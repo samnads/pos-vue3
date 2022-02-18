@@ -3,7 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import AdminMain from '../admin/AdminMain.vue'
 import AdminLogin from '../admin/AdminLogin.vue'
 import AdminProfile from '../admin/AdminProfile.vue'
-import AdminDashboard from '../admin/AdminDashboard.vue'
+//import AdminDashboard from '../admin/AdminDashboard.vue'
 
 const routes = [
   {
@@ -30,7 +30,7 @@ const routes = [
   },
   {
     path: '/admin/',
-    component: AdminDashboard,
+    component: AdminMain,
     children: [
       {
         path: 'login',
