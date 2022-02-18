@@ -13,14 +13,24 @@
           <form>
             <!-- Email input -->
             <div class="form-floating mb-3">
-  <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-  <label for="floatingInput">Email address</label>
-</div>
+              <input
+                type="email"
+                class="form-control"
+                id="floatingInput"
+                placeholder="name@example.com"
+              />
+              <label for="floatingInput">Email address</label>
+            </div>
             <!-- Password input -->
-           <div class="form-floating">
-  <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
-  <label for="floatingPassword">Password</label>
-</div>
+            <div class="form-floating">
+              <input
+                type="password"
+                class="form-control"
+                id="floatingPassword"
+                placeholder="Password"
+              />
+              <label for="floatingPassword">Password</label>
+            </div>
 
             <div class="d-flex justify-content-around align-items-center mb-4">
               <!-- Checkbox -->
@@ -40,17 +50,25 @@
             </div>
 
             <!-- Submit button -->
-           <div class="d-grid gap-2">
-  <button class="btn btn-primary" type="button">Login</button>
-</div>
+            <div class="d-grid gap-2">
+              <button class="btn btn-primary" type="button">Login</button>
+            </div>
 
             <div class="divider d-flex align-items-center my-4">
               <p class="text-center fw-bold mx-3 mb-0 text-muted">OR</p>
             </div>
             <div class="d-grid gap-2">
-  <button class="btn btn-primary btn-lg btn-block"  style="background-color: #3b5998" type="button"><i class="fab fa-facebook-f me-2"></i>Continue with Facebook</button>
-  <button class="btn btn-primary btn-lg btn-block" type="button"> <i class="fab fa-twitter me-2"></i>Continue with Twitter</button>
-</div>
+              <button
+                class="btn btn-primary btn-lg btn-block"
+                style="background-color: #3b5998"
+                type="button"
+              >
+               <i class="bi bi-facebook"></i>&nbsp;Continue with Facebook
+              </button>
+              <button class="btn btn-primary btn-lg btn-block" type="button">
+                <i class="bi bi-twitter"></i>&nbsp;Continue with Twitter
+              </button>
+            </div>
           </form>
         </div>
       </div>

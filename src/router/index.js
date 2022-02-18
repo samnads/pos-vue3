@@ -3,7 +3,8 @@ import HomeView from '../views/HomeView.vue'
 import AdminMain from '../admin/AdminMain.vue'
 import AdminLogin from '../admin/AdminLogin.vue'
 import AdminProfile from '../admin/AdminProfile.vue'
-//import AdminDashboard from '../admin/AdminDashboard.vue'
+import AdminDashboard from '../admin/AdminDashboard.vue'
+import PageNotFound from '../admin/PageNotFound.vue'
 
 const routes = [
   {
@@ -16,11 +17,6 @@ const routes = [
     component: HomeView
   },
   {
-    path: '/admin',
-    name: 'admin',
-    component: AdminMain
-  },
-  {
     path: '/about',
     name: 'about',
     // route level code-splitting
@@ -29,7 +25,7 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
   },
   {
-    path: '/admin/',
+    path: '/admin',
     component: AdminMain,
     children: [
       {
@@ -37,9 +33,17 @@ const routes = [
         component: AdminLogin,
       },
       {
+        path: 'dashboard',
+        component: AdminDashboard,
+      },
+      {
         path: 'profile',
         component: AdminProfile,
       },
+      {
+        path: '/:pathMatch(.*)*',
+        component: PageNotFound,
+      }
     ],
   },
 ]
