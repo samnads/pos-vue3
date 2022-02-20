@@ -6,7 +6,7 @@
 			"script": "serve",
 			"problemMatcher": [],
 			"label": "Run POS",
-			"detail": "vue-cli-service serve"
+			"detail": "vue-cli-service serve --port 8082"
 		}
 	]
 }

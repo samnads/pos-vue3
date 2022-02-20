@@ -1,5 +1,5 @@
 <template>
-Admin Dashboardd
+Admin Dashboard
 </template>
 <style>
 </style>

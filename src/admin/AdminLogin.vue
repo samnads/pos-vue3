@@ -10,14 +10,15 @@
           />
         </div>
         <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
-          <form>
+          <form @submit.prevent="submitForm">
             <!-- Email input -->
             <div class="form-floating mb-3">
               <input
-                type="email"
+                type="text"
                 class="form-control"
                 id="floatingInput"
                 placeholder="name@example.com"
+                v-model="username"
               />
               <label for="floatingInput">Email address</label>
             </div>
@@ -28,11 +29,14 @@
                 class="form-control"
                 id="floatingPassword"
                 placeholder="Password"
+                v-model="password"
               />
               <label for="floatingPassword">Password</label>
             </div>
 
-            <div class="d-flex justify-content-around align-items-center mb-4">
+            <div
+              class="d-flex justify-content-around align-items-center mb-4 mt-4"
+            >
               <!-- Checkbox -->
               <div class="form-check">
                 <input
@@ -46,12 +50,14 @@
                   Remember me
                 </label>
               </div>
-              <a href="#!">Forgot password?</a>
+              <router-link to="/admin/login">Forgot password?</router-link>
             </div>
 
             <!-- Submit button -->
             <div class="d-grid gap-2">
-              <button class="btn btn-primary" type="button">Login</button>
+              <button class="btn btn-primary" type="submit" value="Submit">
+                Login
+              </button>
             </div>
 
             <div class="divider d-flex align-items-center my-4">
@@ -63,7 +69,7 @@
                 style="background-color: #3b5998"
                 type="button"
               >
-               <i class="bi bi-facebook"></i>&nbsp;Continue with Facebook
+                <i class="bi bi-facebook"></i>&nbsp;Continue with Facebook
               </button>
               <button class="btn btn-primary btn-lg btn-block" type="button">
                 <i class="bi bi-twitter"></i>&nbsp;Continue with Twitter
@@ -83,4 +89,35 @@
   height: 1px;
   background: #eee;
 }
+a {
+  text-decoration: none !important;
+}
 </style>
+<script>
+import axios from 'axios'
+export default {
+  data() {
+    return {
+      username: "",
+      email: "",
+      password: "",
+    };
+  },
+  methods: {
+    // submit the form to our backend api
+    submitForm() {
+      const formData = {
+        action: "login",
+        data: { username: this.username, password: this.password },
+      };
+      const headers = {
+      };
+      axios
+        .post("http://localhost/CyberLikes-POS/admin/ajax/login", formData, {
+          headers,
+        })
+        .then((response) => (this.articleId = response.data.id));
+    },
+  },
+};
+</script>
