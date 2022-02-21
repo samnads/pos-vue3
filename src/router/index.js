@@ -30,9 +30,11 @@ const routes = [
   {
     path: '/admin',
     component: AdminMain,
+    redirect: '/admin/dashboard',
     children: [
       {
         path: 'login',
+        name: 'adminLogin',
         component: AdminLogin,
       },
       {
