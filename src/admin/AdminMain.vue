@@ -1,6 +1,9 @@
 <template>
   <div class="header">
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" v-show="this.$route.name !== 'adminLogin'">
+    <nav
+      class="navbar navbar-expand-md navbar-dark fixed-top bg-dark"
+      v-if="this.$route.name !== 'adminLogin'"
+    >
       <div class="container-fluid">
         <a class="navbar-brand" href="#">POS</a>
         <button
@@ -31,16 +34,48 @@
                 Products
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li><router-link class="dropdown-item" to="/admin/products">List All</router-link></li>
-                <li><router-link class="dropdown-item" to="/admin/products/new">Add New</router-link></li>
-                <li><router-link class="dropdown-item" to="/admin/products/adjustments">Adjustments</router-link></li>
-                <li><router-link class="dropdown-item" to="/admin/products/adjustments/new">Add Adjustment</router-link></li>
-                <li><router-link class="dropdown-item" to="/admin/products/import">Import via CSV</router-link></li>
+                <li>
+                  <router-link class="dropdown-item" to="/admin/products"
+                    >List All</router-link
+                  >
+                </li>
+                <li>
+                  <router-link class="dropdown-item" to="/admin/products/new"
+                    >Add New</router-link
+                  >
+                </li>
+                <li>
+                  <router-link
+                    class="dropdown-item"
+                    to="/admin/products/adjustments"
+                    >Adjustments</router-link
+                  >
+                </li>
+                <li>
+                  <router-link
+                    class="dropdown-item"
+                    to="/admin/products/adjustments/new"
+                    >Add Adjustment</router-link
+                  >
+                </li>
+                <li>
+                  <router-link class="dropdown-item" to="/admin/products/import"
+                    >Import via CSV</router-link
+                  >
+                </li>
                 <li><hr class="dropdown-divider" /></li>
-                <li><router-link class="dropdown-item" to="/admin/products/label">Import via CSV</router-link></li>
+                <li>
+                  <router-link class="dropdown-item" to="/admin/products/label"
+                    >Import via CSV</router-link
+                  >
+                </li>
               </ul>
             </li>
-           <li><router-link class="nav-link" to="/admin/login">Login</router-link></li>
+            <li>
+              <router-link class="nav-link" to="/admin/login"
+                >Login</router-link
+              >
+            </li>
             <li class="nav-item">
               <a class="nav-link disabled">Contacts</a>
             </li>
@@ -60,8 +95,10 @@
       </div>
     </nav>
   </div>
-  <div id="content">
-    <router-view></router-view>
+  <div id="content" class="pt-2">
+    <div class="container-fluid">
+      <router-view></router-view>
+    </div>
   </div>
   <footer class="footer mt-auto py-3 bg-light">
     <div class="container">
@@ -76,6 +113,5 @@
 }
 </style>
 <script>
-
 </script>
 

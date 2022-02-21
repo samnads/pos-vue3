@@ -1,12 +1,6 @@
 <template>
-  <!--<nav>
-    <router-link to="/">Home</router-link> |
-     <router-link to="/admin">Admin</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>-->
   <router-view></router-view>
 </template>
-
 <style>
 @import url(https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700);
 #app {
