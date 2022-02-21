@@ -4,6 +4,9 @@ import AdminMain from '../admin/AdminMain.vue'
 import AdminLogin from '../admin/AdminLogin.vue'
 import AdminProfile from '../admin/AdminProfile.vue'
 import AdminDashboard from '../admin/AdminDashboard.vue'
+// Product Based Pages
+import AdminProducts from '../admin/AdminProducts.vue'
+//
 import PageNotFound from '../admin/PageNotFound.vue'
 
 const routes = [
@@ -34,7 +37,13 @@ const routes = [
       },
       {
         path: 'dashboard',
+        name: 'adminDashboard',
         component: AdminDashboard,
+      },
+      {
+        path: 'products',
+        name: 'adminProducts',
+        component: AdminProducts,
       },
       {
         path: 'profile',

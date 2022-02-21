@@ -94,7 +94,6 @@ a {
 }
 </style>
 <script>
-import axios from 'axios'
 export default {
   data() {
     return {
@@ -106,17 +105,26 @@ export default {
   methods: {
     // submit the form to our backend api
     submitForm() {
+      const self = this;
       const formData = {
         action: "login",
         data: { username: this.username, password: this.password },
       };
-      const headers = {
-      };
-      axios
-        .post("http://localhost/CyberLikes-POS/admin/ajax/login", formData, {
-          headers,
+      this.axios
+        .post("http://localhost/CyberLikes-POS/admin/ajax/login", formData)
+        .then(function (response) {
+          let data = response.data;
+          if (data.success == true) {
+            console.log(data.message);
+            self.$router.push({ name: "adminDashboard" }).catch(() => {});
+          } else {
+            alert(data.message);
+          }
         })
-        .then((response) => (this.articleId = response.data.id));
+        .catch((error) => {
+          this.errorMessage = error.message;
+          alert("There was an error! " + error);
+        });
     },
   },
 };
