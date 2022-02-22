@@ -115,7 +115,6 @@ export default {
         .then(function (response) {
           let data = response.data;
           if (data.success == true) {
-            console.log(data.message);
             self.$router.push({ name: "adminDashboard" }).catch(() => {});
           } else {
             alert(data.message);

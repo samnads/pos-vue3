@@ -2,7 +2,20 @@
   <div class="form-inline menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
-        <span class=""><i class="bi bi-cart-fill"></i> Products</span>
+        <h5 class="title"><i class="bi bi-cart-fill"></i> Products</h5>
+      </div>
+      <div class="p-2 bd-highlight">
+        <select
+          class="form-select form-select-md"
+          id="length_change"
+          name="length_change"
+        >
+          <option selected>5</option>
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="-1">All</option>
+        </select>
       </div>
       <div class="p-2 bd-highlight"><span id="buttons"></span></div>
       <div class="p-2 bd-highlight">
@@ -23,7 +36,7 @@
             class="form-check-input"
             type="checkbox"
             value=""
-            id="flexCheckDefault"
+            id="checkall"
           />
         </th>
         <th scope="col"><i class="bi bi-card-image"></i></th>
@@ -52,19 +65,42 @@
   background-color: #5f9ea0;
   color: #fff;
 }
-.menubar > .bi {
-  margin-right: 5px;
+.menubar .bi {
+  margin-right: 10px;
 }
-.menubar > .title .bi:after {
+.menubar .title .bi:after {
+  margin-left: 10px;
   content: " | ";
   font-style: normal;
 }
 table.dataTable {
   margin-top: 0px !important;
 }
+.btn-group > .btn-group:not(:last-child) > .btn,
+.btn-group > .btn:not(:last-child):not(.dropdown-toggle) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.dt-buttons.btn-group .btn {
+  border: 1px solid #ced4da !important;
+}
+/* change table header row color */
+table.dataTable > thead {
+  background-color: #072f49 !important;
+  color: ivory;
+}
+/* hide because the default button location is shown while loading */
+#datatable_wrapper > .dt-buttons {
+  display: none;
+}
+/* selected row color */
+table tbody > tr.selected {
+  background-color: #8197a6 !important;
+}
 </style>
 <script>
 import "jquery/dist/jquery.min.js";
+// dataTable files
 import "datatables.net-bs5/js/dataTables.bootstrap5";
 import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
 import "datatables.net-buttons-bs5/js/buttons.bootstrap5";
@@ -74,7 +110,9 @@ import "datatables.net-buttons/js/buttons.flash";
 import "datatables.net-buttons/js/buttons.html5";
 import "datatables.net-buttons/js/buttons.print";
 import "datatables.net-buttons/js/dataTables.buttons";
-
+import "datatables.net-select-bs5/css/select.bootstrap5.css";
+import "datatables.net-select-bs5/js/select.bootstrap5";
+// font awesome files
 import "@fortawesome/fontawesome-free/css/all.css";
 import $ from "jquery";
 export default {
@@ -86,13 +124,12 @@ export default {
     this.initLoad();
   },
   mounted() {
-    var self = this;
     $(document).ready(function () {
+      var self = this;
       $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {};
-      var table = $("#datatable").DataTable({
+      self.table = $("#datatable").DataTable({
         searching: true, // remove default search box
         bLengthChange: false, // remove default length change menu
-        lengthMenu: [10, 25, 50, 75, 100],
         pageLength: 5,
         searchDelay: 750,
         processing: true,
@@ -117,6 +154,15 @@ export default {
           data: function (d) {
             d["action"] = "datatable";
             return d;
+          },
+          dataSrc: function (response) {
+            if (response.success == false && response.location) {
+              self.$router
+                .push({ path: "/" + response.location })
+                .catch(() => {});
+            } else {
+              return response.data;
+            }
           },
         },
         language: {
@@ -191,11 +237,10 @@ export default {
             searchable: false,
             className: "text-center",
             render: function (data, type, full, meta) {
-              return "";
               return (
                 '<img src="' +
-                (data || "../gd/50/50") +
-                '" class="rounded thumbnail"/>'
+                (data || "http://localhost/CyberLikes-POS/gd/50/50") +
+                '" class="rounded thumbnail" width="20px"/>'
               );
             },
           },
@@ -247,27 +292,27 @@ export default {
             searchable: false,
             width: "2%",
             defaultContent:
-              "<div class='btn-group dropleft'><button type='button' class='btn btn-secondary dropdown-toggle btn-sm' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> Action</button><div class='dropdown-menu'><a id='info' class='dropdown-item' href='#'><i class='fa fa-info fa-fw' aria-hidden='true'></i>Details</a> <a class='dropdown-item' id='edit' href='#'><i class='fa fa-edit fa-fw' aria-hidden='true'></i>Edit</a><a class='dropdown-item' id='copy' href='#'><i class='fa fa-copy fa-fw' aria-hidden='true'></i>Duplicate</a> <a class='dropdown-item' href='#'><i class='fa fa-shopping-cart fa-fw' aria-hidden='true'></i>Add to POS</a><div class='dropdown-divider'></div><a class='dropdown-item' id='delete' href='#'><i class='fa fa-trash fa-fw' aria-hidden='true'></i>Delete</a> </div></div>",
+              '<div class="btn-group dropstart">  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Action</button><ul class="dropdown-menu"><li><button class="dropdown-item" type="button"><i class="fa-solid fa-square-info"></i>Details</button></li><li><button class="dropdown-item" type="button">Edit</button></li>    <li><button class="dropdown-item" type="button">Duplicate</button></li> </ul></div>',
           },
         ],
         buttons: [
           {
-            extend: "excelHtml5",
-            text: '<i class="fas fa-file-excel"></i>',
+            extend: "csv",
+            text: '<i class="fas fa-file-csv"></i>',
             className: "btn-light",
             exportOptions: {
               columns: [2, 3, 4, 5, 6, 7],
             },
             attr: {
               "data-toggle": "tooltip",
-              title: "Download Excel",
+              title: "Download CSV",
             },
           },
           {
-            text: '<i class="fa fa-sync-alt" aria-hidden="true"></i>',
+            text: '<i class="fa fa-sync-alt"></i>',
             className: "btn-light",
             action: function () {
-              table.ajax.reload();
+              self.table.ajax.reload();
             },
             attr: {
               title: "Refresh",
@@ -279,10 +324,13 @@ export default {
             },
           },
           {
-            text: '<i class="fa fa-trash" aria-hidden="true"></i>',
+            text: '<i class="fa fa-trash"></i>',
             className: "btn-light",
             enabled: false,
-            action: function () {},
+            action: function () {
+              self.rows = self.table.rows(".selected").data().toArray();
+              //$scope.confDel($scope.rows);
+            },
             attr: {
               title: "Delete",
               id: "delete",
@@ -300,29 +348,78 @@ export default {
               columns: [2, 3, 4, 5, 6, 7],
             },
             attr: {
-              "data-toggle": "tooltip",
+              "data-bs-toggle": "tooltip",
               title: "Print",
             },
           },
+          {
+            text: '<i class="fa fa-plus" aria-hidden="true"></i>',
+            className: "btn-light",
+            action: function () {
+              //$window.location = $scope.baseUrl + "admin/product/new"; // redirect
+            },
+            attr: {
+              "data-bs-toggle": "tooltip",
+              title: "Add New",
+              id: "new",
+            },
+            key: {
+              key: "d",
+              shiftKey: true,
+            },
+            init: function (api, node, config) {
+
+            },
+          },
         ],
-        initComplete: function (settings) {},
+        initComplete: function (settings) {
+          $("#buttons").html(self.table.buttons().container());
+        },
       });
-      table.buttons().container().appendTo("#buttons");
+      $("#datatable tbody").on(
+        "click",
+        "td:not(:first-child):not(:last-child)",
+        function () {
+          // show single product info
+          self.row = self.table.row(this).data();
+        }
+      );
+      self.table.on("select deselect", function () {
+        self.rows = self.table.rows(".selected").data().toArray();
+        self.table.button(2).enable(self.rows.length >= 1);
+        if (self.rows.length < self.table.data().count()) {
+          //$scope.checkall = false;
+        } else if (self.rows.length == self.table.data().count()) {
+          //$scope.checkall = true;
+        }
+      });
+      $("#checkall").on("click", function (e) {
+        if ($(this).is(":checked")) {
+          self.table.rows().select();
+        } else {
+          self.table.rows().deselect();
+        }
+      });
       $("#search").keyup(function () {
         // custom search box
-        table.search($(this).val()).draw();
+        self.table.search($(this).val()).draw();
+      });
+      $("#length_change").change(function () {
+        // custom length change menu
+        self.table.page.len($(this).val()).draw();
       });
       document
         .getElementById("search")
         .addEventListener("search", function (event) {
           // search clear button clicked
-          table.search("").draw();
+          self.table.search("").draw();
         });
     });
   },
   data: function () {
     return {
       products: [],
+      table: null,
     };
   },
 };

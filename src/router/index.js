@@ -5,7 +5,7 @@ import AdminLogin from '../admin/AdminLogin.vue'
 import AdminProfile from '../admin/AdminProfile.vue'
 import AdminDashboard from '../admin/AdminDashboard.vue'
 // Product Based Pages
-import AdminProducts from '../admin/AdminProducts.vue'
+import AdminProducts from '../admin/product/Products.vue'
 //
 import PageNotFound from '../admin/PageNotFound.vue'
 
@@ -65,3 +65,4 @@ const router = createRouter({
 })
 
 export default router
+

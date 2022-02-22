@@ -8,4 +8,5 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap"
 import "bootstrap-icons/font/bootstrap-icons.css"
 axios.defaults.withCredentials = true
-createApp(App).use(store).use(router).use(VueAxios, axios).mount('#app')
+// eslint-disable-next-line
+const app = createApp(App).use(store).use(router).use(VueAxios, axios).mount('#app')
