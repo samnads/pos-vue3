@@ -1,9 +1,21 @@
 <template>
-  <div class="form-inline menubar"><i class="bi bi-cart-fill"></i>Products</div>
-  <table
-    class="table table-bordered table-striped w-auto"
-    id="datatable"
-  >
+  <div class="form-inline menubar">
+    <div class="d-flex bd-highlight align-items-baseline">
+      <div class="p-2 flex-grow-1 bd-highlight">
+        <span class=""><i class="bi bi-cart-fill"></i> Products</span>
+      </div>
+      <div class="p-2 bd-highlight"><span id="buttons"></span></div>
+      <div class="p-2 bd-highlight">
+        <input
+          class="form-control"
+          id="search"
+          type="search"
+          placeholder="Search..."
+        />
+      </div>
+    </div>
+  </div>
+  <table class="table table-bordered table-striped w-auto" id="datatable">
     <thead>
       <tr>
         <th scope="col">
@@ -28,40 +40,60 @@
         <th scope="col"><i class="bi bi-menu-down"></i></th>
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody>
+      <tr v-for="item in products" :key="item.id"></tr>
+    </tbody>
   </table>
 </template>
 <style>
 .menubar {
   border-top-left-radius: 0.25rem !important;
   border-top-right-radius: 0.25rem !important;
-  padding: 0.75rem !important;
   background-color: #5f9ea0;
   color: #fff;
-  text-align: left;
 }
 .menubar > .bi {
   margin-right: 5px;
 }
-.menubar > .bi:after {
+.menubar > .title .bi:after {
   content: " | ";
   font-style: normal;
+}
+table.dataTable {
+  margin-top: 0px !important;
 }
 </style>
 <script>
 import "jquery/dist/jquery.min.js";
-import "datatables.net-dt/js/dataTables.dataTables";
-import "datatables.net-dt/css/jquery.dataTables.min.css";
+import "datatables.net-bs5/js/dataTables.bootstrap5";
+import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
+import "datatables.net-buttons-bs5/js/buttons.bootstrap5";
+import "datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css";
+import "datatables.net-buttons/js/buttons.colVis";
+import "datatables.net-buttons/js/buttons.flash";
+import "datatables.net-buttons/js/buttons.html5";
+import "datatables.net-buttons/js/buttons.print";
+import "datatables.net-buttons/js/dataTables.buttons";
+
+import "@fortawesome/fontawesome-free/css/all.css";
 import $ from "jquery";
 export default {
   /* eslint-disable */
+  methods: {
+    initLoad() {},
+  },
+  created() {
+    this.initLoad();
+  },
   mounted() {
     var self = this;
     $(document).ready(function () {
-      $("#datatable").DataTable({
+      $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {};
+      var table = $("#datatable").DataTable({
         searching: true, // remove default search box
         bLengthChange: false, // remove default length change menu
-        pageLength: 10,
+        lengthMenu: [10, 25, 50, 75, 100],
+        pageLength: 5,
         searchDelay: 750,
         processing: true,
         serverSide: true,
@@ -82,7 +114,6 @@ export default {
           url: "http://localhost/CyberLikes-POS/admin/ajax/product",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
-
           data: function (d) {
             d["action"] = "datatable";
             return d;
@@ -90,7 +121,7 @@ export default {
         },
         language: {
           processing:
-            '<div class="d-flex justify-content-center"> <div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>',
+            '<div class="spinner-grow" style="width: 3rem; height: 3rem;" role="status"> <span class="visually-hidden">Loading...</span></div>',
           emptyTable: "No data available in table",
           zeroRecords: "No matching products found",
           info: "Showing _START_ to _END_ of _TOTAL_ Products",
@@ -160,7 +191,7 @@ export default {
             searchable: false,
             className: "text-center",
             render: function (data, type, full, meta) {
-              return '';
+              return "";
               return (
                 '<img src="' +
                 (data || "../gd/50/50") +
@@ -212,17 +243,87 @@ export default {
           {
             targets: -1,
             orderable: false,
+            className: "text-center",
             searchable: false,
             width: "2%",
             defaultContent:
               "<div class='btn-group dropleft'><button type='button' class='btn btn-secondary dropdown-toggle btn-sm' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> Action</button><div class='dropdown-menu'><a id='info' class='dropdown-item' href='#'><i class='fa fa-info fa-fw' aria-hidden='true'></i>Details</a> <a class='dropdown-item' id='edit' href='#'><i class='fa fa-edit fa-fw' aria-hidden='true'></i>Edit</a><a class='dropdown-item' id='copy' href='#'><i class='fa fa-copy fa-fw' aria-hidden='true'></i>Duplicate</a> <a class='dropdown-item' href='#'><i class='fa fa-shopping-cart fa-fw' aria-hidden='true'></i>Add to POS</a><div class='dropdown-divider'></div><a class='dropdown-item' id='delete' href='#'><i class='fa fa-trash fa-fw' aria-hidden='true'></i>Delete</a> </div></div>",
           },
         ],
+        buttons: [
+          {
+            extend: "excelHtml5",
+            text: '<i class="fas fa-file-excel"></i>',
+            className: "btn-light",
+            exportOptions: {
+              columns: [2, 3, 4, 5, 6, 7],
+            },
+            attr: {
+              "data-toggle": "tooltip",
+              title: "Download Excel",
+            },
+          },
+          {
+            text: '<i class="fa fa-sync-alt" aria-hidden="true"></i>',
+            className: "btn-light",
+            action: function () {
+              table.ajax.reload();
+            },
+            attr: {
+              title: "Refresh",
+              id: "refresh",
+            },
+            key: {
+              key: "r",
+              shiftKey: true,
+            },
+          },
+          {
+            text: '<i class="fa fa-trash" aria-hidden="true"></i>',
+            className: "btn-light",
+            enabled: false,
+            action: function () {},
+            attr: {
+              title: "Delete",
+              id: "delete",
+            },
+            key: {
+              key: "d",
+              shiftKey: true,
+            },
+          },
+          {
+            extend: "print",
+            text: '<i class="fa-solid fa-print"></i>',
+            className: "btn-light",
+            exportOptions: {
+              columns: [2, 3, 4, 5, 6, 7],
+            },
+            attr: {
+              "data-toggle": "tooltip",
+              title: "Print",
+            },
+          },
+        ],
+        initComplete: function (settings) {},
       });
+      table.buttons().container().appendTo("#buttons");
+      $("#search").keyup(function () {
+        // custom search box
+        table.search($(this).val()).draw();
+      });
+      document
+        .getElementById("search")
+        .addEventListener("search", function (event) {
+          // search clear button clicked
+          table.search("").draw();
+        });
     });
   },
   data: function () {
-    return {};
+    return {
+      products: [],
+    };
   },
 };
 </script>
