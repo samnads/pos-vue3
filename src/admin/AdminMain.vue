@@ -111,6 +111,66 @@
   margin-top: 56px;
   min-height: calc(100vh - 112px) !important;
 }
+/* MENU BAR STYLEES */
+.menubar {
+  border-top-left-radius: 0.25rem !important;
+  border-top-right-radius: 0.25rem !important;
+  background-color: #5f9ea0;
+  color: #fff;
+}
+.menubar .dt-buttons.btn-group .btn {
+  border: 1px solid #ced4da !important;
+}
+.menubar .bi {
+  margin-right: 10px;
+}
+.menubar .title .bi:after {
+  margin-left: 10px;
+  content: " | ";
+  font-style: normal;
+}
+/* MENU CONTENT STYLES */
+#wrap_content{
+  padding: 10px;
+  background-color: #e9e9e9;
+   border-bottom-left-radius: 0.25rem !important;
+  border-bottom-right-radius: 0.25rem !important;
+  min-height: calc(100vh - 175px) !important;
+}
+/* DATA TABLE STYLES */
+/* hide because the default button location is shown while loading */
+#datatable_wrapper tbody{
+  background-color: white;
+}
+#datatable_wrapper > .dt-buttons {
+  display: none;
+}
+/* change table header row color */
+#datatable_wrapper table.dataTable > thead {
+  background-color: #072f49 !important;
+  color: ivory;
+}
+#datatable_wrapper table.dataTable {
+  margin-top: 0px !important;
+}
+#datatable_wrapper tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.13);
+}
+/* selected row color */
+#datatable_wrapper table tbody > tr.selected {
+  background-color: #8197a6 !important;
+}
+/* pagination */
+.page-item.active .page-link {
+  background-color: #5f9ea0 !important;
+  border-color: #5f9ea0 !important;
+}
+.page-link {
+  color: darkslategray !important;
+}
+.page-item.active .page-link {
+  color: #fff !important;
+}
 </style>
 <script>
 </script>

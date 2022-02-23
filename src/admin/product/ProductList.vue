@@ -1,5 +1,5 @@
 <template>
-  <div class="form-inline menubar">
+  <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
         <h5 class="title"><i class="bi bi-cart-fill"></i> Products</h5>
@@ -28,94 +28,47 @@
       </div>
     </div>
   </div>
-  <table class="table table-bordered table-striped w-auto" id="datatable">
-    <thead>
-      <tr>
-        <th scope="col">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            value=""
-            id="checkall"
-          />
-        </th>
-        <th scope="col"><i class="bi bi-card-image"></i></th>
-        <th scope="col">ID</th>
-        <th scope="col">Code</th>
-        <th scope="col">Name</th>
-        <th scope="col">Brand</th>
-        <th scope="col">Category</th>
-        <th scope="col">MRP</th>
-        <th scope="col">Stock</th>
-        <th scope="col">Unit</th>
-        <th scope="col">Cost</th>
-        <th scope="col">Price</th>
-        <th scope="col"><i class="bi bi-menu-down"></i></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="item in products" :key="item.id"></tr>
-    </tbody>
-  </table>
+  <div class="wrap_content" id="wrap_content">
+    <table class="table table-bordered table-striped w-auto" id="datatable">
+      <thead>
+        <tr>
+          <th scope="col">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              value=""
+              id="checkall"
+            />
+          </th>
+          <th scope="col"><i class="bi bi-card-image"></i></th>
+          <th scope="col">ID</th>
+          <th scope="col">Code</th>
+          <th scope="col">Name</th>
+          <th scope="col">Brand</th>
+          <th scope="col">Category</th>
+          <th scope="col">MRP</th>
+          <th scope="col">Stock</th>
+          <th scope="col">Unit</th>
+          <th scope="col">Cost</th>
+          <th scope="col">Price</th>
+          <th scope="col"><i class="bi bi-menu-down"></i></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in products" :key="item.id"></tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 <style>
-.menubar {
-  border-top-left-radius: 0.25rem !important;
-  border-top-right-radius: 0.25rem !important;
-  background-color: #5f9ea0;
-  color: #fff;
-}
-.menubar .bi {
-  margin-right: 10px;
-}
-.menubar .title .bi:after {
-  margin-left: 10px;
-  content: " | ";
-  font-style: normal;
-}
-table.dataTable {
-  margin-top: 0px !important;
-}
-.btn-group > .btn-group:not(:last-child) > .btn,
-.btn-group > .btn:not(:last-child):not(.dropdown-toggle) {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-.dt-buttons.btn-group .btn {
-  border: 1px solid #ced4da !important;
-}
-/* change table header row color */
-table.dataTable > thead {
-  background-color: #072f49 !important;
-  color: ivory;
-}
-/* hide because the default button location is shown while loading */
-#datatable_wrapper > .dt-buttons {
-  display: none;
-}
-/* selected row color */
-table tbody > tr.selected {
-  background-color: #8197a6 !important;
-}
 </style>
 <script>
-import "jquery/dist/jquery.min.js";
-// dataTable files
-import "datatables.net-bs5/js/dataTables.bootstrap5";
-import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
-import "datatables.net-buttons-bs5/js/buttons.bootstrap5";
-import "datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css";
-import "datatables.net-buttons/js/buttons.colVis";
-import "datatables.net-buttons/js/buttons.flash";
-import "datatables.net-buttons/js/buttons.html5";
-import "datatables.net-buttons/js/buttons.print";
-import "datatables.net-buttons/js/dataTables.buttons";
-import "datatables.net-select-bs5/css/select.bootstrap5.css";
-import "datatables.net-select-bs5/js/select.bootstrap5";
-// font awesome files
-import "@fortawesome/fontawesome-free/css/all.css";
-import $ from "jquery";
+import jQuery from "jquery";
+const $ = jQuery;
+window.$ = $;
 export default {
+  components: {
+  },
   /* eslint-disable */
   methods: {
     initLoad() {},
@@ -124,7 +77,7 @@ export default {
     this.initLoad();
   },
   mounted() {
-     var self = this;
+    var self = this;
     $(document).ready(function () {
       $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {};
       self.table = $("#datatable").DataTable({
@@ -157,7 +110,9 @@ export default {
           },
           dataSrc: function (response) {
             if (response.success == false && response.location) {
-              self.$router.push({ path: "/" + response.location }).catch((e) => {});
+              self.$router
+                .push({ path: "/" + response.location })
+                .catch((e) => {});
             } else {
               return response.data;
             }
@@ -365,9 +320,7 @@ export default {
               key: "d",
               shiftKey: true,
             },
-            init: function (api, node, config) {
-
-            },
+            init: function (api, node, config) {},
           },
         ],
         initComplete: function (settings) {
@@ -380,6 +333,7 @@ export default {
         function () {
           // show single product info
           self.row = self.table.row(this).data();
+          $('#exampleModal').modal('show');
         }
       );
       self.table.on("select deselect", function () {
