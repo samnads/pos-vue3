@@ -15,11 +15,5 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off'
   },
   overrides: [
-    {
-      files: ['src/admin/**/*.vue'],
-      rules: {
-        'vue/multi-word-component-names': 0,
-      },
-    },
   ],
 }

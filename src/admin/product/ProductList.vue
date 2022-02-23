@@ -124,8 +124,8 @@ export default {
     this.initLoad();
   },
   mounted() {
+     var self = this;
     $(document).ready(function () {
-      var self = this;
       $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {};
       self.table = $("#datatable").DataTable({
         searching: true, // remove default search box
@@ -157,9 +157,7 @@ export default {
           },
           dataSrc: function (response) {
             if (response.success == false && response.location) {
-              self.$router
-                .push({ path: "/" + response.location })
-                .catch(() => {});
+              self.$router.push({ path: "/" + response.location }).catch((e) => {});
             } else {
               return response.data;
             }
@@ -356,7 +354,7 @@ export default {
             text: '<i class="fa fa-plus" aria-hidden="true"></i>',
             className: "btn-light",
             action: function () {
-              //$window.location = $scope.baseUrl + "admin/product/new"; // redirect
+              self.$router.push({ name: "adminProductNew" }).catch((e) => {});
             },
             attr: {
               "data-bs-toggle": "tooltip",

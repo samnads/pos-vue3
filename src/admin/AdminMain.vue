@@ -35,37 +35,37 @@
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <li>
-                  <router-link class="dropdown-item" to="/admin/products"
+                  <router-link class="dropdown-item" to="/admin/product/list"
                     >List All</router-link
                   >
                 </li>
                 <li>
-                  <router-link class="dropdown-item" to="/admin/products/new"
+                  <router-link class="dropdown-item" to="/admin/product/new"
                     >Add New</router-link
                   >
                 </li>
                 <li>
                   <router-link
                     class="dropdown-item"
-                    to="/admin/products/adjustments"
+                    to="/admin/product/adjustments"
                     >Adjustments</router-link
                   >
                 </li>
                 <li>
                   <router-link
                     class="dropdown-item"
-                    to="/admin/products/adjustments/new"
+                    to="/admin/product/adjustments/new"
                     >Add Adjustment</router-link
                   >
                 </li>
                 <li>
-                  <router-link class="dropdown-item" to="/admin/products/import"
+                  <router-link class="dropdown-item" to="/admin/product/import"
                     >Import via CSV</router-link
                   >
                 </li>
                 <li><hr class="dropdown-divider" /></li>
                 <li>
-                  <router-link class="dropdown-item" to="/admin/products/label"
+                  <router-link class="dropdown-item" to="/admin/product/label"
                     >Import via CSV</router-link
                   >
                 </li>

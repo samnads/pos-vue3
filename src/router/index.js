@@ -1,12 +1,15 @@
-import { createRouter, createWebHashHistory  } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+// admin pages
 import AdminMain from '../admin/AdminMain.vue'
 import AdminLogin from '../admin/AdminLogin.vue'
 import AdminProfile from '../admin/AdminProfile.vue'
 import AdminDashboard from '../admin/AdminDashboard.vue'
 // Product Based Pages
-import AdminProducts from '../admin/product/Products.vue'
-//
+import AdminProductMain from '../admin/product/ProductMain.vue'
+import AdminProductList from '../admin/product/ProductList.vue'
+import AdminProductNew from '../admin/product/ProductNew.vue'
+// error pages
 import PageNotFound from '../admin/PageNotFound.vue'
 
 const routes = [
@@ -43,9 +46,22 @@ const routes = [
         component: AdminDashboard,
       },
       {
-        path: 'products',
-        name: 'adminProducts',
-        component: AdminProducts,
+        path: 'product',
+        name: 'adminProductMain',
+        component: AdminProductMain,
+        redirect: '/admin/product/list',
+        children: [
+          {
+            path: 'list',
+            name: 'adminProductList',
+            component: AdminProductList,
+          },
+          {
+            path: 'new',
+            name: 'adminProductNew',
+            component: AdminProductNew,
+          },
+        ],
       },
       {
         path: 'profile',
@@ -60,7 +76,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory (process.env.BASE_URL),
+  history: createWebHashHistory(process.env.BASE_URL),
   routes
 })
 
