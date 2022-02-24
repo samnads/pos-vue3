@@ -59,15 +59,17 @@
       </tbody>
     </table>
   </div>
+  <AdminProductDetails :product="product.details" />
 </template>
 <style>
 </style>
 <script>
-import jQuery from "jquery";
-const $ = jQuery;
-window.$ = $;
+import { Modal } from "bootstrap";
+import AdminProductDetails from "./ProductDetails.vue";
 export default {
+  props: {},
   components: {
+     AdminProductDetails,
   },
   /* eslint-disable */
   methods: {
@@ -78,7 +80,7 @@ export default {
   },
   mounted() {
     var self = this;
-    $(document).ready(function () {
+    $(function () {
       $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {};
       self.table = $("#datatable").DataTable({
         searching: true, // remove default search box
@@ -333,7 +335,9 @@ export default {
         function () {
           // show single product info
           self.row = self.table.row(this).data();
-          $('#exampleModal').modal('show');
+          self.product.details = self.row;
+          var prodDetailsModal = new Modal($("#detailsModal"), {});
+          prodDetailsModal.show();
         }
       );
       self.table.on("select deselect", function () {
@@ -371,7 +375,9 @@ export default {
   data: function () {
     return {
       products: [],
-      table: null,
+      product: {
+        details: {},
+      },
     };
   },
 };
