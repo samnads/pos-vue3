@@ -2,6 +2,7 @@
   <div id="adminProductRoute">
     <router-view></router-view>
   </div>
+  
 </template>
 <style>
 #adminProductRoute .modal-header {

@@ -124,22 +124,22 @@
 .menubar .bi {
   margin-right: 10px;
 }
-.menubar .title .bi:after {
+.menubar .title i:after {
   margin-left: 10px;
   content: " | ";
   font-style: normal;
 }
 /* MENU CONTENT STYLES */
-#wrap_content{
+#wrap_content {
   padding: 10px;
   background-color: #e9e9e9;
-   border-bottom-left-radius: 0.25rem !important;
+  border-bottom-left-radius: 0.25rem !important;
   border-bottom-right-radius: 0.25rem !important;
   min-height: calc(100vh - 175px) !important;
 }
 /* DATA TABLE STYLES */
 /* hide because the default button location is shown while loading */
-#datatable_wrapper tbody{
+#datatable_wrapper tbody {
   background-color: white;
 }
 #datatable_wrapper > .dt-buttons {
@@ -160,6 +160,12 @@
 #datatable_wrapper table tbody > tr.selected {
   background-color: #8197a6 !important;
 }
+/* action menu styles */
+#datatable_wrapper table tbody > tr .dropdown .dropdown-item > svg {
+  margin-right: 10px;;
+}
+
+
 /* pagination */
 .page-item.active .page-link {
   background-color: #5f9ea0 !important;
@@ -170,6 +176,9 @@
 }
 .page-item.active .page-link {
   color: #fff !important;
+}
+.btn > svg {
+  margin-right: 10px;
 }
 </style>
 <script>
@@ -184,8 +193,24 @@ import "datatables.net-buttons/js/buttons.print";
 import "datatables.net-buttons/js/dataTables.buttons";
 import "datatables.net-select-bs5/css/select.bootstrap5.css";
 import "datatables.net-select-bs5/js/select.bootstrap5";
+import { Modal } from "bootstrap";
 export default {
-  components: {
+  props: ["mytest"],
+  components: {},
+  data: function () {
+    return {
+      user: "",
+    };
+  },
+  methods: {
+    initLoad() {},
+  },
+  created() {
+    this.initLoad();
+  },
+  mounted() {
+    window.prodDetailsModal = new Modal($("#detailsModal"), {});
+    window.prodDeleteModal = new Modal($("#deleteModal"), {});
   },
 };
 </script>

@@ -9,9 +9,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">
-            Prooduct Details <font-awesome-icon icon="user-secret" />
-          </h5>
+          <h5 class="modal-title" id="exampleModalLabel">Product Details</h5>
           <button
             type="button"
             class="btn-close"
@@ -20,68 +18,82 @@
           ></button>
         </div>
         <div class="modal-body">
-          <table class="table table-sm">
-            <caption>
-              {{
-                product.name
-              }}
-              |
-              {{
-                product.code
-              }}
-            </caption>
-          </table>
+          <div class="row justify-content-start">
+            <div class="col-12">
+              <table
+                class="table table-bordered border-secondary table-primary"
+              >
+                <tbody>
+                  <tr>
+                    <th scope="row">Name</th>
+                    <td>
+                      {{ product.name }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Code</th>
+                    <td>{{ product.code }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <table class="table table-sm"></table>
           <div class="row justify-content-start">
             <div class="col-4">
               <table class="table table-bordered border-secondary table-info">
                 <tbody>
                   <tr>
                     <th scope="row">Name</th>
-                    <td>Mark</td>
+                    <td>Avariery product with different types of colors.</td>
                   </tr>
                   <tr>
                     <th scope="row">Code</th>
-                    <td>Jacob</td>
+                    <td>561561051</td>
                   </tr>
                   <tr>
                     <th scope="row">Rack</th>
-                    <td>Larry</td>
+                    <td>RL1</td>
                   </tr>
                 </tbody>
               </table>
             </div>
             <div class="col-4">
-              <table class="table table-bordered border-secondary table-warning">
+              <table
+                class="table table-bordered border-secondary table-warning"
+              >
                 <tbody>
                   <tr>
-                    <th scope="row">MRP</th>
+                    <th scope="row">50</th>
                     <td>Mark</td>
                   </tr>
                   <tr>
                     <th scope="row">Cost</th>
-                    <td>Jacob</td>
+                    <td>20</td>
                   </tr>
                   <tr>
                     <th scope="row">Price</th>
-                    <td>Larry</td>
+                    <td>30</td>
                   </tr>
                 </tbody>
               </table>
             </div>
             <div class="col-4">
-              <table class="table table-bordered border-secondary table-secondary">
+              <table
+                class="table table-bordered border-secondary table-secondary"
+              >
                 <tbody>
                   <tr>
                     <th scope="row">Brand</th>
-                    <td>Mark</td>
+                    <td>Dell</td>
                   </tr>
                   <tr>
                     <th scope="row">Category</th>
-                    <td>Jacob</td>
+                    <td>Electronics</td>
                   </tr>
                   <tr>
                     <th scope="row">Subcategory</th>
-                    <td>Larry</td>
+                    <td>Laptops</td>
                   </tr>
                 </tbody>
               </table>
@@ -89,10 +101,22 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-danger me-auto">DELETE</button>
-          <button type="button" class="btn btn-primary">Print</button>
-          <button type="button" class="btn btn-warning">Edit</button>
-          <button type="button" class="btn btn-dark">Copy</button>
+          <button
+            type="button"
+            class="btn btn-danger me-auto"
+            v-on:click="deleteModal()"
+          >
+            <i class="fa-solid fa-trash"></i>DELETE
+          </button>
+          <button type="button" class="btn btn-primary">
+            <i class="fa-solid fa-print"></i>Print
+          </button>
+          <button type="button" class="btn btn-warning" v-on:click="edit()">
+            <i class="fa-solid fa-pen-to-square"></i>Edit
+          </button>
+          <button type="button" class="btn btn-dark" v-on:click="copy()">
+            <i class="fa-solid fa-copy"></i>Copy
+          </button>
         </div>
       </div>
     </div>
@@ -102,6 +126,20 @@
 export default {
   props: {
     product: Object,
+  },
+  methods: {
+    edit() {
+      window.prodDetailsModal.hide();
+      this.$router.push({ path: "/admin/edit/1" }).catch(() => {});
+    },
+    copy() {
+      window.prodDetailsModal.hide();
+      this.$router.push({ path: "/admin/copy/1" }).catch(() => {});
+    },
+    deleteModal() {
+      window.prodDetailsModal.hide();
+      window.prodDeleteModal.show();
+    },
   },
 };
 </script>

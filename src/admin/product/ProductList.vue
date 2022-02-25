@@ -2,7 +2,7 @@
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
-        <h5 class="title"><i class="bi bi-cart-fill"></i> Products</h5>
+        <h5 class="title"><i class="fa-solid fa-cart-shopping"></i> Products</h5>
       </div>
       <div class="p-2 bd-highlight">
         <select
@@ -40,7 +40,7 @@
               id="checkall"
             />
           </th>
-          <th scope="col"><i class="bi bi-card-image"></i></th>
+          <th scope="col"><i class="fa-solid fa-image"></i></th>
           <th scope="col">ID</th>
           <th scope="col">Code</th>
           <th scope="col">Name</th>
@@ -51,7 +51,7 @@
           <th scope="col">Unit</th>
           <th scope="col">Cost</th>
           <th scope="col">Price</th>
-          <th scope="col"><i class="bi bi-menu-down"></i></th>
+          <th scope="col"><i class="fa-solid fa-bars"></i></th>
         </tr>
       </thead>
       <tbody>
@@ -60,16 +60,18 @@
     </table>
   </div>
   <AdminProductDetails :product="product.details" />
+  <AdminProductDeleteConfirmModal :product="product.details" />
 </template>
 <style>
 </style>
 <script>
-import { Modal } from "bootstrap";
 import AdminProductDetails from "./ProductDetails.vue";
+import AdminProductDeleteConfirmModal from "./ProductDelete.vue";
 export default {
   props: {},
   components: {
      AdminProductDetails,
+     AdminProductDeleteConfirmModal,
   },
   /* eslint-disable */
   methods: {
@@ -247,7 +249,7 @@ export default {
             searchable: false,
             width: "2%",
             defaultContent:
-              '<div class="btn-group dropstart">  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Action</button><ul class="dropdown-menu"><li><button class="dropdown-item" type="button"><i class="fa-solid fa-square-info"></i>Details</button></li><li><button class="dropdown-item" type="button">Edit</button></li>    <li><button class="dropdown-item" type="button">Duplicate</button></li> </ul></div>',
+              '<div class="dropdown dropstart">  <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">    Action  </button>  <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">    <li id="details"><button class="dropdown-item" type="button"><i class="fa-solid fa-circle-info"></i>Details</button></li>    <li><button class="dropdown-item" type="button"><i class="fa-solid fa-pen-to-square"></i>Edit</button></li>    <li><button class="dropdown-item" type="button"><i class="fa-solid fa-copy"></i>Duplicate</button></li>  </ul></div>',
           },
         ],
         buttons: [
@@ -308,7 +310,7 @@ export default {
             },
           },
           {
-            text: '<font-awesome-icon icon="user-secret" />',
+            text: '<i class="fa-solid fa-plus"></i>',
             className: "btn-light",
             action: function () {
               self.$router.push({ name: "adminProductNew" }).catch((e) => {});
@@ -329,15 +331,11 @@ export default {
           $("#buttons").html(self.table.buttons().container());
         },
       });
-      $("#datatable tbody").on(
-        "click",
-        "td:not(:first-child):not(:last-child)",
-        function () {
+      $("#datatable tbody").on("click","td:not(:first-child):not(:last-child),#details",function () {
           // show single product info
           self.row = self.table.row(this).data();
           self.product.details = self.row;
-          var prodDetailsModal = new Modal($("#detailsModal"), {});
-          prodDetailsModal.show();
+          window.prodDetailsModal.show();
         }
       );
       self.table.on("select deselect", function () {
