@@ -19,9 +19,13 @@
             aria-label="Close"
           ></button>
         </div>
-        <div class="modal-body">{{ "d" || product.name }} | {{ "d" || product.code }}</div>
+        <div class="modal-body">{{ product.name }} | {{ product.code }}</div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-danger me-auto" v-on:click="confirmDeleteProduct()">
+          <button
+            type="button"
+            class="btn btn-danger me-auto"
+            v-on:click="confirmDeleteProduct()"
+          >
             <i class="fa-solid fa-trash"></i>YES
           </button>
           <button
@@ -39,13 +43,18 @@
 <script>
 export default {
   props: {
-    product: Object,
+    productData: Object,
+  },
+  computed: {
+    product: function () {
+      return  this.productData;
+    },
   },
   mounted() {},
   methods: {
-    confirmDeleteProduct(){
+    confirmDeleteProduct() {
       window.PROD_DELETE_MODAL.toggle();
-    }
+    },
   },
 };
 </script>

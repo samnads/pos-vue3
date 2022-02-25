@@ -2,7 +2,9 @@
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
-        <h5 class="title"><i class="fa-solid fa-cart-shopping"></i> Products</h5>
+        <h5 class="title">
+          <i class="fa-solid fa-cart-shopping"></i> Products
+        </h5>
       </div>
       <div class="p-2 bd-highlight">
         <select
@@ -11,7 +13,6 @@
           name="length_change"
         >
           <option selected>5</option>
-          <option value="5">5</option>
           <option value="10">10</option>
           <option value="20">20</option>
           <option value="-1">All</option>
@@ -64,14 +65,10 @@
 </style>
 <script>
 export default {
-  props: {},
-  components: {
-  },
+  components: {},
   /* eslint-disable */
-  methods: {
-  },
-  created() {
-  },
+  methods: {},
+  created() {},
   mounted() {
     var self = this;
     $(function () {
@@ -322,21 +319,35 @@ export default {
         initComplete: function (settings) {
           $("#buttons").html(self.table.buttons().container());
         },
+        drawCallback: function (settings) {
+          let rows = self.table.rows(".selected").data().toArray();
+          self.table.button(2).enable(rows.length >= 1);
+          $("#checkall").prop("indeterminate", false);
+          $("#checkall").prop("checked", false);
+        },
       });
-      $("#datatable tbody").on("click","td:not(:first-child):not(:last-child),#details",function () {
+      $("#datatable tbody").on(
+        "click",
+        "td:not(:first-child):not(:last-child),#details",
+        function () {
           // show single product info
-          self.row = self.table.row(this).data();
-          self.product.details = self.row;
+          self.row = self.table.row($(this).parents("tr")).data();
+          self.$parent.product = self.row;
           window.PROD_DETAILS_MODAL.show();
         }
       );
       self.table.on("select deselect", function () {
         self.rows = self.table.rows(".selected").data().toArray();
         self.table.button(2).enable(self.rows.length >= 1);
-        if (self.rows.length < self.table.data().count()) {
-          //$scope.checkall = false;
+        if (self.rows.length == 0) {
+          $("#checkall").prop("indeterminate", false);
+          $("#checkall").prop("checked", false);
+        } else if (self.rows.length < self.table.data().count()) {
+          $("#checkall").prop("checked", false);
+          $("#checkall").prop("indeterminate", true);
         } else if (self.rows.length == self.table.data().count()) {
-          //$scope.checkall = true;
+          $("#checkall").prop("indeterminate", false);
+          $("#checkall").prop("checked", true);
         }
       });
       $("#checkall").on("click", function (e) {

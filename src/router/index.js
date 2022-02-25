@@ -80,16 +80,5 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
-  // remove modal backdrop if one exists
-  let modalBackground = document.querySelector('.modal-backdrop')
-  if (modalBackground) {
-    modalBackground.remove()
-  }
-  // do other stuff
-
-  next()
-})
-
 export default router
 

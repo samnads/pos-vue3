@@ -27,12 +27,12 @@
                   <tr>
                     <th scope="row">Name</th>
                     <td>
-                      {{ "g" || product.name }}
+                      {{ product.name }}
                     </td>
                   </tr>
                   <tr>
                     <th scope="row">Code</th>
-                    <td>{{ "g" || product.code }}</td>
+                    <td>{{ product.code }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -125,7 +125,16 @@
 <script>
 export default {
   props: {
-    product: Object,
+    productData: Object,
+  },
+  data: function () {
+    return {
+    };
+  },
+  computed: {
+    product: function () {
+      return  this.productData;
+    },
   },
   methods: {
     edit() {
@@ -141,12 +150,7 @@ export default {
       window.PROD_DELETE_MODAL.show();
     },
   },
-  mounted() {
-    $("#modal").on("hidden.bs.modal", function () {
-      //remove the backdrop
-      $(".modal-backdrop").remove();
-    });
-  },
+  mounted() {},
 };
 </script>
 
