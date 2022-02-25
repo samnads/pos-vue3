@@ -9,8 +9,19 @@ import "bootstrap/dist/css/bootstrap.min.css" // css
 import "bootstrap" // js
 // bootsrap icons
 import "bootstrap-icons/font/bootstrap-icons.css"
-// fontawesome
-import "@fortawesome/fontawesome-free/css/all.css";
+/* import the fontawesome core */
+import { library } from '@fortawesome/fontawesome-svg-core'
+/* import specific icons */
+import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
+/* import font awesome icon component */
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+/* add icons to the library */
+library.add(faUserSecret)
 axios.defaults.withCredentials = true
 // eslint-disable-next-line
-createApp(App).use(store).use(router).use(VueAxios, axios).mount('#app')
+const app = createApp(App);
+app.component("font-awesome-icon", FontAwesomeIcon);
+app.use(store);
+app.use(router);
+app.use(VueAxios, axios);
+app.mount('#app')

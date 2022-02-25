@@ -5,8 +5,10 @@
 </template>
 <style>
 #adminProductRoute .modal-header {
-  background-color: #6c757d;
+  background-color: rgb(41, 41, 41);
   color:#fff;
 }
+#adminProductRoute .modal-header .btn-close {
+  background-color: #4d4d4d;
+}
 </style>
-

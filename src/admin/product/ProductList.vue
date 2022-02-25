@@ -308,7 +308,7 @@ export default {
             },
           },
           {
-            text: '<i class="fa fa-plus" aria-hidden="true"></i>',
+            text: '<font-awesome-icon icon="user-secret" />',
             className: "btn-light",
             action: function () {
               self.$router.push({ name: "adminProductNew" }).catch((e) => {});
