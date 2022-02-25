@@ -59,26 +59,18 @@
       </tbody>
     </table>
   </div>
-  <AdminProductDetails :product="product.details" />
-  <AdminProductDeleteConfirmModal :product="product.details" />
 </template>
 <style>
 </style>
 <script>
-import AdminProductDetails from "./ProductDetails.vue";
-import AdminProductDeleteConfirmModal from "./ProductDelete.vue";
 export default {
   props: {},
   components: {
-     AdminProductDetails,
-     AdminProductDeleteConfirmModal,
   },
   /* eslint-disable */
   methods: {
-    initLoad() {},
   },
   created() {
-    this.initLoad();
   },
   mounted() {
     var self = this;
@@ -335,7 +327,7 @@ export default {
           // show single product info
           self.row = self.table.row(this).data();
           self.product.details = self.row;
-          window.prodDetailsModal.show();
+          window.PROD_DETAILS_MODAL.show();
         }
       );
       self.table.on("select deselect", function () {

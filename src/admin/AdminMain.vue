@@ -193,9 +193,10 @@ import "datatables.net-buttons/js/buttons.print";
 import "datatables.net-buttons/js/dataTables.buttons";
 import "datatables.net-select-bs5/css/select.bootstrap5.css";
 import "datatables.net-select-bs5/js/select.bootstrap5";
-import { Modal } from "bootstrap";
+
 export default {
   props: ["mytest"],
+   emits: ["enlargeText"],
   components: {},
   data: function () {
     return {
@@ -209,8 +210,7 @@ export default {
     this.initLoad();
   },
   mounted() {
-    window.prodDetailsModal = new Modal($("#detailsModal"), {});
-    window.prodDeleteModal = new Modal($("#deleteModal"), {});
+
   },
 };
 </script>

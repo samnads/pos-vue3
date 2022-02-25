@@ -27,12 +27,12 @@
                   <tr>
                     <th scope="row">Name</th>
                     <td>
-                      {{ product.name }}
+                      {{ "g" || product.name }}
                     </td>
                   </tr>
                   <tr>
                     <th scope="row">Code</th>
-                    <td>{{ product.code }}</td>
+                    <td>{{ "g" || product.code }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -129,17 +129,23 @@ export default {
   },
   methods: {
     edit() {
-      window.prodDetailsModal.hide();
+      window.PROD_DETAILS_MODAL.toggle();
       this.$router.push({ path: "/admin/edit/1" }).catch(() => {});
     },
     copy() {
-      window.prodDetailsModal.hide();
+      window.PROD_DETAILS_MODAL.toggle();
       this.$router.push({ path: "/admin/copy/1" }).catch(() => {});
     },
     deleteModal() {
-      window.prodDetailsModal.hide();
-      window.prodDeleteModal.show();
+      window.PROD_DETAILS_MODAL.toggle();
+      window.PROD_DELETE_MODAL.show();
     },
+  },
+  mounted() {
+    $("#modal").on("hidden.bs.modal", function () {
+      //remove the backdrop
+      $(".modal-backdrop").remove();
+    });
   },
 };
 </script>
