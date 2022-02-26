@@ -3,7 +3,7 @@
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
         <h5 class="title">
-          <i class="fa-solid fa-cart-shopping"></i> Products
+          <i class="fa-solid fa-cart-shopping"></i><span>Products</span>
         </h5>
       </div>
       <div class="p-2 bd-highlight">
@@ -238,7 +238,7 @@ export default {
             searchable: false,
             width: "2%",
             defaultContent:
-              '<div class="dropdown dropstart">  <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">    Action  </button>  <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">    <li id="details"><button class="dropdown-item" type="button"><i class="fa-solid fa-circle-info"></i>Details</button></li>    <li><button class="dropdown-item" type="button"><i class="fa-solid fa-pen-to-square"></i>Edit</button></li>    <li><button class="dropdown-item" type="button"><i class="fa-solid fa-copy"></i>Duplicate</button></li>  </ul></div>',
+              '<div class="dropdown dropstart">  <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">    Action  </button>  <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">    <li id="details"><button class="dropdown-item" type="button"><i class="fa-solid fa-circle-info"></i>Details</button></li>    <li id="edit"><button class="dropdown-item" type="button"><i class="fa-solid fa-pen-to-square"></i>Edit</button></li>    <li id="copy"><button class="dropdown-item" type="button"><i class="fa-solid fa-copy"></i>Duplicate</button></li>  </ul></div>',
           },
         ],
         buttons: [
@@ -336,6 +336,16 @@ export default {
           window.PROD_DETAILS_MODAL.show();
         }
       );
+      $("#datatable tbody").on("click", "#edit", function () {
+        // edit from action menu
+        self.row = self.table.row($(this).parents("tr")).data();
+        self.$router.push({ path: "/admin/product/edit/"+self.row.id }).catch(() => {});
+      });
+      $("#datatable tbody").on("click", "#copy", function () {
+        // copy from action menu
+        self.row = self.table.row($(this).parents("tr")).data();
+        self.$router.push({ path: "/admin/product/copy/"+self.row.id }).catch(() => {});
+      });
       self.table.on("select deselect", function () {
         self.rows = self.table.rows(".selected").data().toArray();
         self.table.button(2).enable(self.rows.length >= 1);

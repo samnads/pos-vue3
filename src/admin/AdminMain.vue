@@ -124,9 +124,10 @@
 .menubar .bi {
   margin-right: 10px;
 }
-.menubar .title i:after {
+.menubar .title span:before {
   margin-left: 10px;
-  content: " | ";
+  margin-right: 10px;
+  content: "|";
   font-style: normal;
 }
 /* MENU CONTENT STYLES */
@@ -195,12 +196,9 @@ import "datatables.net-select-bs5/css/select.bootstrap5.css";
 import "datatables.net-select-bs5/js/select.bootstrap5";
 
 export default {
-  props: ["mytest"],
-   emits: ["enlargeText"],
   components: {},
   data: function () {
     return {
-      user: "",
     };
   },
   methods: {
