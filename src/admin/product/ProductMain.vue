@@ -42,6 +42,7 @@ export default {
       backdrop: true,
       show: true,
     });
+    
   },
 };
 </script>

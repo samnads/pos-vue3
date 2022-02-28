@@ -40,32 +40,49 @@
     </div>
   </div>
 
-  
-
-
-
-
-
-
-
-<div class="position-fixed top-50 start-50 translate-middle pb-5 " style="z-index: 11">
-  <div id="liveToast" class="toast bg-success text-white" role="alert" aria-live="assertive" aria-atomic="true" data-delay="1000">
-    <div class="d-flex">
-    <div class="toast-body">
-      Hello, world! This is a toast message.
+  <div v-for="item in items" :key="item.id">
+    <div
+      class="position-fixed top-50 start-50 translate-middle pb-5"
+      style="z-index: 11"
+    >
+      <div
+        id="liveToast"
+        class="toast text-white fade"
+        :class="item.type"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+        data-delay="2000"
+      >
+        <div class="d-flex">
+          <div class="toast-body">
+            <span v-html="item.message"></span>
+          </div>
+          <button
+            type="button"
+            class="btn-close btn-close-white me-2 m-auto"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+      </div>
     </div>
-    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
   </div>
-  </div>
-</div>
-
-
-
 </template>
 <script>
-import '@/mixins/admin'
-import { Toast } from "bootstrap";
+/* eslint-disable */
+import AdminMain from "@//admin/AdminMain.vue";
+import adminMixin from "@/mixins/admin.js";
 export default {
+  components: {
+    AdminMain,
+  },
+  data() {
+    return {
+      items: [{"type":"bg-danger","message":"test message","id":"t1"},{"type":"bg-success","message":"test message 2","id":"t2"}],
+    };
+  },
+  mixins: [adminMixin],
   props: {
     productData: Object,
   },
@@ -77,6 +94,7 @@ export default {
   mounted() {},
   methods: {
     confirmDeleteProduct(product) {
+      var self = this;
       let data = JSON.parse(JSON.stringify(product));
       //window.PROD_DELETE_MODAL.toggle();
       let json = { data: data, action: "delete", bulk: false };
@@ -90,9 +108,8 @@ export default {
             //
           } else {
             //alert(data.message);
-            var toastLiveExample = document.getElementById("liveToast");
-            var toast = new Toast(toastLiveExample);
-            toast.show();
+            self.toastResponse(data);
+            console.log(self.toastBgClass);
           }
           window.PROD_DELETE_MODAL.toggle();
         })

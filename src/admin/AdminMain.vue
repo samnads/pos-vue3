@@ -100,6 +100,35 @@
       <router-view></router-view>
     </div>
   </div>
+
+  <div
+    class="position-fixed top-50 start-50 translate-middle pb-5"
+    style="z-index: 11"
+  >
+    <div
+      id="liveToast2"
+      class="toast text-white"
+      :class="this.toastBgClass"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+      data-delay="2000"
+    >
+      <div class="d-flex">
+        <div class="toast-body">
+          <span v-html="this.toastMessage"></span>
+        </div>
+        <button
+          type="button"
+          class="btn-close btn-close-white me-2 m-auto"
+          data-bs-dismiss="toast"
+          aria-label="Close"
+        ></button>
+      </div>
+    </div>
+  </div>
+  
+
   <footer class="footer mt-auto py-3 bg-light">
     <div class="container text-center">
       <span class="text-muted">&copy; CyberLikes</span>
@@ -163,9 +192,8 @@
 }
 /* action menu styles */
 #datatable_wrapper table tbody > tr .dropdown .dropdown-item > svg {
-  margin-right: 10px;;
+  margin-right: 10px;
 }
-
 
 /* pagination */
 .page-item.active .page-link {
@@ -183,6 +211,10 @@
 }
 </style>
 <script>
+/* eslint-disable */
+// contains function for global admin pages
+import adminMixin from "@/mixins/admin.js";
+//
 import "datatables.net-bs5/js/dataTables.bootstrap5";
 import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
 import "datatables.net-buttons-bs5/js/buttons.bootstrap5";
@@ -194,21 +226,18 @@ import "datatables.net-buttons/js/buttons.print";
 import "datatables.net-buttons/js/dataTables.buttons";
 import "datatables.net-select-bs5/css/select.bootstrap5.css";
 import "datatables.net-select-bs5/js/select.bootstrap5";
-
+// use for admin area
+import { Toast } from "bootstrap";
 export default {
   components: {},
+  mixins: [adminMixin],
   data: function () {
-    return {
-    };
+    return {};
   },
-  methods: {
-    initLoad() {},
-  },
-  created() {
-    this.initLoad();
-  },
+  methods: {},
+  created() {},
   mounted() {
-
+    window.toast = new Toast(document.getElementById("liveToast"));
   },
 };
 </script>
