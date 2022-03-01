@@ -79,6 +79,10 @@ const router = createRouter({
   history: createWebHashHistory(process.env.BASE_URL),
   routes
 })
+router.beforeEach((to, from, next) => {
+  //console.log(`Navigating to: ${to.name}`);
+  next();
+});
 
 export default router
 

@@ -100,35 +100,13 @@
       <router-view></router-view>
     </div>
   </div>
-
-  <div
-    class="position-fixed top-50 start-50 translate-middle pb-5"
-    style="z-index: 11"
-  >
-    <div
-      id="liveToast2"
-      class="toast text-white"
-      :class="this.toastBgClass"
-      role="alert"
-      aria-live="assertive"
-      aria-atomic="true"
-      data-delay="2000"
-    >
-      <div class="d-flex">
-        <div class="toast-body">
-          <span v-html="this.toastMessage"></span>
-        </div>
-        <button
-          type="button"
-          class="btn-close btn-close-white me-2 m-auto"
-          data-bs-dismiss="toast"
-          aria-label="Close"
-        ></button>
-      </div>
-    </div>
-  </div>
-  
-
+  <notifications
+    group="general"
+    position="bottom center"
+    animation-type="css"
+    :max="general.max"
+    :closeOnClick="general.closeOnClick"
+  />
   <footer class="footer mt-auto py-3 bg-light">
     <div class="container text-center">
       <span class="text-muted">&copy; CyberLikes</span>
@@ -209,6 +187,57 @@
 .btn > svg {
   margin-right: 10px;
 }
+/* notification contaier */
+.vue-notification-group {
+  margin-bottom: 100px;
+}
+.vue-notification {
+  margin: 0 5px 5px;
+  padding: 10px;
+  font-size: 15px;
+  background: #44a4fc;
+  border-left: 5px solid #187fe7;
+}
+.vue-notification.primary {
+  background: #cfe2ff;
+  color: #084298;
+  border-left-color: #b6d4fe;
+}
+.vue-notification.secondary {
+  color: #41464b;
+  background-color: #e2e3e5;
+  border-left-color: #d3d6d8;
+}
+.vue-notification.success {
+  color: #0f5132;
+  background-color: #d1e7dd;
+  border-left-color: #badbcc;
+}
+.vue-notification.danger {
+  color: #842029;
+  background-color: #f8d7da;
+  border-left-color: #f5c2c7;
+}
+.vue-notification.warning {
+  color: #664d03;
+  background-color: #fff3cd;
+  border-left-color: #ffecb5;
+}
+.vue-notification.info {
+  color: #055160;
+  background-color: #cff4fc;
+  border-left-color: #b6effb;
+}
+.vue-notification.light {
+  color: #636464;
+  background-color: #fefefe;
+  border-left-color: #fdfdfe;
+}
+.vue-notification.dark {
+  color: #141619;
+  background-color: #d3d3d4;
+  border-left-color: #bcbebf;
+}
 </style>
 <script>
 /* eslint-disable */
@@ -232,12 +261,13 @@ export default {
   components: {},
   mixins: [adminMixin],
   data: function () {
-    return {};
+    return {
+      general: { closeOnClick: false, max: 3 },
+    };
   },
   methods: {},
   created() {},
   mounted() {
-    window.toast = new Toast(document.getElementById("liveToast"));
   },
 };
 </script>
