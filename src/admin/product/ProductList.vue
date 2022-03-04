@@ -64,15 +64,19 @@
 <style>
 </style>
 <script>
+import adminMixin from "@/mixins/admin.js";
 export default {
   components: {},
   /* eslint-disable */
+  mixins: [adminMixin],
   methods: {},
   created() {},
   mounted() {
     var self = this;
     $(function () {
-      $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {};
+      $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+        self.notifyCatchResponse({ message: message });
+      };
       self.table = $("#datatable").DataTable({
         searching: true, // remove default search box
         bLengthChange: false, // remove default length change menu
@@ -97,6 +101,9 @@ export default {
           url: "http://localhost/CyberLikes-POS/admin/ajax/product",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
+          error: function (xhr, error, code) {
+            self.notifyCatchResponse({ title:"Network Error !",message: "" });
+          },
           data: function (d) {
             d["action"] = "datatable";
             return d;
@@ -339,12 +346,16 @@ export default {
       $("#datatable tbody").on("click", "#edit", function () {
         // edit from action menu
         self.row = self.table.row($(this).parents("tr")).data();
-        self.$router.push({ path: "/admin/product/edit/"+self.row.id }).catch(() => {});
+        self.$router
+          .push({ path: "/admin/product/edit/" + self.row.id })
+          .catch(() => {});
       });
       $("#datatable tbody").on("click", "#copy", function () {
         // copy from action menu
         self.row = self.table.row($(this).parents("tr")).data();
-        self.$router.push({ path: "/admin/product/copy/"+self.row.id }).catch(() => {});
+        self.$router
+          .push({ path: "/admin/product/copy/" + self.row.id })
+          .catch(() => {});
       });
       self.table.on("select deselect", function () {
         self.rows = self.table.rows(".selected").data().toArray();

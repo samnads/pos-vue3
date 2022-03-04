@@ -235,6 +235,13 @@
 .btn > svg {
   margin-right: 10px;
 }
+/* from control styles */
+label{
+  font-weight: bold;;
+}
+label > i {
+  font-style: normal;;
+}
 /* notification contaier */
 .vue-notification-group {
   margin-bottom: 100px;

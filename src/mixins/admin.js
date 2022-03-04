@@ -13,6 +13,19 @@ export default {
     created: function () {
         //console.log("Printing from the Mixin")
     },
+    mounted: function () {
+        $(function () {
+            // change required fields label color for *
+            let labels = document.getElementsByTagName('label'); // get all form labels
+            for (let i = 0; i < labels.length; i++) {
+                if (labels[i].innerHTML.includes("<i>")) { // have stong tag
+                    let strongs = labels[i].getElementsByTagName('i');
+                    strongs[0].classList.add("text-danger"); // change style
+                }
+            }
+            // end
+        });
+    },
     methods: {
         notifyApiResponse: function (data) {
             notify({
@@ -27,7 +40,7 @@ export default {
         },
         notifyCatchResponse: function (data) {
             notify({
-                title: "Error !",
+                title: data.title || "Error occured !",
                 text: data.message || this.message,
                 group: "general",
                 type: data.type || "warning",
