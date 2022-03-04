@@ -19,25 +19,25 @@
     </div>
   </div>
   <div class="wrap_content" id="wrap_content">
-    <form id="newProduct">
+    <Form id="newProduct" @submit="onSubmit">
       <div class="row">
         <!-- main row -->
-        <div class="col">
+        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
           <!-- column section 1 -->
           <div class="row">
             <div class="col">
-              <label for="exampleInputEmail1" class="form-label"
-                >Product Type <i>*</i></label
+              <label for="producttype" class="form-label">
+                Product Type <i>*</i></label
               >
-              <input
-                type="text"
-                v-model="product.type"
-                class="form-control"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
-              />
-              <div id="emailHelp" class="form-text">
-                We'll never share your email with anyone else.
+              <Field class="form-select" as="select" name="type" :disabled="!productTypes" v-model="product.type" id="producttype">
+                <option value="" v-if="!productTypes">Loading...</option>
+                <option  value="" selected v-if="productTypes">Select...</option>
+                <option v-for="type in productTypes" :key="type.id" :value="type.id">
+                  {{ type.name }}
+                </option>
+              </Field>
+              <div class="invalid-feedback" v-if="errors.type">
+                {{ errors.type }}
               </div>
             </div>
           </div>
@@ -150,7 +150,7 @@
           </div>
         </div>
         <!-- column section 2 -->
-        <div class="col">
+        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
           <div class="row">
             <div class="col">
               <label for="exampleInputEmail1" class="form-label"
@@ -218,36 +218,110 @@
           </div>
         </div>
         <!-- column section 3 -->
-        <div class="col">One of three columns</div>
+        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+          <div v-for="product in productTypes" :key="product.id">
+            {{ product.name }}
+          </div>
+        </div>
       </div>
       <div class="d-flex pt-3">
         <div class="me-auto">
-          <button type="button" class="btn btn-success" v-on:click="submit">Save</button>
+          <button type="submit" class="btn btn-success">Save</button>
         </div>
         <div class="">
-          <button type="button" class="btn btn-info">Reset</button>
+          <button type="reset" class="btn btn-info" v-on:clic="reset">
+            Reset
+          </button>
         </div>
       </div>
-    </form>
+    </Form>
   </div>
 </template>
 <style>
 </style>
 <script>
+import { Field, Form } from "vee-validate";
+import { computed } from "vue";
+import { useStore } from "vuex";
+import adminMixin from "@/mixins/admin.js";
 export default {
-  components: {},
+  components: {
+    Field,
+    Form,
+  },
+  setup() {
+    const store = useStore();
+
+    let productTypes = computed(function () {
+      return store.state.productTypes;
+    });
+
+    let products = computed(function () {
+      return store.state.products;
+    });
+
+    let cart = computed(function () {
+      return store.state.cart;
+    });
+
+    return {
+      productTypes,
+      products,
+      cart,
+    };
+  },
+  mixins: [adminMixin],
   data() {
     return {
       product: {},
+      errors: {},
     };
   },
   methods: {
-    submit() {
-      let data = JSON.parse(JSON.stringify(this.product));
-      console.log(data)
+    onSubmit(values) {
+      console.log(values);
+    },
+    isRequired(value) {
+      return value ? true : "This field is required";
+    },
+    reset() {
+      var self = this;
+      self.product = {};
+    },
+    onubmit() {
+      var self = this;
+      //let data = JSON.parse(JSON.stringify(self.product));
+      var formId = document.getElementById("newProduct");
+      this.axios
+        .post("http://localhost/CyberLikes-POS/admin/ajax/product", {
+          data: self.product,
+        })
+        .then(function (response) {
+          formId.classList.add("was-validated");
+          let data = response.data;
+          if (data.success == true) {
+            //
+          } else if (data.success == false) {
+            let errors = data.errors;
+            self.errors = errors;
+            for (var field in errors) {
+              if (Object.prototype.hasOwnProperty.call(errors, field)) {
+                console.log(field + " -> " + errors[field]);
+              }
+            }
+            var form = document.getElementById("newProduct");
+            form.classList.add("was-validated");
+            self.notifyApiResponse(data);
+          }
+        })
+        .catch((error) => {
+          self.notifyCatchResponse({ message: error.message });
+        });
     },
   },
   created() {},
-  mounted() {},
+  mounted() {
+    this.addProductTypes(); // get product types
+  },
 };
 </script>

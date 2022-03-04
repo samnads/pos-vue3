@@ -1,4 +1,7 @@
 import { notify } from "@kyvg/vue3-notification";
+import { computed } from "vue";
+import { useStore } from "vuex";
+import store from "@/store";
 export default {
     data() {
         return {
@@ -7,6 +10,15 @@ export default {
             type: "warning",
             duration: 3000,
         };
+    },
+    setup() {
+        const store = useStore();
+        let productTypes = computed(function () {
+            return store.state.productTypes
+        });
+        return {
+            productTypes
+        }
     },
     computed: {
     },
@@ -25,6 +37,7 @@ export default {
             }
             // end
         });
+
     },
     methods: {
         notifyApiResponse: function (data) {
@@ -46,6 +59,13 @@ export default {
                 type: data.type || "warning",
                 duration: data.duration || this.duration,
                 speed: 300
+            });
+        },
+        addProductTypes: function () {
+            this.axios.get("http://localhost/CyberLikes-POS/admin/ajax/type", { params: { action: 'all' }, }).then(function (response) {
+                store.commit("storeProductTypes", response.data.data);
+            }).catch((error) => {
+                this.notifyCatchResponse({ message: error.message });
             });
         }
     }
