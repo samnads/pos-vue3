@@ -29,17 +29,24 @@
         <!-- main row -->
         <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
           <!-- column section 1 -->
-          <div class="row">
+          <div class="row mb-1">
             <div class="col">
               <label for="producttype" class="form-label">
-                Product Type <i>*</i></label
+                Product Type<i>*</i></label
               >
               <select
-                class="form-select is-invalid"
+                class="form-select"
                 name="type"
                 :disabled="!productTypes"
                 v-model="type"
                 id="producttype"
+                v-bind:class="[
+                  errorType
+                    ? 'is-invalid'
+                    : !errorType && type
+                    ? 'is-valid'
+                    : '',
+                ]"
               >
                 <option selected :value="null" v-if="!productTypes">
                   Loading...
@@ -57,64 +64,97 @@
           <div class="row">
             <div class="col">
               <label for="exampleInputEmail1" class="form-label"
-                >Product Code <i>*</i></label
+                >Product Code<i>*</i></label
               >
-              <input
-                type="text"
-                name="code"
-                v-model="code"
-                class="form-control is-invalid"
-                id="productcode"
-              />
-              <div id="emailHelp" class="form-text">
-                We'll never share your email with anyone else.
+              <div class="input-group has-validation">
+                <input
+                  type="text"
+                  name="code"
+                  v-model="code"
+                  class="form-control"
+                  id="productcode"
+                  v-bind:class="[
+                    errorCode
+                      ? 'is-invalid'
+                      : !errorCode && code
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                />
+                <span class="input-group-text text-info" role="button"
+                  ><i class="fa-solid fa-shuffle"></i
+                ></span>
+                <div class="invalid-feedback">{{ errorCode }}</div>
               </div>
-              <div class="invalid-feedback">{{ errorCode }}</div>
             </div>
             <div class="col">
               <label for="exampleInputPassword1" class="form-label"
-                >Symbology</label
+                >Symbology<i>*</i></label
               >
-              <input
-                type="text"
-                v-model="product.symbology"
-                class="form-control"
-                id="exampleInputPassword1"
-              />
+              <select
+                class="form-select"
+                name="symbology"
+                :disabled="!symbologies"
+                v-model="symbology"
+                id="productsymbology"
+                v-bind:class="[
+                  errorSymbology
+                    ? 'is-invalid'
+                    : !errorSymbology && symbology
+                    ? 'is-valid'
+                    : '',
+                ]"
+              >
+                <option selected :value="1" v-if="!symbologies">
+                  Loading...
+                </option>
+                <option selected :value="null" v-if="symbologies">
+                  -- Select symbology --
+                </option>
+                <option v-for="s in symbologies" :key="s.id" :value="s.id">
+                  {{ s.code }}
+                </option>
+              </select>
+              <div class="invalid-feedback">{{ errorSymbology }}</div>
             </div>
           </div>
           <div class="row">
             <div class="col">
-              <label for="exampleInputEmail1" class="form-label"
-                >Product Name <i>*</i></label
-              >
+              <label for="" class="form-label">Product Name<i>*</i></label>
               <input
                 type="text"
+                name="name"
                 v-model="name"
                 class="form-control"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
+                id="productname"
+                v-bind:class="[
+                  errorName
+                    ? 'is-invalid'
+                    : !errorName && name
+                    ? 'is-valid'
+                    : '',
+                ]"
               />
-              <div id="emailHelp" class="form-text">
-                We'll never share your email with anyone else.
-              </div>
+              <div class="invalid-feedback">{{ errorName }}</div>
             </div>
           </div>
           <div class="row">
             <div class="col">
-              <label for="exampleInputEmail1" class="form-label"
-                >URL Slug<i>*</i></label
-              >
+              <label for="" class="form-label">URL Slug<i>*</i></label>
               <input
                 type="text"
+                name="slug"
                 v-model="slug"
                 class="form-control"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
+                v-bind:class="[
+                  errorSlug
+                    ? 'is-invalid'
+                    : !errorSlug && slug
+                    ? 'is-valid'
+                    : '',
+                ]"
               />
-              <div id="emailHelp" class="form-text">
-                We'll never share your email with anyone else.
-              </div>
+              <div class="invalid-feedback">{{ errorSlug }}</div>
             </div>
           </div>
           <div class="row">
@@ -233,17 +273,17 @@
         </div>
         <!-- column section 3 -->
         <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
-          <div v-for="product in productTypes" :key="product.id">
-            {{ product.name }}
-          </div>
+          Col 3
         </div>
       </div>
       <div class="d-flex pt-3">
         <div class="me-auto">
-          <button type="submit" class="btn btn-success">Save</button>
+          <button type="submit" class="btn btn-success" :disable="!isValid">
+            Save
+          </button>
         </div>
         <div class="">
-          <button type="reset" class="btn btn-info" v-on:clic="reset">
+          <button type="reset" class="btn btn-info" :disable="!isDirty">
             Reset
           </button>
         </div>
@@ -255,7 +295,12 @@
 </style>
 <script>
 /* eslint-disable */
-import { useForm, useField } from "vee-validate";
+import {
+  useForm,
+  useField,
+  useIsFormDirty,
+  useIsFormValid,
+} from "vee-validate";
 import * as yup from "yup";
 import { computed } from "vue";
 import { useStore } from "vuex";
@@ -267,36 +312,69 @@ export default {
     let productTypes = computed(function () {
       return store.state.productTypes;
     });
+    let symbologies = computed(function () {
+      return store.state.symbologies;
+    });
     /**************************************** */
-
-    const { handleSubmit } = useForm();
+    // Initial values
+    const formValues = {
+      type: null,
+      symbology: 1,
+    };
+    const { handleSubmit } = useForm({
+      initialValues: formValues,
+    });
+    const isDirty = useIsFormDirty();
+    const isValid = useIsFormValid();
     const onSubmit = handleSubmit((values) => {
       console.log(values);
       //alert(JSON.stringify(values, null, 2));
     });
-    const { value: type,errorMessage: errorType  } = useField(
+    const { value: type, errorMessage: errorType } = useField(
       "type",
-      yup.number().required().min(1)
+      yup.number().required().min(1).nullable(true)
     );
-    const {value: code ,errorMessage: errorCode} = useField(
+    const { value: code, errorMessage: errorCode } = useField(
       "code",
-      yup.string().required().min(3)
+      yup.string().required().min(3).nullable(true)
+    );
+    const { value: symbology, errorMessage: errorSymbology } = useField(
+      "symbology",
+      yup.number().required().min(1).nullable(true)
+    );
+    const { value: name, errorMessage: errorName } = useField(
+      "name",
+      yup.string().required().min(3).max(10).nullable(true)
+    );
+    const { value: slug, errorMessage: errorSlug } = useField(
+      "slug",
+      yup.string().required().min(3).max(10).nullable(true)
     );
     /*************************************** */
     return {
-      errorType,
-      errorCode,
+      /************** db */
       productTypes,
+      symbologies,
+      /******* fields   */
       type,
+      errorType,
       code,
+      errorCode,
+      symbology,
+      errorSymbology,
+      name,
+      errorName,
+      slug,
+      errorSlug,
+      /*************** */
+      isDirty,
+      isValid,
       onSubmit,
     };
   },
   mixins: [adminMixin],
   data() {
     return {
-      name: null,
-      slug: null,
       weight: null,
       category: null,
       sub_category: null,
@@ -351,6 +429,7 @@ export default {
   created() {},
   mounted() {
     this.addProductTypes(); // get product types
+    this.addSymbologies(); // get symbologies
   },
 };
 </script>

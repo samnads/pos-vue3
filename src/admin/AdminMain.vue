@@ -242,6 +242,15 @@ label{
 label > i {
   font-style: normal;;
 }
+label > i:before {
+  content: " ";
+}
+.form-label {
+    margin-bottom: 0.1rem !important;
+}
+form .row {
+    margin-bottom: 0.4rem !important;
+}
 /* notification contaier */
 .vue-notification-group {
   margin-bottom: 100px;

@@ -67,6 +67,13 @@ export default {
             }).catch((error) => {
                 this.notifyCatchResponse({ message: error.message });
             });
+        },
+        addSymbologies: function () {
+            this.axios.get("http://localhost/CyberLikes-POS/admin/ajax/symbology", { params: { action: 'dropdown' }, }).then(function (response) {
+                store.commit("storeSymbologies", response.data.data);
+            }).catch((error) => {
+                this.notifyCatchResponse({ message: error.message });
+            });
         }
     }
 }

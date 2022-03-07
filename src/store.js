@@ -53,6 +53,12 @@ export default createStore({
         storeProductTypes(state, item) {
             state.productTypes = item;
         },
+        storeSymbologies(state, item) {
+            state.symbologies = item;
+        },
+
+
+
         addCartItem(state, item) {
             item.quantity = 1;
             state.cart.push(item);
