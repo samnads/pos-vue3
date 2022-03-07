@@ -19,7 +19,12 @@
     </div>
   </div>
   <div class="wrap_content" id="wrap_content">
-    <Form id="newProduct" @submit="onSubmit">
+    <form
+      id="newProduct"
+      method="post"
+      @submit="onSubmit"
+      class="needs-validation"
+    >
       <div class="row">
         <!-- main row -->
         <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
@@ -29,16 +34,24 @@
               <label for="producttype" class="form-label">
                 Product Type <i>*</i></label
               >
-              <Field class="form-select" as="select" name="type" :disabled="!productTypes" v-model="product.type" id="producttype">
-                <option value="" v-if="!productTypes">Loading...</option>
-                <option  value="" selected v-if="productTypes">Select...</option>
-                <option v-for="type in productTypes" :key="type.id" :value="type.id">
-                  {{ type.name }}
+              <select
+                class="form-select is-invalid"
+                name="type"
+                :disabled="!productTypes"
+                v-model="type"
+                id="producttype"
+              >
+                <option selected :value="null" v-if="!productTypes">
+                  Loading...
                 </option>
-              </Field>
-              <div class="invalid-feedback" v-if="errors.type">
-                {{ errors.type }}
-              </div>
+                <option selected :value="null" v-if="productTypes">
+                  Select product type...
+                </option>
+                <option v-for="t in productTypes" :key="t.id" :value="t.id">
+                  {{ t.name }}
+                </option>
+              </select>
+              <div class="invalid-feedback">{{ errorType }}</div>
             </div>
           </div>
           <div class="row">
@@ -48,14 +61,15 @@
               >
               <input
                 type="text"
-                v-model="product.code"
-                class="form-control"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
+                name="code"
+                v-model="code"
+                class="form-control is-invalid"
+                id="productcode"
               />
               <div id="emailHelp" class="form-text">
                 We'll never share your email with anyone else.
               </div>
+              <div class="invalid-feedback">{{ errorCode }}</div>
             </div>
             <div class="col">
               <label for="exampleInputPassword1" class="form-label"
@@ -76,7 +90,7 @@
               >
               <input
                 type="text"
-                v-model="product.name"
+                v-model="name"
                 class="form-control"
                 id="exampleInputEmail1"
                 aria-describedby="emailHelp"
@@ -93,7 +107,7 @@
               >
               <input
                 type="text"
-                v-model="product.slug"
+                v-model="slug"
                 class="form-control"
                 id="exampleInputEmail1"
                 aria-describedby="emailHelp"
@@ -110,7 +124,7 @@
               >
               <input
                 type="text"
-                v-model="product.weight"
+                v-model="weight"
                 class="form-control"
                 id="exampleInputEmail1"
                 aria-describedby="emailHelp"
@@ -127,7 +141,7 @@
               >
               <input
                 type="text"
-                v-model="product.category"
+                v-model="category"
                 class="form-control"
                 id="exampleInputEmail1"
                 aria-describedby="emailHelp"
@@ -142,7 +156,7 @@
               >
               <input
                 type="text"
-                v-model="product.sub_category"
+                v-model="sub_category"
                 class="form-control"
                 id="exampleInputPassword1"
               />
@@ -158,7 +172,7 @@
               >
               <input
                 type="text"
-                v-model="product.brand"
+                v-model="brand"
                 class="form-control"
                 id="exampleInputEmail1"
                 aria-describedby="emailHelp"
@@ -171,7 +185,7 @@
               <label for="exampleInputPassword1" class="form-label">MRP</label>
               <input
                 type="text"
-                v-model="product.mrp"
+                v-model="mrp"
                 class="form-control"
                 id="exampleInputPassword1"
               />
@@ -184,7 +198,7 @@
               >
               <input
                 type="text"
-                v-model="product.unit"
+                v-model="unit"
                 class="form-control"
                 id="exampleInputEmail1"
                 aria-describedby="emailHelp"
@@ -199,7 +213,7 @@
               >
               <input
                 type="text"
-                v-model="product.p_unit"
+                v-model="p_unit"
                 class="form-control"
                 id="exampleInputPassword1"
               />
@@ -210,7 +224,7 @@
               >
               <input
                 type="text"
-                v-model="product.s_unit"
+                v-model="s_unit"
                 class="form-control"
                 id="exampleInputPassword1"
               />
@@ -234,53 +248,68 @@
           </button>
         </div>
       </div>
-    </Form>
+    </form>
   </div>
 </template>
 <style>
 </style>
 <script>
-import { Field, Form } from "vee-validate";
+/* eslint-disable */
+import { useForm, useField } from "vee-validate";
+import * as yup from "yup";
 import { computed } from "vue";
 import { useStore } from "vuex";
 import adminMixin from "@/mixins/admin.js";
 export default {
-  components: {
-    Field,
-    Form,
-  },
+  components: {},
   setup() {
     const store = useStore();
-
     let productTypes = computed(function () {
       return store.state.productTypes;
     });
+    /**************************************** */
 
-    let products = computed(function () {
-      return store.state.products;
+    const { handleSubmit } = useForm();
+    const onSubmit = handleSubmit((values) => {
+      console.log(values);
+      //alert(JSON.stringify(values, null, 2));
     });
-
-    let cart = computed(function () {
-      return store.state.cart;
-    });
-
+    const { value: type,errorMessage: errorType  } = useField(
+      "type",
+      yup.number().required().min(1)
+    );
+    const {value: code ,errorMessage: errorCode} = useField(
+      "code",
+      yup.string().required().min(3)
+    );
+    /*************************************** */
     return {
+      errorType,
+      errorCode,
       productTypes,
-      products,
-      cart,
+      type,
+      code,
+      onSubmit,
     };
   },
   mixins: [adminMixin],
   data() {
     return {
-      product: {},
+      name: null,
+      slug: null,
+      weight: null,
+      category: null,
+      sub_category: null,
+      brand: null,
+      mrp: null,
+      unit: null,
+      p_unit: null,
+      s_unit: null,
+      product: { type: null },
       errors: {},
     };
   },
   methods: {
-    onSubmit(values) {
-      console.log(values);
-    },
     isRequired(value) {
       return value ? true : "This field is required";
     },

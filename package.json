@@ -42,7 +42,8 @@
     "vue-mixins": "^0.3.6",
     "vue-notification": "^1.3.20",
     "vue-router": "^4.0.3",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
