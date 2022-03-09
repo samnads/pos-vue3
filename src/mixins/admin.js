@@ -40,6 +40,16 @@ export default {
 
     },
     methods: {
+        notifyDefault: function (data) {
+            notify({
+                title: data.title || '', // no title
+                text: data.message || '',
+                group: "general",
+                type: data.type || this.type,
+                duration: data.duration || this.duration,
+                speed: 300,
+            });
+        },
         notifyApiResponse: function (data) {
             notify({
                 //title: data.title || this.title, // no title
@@ -53,8 +63,8 @@ export default {
         },
         notifyCatchResponse: function (data) {
             notify({
-                title: data.title || "Error occured !",
-                text: data.message || this.message,
+                title: data.title || "",
+                text: data.message || data.error || this.message,
                 group: "general",
                 type: data.type || "warning",
                 duration: data.duration || this.duration,

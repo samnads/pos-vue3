@@ -19,12 +19,7 @@
     </div>
   </div>
   <div class="wrap_content" id="wrap_content">
-    <form
-      id="newProduct"
-      method="post"
-      @submit="onSubmit"
-      class="needs-validation"
-    >
+    <form id="newProduct" @submit="onSubmit" class="needs-validation">
       <div class="row">
         <!-- main row -->
         <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
@@ -159,19 +154,21 @@
           </div>
           <div class="row">
             <div class="col">
-              <label for="exampleInputEmail1" class="form-label"
-                >Product Weight <i>*</i></label
-              >
+              <label for="" class="form-label">Weight</label>
               <input
                 type="text"
+                name="weight"
                 v-model="weight"
                 class="form-control"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
+                v-bind:class="[
+                  errorWeight
+                    ? 'is-invalid'
+                    : !errorWeight && weight
+                    ? 'is-valid'
+                    : '',
+                ]"
               />
-              <div id="emailHelp" class="form-text">
-                We'll never share your email with anyone else.
-              </div>
+              <div class="invalid-feedback">{{ errorWeight }}</div>
             </div>
           </div>
           <div class="row">
@@ -272,9 +269,7 @@
           </div>
         </div>
         <!-- column section 3 -->
-        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
-          Col 3
-        </div>
+        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">Col 3</div>
       </div>
       <div class="d-flex pt-3">
         <div class="me-auto">
@@ -295,18 +290,21 @@
 </style>
 <script>
 /* eslint-disable */
+import axios from "axios";
 import {
   useForm,
   useField,
   useIsFormDirty,
   useIsFormValid,
+  configure,
 } from "vee-validate";
 import * as yup from "yup";
-import { computed } from "vue";
+import { ref,computed } from "vue";
 import { useStore } from "vuex";
 import adminMixin from "@/mixins/admin.js";
 export default {
   components: {},
+  props: {},
   setup() {
     const store = useStore();
     let productTypes = computed(function () {
@@ -316,6 +314,12 @@ export default {
       return store.state.symbologies;
     });
     /**************************************** */
+    configure({
+      validateOnBlur: true, // controls if `blur` events should trigger validation with `handleChange` handler
+      validateOnChange: true, // controls if `change` events should trigger validation with `handleChange` handler
+      validateOnInput: false, // controls if `input` events should trigger validation with `handleChange` handler
+      validateOnModelUpdate: true, // controls if `update:modelValue` events should trigger validation with `handleChange` handler
+    });
     // Initial values
     const formValues = {
       type: null,
@@ -326,10 +330,24 @@ export default {
     });
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
+    function onInvalidSubmit({ values, errors, results }) {
+    }
     const onSubmit = handleSubmit((values) => {
       console.log(values);
-      //alert(JSON.stringify(values, null, 2));
-    });
+      axios
+        .post("http://localhost/CyberLikes-POS/admin/ajax/product", {
+          data: values,
+        })
+        .then(function (response) {
+          let data = response.data;
+          if (data.success == false) {
+            if (data.location) {
+            } else if (data.errors) {
+            }
+          }
+        })
+        .catch((error) => {});
+    }, onInvalidSubmit);
     const { value: type, errorMessage: errorType } = useField(
       "type",
       yup.number().required().min(1).nullable(true)
@@ -350,6 +368,10 @@ export default {
       "slug",
       yup.string().required().min(3).max(10).nullable(true)
     );
+    const { value: weight, errorMessage: errorWeight } = useField(
+      "weight",
+      yup.number().typeError("Invalid input!").min(0).max(10).nullable(true)
+    );
     /*************************************** */
     return {
       /************** db */
@@ -366,6 +388,8 @@ export default {
       errorName,
       slug,
       errorSlug,
+      weight,
+      errorWeight,
       /*************** */
       isDirty,
       isValid,
@@ -375,7 +399,6 @@ export default {
   mixins: [adminMixin],
   data() {
     return {
-      weight: null,
       category: null,
       sub_category: null,
       brand: null,
@@ -395,35 +418,8 @@ export default {
       var self = this;
       self.product = {};
     },
-    onubmit() {
-      var self = this;
-      //let data = JSON.parse(JSON.stringify(self.product));
-      var formId = document.getElementById("newProduct");
-      this.axios
-        .post("http://localhost/CyberLikes-POS/admin/ajax/product", {
-          data: self.product,
-        })
-        .then(function (response) {
-          formId.classList.add("was-validated");
-          let data = response.data;
-          if (data.success == true) {
-            //
-          } else if (data.success == false) {
-            let errors = data.errors;
-            self.errors = errors;
-            for (var field in errors) {
-              if (Object.prototype.hasOwnProperty.call(errors, field)) {
-                console.log(field + " -> " + errors[field]);
-              }
-            }
-            var form = document.getElementById("newProduct");
-            form.classList.add("was-validated");
-            self.notifyApiResponse(data);
-          }
-        })
-        .catch((error) => {
-          self.notifyCatchResponse({ message: error.message });
-        });
+    test() {
+      alert();
     },
   },
   created() {},

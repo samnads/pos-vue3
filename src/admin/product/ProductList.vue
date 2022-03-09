@@ -75,7 +75,7 @@ export default {
     var self = this;
     $(function () {
       $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
-        self.notifyCatchResponse({ message: message });
+        console.log(message);
       };
       self.table = $("#datatable").DataTable({
         searching: true, // remove default search box
@@ -102,7 +102,7 @@ export default {
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {
-            self.notifyCatchResponse({ title:"Network Error !",message: "" });
+            self.notifyCatchResponse({ title: "Network Error !", message: "" });
           },
           data: function (d) {
             d["action"] = "datatable";
@@ -110,6 +110,7 @@ export default {
           },
           dataSrc: function (response) {
             if (response.success == false && response.location) {
+              self.notifyCatchResponse(response);
               self.$router
                 .push({ path: "/" + response.location })
                 .catch((e) => {});
