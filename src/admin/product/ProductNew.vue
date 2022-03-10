@@ -299,13 +299,19 @@ import {
   configure,
 } from "vee-validate";
 import * as yup from "yup";
-import { ref,computed } from "vue";
+import {  computed } from "vue";
 import { useStore } from "vuex";
-import adminMixin from "@/mixins/admin.js";
+//import adminMixin from "@/mixins/admin.js";
+import useCounter from "@/mixins/useCounter.js";
 export default {
   components: {},
   props: {},
   setup() {
+    // data retrieve
+    const { addProductTypes, addSymbologies } = useCounter();
+    // notify
+    const { notifyDefault, notifyApiResponse, notifyCatchResponse } = useCounter();
+    // from store
     const store = useStore();
     let productTypes = computed(function () {
       return store.state.productTypes;
@@ -331,6 +337,7 @@ export default {
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
     function onInvalidSubmit({ values, errors, results }) {
+      notifyDefault({ message: "Form have error !" ,type:"danger"});
     }
     const onSubmit = handleSubmit((values) => {
       console.log(values);
@@ -340,6 +347,7 @@ export default {
         })
         .then(function (response) {
           let data = response.data;
+          console.log(data);
           if (data.success == false) {
             if (data.location) {
             } else if (data.errors) {
@@ -394,9 +402,12 @@ export default {
       isDirty,
       isValid,
       onSubmit,
+      /******************/
+      addProductTypes,
+      addSymbologies,
     };
   },
-  mixins: [adminMixin],
+  mixins: [],
   data() {
     return {
       category: null,
@@ -411,16 +422,6 @@ export default {
     };
   },
   methods: {
-    isRequired(value) {
-      return value ? true : "This field is required";
-    },
-    reset() {
-      var self = this;
-      self.product = {};
-    },
-    test() {
-      alert();
-    },
   },
   created() {},
   mounted() {
