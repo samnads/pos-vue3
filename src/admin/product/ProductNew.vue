@@ -299,18 +299,25 @@ import {
   configure,
 } from "vee-validate";
 import * as yup from "yup";
-import {  computed } from "vue";
+import { computed } from "vue";
 import { useStore } from "vuex";
+import router from '@/router'
 //import adminMixin from "@/mixins/admin.js";
-import useCounter from "@/mixins/useCounter.js";
+import admin from "@/mixins/admin.js";
 export default {
   components: {},
   props: {},
   setup() {
     // data retrieve
-    const { addProductTypes, addSymbologies } = useCounter();
+    const { addProductTypes, addSymbologies } = admin();
     // notify
-    const { notifyDefault, notifyApiResponse, notifyCatchResponse } = useCounter();
+    const {
+      notifyDefault,
+      notifyFormError,
+      notifyApiResponse,
+      notifyCatchResponse,
+      axiosCall,
+    } = admin();
     // from store
     const store = useStore();
     let productTypes = computed(function () {
@@ -337,24 +344,13 @@ export default {
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
     function onInvalidSubmit({ values, errors, results }) {
-      notifyDefault({ message: "Form have error !" ,type:"danger"});
+      this.$router.push({ name: "adminDashboard" }).catch((e) => {console.log(e) });
     }
     const onSubmit = handleSubmit((values) => {
-      console.log(values);
-      axios
-        .post("http://localhost/CyberLikes-POS/admin/ajax/product", {
-          data: values,
-        })
-        .then(function (response) {
-          let data = response.data;
-          console.log(data);
-          if (data.success == false) {
-            if (data.location) {
-            } else if (data.errors) {
-            }
-          }
-        })
-        .catch((error) => {});
+      axiosCall("post", "product", {
+        data: values,
+      }).then(function (data) {
+      });
     }, onInvalidSubmit);
     const { value: type, errorMessage: errorType } = useField(
       "type",
@@ -421,8 +417,7 @@ export default {
       errors: {},
     };
   },
-  methods: {
-  },
+  methods: {},
   created() {},
   mounted() {
     this.addProductTypes(); // get product types

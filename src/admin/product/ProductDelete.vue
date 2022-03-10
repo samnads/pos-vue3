@@ -41,13 +41,22 @@
   </div>
 </template>
 <script>
-import adminMixin from "@/mixins/admin.js";
+import admin from "@/mixins/admin.js";
 export default {
   components: {},
+  setup() {
+    // notify
+    const { notifyDefault, notifyApiResponse, notifyCatchResponse } = admin();
+    return {
+      notifyDefault,
+      notifyApiResponse,
+      notifyCatchResponse,
+    };
+  },
   data() {
     return {};
   },
-  mixins: [adminMixin],
+  mixins: [],
   props: {
     productData: Object,
   },

@@ -95,7 +95,7 @@
                 </li>
               </ul>
             </li>
-             <li class="nav-item dropdown">
+            <li class="nav-item dropdown">
               <a
                 class="nav-link dropdown-toggle"
                 href="#"
@@ -236,24 +236,27 @@
   margin-right: 10px;
 }
 /* from control styles */
-label{
-  font-weight: bold;;
+label {
+  font-weight: bold;
 }
 label > i {
-  font-style: normal;;
+  font-style: normal;
 }
 label > i:before {
   content: " ";
 }
 .form-label {
-    margin-bottom: 0.1rem !important;
+  margin-bottom: 0.1rem !important;
 }
 form .row {
-    margin-bottom: 0.4rem !important;
+  margin-bottom: 0.4rem !important;
 }
 /* notification contaier */
 .vue-notification-group {
   margin-bottom: 100px;
+}
+.vue-notification .notification-content{
+  font-size: 18px;;
 }
 .vue-notification {
   margin: 0 5px 5px;
@@ -304,10 +307,6 @@ form .row {
 }
 </style>
 <script>
-/* eslint-disable */
-// contains function for global admin pages
-import adminMixin from "@/mixins/admin.js";
-//
 import "datatables.net-bs5/js/dataTables.bootstrap5";
 import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
 import "datatables.net-buttons-bs5/js/buttons.bootstrap5";
@@ -319,20 +318,18 @@ import "datatables.net-buttons/js/buttons.print";
 import "datatables.net-buttons/js/dataTables.buttons";
 import "datatables.net-select-bs5/css/select.bootstrap5.css";
 import "datatables.net-select-bs5/js/select.bootstrap5";
-// use for admin area
-import { Toast } from "bootstrap";
 export default {
   components: {},
-  mixins: [adminMixin],
+  mixins: [],
   data: function () {
     return {
+      // for notify
       general: { closeOnClick: false, max: 3 },
     };
   },
   methods: {},
   created() {},
-  mounted() {
-  },
+  mounted() {},
 };
 </script>
 

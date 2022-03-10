@@ -64,11 +64,20 @@
 <style>
 </style>
 <script>
-import adminMixin from "@/mixins/admin.js";
+import admin from "@/mixins/admin.js";
 export default {
   components: {},
   /* eslint-disable */
-  mixins: [adminMixin],
+  mixins: [],
+  setup() {
+    // notify
+    const { notifyDefault, notifyApiResponse, notifyCatchResponse } = admin();
+    return {
+      notifyDefault,
+      notifyApiResponse,
+      notifyCatchResponse,
+    };
+  },
   methods: {},
   created() {},
   mounted() {
