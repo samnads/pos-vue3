@@ -166,6 +166,9 @@
   margin-top: 56px;
   min-height: calc(100vh - 112px) !important;
 }
+a {
+  text-decoration: none !important;
+}
 /* MENU BAR STYLEES */
 .menubar {
   border-top-left-radius: 0.25rem !important;
@@ -255,8 +258,8 @@ form .row {
 .vue-notification-group {
   margin-bottom: 100px;
 }
-.vue-notification .notification-content{
-  font-size: 18px;;
+.vue-notification .notification-content {
+  font-size: 18px;
 }
 .vue-notification {
   margin: 0 5px 5px;

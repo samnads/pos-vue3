@@ -76,7 +76,10 @@
                       : '',
                   ]"
                 />
-                <span class="input-group-text text-info" role="button"
+                <span
+                  class="input-group-text text-info"
+                  role="button"
+                  @click="genRandCode"
                   ><i class="fa-solid fa-shuffle"></i
                 ></span>
                 <div class="invalid-feedback">{{ errorCode }}</div>
@@ -122,6 +125,7 @@
                 v-model="name"
                 class="form-control"
                 id="productname"
+                @input="handleChangeName"
                 v-bind:class="[
                   errorName
                     ? 'is-invalid'
@@ -141,6 +145,7 @@
                 name="slug"
                 v-model="slug"
                 class="form-control"
+                @change="handleChangeSlug"
                 v-bind:class="[
                   errorSlug
                     ? 'is-invalid'
@@ -303,10 +308,12 @@ import { computed } from "vue";
 import { useStore } from "vuex";
 //import adminMixin from "@/mixins/admin.js";
 import admin from "@/mixins/admin.js";
+import adminProduct from "@/mixins/adminProduct.js";
 export default {
   components: {},
   props: {},
   setup() {
+    const { randCode } = adminProduct();
     // data retrieve
     const { addProductTypes, addSymbologies } = admin();
     // notify
@@ -338,18 +345,35 @@ export default {
       type: null,
       symbology: 1,
     };
-    const { handleSubmit } = useForm({
+    const { handleSubmit, setFieldValue } = useForm({
       initialValues: formValues,
     });
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
     function onInvalidSubmit({ values, errors, results }) {
+       console.log(errors)
+      //setFieldValue("name", "test");
+    }
+    function genRandCode() {
+      setFieldValue("code", randCode());
     }
     const onSubmit = handleSubmit((values) => {
       axiosCall("post", "product", {
         data: values,
       }).then(function (data) {});
     }, onInvalidSubmit);
+
+    const { handleChangeName } = useField("name", function (value) {
+      if (value) {
+        setFieldValue("slug", "value.trim().replace(/\s+/g, "-").toLowerCase()");
+      }
+    });
+    const { handleChangeSlug } = useField("slug", function (value) {
+      if (value) {
+        setFieldValue("slug", value.trim().replace(/\s+/g, "-").toLowerCase());
+      }
+    });
+
     const { value: type, errorMessage: errorType } = useField(
       "type",
       yup.number().required().min(1).nullable(true)
@@ -364,11 +388,11 @@ export default {
     );
     const { value: name, errorMessage: errorName } = useField(
       "name",
-      yup.string().required().min(3).max(10).nullable(true)
+      yup.string().required().min(3).max(100).nullable(true)
     );
     const { value: slug, errorMessage: errorSlug } = useField(
       "slug",
-      yup.string().required().min(3).max(10).nullable(true)
+      yup.string().required().min(3).max(100).nullable(true)
     );
     const { value: weight, errorMessage: errorWeight } = useField(
       "weight",
@@ -376,6 +400,10 @@ export default {
     );
     /*************************************** */
     return {
+      /**************** event handler */
+      genRandCode,
+      handleChangeName,
+      handleChangeSlug,
       /************** db */
       productTypes,
       symbologies,
@@ -415,7 +443,11 @@ export default {
       errors: {},
     };
   },
-  methods: {},
+  methods: {
+    test() {
+      alert();
+    },
+  },
   created() {},
   mounted() {
     this.addProductTypes(); // get product types

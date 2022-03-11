@@ -47,8 +47,8 @@ export default function () {
                     notifyApiResponse(resData);
                 }
             } else if (resData.success == true) {
+                notifyApiResponse(resData);
                 if (resData.location) { // redirect found
-                    notifyApiResponse(resData);
                     router.push({ path: "/" + resData.location }).catch((e) => {
                         console.log(e);
                     });

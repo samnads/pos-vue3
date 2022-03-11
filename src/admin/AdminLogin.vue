@@ -89,9 +89,6 @@
   height: 1px;
   background: #eee;
 }
-a {
-  text-decoration: none !important;
-}
 </style>
 <script>
 import admin from "@/mixins/admin.js";
