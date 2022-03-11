@@ -94,6 +94,7 @@ a {
 }
 </style>
 <script>
+import admin from "@/mixins/admin.js";
 export default {
   data() {
     return {
@@ -102,28 +103,21 @@ export default {
       password: "",
     };
   },
+  setup() {
+    const { axiosCall } = admin();
+    return {
+      axiosCall,
+    };
+  },
   methods: {
     // submit the form to our backend api
     submitForm() {
-      const self = this;
+      //const self = this;
       const formData = {
         action: "login",
         data: { username: this.username, password: this.password },
       };
-      this.axios
-        .post("http://localhost/CyberLikes-POS/admin/ajax/login", formData)
-        .then(function (response) {
-          let data = response.data;
-          if (data.success == true) {
-            self.$router.push({ name: "adminDashboard" }).catch(() => {});
-          } else {
-            alert(data.message);
-          }
-        })
-        .catch((error) => {
-          this.errorMessage = error.message;
-          alert("There was an error! " + error);
-        });
+      this.axiosCall("post", "login", formData).then(function () {});
     },
   },
 };

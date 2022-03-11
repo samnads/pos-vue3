@@ -2,6 +2,7 @@ import { computed } from "vue";
 import { notify } from "@kyvg/vue3-notification";
 import { useStore } from "vuex";
 import axios from "axios";
+import router from "@/router";
 export default function () {
     var notType = 'warning'
     var notTitle = ''
@@ -13,10 +14,10 @@ export default function () {
         return store.state.productTypes
     });
     async function axiosCall(method, url, data) {
-        const endpoint = "http://localhost/CyberLikes-POS/admin/ajax/";
+        const endpoint = "http://localhost/pos-vue3/server/admin/ajax/";
         try {
             let res = await axios({
-                url: endpoint+url,
+                url: endpoint + url,
                 method: method,
                 data: data,
                 timeout: 8000,
@@ -31,17 +32,29 @@ export default function () {
             /******************************* */ // common things for all response
             let resData = res.data;
             if (resData.success == false) {
-                if (resData.location) {
-                    //
-                } else if (resData.errors) {
+                if (resData.location) { // redirect found
+                    notifyApiResponse(resData);
+                    router.push({ path: "/" + resData.location }).catch((e) => {
+                        console.log(e);
+                    });
+                } else if (resData.errors) { // may be form errors
                     notifyFormError({
                         message: "Form Data Error !",
                         type: "warning",
                     });
                 }
+                else {
+                    notifyApiResponse(resData);
+                }
             } else if (resData.success == true) {
-                //
+                if (resData.location) { // redirect found
+                    notifyApiResponse(resData);
+                    router.push({ path: "/" + resData.location }).catch((e) => {
+                        console.log(e);
+                    });
+                }
             }
+
             /******************************* */
             // Don't forget to return something   
             return res.data
@@ -53,7 +66,7 @@ export default function () {
     function notifyDefault(data) {
         notify({
             title: data.title || notTitle, // no title
-            text: data.message || notMessage,
+            text: data.message || data.error || notMessage,
             group: "general",
             type: data.type || notType,
             duration: data.duration || notDuration,
@@ -63,7 +76,7 @@ export default function () {
     function notifyFormError(data) {
         notify({
             title: data.title || notTitle, // no title
-            text: data.message || notMessage,
+            text: data.message || data.error || notMessage,
             group: "general",
             type: data.type || notType,
             duration: data.duration || notDuration,
@@ -73,7 +86,7 @@ export default function () {
     function notifyApiResponse(data) {
         notify({
             title: data.title || notTitle, // no title
-            text: data.message || notMessage,
+            text: data.message || data.error || notMessage,
             group: "general",
             type: data.type || notType,
             duration: data.duration || notDuration,
@@ -105,7 +118,13 @@ export default function () {
             this.notifyCatchResponse({ message: error.message });
         });
     }
+    function adminTest() {
+        router.push({ name: "adminDashboard" }).catch((e) => {
+            console.log(e);
+        });
+    }
     return {
+        adminTest,
         /******************* for notify */
         notifyDefault,
         notifyApiResponse,

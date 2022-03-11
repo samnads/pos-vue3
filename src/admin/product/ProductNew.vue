@@ -301,7 +301,6 @@ import {
 import * as yup from "yup";
 import { computed } from "vue";
 import { useStore } from "vuex";
-import router from '@/router'
 //import adminMixin from "@/mixins/admin.js";
 import admin from "@/mixins/admin.js";
 export default {
@@ -317,6 +316,7 @@ export default {
       notifyApiResponse,
       notifyCatchResponse,
       axiosCall,
+      adminTest,
     } = admin();
     // from store
     const store = useStore();
@@ -344,13 +344,11 @@ export default {
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
     function onInvalidSubmit({ values, errors, results }) {
-      this.$router.push({ name: "adminDashboard" }).catch((e) => {console.log(e) });
     }
     const onSubmit = handleSubmit((values) => {
       axiosCall("post", "product", {
         data: values,
-      }).then(function (data) {
-      });
+      }).then(function (data) {});
     }, onInvalidSubmit);
     const { value: type, errorMessage: errorType } = useField(
       "type",

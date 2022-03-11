@@ -1,0 +1,4 @@
+system->core->controller
+added line 88
+$this->db->conn_id->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, true);
+to return query result as same datatype as mysql fields
