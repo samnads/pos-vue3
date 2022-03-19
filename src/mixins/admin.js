@@ -20,6 +20,7 @@ export default function () {
                 url: endpoint + url,
                 method: method,
                 data: data,
+                params: data,
                 timeout: 8000,
                 headers: {
                     'Content-Type': 'application/json',
@@ -46,8 +47,15 @@ export default function () {
                 else {
                     notifyApiResponse(resData);
                 }
-            } else if (resData.success == true) {
+            } else if (resData.success == true && resData.location) {
                 notifyApiResponse(resData);
+                if (resData.location) { // redirect found
+                    router.push({ path: "/" + resData.location }).catch((e) => {
+                        console.log(e);
+                    });
+                }
+            }
+            else if (resData.success == true) {
                 if (resData.location) { // redirect found
                     router.push({ path: "/" + resData.location }).catch((e) => {
                         console.log(e);
@@ -118,6 +126,13 @@ export default function () {
             this.notifyCatchResponse({ message: error.message });
         });
     }
+    function addCategories() {
+        this.axios.get("http://localhost/CyberLikes-POS/admin/ajax/category", { params: { action: 'getall' }, }).then(function (response) {
+            store.commit("storeCategories", response.data.data);
+        }).catch((error) => {
+            this.notifyCatchResponse({ message: error.message });
+        });
+    }
     function adminTest() {
         router.push({ name: "adminDashboard" }).catch((e) => {
             console.log(e);
@@ -133,6 +148,7 @@ export default function () {
         /******************* for data */
         addProductTypes,
         addSymbologies,
+        addCategories,
         /******************* */
         axiosCall,
         productTypes,

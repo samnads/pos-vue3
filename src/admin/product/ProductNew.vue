@@ -43,7 +43,7 @@
                     : '',
                 ]"
               >
-                <option selected :value="null" v-if="!productTypes">
+                <option selected :value="defType" v-if="!productTypes">
                   Loading...
                 </option>
                 <option selected :value="null" v-if="productTypes">
@@ -103,7 +103,7 @@
                     : '',
                 ]"
               >
-                <option selected :value="1" v-if="!symbologies">
+                <option selected :value="defSymbology" v-if="!symbologies">
                   Loading...
                 </option>
                 <option selected :value="null" v-if="symbologies">
@@ -178,30 +178,53 @@
           </div>
           <div class="row">
             <div class="col">
-              <label for="exampleInputEmail1" class="form-label"
-                >Category <i>*</i></label
+              <label for="exampleInputPassword1" class="form-label"
+                >Category<i>*</i></label
               >
-              <input
-                type="text"
+              <select
+                class="form-select"
+                name="category"
+                :disabled="!categories"
                 v-model="category"
-                class="form-control"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
-              />
-              <div id="emailHelp" class="form-text">
-                We'll never share your email with anyone else.
-              </div>
+                @input="handleChangeCat"
+                id="productcategory"
+                v-bind:class="[
+                  errorCategory
+                    ? 'is-invalid'
+                    : !errorCategory && category
+                    ? 'is-valid'
+                    : '',
+                ]"
+              >
+                <option selected :value="defCategory" v-if="!categories">
+                  Loading...
+                </option>
+                <option selected :value="null" v-if="categories">
+                  -- Select --
+                </option>
+                <option v-for="c in categories" :key="c.id" :value="c.id">
+                  {{ c.name }}
+                </option>
+              </select>
+              <div class="invalid-feedback">{{ errorCategory }}</div>
             </div>
             <div class="col">
               <label for="exampleInputPassword1" class="form-label"
                 >Sub Category</label
               >
-              <input
-                type="text"
+              <select
+                class="form-select"
+                name="sub_category"
+                :disabled="!categories || !category || !subCats || subCats.length == 0"
                 v-model="sub_category"
-                class="form-control"
-                id="exampleInputPassword1"
-              />
+              >
+                <option selected :value="null" >
+                 {{!categories ? 'Loading...' : (!category ? 'Select category first' : (!subCats ? 'Loading...' : (subCats.length == 0 ? 'No sub category found' : '-- Select --')))}}
+                </option>
+                <option v-for="sc in subCats" :key="sc.id" :value="sc.id">
+                  {{ sc.name }}
+                </option>
+              </select>
             </div>
           </div>
         </div>
@@ -295,7 +318,6 @@
 </style>
 <script>
 /* eslint-disable */
-import axios from "axios";
 import {
   useForm,
   useField,
@@ -304,7 +326,7 @@ import {
   configure,
 } from "vee-validate";
 import * as yup from "yup";
-import { computed } from "vue";
+import { ref, computed } from "vue";
 import { useStore } from "vuex";
 //import adminMixin from "@/mixins/admin.js";
 import admin from "@/mixins/admin.js";
@@ -315,7 +337,7 @@ export default {
   setup() {
     const { randCode } = adminProduct();
     // data retrieve
-    const { addProductTypes, addSymbologies } = admin();
+    const { addProductTypes, addSymbologies, addCategories } = admin();
     // notify
     const {
       notifyDefault,
@@ -333,6 +355,9 @@ export default {
     let symbologies = computed(function () {
       return store.state.symbologies;
     });
+    let categories = computed(function () {
+      return store.state.categories;
+    });
     /**************************************** */
     configure({
       validateOnBlur: true, // controls if `blur` events should trigger validation with `handleChange` handler
@@ -340,10 +365,17 @@ export default {
       validateOnInput: false, // controls if `input` events should trigger validation with `handleChange` handler
       validateOnModelUpdate: true, // controls if `update:modelValue` events should trigger validation with `handleChange` handler
     });
+    // Defaule values
+    var defType = null;
+    var defSymbology = 1;
+    var defCategory = 1;
+    var subCats = ref(0);
     // Initial values
     const formValues = {
-      type: null,
-      symbology: 1,
+      type: defType,
+      symbology: defSymbology,
+      category: defCategory,
+      sub_category: null,
     };
     const { handleSubmit, setFieldValue } = useForm({
       initialValues: formValues,
@@ -351,7 +383,7 @@ export default {
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
     function onInvalidSubmit({ values, errors, results }) {
-       console.log(errors)
+      console.log(errors);
       //setFieldValue("name", "test");
     }
     function genRandCode() {
@@ -365,12 +397,34 @@ export default {
 
     const { handleChangeName } = useField("name", function (value) {
       if (value) {
-        setFieldValue("slug", "value.trim().replace(/\s+/g, "-").toLowerCase()");
+        setFieldValue("slug", value.trim().replace(/\s+/g, "-").toLowerCase());
+        return true;
+      } else {
+        return "Required !";
       }
     });
     const { handleChangeSlug } = useField("slug", function (value) {
       if (value) {
         setFieldValue("slug", value.trim().replace(/\s+/g, "-").toLowerCase());
+        return true;
+      } else {
+        return "Required !";
+      }
+    });
+
+    const { handleChangeCat } = useField("category", function (value) {
+      if (value) {
+        subCats.value = undefined;
+        axiosCall("get", "category", {
+          action: "subcats",
+          id: value,
+        }).then(function (response) {
+          subCats.value = response.data;
+        });
+        return true;
+      } else {
+        subCats.value = undefined;
+        return "Required !";
       }
     });
 
@@ -398,15 +452,29 @@ export default {
       "weight",
       yup.number().typeError("Invalid input!").min(0).max(10).nullable(true)
     );
+    const { value: category, errorMessage: errorCategory } = useField(
+      "category",
+      yup.number().required().nullable(true)
+    );
+    const { value: sub_category, errorMessage: errorSubCategory } = useField(
+      "sub_category",
+      yup.number().required().nullable(true)
+    );
     /*************************************** */
     return {
+      /**************** default form sel values */
+      defCategory,
+      defSymbology,
+      defType,
       /**************** event handler */
       genRandCode,
       handleChangeName,
       handleChangeSlug,
+      handleChangeCat,
       /************** db */
       productTypes,
       symbologies,
+      categories,
       /******* fields   */
       type,
       errorType,
@@ -420,20 +488,24 @@ export default {
       errorSlug,
       weight,
       errorWeight,
+      category,
+      errorCategory,
+      sub_category,
+      errorSubCategory,
       /*************** */
       isDirty,
       isValid,
       onSubmit,
+      subCats,
       /******************/
       addProductTypes,
       addSymbologies,
+      addCategories,
     };
   },
   mixins: [],
   data() {
     return {
-      category: null,
-      sub_category: null,
       brand: null,
       mrp: null,
       unit: null,
@@ -452,6 +524,7 @@ export default {
   mounted() {
     this.addProductTypes(); // get product types
     this.addSymbologies(); // get symbologies
+    this.addCategories(); // get categories
   },
 };
 </script>

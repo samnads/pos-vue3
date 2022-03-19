@@ -47,7 +47,10 @@ export default createStore({
             }
         ],
         cart: [],
-        productTypes: undefined
+        productTypes: undefined,
+        symbologies: undefined,
+        categories: undefined,
+        subCatLevel1: undefined,
     },
     mutations: {
         storeProductTypes(state, item) {
@@ -55,6 +58,9 @@ export default createStore({
         },
         storeSymbologies(state, item) {
             state.symbologies = item;
+        },
+        storeCategories(state, item) {
+            state.categories = item;
         },
 
 
