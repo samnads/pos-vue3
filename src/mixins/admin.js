@@ -20,7 +20,7 @@ export default function () {
                 url: endpoint + url,
                 method: method,
                 data: data,
-                params: data,
+                params: method == 'get' ? data : undefined,
                 timeout: 8000,
                 headers: {
                     'Content-Type': 'application/json',

@@ -181,13 +181,13 @@
               <label for="exampleInputPassword1" class="form-label"
                 >Category<i>*</i></label
               >
+              <div class="input-group">
               <select
                 class="form-select"
                 name="category"
                 :disabled="!categories"
                 v-model="category"
                 @input="handleChangeCat"
-                id="productcategory"
                 v-bind:class="[
                   errorCategory
                     ? 'is-invalid'
@@ -200,12 +200,19 @@
                   Loading...
                 </option>
                 <option selected :value="null" v-if="categories">
-                  -- Select --
+                  -- Select ({{categories.length}}) --
                 </option>
                 <option v-for="c in categories" :key="c.id" :value="c.id">
                   {{ c.name }}
                 </option>
               </select>
+              <span
+                  class="input-group-text text-info"
+                  role="button"
+                  @click="newCategory"
+                  ><i class="fa-solid fa-plus"></i
+                ></span>
+              </div>
               <div class="invalid-feedback">{{ errorCategory }}</div>
             </div>
             <div class="col">
@@ -215,11 +222,23 @@
               <select
                 class="form-select"
                 name="sub_category"
-                :disabled="!categories || !category || !subCats || subCats.length == 0"
+                :disabled="
+                  !categories || !category || !subCats || subCats.length == 0
+                "
                 v-model="sub_category"
               >
-                <option selected :value="null" >
-                 {{!categories ? 'Loading...' : (!category ? 'Select category first' : (!subCats ? 'Loading...' : (subCats.length == 0 ? 'No sub category found' : '-- Select --')))}}
+                <option selected :value="null">
+                  {{
+                    !categories
+                      ? "Loading..."
+                      : !category
+                      ? "Select category first"
+                      : !subCats
+                      ? "Loading..."
+                      : subCats.length == 0
+                      ? "No sub category found"
+                      : "-- Select ("+subCats.length+") --"
+                  }}
                 </option>
                 <option v-for="sc in subCats" :key="sc.id" :value="sc.id">
                   {{ sc.name }}
@@ -306,7 +325,12 @@
           </button>
         </div>
         <div class="">
-          <button type="reset" class="btn btn-info" :disable="!isDirty">
+          <button
+            type="button"
+            class="btn btn-info"
+            :disabled="!isDirty"
+            @click="resetForm()"
+          >
             Reset
           </button>
         </div>
@@ -359,26 +383,20 @@ export default {
       return store.state.categories;
     });
     /**************************************** */
-    configure({
-      validateOnBlur: true, // controls if `blur` events should trigger validation with `handleChange` handler
-      validateOnChange: true, // controls if `change` events should trigger validation with `handleChange` handler
-      validateOnInput: false, // controls if `input` events should trigger validation with `handleChange` handler
-      validateOnModelUpdate: true, // controls if `update:modelValue` events should trigger validation with `handleChange` handler
-    });
     // Defaule values
     var defType = null;
     var defSymbology = 1;
     var defCategory = 1;
     var subCats = ref(0);
+    const { handleSubmit } = useForm();
+    const { resetForm } = useForm();
+    const { setFieldValue, setValues } = useForm();
     // Initial values
-    const formValues = {
+    setValues({
       type: defType,
       symbology: defSymbology,
       category: defCategory,
       sub_category: null,
-    };
-    const { handleSubmit, setFieldValue } = useForm({
-      initialValues: formValues,
     });
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
@@ -389,10 +407,15 @@ export default {
     function genRandCode() {
       setFieldValue("code", randCode());
     }
+    function newCategory() {
+      window.PROD_NEW_CATEGORY_MODAL.show();
+    }
     const onSubmit = handleSubmit((values) => {
       axiosCall("post", "product", {
         data: values,
-      }).then(function (data) {});
+      }).then(function (data) {
+        console.log(data.errors)
+      });
     }, onInvalidSubmit);
 
     const { handleChangeName } = useField("name", function (value) {
@@ -415,6 +438,7 @@ export default {
     const { handleChangeCat } = useField("category", function (value) {
       if (value) {
         subCats.value = undefined;
+        sub_category.value = null;
         axiosCall("get", "category", {
           action: "subcats",
           id: value,
@@ -424,6 +448,7 @@ export default {
         return true;
       } else {
         subCats.value = undefined;
+        sub_category.value = null;
         return "Required !";
       }
     });
@@ -458,7 +483,7 @@ export default {
     );
     const { value: sub_category, errorMessage: errorSubCategory } = useField(
       "sub_category",
-      yup.number().required().nullable(true)
+      yup.number().nullable(true)
     );
     /*************************************** */
     return {
@@ -468,6 +493,7 @@ export default {
       defType,
       /**************** event handler */
       genRandCode,
+      newCategory,
       handleChangeName,
       handleChangeSlug,
       handleChangeCat,
@@ -496,6 +522,7 @@ export default {
       isDirty,
       isValid,
       onSubmit,
+      resetForm,
       subCats,
       /******************/
       addProductTypes,
