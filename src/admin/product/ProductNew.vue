@@ -182,31 +182,31 @@
                 >Category<i>*</i></label
               >
               <div class="input-group">
-              <select
-                class="form-select"
-                name="category"
-                :disabled="!categories"
-                v-model="category"
-                @input="handleChangeCat"
-                v-bind:class="[
-                  errorCategory
-                    ? 'is-invalid'
-                    : !errorCategory && category
-                    ? 'is-valid'
-                    : '',
-                ]"
-              >
-                <option selected :value="defCategory" v-if="!categories">
-                  Loading...
-                </option>
-                <option selected :value="null" v-if="categories">
-                  -- Select ({{categories.length}}) --
-                </option>
-                <option v-for="c in categories" :key="c.id" :value="c.id">
-                  {{ c.name }}
-                </option>
-              </select>
-              <span
+                <select
+                  class="form-select"
+                  name="category"
+                  :disabled="!categories"
+                  v-model="category"
+                  @input="handleChangeCat"
+                  v-bind:class="[
+                    errorCategory
+                      ? 'is-invalid'
+                      : !errorCategory && category
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                >
+                  <option selected :value="defCategory" v-if="!categories">
+                    Loading...
+                  </option>
+                  <option selected :value="null" v-if="categories">
+                    -- Select ({{ categories.length }}) --
+                  </option>
+                  <option v-for="c in categories" :key="c.id" :value="c.id">
+                    {{ c.name }}
+                  </option>
+                </select>
+                <span
                   class="input-group-text text-info"
                   role="button"
                   @click="newCategory"
@@ -237,7 +237,7 @@
                       ? "Loading..."
                       : subCats.length == 0
                       ? "No sub category found"
-                      : "-- Select ("+subCats.length+") --"
+                      : "-- Select (" + subCats.length + ") --"
                   }}
                 </option>
                 <option v-for="sc in subCats" :key="sc.id" :value="sc.id">
@@ -360,10 +360,10 @@ export default {
   props: {},
   setup() {
     const { randCode } = adminProduct();
-    // data retrieve
-    const { addProductTypes, addSymbologies, addCategories } = admin();
-    // notify
     const {
+      addProductTypes,
+      addSymbologies,
+      addCategories,
       notifyDefault,
       notifyFormError,
       notifyApiResponse,
@@ -388,9 +388,7 @@ export default {
     var defSymbology = 1;
     var defCategory = 1;
     var subCats = ref(0);
-    const { handleSubmit } = useForm();
-    const { resetForm } = useForm();
-    const { setFieldValue, setValues } = useForm();
+    const { setFieldValue, setValues, handleSubmit, resetForm } = useForm();
     // Initial values
     setValues({
       type: defType,
@@ -414,7 +412,7 @@ export default {
       axiosCall("post", "product", {
         data: values,
       }).then(function (data) {
-        console.log(data.errors)
+        console.log(data.errors);
       });
     }, onInvalidSubmit);
 
@@ -455,35 +453,35 @@ export default {
 
     const { value: type, errorMessage: errorType } = useField(
       "type",
-      yup.number().required().min(1).nullable(true)
+      yup.number().required().min(1).nullable(false)
     );
     const { value: code, errorMessage: errorCode } = useField(
       "code",
-      yup.string().required().min(3).nullable(true)
+      yup.string().required().min(3).nullable(false)
     );
     const { value: symbology, errorMessage: errorSymbology } = useField(
       "symbology",
-      yup.number().required().min(1).nullable(true)
+      yup.number().required().min(1).nullable(false)
     );
     const { value: name, errorMessage: errorName } = useField(
       "name",
-      yup.string().required().min(3).max(100).nullable(true)
+      yup.string().required().min(3).max(100).nullable(false)
     );
     const { value: slug, errorMessage: errorSlug } = useField(
       "slug",
-      yup.string().required().min(3).max(100).nullable(true)
+      yup.string().required().min(3).max(100).nullable(false)
     );
     const { value: weight, errorMessage: errorWeight } = useField(
       "weight",
-      yup.number().typeError("Invalid input!").min(0).max(10).nullable(true)
+      yup.number().min(0).max(10).nullable(false)
     );
     const { value: category, errorMessage: errorCategory } = useField(
       "category",
-      yup.number().required().nullable(true)
+      yup.number().required().nullable(false)
     );
     const { value: sub_category, errorMessage: errorSubCategory } = useField(
       "sub_category",
-      yup.number().nullable(true)
+      yup.number().nullable(false)
     );
     /*************************************** */
     return {
@@ -538,7 +536,6 @@ export default {
       unit: null,
       p_unit: null,
       s_unit: null,
-      product: { type: null },
       errors: {},
     };
   },

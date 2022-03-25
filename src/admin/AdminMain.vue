@@ -308,6 +308,10 @@ form .row {
   background-color: #d3d3d4;
   border-left-color: #bcbebf;
 }
+.modal-header {
+    background-color: #00416A !important;
+   color: #dee2e6;
+}
 </style>
 <script>
 import "datatables.net-bs5/js/dataTables.bootstrap5";
