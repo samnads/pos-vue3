@@ -141,12 +141,9 @@ import {
   useIsFormValid,
 } from "vee-validate";
 import * as yup from "yup";
-import { useStore } from "vuex";
 import admin from "@/mixins/admin.js";
-import adminProduct from "@/mixins/adminProduct.js";
 export default {
   setup() {
-    const { randCode } = adminProduct();
     // data retrieve
     const {
       notifyDefault,
@@ -155,8 +152,6 @@ export default {
       notifyCatchResponse,
       axiosCall,
     } = admin();
-    // from store
-    const store = useStore();
     /**************************************** */
     // Defaule values
     const { setFieldValue, setValues, handleSubmit, resetForm } = useForm();

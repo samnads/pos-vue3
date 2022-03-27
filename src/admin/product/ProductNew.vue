@@ -145,7 +145,7 @@
                 name="slug"
                 v-model="slug"
                 class="form-control"
-                @change="handleChangeSlug"
+                @input="handleChangeSlug"
                 v-bind:class="[
                   errorSlug
                     ? 'is-invalid'
@@ -161,7 +161,7 @@
             <div class="col">
               <label for="" class="form-label">Weight</label>
               <input
-                type="text"
+                type="number"
                 name="weight"
                 v-model="weight"
                 class="form-control"
@@ -248,73 +248,7 @@
           </div>
         </div>
         <!-- column section 2 -->
-        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
-          <div class="row">
-            <div class="col">
-              <label for="exampleInputEmail1" class="form-label"
-                >Brand Name</label
-              >
-              <input
-                type="text"
-                v-model="brand"
-                class="form-control"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
-              />
-              <div id="emailHelp" class="form-text">
-                We'll never share your email with anyone else.
-              </div>
-            </div>
-            <div class="col">
-              <label for="exampleInputPassword1" class="form-label">MRP</label>
-              <input
-                type="text"
-                v-model="mrp"
-                class="form-control"
-                id="exampleInputPassword1"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <label for="exampleInputEmail1" class="form-label"
-                >Product Unit <i>*</i></label
-              >
-              <input
-                type="text"
-                v-model="unit"
-                class="form-control"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
-              />
-              <div id="emailHelp" class="form-text">
-                We'll never share your email with anyone else.
-              </div>
-            </div>
-            <div class="col">
-              <label for="exampleInputPassword1" class="form-label"
-                >Purchase Unit</label
-              >
-              <input
-                type="text"
-                v-model="p_unit"
-                class="form-control"
-                id="exampleInputPassword1"
-              />
-            </div>
-            <div class="col">
-              <label for="exampleInputPassword1" class="form-label"
-                >Sale Unit</label
-              >
-              <input
-                type="text"
-                v-model="s_unit"
-                class="form-control"
-                id="exampleInputPassword1"
-              />
-            </div>
-          </div>
-        </div>
+        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4"></div>
         <!-- column section 3 -->
         <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">Col 3</div>
       </div>
@@ -388,22 +322,36 @@ export default {
     var defSymbology = 1;
     var defCategory = 1;
     var subCats = ref(0);
-    const { setFieldValue, setValues, handleSubmit, resetForm } = useForm();
+    const formValues = {
+      type: defType,
+      symbology: defSymbology,
+      category: defCategory,
+      sub_category: null,
+    };
+
+    const { setFieldValue, setValues } = useForm();
+    const { handleSubmit } = useForm();
+    const { resetForm } = useForm({
+      initialValues: formValues,
+    });
+
     // Initial values
+    /* const { setValues } = useForm();
     setValues({
       type: defType,
       symbology: defSymbology,
       category: defCategory,
       sub_category: null,
-    });
+    });*/
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
     function onInvalidSubmit({ values, errors, results }) {
+      console.log("Frontend Errors Found !");
       console.log(errors);
-      //setFieldValue("name", "test");
     }
+
     function genRandCode() {
-      setFieldValue("code", randCode());
+      setFieldValue('code', randCode());
     }
     function newCategory() {
       window.PROD_NEW_CATEGORY_MODAL.show();
@@ -412,7 +360,12 @@ export default {
       axiosCall("post", "product", {
         data: values,
       }).then(function (data) {
-        console.log(data.errors);
+        if (data.success == true) {
+          console.log("Everything OK !");
+        } else {
+          console.log("Error Found from CI !");
+          console.log(data.errors);
+        }
       });
     }, onInvalidSubmit);
 
@@ -453,35 +406,41 @@ export default {
 
     const { value: type, errorMessage: errorType } = useField(
       "type",
-      yup.number().required().min(1).nullable(false)
+      yup.number().required().min(1).nullable(true).label("Product Type")
     );
     const { value: code, errorMessage: errorCode } = useField(
       "code",
-      yup.string().required().min(3).nullable(false)
+      yup.string().required().min(3).label("Product Code")
     );
     const { value: symbology, errorMessage: errorSymbology } = useField(
       "symbology",
-      yup.number().required().min(1).nullable(false)
+      yup.number().required().min(1).nullable(true).label("Barcode Symbology")
     );
     const { value: name, errorMessage: errorName } = useField(
       "name",
-      yup.string().required().min(3).max(100).nullable(false)
+      yup.string().required().min(3).max(100).label("Product Name")
     );
     const { value: slug, errorMessage: errorSlug } = useField(
       "slug",
-      yup.string().required().min(3).max(100).nullable(false)
+      yup.string().required().min(3).max(100).label("URL Slug")
     );
     const { value: weight, errorMessage: errorWeight } = useField(
       "weight",
-      yup.number().min(0).max(10).nullable(false)
+      yup
+        .number()
+        .min(0)
+        .max(10)
+        .nullable(true)
+        .transform((_, val) => (val === Number(val) ? val : null))
+        .label("Product Weight")
     );
     const { value: category, errorMessage: errorCategory } = useField(
       "category",
-      yup.number().required().nullable(false)
+      yup.number().required().nullable(false).label("Category")
     );
     const { value: sub_category, errorMessage: errorSubCategory } = useField(
       "sub_category",
-      yup.number().nullable(false)
+      yup.number().nullable(true).label("Subcategory")
     );
     /*************************************** */
     return {
