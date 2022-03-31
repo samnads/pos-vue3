@@ -329,11 +329,41 @@ export default {
       sub_category: null,
     };
 
-    const { setFieldValue, setValues } = useForm();
-    const { handleSubmit } = useForm();
-    const { resetForm } = useForm({
+    const schema = computed(() => {
+      return yup.object({
+        type: yup
+          .number()
+          .required()
+          .min(1)
+          .nullable(true)
+          .label("Product Type"),
+        code: yup.string().required().min(3).label("Product Code"),
+        symbology: yup
+          .number()
+          .required()
+          .min(1)
+          .nullable(true)
+          .label("Barcode Symbology"),
+        name: yup.string().required().min(3).max(100).label("Product Name"),
+        slug: yup.string().required().min(3).max(100).label("URL Slug"),
+        weight: yup
+          .number()
+          .min(0)
+          .max(10)
+          .nullable(true)
+          .transform((_, val) => (val === Number(val) ? val : null))
+          .label("Product Weight"),
+        category: yup.number().required().nullable(false).label("Category"),
+        sub_category: yup.number().nullable(true).label("Subcategory"),
+      });
+    });
+
+    const { setFieldValue, handleSubmit, resetForm } = useForm({
+      validationSchema: schema,
       initialValues: formValues,
     });
+    //const { handleSubmit } = useForm();
+    //const { resetForm } = useForm({initialValues: formValues,});
 
     // Initial values
     /* const { setValues } = useForm();
@@ -351,7 +381,7 @@ export default {
     }
 
     function genRandCode() {
-      setFieldValue('code', randCode());
+      setFieldValue("code", randCode());
     }
     function newCategory() {
       window.PROD_NEW_CATEGORY_MODAL.show();
@@ -368,6 +398,16 @@ export default {
         }
       });
     }, onInvalidSubmit);
+
+    function isRequired(value) {
+      console.log("DETECTED !!!!!  " + value);
+      if (value) {
+        setFieldValue("slug", value.trim().replace(/\s+/g, "-").toLowerCase());
+        return true;
+      } else {
+        return "Required !";
+      }
+    }
 
     const { handleChangeName } = useField("name", function (value) {
       if (value) {
@@ -404,44 +444,20 @@ export default {
       }
     });
 
-    const { value: type, errorMessage: errorType } = useField(
-      "type",
-      yup.number().required().min(1).nullable(true).label("Product Type")
-    );
-    const { value: code, errorMessage: errorCode } = useField(
-      "code",
-      yup.string().required().min(3).label("Product Code")
-    );
-    const { value: symbology, errorMessage: errorSymbology } = useField(
-      "symbology",
-      yup.number().required().min(1).nullable(true).label("Barcode Symbology")
-    );
+    const { value: type, errorMessage: errorType } = useField("type");
+    const { value: code, errorMessage: errorCode } = useField("code");
+    const { value: symbology, errorMessage: errorSymbology } =
+      useField("symbology");
     const { value: name, errorMessage: errorName } = useField(
       "name",
-      yup.string().required().min(3).max(100).label("Product Name")
+      isRequired()
     );
-    const { value: slug, errorMessage: errorSlug } = useField(
-      "slug",
-      yup.string().required().min(3).max(100).label("URL Slug")
-    );
-    const { value: weight, errorMessage: errorWeight } = useField(
-      "weight",
-      yup
-        .number()
-        .min(0)
-        .max(10)
-        .nullable(true)
-        .transform((_, val) => (val === Number(val) ? val : null))
-        .label("Product Weight")
-    );
-    const { value: category, errorMessage: errorCategory } = useField(
-      "category",
-      yup.number().required().nullable(false).label("Category")
-    );
-    const { value: sub_category, errorMessage: errorSubCategory } = useField(
-      "sub_category",
-      yup.number().nullable(true).label("Subcategory")
-    );
+    const { value: slug, errorMessage: errorSlug } = useField("slug");
+    const { value: weight, errorMessage: errorWeight } = useField("weight");
+    const { value: category, errorMessage: errorCategory } =
+      useField("category");
+    const { value: sub_category, errorMessage: errorSubCategory } =
+      useField("sub_category");
     /*************************************** */
     return {
       /**************** default form sel values */
