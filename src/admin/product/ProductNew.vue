@@ -62,6 +62,9 @@
                 >Product Code<i>*</i></label
               >
               <div class="input-group has-validation">
+                <span class="input-group-text"
+                  ><i class="fa-solid fa-barcode"></i
+                ></span>
                 <input
                   type="text"
                   name="code"
@@ -125,7 +128,7 @@
                 v-model="name"
                 class="form-control"
                 id="productname"
-                @input="handleChange"
+                @input="handleChangeTesting"
                 v-bind:class="[
                   errorName
                     ? 'is-invalid'
@@ -178,16 +181,14 @@
           </div>
           <div class="row">
             <div class="col">
-              <label for="exampleInputPassword1" class="form-label"
-                >Category<i>*</i></label
-              >
-              <div class="input-group">
+              <label for="" class="form-label">Category<i>*</i></label>
+              <div class="input-group is-invalid">
                 <select
                   class="form-select"
                   name="category"
+                  @change="handleChangeCat(category)"
                   :disabled="!categories"
                   v-model="category"
-                  @change="handleChangeCat(category)"
                   v-bind:class="[
                     errorCategory
                       ? 'is-invalid'
@@ -248,7 +249,68 @@
           </div>
         </div>
         <!-- column section 2 -->
-        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4"></div>
+        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+          <div class="row mb-1">
+            <div class="col">
+              <label for="" class="form-label">Brand Name</label>
+              <div class="input-group is-invalid">
+                <select
+                  class="form-select"
+                  name="brand"
+                  :disabled="!brands"
+                  v-model="brand"
+                  v-bind:class="[
+                    errorBrand
+                      ? 'is-invalid'
+                      : !errorBrand && brand
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                >
+                  <option selected :value="defBrand" v-if="!brands">
+                    Loading...
+                  </option>
+                  <option selected :value="null" v-if="brands">
+                    -- Select ({{ brands.length }}) --
+                  </option>
+                  <option v-for="b in brands" :key="b.id" :value="b.id">
+                    {{ b.name }}
+                  </option>
+                </select>
+                <span
+                  class="input-group-text text-info"
+                  role="button"
+                  @click="newCategory"
+                  ><i class="fa-solid fa-plus"></i
+                ></span>
+              </div>
+              <div class="invalid-feedback">{{ errorBrand }}</div>
+            </div>
+            <div class="col">
+              <label class="form-label">MRP</label>
+              <div class="input-group is-invalid">
+                <span class="input-group-text"
+                  ><i class="fa-solid fa-indian-rupee-sign"></i
+                ></span>
+                <input
+                  type="number"
+                  name="mrp"
+                  v-model="mrp"
+                  class="form-control"
+                  id="productcode"
+                  v-bind:class="[
+                    errorMrp
+                      ? 'is-invalid'
+                      : !errorMrp && mrp
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                />
+              </div>
+              <div class="invalid-feedback">{{ errorMrp }}</div>
+            </div>
+          </div>
+        </div>
         <!-- column section 3 -->
         <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">Col 3</div>
       </div>
@@ -295,6 +357,7 @@ export default {
       addProductTypes,
       addSymbologies,
       addCategories,
+      addBrands,
       notifyDefault,
       notifyFormError,
       notifyApiResponse,
@@ -314,17 +377,22 @@ export default {
     let categories = computed(function () {
       return store.state.categories;
     });
+    let brands = computed(function () {
+      return store.state.brands;
+    });
     /**************************************** */ // Default values
     var defType = null;
     var defSymbology = 1;
-    var defCategory = 1;
+    var defCategory = null;
     var subCats = ref(0);
+    var defBrand = null;
     /************************************************************************* */
     const formValues = {
       type: defType,
       symbology: defSymbology,
       category: defCategory,
       sub_category: null,
+      brand: null,
     };
     /************************************************************************* */
     const schema = computed(() => {
@@ -335,15 +403,32 @@ export default {
           .min(1)
           .nullable(true)
           .label("Product Type"),
-        code: yup.string().required().min(3).label("Product Code"),
+        code: yup
+          .string()
+          .required()
+          .min(3)
+          .transform((_, val) => (val.length > 0 ? val : undefined))
+          .label("Product Code"),
         symbology: yup
           .number()
           .required()
           .min(1)
           .nullable(true)
           .label("Barcode Symbology"),
-        name: yup.string().required().min(3).max(100).label("Product Name"),
-        slug: yup.string().required().min(3).max(100).label("URL Slug"),
+        name: yup
+          .string()
+          .required()
+          .min(3)
+          .max(100)
+          .transform((_, val) => (val.length > 0 ? val : undefined))
+          .label("Product Name"),
+        slug: yup
+          .string()
+          .required()
+          .min(3)
+          .max(100)
+          .transform((_, val) => (val.length > 0 ? val : undefined))
+          .label("URL Slug"),
         weight: yup
           .number()
           .min(0)
@@ -351,8 +436,17 @@ export default {
           .nullable(true)
           .transform((_, val) => (val === Number(val) ? val : null))
           .label("Product Weight"),
-        category: yup.number().required().label("Category"),
+        category: yup
+          .number()
+          .required()
+          .min(1)
+          .nullable(true)
+          .default(1)
+          .transform((_, val) => (val === Number(val) ? val : null))
+          .label("Category"),
         sub_category: yup.number().nullable(true).label("Subcategory"),
+        brand: yup.number().nullable(true).label("Brand Name"),
+        mrp: yup.number().nullable(true).min(1).transform((_, val) => (val === Number(val) ? val : null)).label("MRP"),
       });
     });
     /************************************************************************* */
@@ -360,36 +454,31 @@ export default {
       validationSchema: schema,
       initialValues: formValues,
     });
-
-    function isRequired(value) {
-      if (value && value.trim()) {
-        return true;
-      }
-      return "This is required";
-    }
     /************************************************************************* */
     const { value: type, errorMessage: errorType } = useField("type");
     const { value: code, errorMessage: errorCode } = useField("code");
     const { value: symbology, errorMessage: errorSymbology } =
       useField("symbology");
-    const { errorMessage: errorName, value: name,meta:metaName } = useField(
-      "name",
-      isRequired
-    );
+    const {
+      errorMessage: errorName,
+      value: name,
+      meta: metaName,
+    } = useField("name");
     const { value: slug, errorMessage: errorSlug } = useField("slug");
     const { value: weight, errorMessage: errorWeight } = useField("weight");
     const { value: category, errorMessage: errorCategory } =
       useField("category");
     const { value: sub_category, errorMessage: errorSubCategory } =
       useField("sub_category");
-
+    const { value: brand, errorMessage: errorBrand } = useField("brand");
+    const { value: mrp, errorMessage: errorMrp } = useField("mrp");
     /************************************************************************* */
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
     /************************************************************************* */
     function onInvalidSubmit({ values, errors, results }) {
       console.log("Frontend Errors Found !");
-      console.log(errors);
+      console.log(values);
     }
     const onSubmit = handleSubmit((values) => {
       axiosCall("post", "product", {
@@ -446,44 +535,12 @@ export default {
       }
     }
 
-    /* const { handleChangeName } = useField("name", function (value) {
-      if (value) {
-        setFieldValue("slug", value.trim().replace(/\s+/g, "-").toLowerCase());
-        return true;
-      } else {
-        return "Required !";
-      }
-    };
-    const { handleChangeSlug } = useField("slug", function (value) {
-      if (value) {
-        setFieldValue("slug", value.trim().replace(/\s+/g, "-").toLowerCase());
-        return true;
-      } else {
-        return "Required !";
-      }
-    });
-    const { handleChangeCat } = useField("category", function (value) {
-      if (value) {
-        subCats.value = undefined;
-        sub_category.value = null;
-        axiosCall("get", "category", {
-          action: "subcats",
-          id: value,
-        }).then(function (response) {
-          subCats.value = response.data;
-        });
-        return true;
-      } else {
-        subCats.value = undefined;
-        sub_category.value = null;
-        return "Required !";
-      }
-    });*/
     return {
       /**************** default form sel values */
       defCategory,
       defSymbology,
       defType,
+      defBrand,
       schema,
       /**************** event handler */
       genRandCode,
@@ -491,11 +548,11 @@ export default {
       handleChangeName,
       handleChangeSlug,
       handleChangeCat,
-
       /************** db */
       productTypes,
       symbologies,
       categories,
+      brands,
       /******* fields   */
       type,
       errorType,
@@ -514,6 +571,10 @@ export default {
       errorCategory,
       sub_category,
       errorSubCategory,
+      brand,
+      errorBrand,
+      mrp,
+      errorMrp,
       /*************** */
       isDirty,
       isValid,
@@ -524,29 +585,20 @@ export default {
       addProductTypes,
       addSymbologies,
       addCategories,
+      addBrands,
     };
   },
   mixins: [],
   data() {
-    return {
-      brand: null,
-      mrp: null,
-      unit: null,
-      p_unit: null,
-      s_unit: null,
-      errors: {},
-    };
+    return {};
   },
-  methods: {
-    test() {
-      alert();
-    },
-  },
+  methods: {},
   created() {},
   mounted() {
     this.addProductTypes(); // get product types
     this.addSymbologies(); // get symbologies
     this.addCategories(); // get categories
+    this.addBrands(); // get brands
   },
 };
 </script>

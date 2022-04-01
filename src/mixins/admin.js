@@ -133,6 +133,13 @@ export default function () {
             this.notifyCatchResponse({ message: error.message });
         });
     }
+    function addBrands() {
+        this.axios.get("http://localhost/CyberLikes-POS/admin/ajax/brand", { params: { action: 'dropdown' }, }).then(function (response) {
+            store.commit("storeBrands", response.data.data);
+        }).catch((error) => {
+            this.notifyCatchResponse({ message: error.message });
+        });
+    }
     function adminTest() {
         router.push({ name: "adminDashboard" }).catch((e) => {
             console.log(e);
@@ -149,6 +156,7 @@ export default function () {
         addProductTypes,
         addSymbologies,
         addCategories,
+        addBrands,
         /******************* */
         axiosCall,
         productTypes,

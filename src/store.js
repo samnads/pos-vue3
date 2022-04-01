@@ -62,6 +62,9 @@ export default createStore({
         storeCategories(state, item) {
             state.categories = item;
         },
+        storeBrands(state, item) {
+            state.brands = item;
+        },
 
 
 
