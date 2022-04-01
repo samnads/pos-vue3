@@ -80,7 +80,7 @@
                   ]"
                 />
                 <span
-                  class="input-group-text text-info"
+                  class="input-group-text text-primary"
                   role="button"
                   @click="genRandCode"
                   ><i class="fa-solid fa-shuffle"></i
@@ -186,7 +186,7 @@
                 <select
                   class="form-select"
                   name="category"
-                  @change="handleChangeCat(category)"
+                  @change="handleChangeCat"
                   :disabled="!categories"
                   v-model="category"
                   v-bind:class="[
@@ -208,7 +208,7 @@
                   </option>
                 </select>
                 <span
-                  class="input-group-text text-info"
+                  class="input-group-text text-primary"
                   role="button"
                   @click="newCategory"
                   ><i class="fa-solid fa-plus"></i
@@ -217,34 +217,43 @@
               <div class="invalid-feedback">{{ errorCategory }}</div>
             </div>
             <div class="col">
-              <label for="exampleInputPassword1" class="form-label"
-                >Sub Category</label
-              >
-              <select
-                class="form-select"
-                name="sub_category"
-                :disabled="
-                  !categories || !category || !subCats || subCats.length == 0
-                "
-                v-model="sub_category"
-              >
-                <option selected :value="null">
-                  {{
-                    !categories
-                      ? "Loading..."
-                      : !category
-                      ? "Select category first"
-                      : !subCats
-                      ? "Loading..."
-                      : subCats.length == 0
-                      ? "No sub category found"
-                      : "-- Select (" + subCats.length + ") --"
-                  }}
-                </option>
-                <option v-for="sc in subCats" :key="sc.id" :value="sc.id">
-                  {{ sc.name }}
-                </option>
-              </select>
+              <label class="form-label">Sub Category</label>
+              <div class="input-group">
+                <select
+                  class="form-select"
+                  name="sub_category"
+                  :disabled="
+                    !categories || !category || !subCats || subCats.length == 0
+                  "
+                  v-model="sub_category"
+                >
+                  <option selected :value="null">
+                    {{
+                      !categories
+                        ? "Loading..."
+                        : !category
+                        ? "Select category first"
+                        : !subCats
+                        ? "Loading..."
+                        : subCats.length == 0
+                        ? "No sub category found"
+                        : "-- Select (" + subCats.length + ") --"
+                    }}
+                  </option>
+                  <option v-for="sc in subCats" :key="sc.id" :value="sc.id">
+                    {{ sc.name }}
+                  </option>
+                </select>
+                <button
+                  type="button"
+                  v-if="category"
+                  class="input-group-text text-primary"
+                  @click="newCategory"
+                  :disabled="!category"
+                >
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -383,7 +392,7 @@ export default {
     /**************************************** */ // Default values
     var defType = null;
     var defSymbology = 1;
-    var defCategory = null;
+    var defCategory = 1;
     var subCats = ref(0);
     var defBrand = null;
     /************************************************************************* */
@@ -446,7 +455,12 @@ export default {
           .label("Category"),
         sub_category: yup.number().nullable(true).label("Subcategory"),
         brand: yup.number().nullable(true).label("Brand Name"),
-        mrp: yup.number().nullable(true).min(1).transform((_, val) => (val === Number(val) ? val : null)).label("MRP"),
+        mrp: yup
+          .number()
+          .nullable(true)
+          .min(1)
+          .transform((_, val) => (val === Number(val) ? val : null))
+          .label("MRP"),
       });
     });
     /************************************************************************* */
@@ -516,22 +530,19 @@ export default {
         return "Required !";
       }
     }
-    function handleChangeCat(value) {
-      if (value) {
-        console.log(value);
+    function handleChangeCat() {
+      if (category.value) {
         subCats.value = undefined;
         sub_category.value = null;
         axiosCall("get", "category", {
           action: "subcats",
-          id: value,
+          id: category.value,
         }).then(function (response) {
           subCats.value = response.data;
         });
-        return true;
       } else {
         subCats.value = undefined;
         sub_category.value = null;
-        return "Required !";
       }
     }
 
@@ -599,6 +610,7 @@ export default {
     this.addSymbologies(); // get symbologies
     this.addCategories(); // get categories
     this.addBrands(); // get brands
+    this.handleChangeCat(); // first time load for default category
   },
 };
 </script>

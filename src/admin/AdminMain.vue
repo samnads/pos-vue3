@@ -244,6 +244,7 @@ label {
 }
 label > i {
   font-style: normal;
+  color: red;;
 }
 label > i:before {
   content: " ";
