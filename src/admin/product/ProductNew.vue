@@ -125,7 +125,7 @@
                 v-model="name"
                 class="form-control"
                 id="productname"
-                @input="handleChangeName"
+                @input="handleChange"
                 v-bind:class="[
                   errorName
                     ? 'is-invalid'
@@ -145,7 +145,7 @@
                 name="slug"
                 v-model="slug"
                 class="form-control"
-                @input="handleChangeSlug"
+                @input="handleChangeSlug(slug)"
                 v-bind:class="[
                   errorSlug
                     ? 'is-invalid'
@@ -187,7 +187,7 @@
                   name="category"
                   :disabled="!categories"
                   v-model="category"
-                  @input="handleChangeCat"
+                  @change="handleChangeCat(category)"
                   v-bind:class="[
                     errorCategory
                       ? 'is-invalid'
@@ -281,17 +281,14 @@ import {
   useField,
   useIsFormDirty,
   useIsFormValid,
-  configure,
 } from "vee-validate";
 import * as yup from "yup";
-import { ref, computed } from "vue";
+import { ref, toRef, computed } from "vue";
 import { useStore } from "vuex";
 //import adminMixin from "@/mixins/admin.js";
 import admin from "@/mixins/admin.js";
 import adminProduct from "@/mixins/adminProduct.js";
 export default {
-  components: {},
-  props: {},
   setup() {
     const { randCode } = adminProduct();
     const {
@@ -305,7 +302,8 @@ export default {
       axiosCall,
       adminTest,
     } = admin();
-    // from store
+
+    /**************************************** */ // from store
     const store = useStore();
     let productTypes = computed(function () {
       return store.state.productTypes;
@@ -316,19 +314,19 @@ export default {
     let categories = computed(function () {
       return store.state.categories;
     });
-    /**************************************** */
-    // Defaule values
+    /**************************************** */ // Default values
     var defType = null;
     var defSymbology = 1;
     var defCategory = 1;
     var subCats = ref(0);
+    /************************************************************************* */
     const formValues = {
       type: defType,
       symbology: defSymbology,
       category: defCategory,
       sub_category: null,
     };
-
+    /************************************************************************* */
     const schema = computed(() => {
       return yup.object({
         type: yup
@@ -353,38 +351,45 @@ export default {
           .nullable(true)
           .transform((_, val) => (val === Number(val) ? val : null))
           .label("Product Weight"),
-        category: yup.number().required().nullable(false).label("Category"),
+        category: yup.number().required().label("Category"),
         sub_category: yup.number().nullable(true).label("Subcategory"),
       });
     });
-
+    /************************************************************************* */
     const { setFieldValue, handleSubmit, resetForm } = useForm({
       validationSchema: schema,
       initialValues: formValues,
     });
-    //const { handleSubmit } = useForm();
-    //const { resetForm } = useForm({initialValues: formValues,});
 
-    // Initial values
-    /* const { setValues } = useForm();
-    setValues({
-      type: defType,
-      symbology: defSymbology,
-      category: defCategory,
-      sub_category: null,
-    });*/
+    function isRequired(value) {
+      if (value && value.trim()) {
+        return true;
+      }
+      return "This is required";
+    }
+    /************************************************************************* */
+    const { value: type, errorMessage: errorType } = useField("type");
+    const { value: code, errorMessage: errorCode } = useField("code");
+    const { value: symbology, errorMessage: errorSymbology } =
+      useField("symbology");
+    const { errorMessage: errorName, value: name,meta:metaName } = useField(
+      "name",
+      isRequired
+    );
+    const { value: slug, errorMessage: errorSlug } = useField("slug");
+    const { value: weight, errorMessage: errorWeight } = useField("weight");
+    const { value: category, errorMessage: errorCategory } =
+      useField("category");
+    const { value: sub_category, errorMessage: errorSubCategory } =
+      useField("sub_category");
+
+    /************************************************************************* */
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
+    /************************************************************************* */
     function onInvalidSubmit({ values, errors, results }) {
       console.log("Frontend Errors Found !");
       console.log(errors);
-    }
-
-    function genRandCode() {
-      setFieldValue("code", randCode());
-    }
-    function newCategory() {
-      window.PROD_NEW_CATEGORY_MODAL.show();
     }
     const onSubmit = handleSubmit((values) => {
       axiosCall("post", "product", {
@@ -398,9 +403,15 @@ export default {
         }
       });
     }, onInvalidSubmit);
+    /************************************************************************* */
+    function genRandCode() {
+      setFieldValue("code", randCode());
+    }
+    function newCategory() {
+      window.PROD_NEW_CATEGORY_MODAL.show();
+    }
 
-    function isRequired(value) {
-      console.log("DETECTED !!!!!  " + value);
+    function handleChangeName(value) {
       if (value) {
         setFieldValue("slug", value.trim().replace(/\s+/g, "-").toLowerCase());
         return true;
@@ -408,15 +419,41 @@ export default {
         return "Required !";
       }
     }
-
-    const { handleChangeName } = useField("name", function (value) {
+    function handleChangeSlug(value) {
       if (value) {
         setFieldValue("slug", value.trim().replace(/\s+/g, "-").toLowerCase());
         return true;
       } else {
         return "Required !";
       }
-    });
+    }
+    function handleChangeCat(value) {
+      if (value) {
+        console.log(value);
+        subCats.value = undefined;
+        sub_category.value = null;
+        axiosCall("get", "category", {
+          action: "subcats",
+          id: value,
+        }).then(function (response) {
+          subCats.value = response.data;
+        });
+        return true;
+      } else {
+        subCats.value = undefined;
+        sub_category.value = null;
+        return "Required !";
+      }
+    }
+
+    /* const { handleChangeName } = useField("name", function (value) {
+      if (value) {
+        setFieldValue("slug", value.trim().replace(/\s+/g, "-").toLowerCase());
+        return true;
+      } else {
+        return "Required !";
+      }
+    };
     const { handleChangeSlug } = useField("slug", function (value) {
       if (value) {
         setFieldValue("slug", value.trim().replace(/\s+/g, "-").toLowerCase());
@@ -425,7 +462,6 @@ export default {
         return "Required !";
       }
     });
-
     const { handleChangeCat } = useField("category", function (value) {
       if (value) {
         subCats.value = undefined;
@@ -442,34 +478,20 @@ export default {
         sub_category.value = null;
         return "Required !";
       }
-    });
-
-    const { value: type, errorMessage: errorType } = useField("type");
-    const { value: code, errorMessage: errorCode } = useField("code");
-    const { value: symbology, errorMessage: errorSymbology } =
-      useField("symbology");
-    const { value: name, errorMessage: errorName } = useField(
-      "name",
-      isRequired()
-    );
-    const { value: slug, errorMessage: errorSlug } = useField("slug");
-    const { value: weight, errorMessage: errorWeight } = useField("weight");
-    const { value: category, errorMessage: errorCategory } =
-      useField("category");
-    const { value: sub_category, errorMessage: errorSubCategory } =
-      useField("sub_category");
-    /*************************************** */
+    });*/
     return {
       /**************** default form sel values */
       defCategory,
       defSymbology,
       defType,
+      schema,
       /**************** event handler */
       genRandCode,
       newCategory,
       handleChangeName,
       handleChangeSlug,
       handleChangeCat,
+
       /************** db */
       productTypes,
       symbologies,
@@ -482,6 +504,7 @@ export default {
       symbology,
       errorSymbology,
       name,
+      metaName,
       errorName,
       slug,
       errorSlug,
