@@ -120,6 +120,7 @@
               type="button"
               class="btn btn-outline-danger me-auto"
               data-bs-dismiss="modal"
+              @click="close"
             >
               <i class="fa-solid fa-stop"></i>Cancel
             </button>
@@ -230,6 +231,10 @@ export default {
         );
       }
     }
+    function close() {
+       resetForm();
+       window.PROD_NEW_CATEGORY_MODAL.hide();
+    }
     /************************************************************************* */
     const { value: name, errorMessage: errorName } = useField("name");
     const { value: code, errorMessage: errorCode } = useField("code");
@@ -258,6 +263,7 @@ export default {
       isValid,
       onSubmit,
       resetForm,
+      close,
       /******************/
       addCategories,
     };
