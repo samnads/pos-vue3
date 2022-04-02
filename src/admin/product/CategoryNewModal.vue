@@ -123,6 +123,9 @@
             >
               <i class="fa-solid fa-stop"></i>Cancel
             </button>
+            <button type="button" class="btn btn-light" v-show="isDirty" @click="resetForm">
+             <i class="fa-solid fa-rotate-left"></i>
+            </button>
             <button type="submit" class="btn btn-secondary" :disable="!isValid">
               <i class="fa-solid fa-save"></i>Save
             </button>
@@ -141,76 +144,99 @@ import {
   useIsFormValid,
 } from "vee-validate";
 import * as yup from "yup";
+import { ref, toRef, computed } from "vue";
 import admin from "@/mixins/admin.js";
 export default {
   setup() {
     // data retrieve
     const {
+      addCategories,
       notifyDefault,
       notifyFormError,
       notifyApiResponse,
       notifyCatchResponse,
       axiosCall,
     } = admin();
-    /**************************************** */
-    // Defaule values
-    const { setFieldValue, setValues, handleSubmit, resetForm } = useForm();
-    // Initial values
-    setValues({
-      code: "MC-",
+    /************************************************************************* */
+    const formValues = {};
+    /************************************************************************* */
+    const schema = computed(() => {
+      return yup.object({
+        name: yup
+          .string()
+          .required()
+          .min(3)
+          .max(100)
+          .nullable(true)
+          .label("Name"),
+        code: yup.string().required().min(2).nullable(true).label("Code"),
+        slug: yup
+          .string()
+          .required()
+          .min(3)
+          .max(100)
+          .nullable(true)
+          .label("Slug"),
+        image: yup.number().min(0).max(10).nullable(true).label("Image"),
+        description: yup.string().nullable(true).label("Description"),
+      });
     });
+    /************************************************************************* */
+    const { setFieldValue, setFieldError, handleSubmit, resetForm } = useForm({
+      validationSchema: schema,
+      initialValues: formValues,
+      initialErrors: {},
+    });
+    /************************************************************************* */
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
+    /************************************************************************* */
     function onInvalidSubmit({ values, errors, results }) {
       console.log(errors);
-      //setFieldValue("name", "test");
     }
-    const onSubmit = handleSubmit((values) => {
+    const onSubmit = handleSubmit((values, { resetForm }) => {
       console.log(values);
       axiosCall("post", "category", {
         data: values,
       }).then(function (data) {
-        console.log(data.errors);
+        if (data.success == true) {
+          addCategories();
+          resetForm();
+           window.PROD_NEW_CATEGORY_MODAL.hide();
+          notifyApiResponse(data);
+        } else {
+          if (data.errors) {
+            for (var key in data.errors) {
+              setFieldError(key, data.errors[key]);
+            }
+          }
+        }
       });
     }, onInvalidSubmit);
-
-    const { handleChangeName } = useField("name", function (value) {
-      if (value) {
-        setFieldValue("slug", value.trim().replace(/\s+/g, "-").toLowerCase());
-        return true;
-      } else {
-        return "Required !";
+    /************************************************************************* */
+    function handleChangeName() {
+      if (name.value) {
+        setFieldValue(
+          "slug",
+          name.value.trim().replace(/\s+/g, "-").toLowerCase()
+        );
       }
-    });
-    const { handleChangeSlug } = useField("slug", function (value) {
-      if (value) {
-        setFieldValue("slug", value.trim().replace(/\s+/g, "-").toLowerCase());
-        return true;
-      } else {
-        return "Required !";
+    }
+    function handleChangeSlug() {
+      if (slug.value) {
+        setFieldValue(
+          "slug",
+          slug.value.trim().replace(/\s+/g, "-").toLowerCase()
+        );
       }
-    });
-
-    const { value: name, errorMessage: errorName } = useField(
-      "name",
-      yup.string().required().min(3).max(100).nullable(true)
-    );
-    const { value: code, errorMessage: errorCode } = useField(
-      "code",
-      yup.string().required().min(2).nullable(true).label("Code")
-    );
-    const { value: slug, errorMessage: errorSlug } = useField(
-      "slug",
-      yup.string().required().min(3).max(100).nullable(true)
-    );
-    const { value: image, errorMessage: errorImage } = useField(
-      "image",
-      yup.number().min(0).max(10).nullable(true)
-    );
-    const { value: description, errorMessage: errorDescription } = useField(
-      "description",
-      yup.string().nullable(true)
-    );
+    }
+    /************************************************************************* */
+    const { value: name, errorMessage: errorName } = useField("name");
+    const { value: code, errorMessage: errorCode } = useField("code");
+    const { value: slug, errorMessage: errorSlug } = useField("slug");
+    const { value: image, errorMessage: errorImage } = useField("image");
+    const { value: description, errorMessage: errorDescription } =
+      useField("description");
     /*************************************** */
     return {
       /**************** event handler */
@@ -232,6 +258,8 @@ export default {
       isValid,
       onSubmit,
       resetForm,
+      /******************/
+      addCategories,
     };
   },
   data() {

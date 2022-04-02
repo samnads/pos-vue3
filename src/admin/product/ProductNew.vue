@@ -128,7 +128,7 @@
                 v-model="name"
                 class="form-control"
                 id="productname"
-                @input="handleChangeTesting"
+                @input="handleChangeName"
                 v-bind:class="[
                   errorName
                     ? 'is-invalid'
@@ -148,7 +148,7 @@
                 name="slug"
                 v-model="slug"
                 class="form-control"
-                @input="handleChangeSlug(slug)"
+                @input="handleChangeSlug"
                 v-bind:class="[
                   errorSlug
                     ? 'is-invalid'
@@ -467,6 +467,7 @@ export default {
     const { setFieldValue, handleSubmit, resetForm } = useForm({
       validationSchema: schema,
       initialValues: formValues,
+      initialErrors: {},
     });
     /************************************************************************* */
     const { value: type, errorMessage: errorType } = useField("type");
@@ -480,8 +481,11 @@ export default {
     } = useField("name");
     const { value: slug, errorMessage: errorSlug } = useField("slug");
     const { value: weight, errorMessage: errorWeight } = useField("weight");
-    const { value: category, errorMessage: errorCategory } =
-      useField("category");
+    const {
+      value: category,
+      errorMessage: errorCategory,
+      resetField,
+    } = useField("category");
     const { value: sub_category, errorMessage: errorSubCategory } =
       useField("sub_category");
     const { value: brand, errorMessage: errorBrand } = useField("brand");
@@ -514,20 +518,20 @@ export default {
       window.PROD_NEW_CATEGORY_MODAL.show();
     }
 
-    function handleChangeName(value) {
-      if (value) {
-        setFieldValue("slug", value.trim().replace(/\s+/g, "-").toLowerCase());
-        return true;
-      } else {
-        return "Required !";
+    function handleChangeName() {
+      if (name.value) {
+        setFieldValue(
+          "slug",
+          name.value.trim().replace(/\s+/g, "-").toLowerCase()
+        );
       }
     }
-    function handleChangeSlug(value) {
-      if (value) {
-        setFieldValue("slug", value.trim().replace(/\s+/g, "-").toLowerCase());
-        return true;
-      } else {
-        return "Required !";
+    function handleChangeSlug() {
+      if (slug.value) {
+        setFieldValue(
+          "slug",
+          slug.value.trim().replace(/\s+/g, "-").toLowerCase()
+        );
       }
     }
     function handleChangeCat() {

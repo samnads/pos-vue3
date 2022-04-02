@@ -235,8 +235,8 @@ a {
 .page-item.active .page-link {
   color: #fff !important;
 }
-.btn > svg {
-  margin-right: 10px;
+.btn > svg:not(.fa-rotate-left){
+  padding-right: 10px;
 }
 /* from control styles */
 label {

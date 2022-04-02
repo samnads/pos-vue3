@@ -40,7 +40,7 @@ export default function () {
                     });
                 } else if (resData.errors) { // may be form errors
                     notifyFormError({
-                        message: "Form Data Error !",
+                        message: "Server Validation Errors Found !",
                         type: "warning",
                     });
                 }
@@ -127,7 +127,7 @@ export default function () {
         });
     }
     function addCategories() {
-        this.axios.get("http://localhost/CyberLikes-POS/admin/ajax/category", { params: { action: 'getall' }, }).then(function (response) {
+        axios.get("http://localhost/CyberLikes-POS/admin/ajax/category", { params: { action: 'getall' }, }).then(function (response) {
             store.commit("storeCategories", response.data.data);
         }).catch((error) => {
             this.notifyCatchResponse({ message: error.message });
