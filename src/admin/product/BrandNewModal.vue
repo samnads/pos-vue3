@@ -124,8 +124,13 @@
             >
               <i class="fa-solid fa-stop"></i>Cancel
             </button>
-            <button type="button" class="btn btn-secondary" v-show="isDirty" @click="resetForm">
-             <i class="fa-solid fa-rotate-left"></i>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              v-show="isDirty"
+              @click="resetForm"
+            >
+              <i class="fa-solid fa-rotate-left"></i>
             </button>
             <button type="submit" class="btn btn-secondary" :disable="!isValid">
               <i class="fa-solid fa-save"></i>Save
@@ -148,10 +153,12 @@ import * as yup from "yup";
 import { ref, toRef, computed } from "vue";
 import admin from "@/mixins/admin.js";
 export default {
-  setup() {
+  props: {
+    propUpdateBrands:Function
+  },
+  setup(props) {
     // data retrieve
     const {
-      addCategories,
       notifyDefault,
       notifyFormError,
       notifyApiResponse,
@@ -169,17 +176,29 @@ export default {
           .min(3)
           .max(100)
           .nullable(true)
+          .transform((_, val) => (val.length > 0 ? val : undefined))
           .label("Name"),
-        code: yup.string().required().min(2).nullable(true).label("Code"),
+        code: yup
+          .string()
+          .required()
+          .min(2)
+          .nullable(true)
+          .transform((_, val) => (val.length > 0 ? val : undefined))
+          .label("Code"),
         slug: yup
           .string()
           .required()
           .min(3)
           .max(100)
           .nullable(true)
+          .transform((_, val) => (val.length > 0 ? val : undefined))
           .label("Slug"),
         image: yup.number().min(0).max(10).nullable(true).label("Image"),
-        description: yup.string().nullable(true).label("Description"),
+        description: yup
+          .string()
+          .nullable(true)
+          .transform((_, val) => (val.length > 0 ? val : undefined))
+          .label("Description"),
       });
     });
     /************************************************************************* */
@@ -201,9 +220,9 @@ export default {
         data: values,
       }).then(function (data) {
         if (data.success == true) {
-          addCategories();
+          props.propUpdateBrands(data.id);
           resetForm();
-           window.PROD_NEW_BRAND_MODAL.hide();
+          window.PROD_NEW_BRAND_MODAL.hide();
           notifyApiResponse(data);
         } else {
           if (data.errors) {
@@ -232,8 +251,8 @@ export default {
       }
     }
     function close() {
-       resetForm();
-       window.PROD_NEW_CATEGORY_MODAL.hide();
+      resetForm();
+      window.PROD_NEW_CATEGORY_MODAL.hide();
     }
     /************************************************************************* */
     const { value: name, errorMessage: errorName } = useField("name");
@@ -264,17 +283,12 @@ export default {
       onSubmit,
       resetForm,
       close,
-      /******************/
-      addCategories,
     };
   },
   data() {
     return {};
   },
   methods: {
-    test() {
-      alert();
-    },
   },
   created() {},
   mounted() {},

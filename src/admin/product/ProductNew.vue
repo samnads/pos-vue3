@@ -11,7 +11,7 @@
         : []
     "
   />
-  <AdminProductNewBrandModal />
+  <AdminProductNewBrandModal v-bind:propUpdateBrands="loadBrands" />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
@@ -57,7 +57,7 @@
                     : '',
                 ]"
               >
-                <option selected :value="defType" v-if="!productTypes">
+                <option selected :value="formValues.type" v-if="!productTypes">
                   Loading...
                 </option>
                 <option selected :value="null" v-if="productTypes">
@@ -120,7 +120,11 @@
                     : '',
                 ]"
               >
-                <option selected :value="defSymbology" v-if="!symbologies">
+                <option
+                  selected
+                  :value="formValues.symbology"
+                  v-if="!symbologies"
+                >
                   Loading...
                 </option>
                 <option selected :value="null" v-if="symbologies">
@@ -210,7 +214,11 @@
                       : '',
                   ]"
                 >
-                  <option selected :value="defCategory" v-if="!categories">
+                  <option
+                    selected
+                    :value="formValues.category"
+                    v-if="!categories"
+                  >
                     Loading...
                   </option>
                   <option selected :value="null" v-if="categories">
@@ -271,7 +279,7 @@
           </div>
         </div>
         <!-- column section 2 -->
-        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-4">
           <div class="row mb-1">
             <div class="col">
               <label for="" class="form-label">Brand Name</label>
@@ -289,7 +297,7 @@
                       : '',
                   ]"
                 >
-                  <option selected :value="defBrand" v-if="!brands">
+                  <option selected :value="formValues.brand" v-if="!brands">
                     Loading...
                   </option>
                   <option selected :value="null" v-if="brands">
@@ -311,9 +319,7 @@
             <div class="col">
               <label class="form-label">MRP</label>
               <div class="input-group is-invalid">
-                <span class="input-group-text"
-                  ><i class="fa-solid fa-indian-rupee-sign"></i
-                ></span>
+                <span class="input-group-text">₹</span>
                 <input
                   type="number"
                   name="mrp"
@@ -330,6 +336,129 @@
                 />
               </div>
               <div class="invalid-feedback">{{ errorMrp }}</div>
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col">
+              <label for="" class="form-label">Product Unit<i>*</i></label>
+              <div class="input-group is-invalid">
+                <select
+                  class="form-select"
+                  name="unit"
+                  :disabled="!units"
+                  v-model="unit"
+                  v-bind:class="[
+                    errorUnit
+                      ? 'is-invalid'
+                      : !errorUnit && unit
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                >
+                  <option selected :value="formValues.unit" v-if="!units">
+                    Loading...
+                  </option>
+                  <option selected :value="null" v-if="units">
+                    -- Select ({{ units.length }}) --
+                  </option>
+                  <option v-for="u in units" :key="u.id" :value="u.id">
+                    {{ u.name }}
+                  </option>
+                </select>
+                <span
+                  class="input-group-text text-info"
+                  role="button"
+                  @click="newUnit"
+                  ><i class="fa-solid fa-plus"></i
+                ></span>
+              </div>
+              <div class="invalid-feedback">{{ errorUnit }}</div>
+            </div>
+            <div class="col">
+              <label for="" class="form-label">Purchase Unit</label>
+              <div class="input-group is-invalid">
+                <select
+                  class="form-select"
+                  name="p_unit"
+                  :disabled="!unitsBulk || !unit"
+                  v-model="p_unit"
+                  v-bind:class="[
+                    errorPUnit
+                      ? 'is-invalid'
+                      : !errorPUnit && p_unit
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                >
+                  <option selected :value="formValues.p_unit" v-if="!unitsBulk">
+                    Loading...
+                  </option>
+                  <option selected :value="null" v-if="unitsBulk">
+                    {{
+                      unit
+                        ? units.find((obj) => {
+                            return obj.id === unit;
+                          })["name"]
+                        : "Select base unit first"
+                    }}
+                  </option>
+                  <option v-for="u in unitsBulk" :key="u.id" :value="u.id">
+                    {{ u.name }}
+                  </option>
+                </select>
+                <button
+                  class="input-group-text text-info"
+                  type="button"
+                  @click="newBrand"
+                  v-if="unitsBulk && unit"
+                >
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+              <div class="invalid-feedback">{{ errorPUnit }}</div>
+            </div>
+            <div class="col">
+              <label for="" class="form-label">Sale Unit</label>
+              <div class="input-group is-invalid">
+                <select
+                  class="form-select"
+                  name="s_unit"
+                  :disabled="!unitsBulk || !unit"
+                  v-model="s_unit"
+                  v-bind:class="[
+                    errorSUnit
+                      ? 'is-invalid'
+                      : !errorSUnit && s_unit
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                >
+                  <option selected :value="formValues.s_unit" v-if="!unitsBulk">
+                    Loading...
+                  </option>
+                  <option selected :value="null" v-if="unitsBulk">
+                    {{
+                      unit
+                        ? units.find((obj) => {
+                            return obj.id === unit;
+                          })["name"]
+                        : "Select base unit first"
+                    }}
+                  </option>
+                  <option v-for="u in unitsBulk" :key="u.id" :value="u.id">
+                    {{ u.name }}
+                  </option>
+                </select>
+                <button
+                  class="input-group-text text-info"
+                  type="button"
+                  @click="newBrand"
+                  v-if="unitsBulk && unit"
+                >
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+              <div class="invalid-feedback">{{ errorSUnit }}</div>
             </div>
           </div>
         </div>
@@ -392,6 +521,8 @@ export default {
       addSymbologies,
       addCategories,
       addBrands,
+      addUnits,
+      addUnitsBulk,
       notifyDefault,
       notifyFormError,
       notifyApiResponse,
@@ -414,19 +545,24 @@ export default {
     let brands = computed(function () {
       return store.state.brands;
     });
+    let units = computed(function () {
+      return store.state.units;
+    });
+    let unitsBulk = computed(function () {
+      return store.state.units_bulk;
+    });
     /**************************************** */ // Default values
-    var defType = null;
-    var defSymbology = 1;
-    var defCategory = 1;
     var subCats = ref(0);
-    var defBrand = null;
     /************************************************************************* */
     const formValues = {
-      type: defType,
-      symbology: defSymbology,
-      category: defCategory,
+      type: 1,
+      symbology: 1,
+      category: 1,
       sub_category: null,
       brand: null,
+      unit: 1,
+      p_unit: null,
+      s_unit: null,
     };
     /************************************************************************* */
     const schema = computed(() => {
@@ -484,6 +620,22 @@ export default {
           .min(1)
           .transform((_, val) => (val === Number(val) ? val : null))
           .label("MRP"),
+        unit: yup
+          .number()
+          .required()
+          .nullable(true)
+          .transform((_, val) => (val === Number(val) ? val : null))
+          .label("Unit"),
+        p_unit: yup
+          .number()
+          .nullable(true)
+          .transform((_, val) => (val === Number(val) ? val : null))
+          .label("Purchase Unit"),
+        s_unit: yup
+          .number()
+          .nullable(true)
+          .transform((_, val) => (val === Number(val) ? val : null))
+          .label("Sale Unit"),
       });
     });
     /************************************************************************* */
@@ -513,6 +665,9 @@ export default {
       useField("sub_category");
     const { value: brand, errorMessage: errorBrand } = useField("brand");
     const { value: mrp, errorMessage: errorMrp } = useField("mrp");
+    const { value: unit, errorMessage: errorUnit } = useField("unit");
+    const { value: p_unit, errorMessage: errorPUnit } = useField("p_unit");
+    const { value: s_unit, errorMessage: errorSUnit } = useField("s_unit");
     /************************************************************************* */
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
@@ -585,11 +740,7 @@ export default {
 
     return {
       /**************** default form sel values */
-      defCategory,
-      defSymbology,
-      defType,
-      defBrand,
-      schema,
+      formValues,
       /**************** event handler */
       genRandCode,
       //
@@ -605,6 +756,8 @@ export default {
       symbologies,
       categories,
       brands,
+      units,
+      unitsBulk,
       /******* fields   */
       type,
       errorType,
@@ -627,6 +780,12 @@ export default {
       errorBrand,
       mrp,
       errorMrp,
+      unit,
+      errorUnit,
+      p_unit,
+      errorPUnit,
+      s_unit,
+      errorSUnit,
       /*************** */
       isDirty,
       isValid,
@@ -639,6 +798,8 @@ export default {
       addSymbologies,
       addCategories,
       addBrands,
+      addUnits,
+      addUnitsBulk,
     };
   },
   mixins: [],
@@ -647,13 +808,20 @@ export default {
   },
   watch: {
     category(value, oldValue) {
-      // load subcats on cat change
       this.handleChangeCat();
+    },
+    unit(value, oldValue) {
+      this.p_unit = this.s_unit = null;
+      if (value) this.addUnitsBulk(value);
     },
   },
   methods: {
     subCatsUpdated: function (id) {
       this.sub_category = id;
+    },
+    loadBrands: function (id) {
+      this.addBrands();
+      this.brand = id;
     },
   },
   created() {},
@@ -662,6 +830,8 @@ export default {
     this.addSymbologies(); // get symbologies
     this.addCategories(); // get categories
     this.addBrands(); // get brands
+    this.addUnits();
+    this.addUnitsBulk(1);
     this.handleChangeCat();
     //
     window.PROD_NEW_CATEGORY_MODAL = new Modal($("#prodNewCategoryModal"), {

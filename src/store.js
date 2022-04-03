@@ -50,6 +50,8 @@ export default createStore({
         productTypes: undefined,
         symbologies: undefined,
         categories: undefined,
+        units: undefined,
+        units_bulk: undefined,
     },
     mutations: {
         storeProductTypes(state, item) {
@@ -63,6 +65,12 @@ export default createStore({
         },
         storeBrands(state, item) {
             state.brands = item;
+        },
+        storeUnits(state, item) {
+            state.units = item;
+        },
+        storeUnitsBulk(state, item) {
+            state.units_bulk = item;
         },
 
 

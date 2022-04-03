@@ -147,6 +147,21 @@ export default function () {
             this.notifyCatchResponse({ message: error.message });
         });
     }
+    function addUnits() {
+        this.axios.get("http://localhost/CyberLikes-POS/admin/ajax/unit", { params: { action: 'list_base' }, }).then(function (response) {
+            store.commit("storeUnits", response.data.data);
+        }).catch((error) => {
+            this.notifyCatchResponse({ message: error.message });
+        });
+    }
+    function addUnitsBulk(id) {
+        store.commit("storeUnitsBulk", undefined);
+        this.axios.get("http://localhost/CyberLikes-POS/admin/ajax/unit", { params: { action: 'list_sub', id: id }, }).then(function (response) {
+            store.commit("storeUnitsBulk", response.data.data);
+        }).catch((error) => {
+            this.notifyCatchResponse({ message: error.message });
+        });
+    }
     function adminTest() {
         router.push({ name: "adminDashboard" }).catch((e) => {
             console.log(e);
@@ -165,6 +180,8 @@ export default function () {
         addCategories,
         addSubCatsLevel1,
         addBrands,
+        addUnits,
+        addUnitsBulk,
         /******************* */
         axiosCall,
         productTypes,
