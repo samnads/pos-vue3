@@ -3,12 +3,11 @@
     <AdminProductList v-if="this.$route.name == 'adminProductList'" />
     <AdminProductNew v-if="this.$route.name == 'adminProductNew'" />
     <AdminProductDetailsModal :productData="product" />
-    <AdminProductNewCategoryModal :productData="product" />
+    <AdminProductNewCategoryModal />
     <AdminProductDeleteConfirmModal :productData="product" />
   </div>
 </template>
 <style>
-
 </style>
 <script>
 import AdminProductList from "./ProductList.vue";
@@ -23,7 +22,7 @@ export default {
     AdminProductNew,
     AdminProductDetailsModal,
     AdminProductDeleteConfirmModal,
-    AdminProductNewCategoryModal
+    AdminProductNewCategoryModal,
   },
   data() {
     return {
@@ -43,7 +42,6 @@ export default {
       backdrop: true,
       show: true,
     });
-    
   },
 };
 </script>

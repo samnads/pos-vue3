@@ -1,10 +1,17 @@
 <template>
-  <div class="modal" id="prodNewCategoryModal" tabindex="-1" aria-hidden="true">
+  <div
+    class="modal"
+    id="prodNewCategoryLevel1Modal"
+    tabindex="-1"
+    aria-hidden="true"
+  >
     <div class="modal-dialog modal-md modal-dialog-centered">
       <div class="modal-content">
         <form id="newCategory" @submit="onSubmit" class="needs-validation">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">New Category</h5>
+            <h5 class="modal-title" id="exampleModalLabel">
+              New Subcategory (Level 1)
+            </h5>
             <button
               type="button"
               class="btn-close"
@@ -13,6 +20,33 @@
             ></button>
           </div>
           <div class="modal-body">
+            <div class="row">
+              <div class="col">
+                <label for="" class="form-label"
+                  >Parent Category Level 0<i>*</i></label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  :value="propCategory.name"
+                  v-bind:class="[
+                    errorCategory
+                      ? 'is-invalid'
+                      : !errorCategory && category
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                  disabled
+                />
+                <input
+                  type="number"
+                  name="category"
+                  class="form-control d-none"
+                  v-model="category"
+                />
+                <div class="invalid-feedback">{{ errorCategory }}</div>
+              </div>
+            </div>
             <div class="row">
               <div class="col">
                 <label for="" class="form-label">Name<i>*</i></label>
@@ -124,8 +158,13 @@
             >
               <i class="fa-solid fa-stop"></i>Cancel
             </button>
-            <button type="button" class="btn btn-secondary" v-show="isDirty" @click="resetForm">
-             <i class="fa-solid fa-rotate-left"></i>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              v-show="isDirty"
+              @click="resetCustom"
+            >
+              <i class="fa-solid fa-rotate-left"></i>
             </button>
             <button type="submit" class="btn btn-secondary" :disable="!isValid">
               <i class="fa-solid fa-save"></i>Save
@@ -148,7 +187,10 @@ import * as yup from "yup";
 import { ref, toRef, computed } from "vue";
 import admin from "@/mixins/admin.js";
 export default {
-  setup() {
+  props: {
+    propCategory: Object,
+  },
+  setup(props) {
     // data retrieve
     const {
       addCategories,
@@ -159,29 +201,43 @@ export default {
       axiosCall,
     } = admin();
     /************************************************************************* */
-    const formValues = {};
-    /************************************************************************* */
     const schema = computed(() => {
       return yup.object({
+        category: yup
+          .number()
+          .required()
+          .min(1)
+          .nullable(true)
+          .label("Parent Category"),
         name: yup
           .string()
           .required()
           .min(3)
           .max(100)
           .nullable(true)
+          .transform((_, val) => (val.length > 0 ? val : undefined))
           .label("Name"),
-        code: yup.string().required().min(2).nullable(true).label("Code"),
+        code: yup
+          .string()
+          .required()
+          .min(2)
+          .nullable(true)
+          .transform((_, val) => (val.length > 0 ? val : undefined))
+          .label("Code"),
         slug: yup
           .string()
           .required()
           .min(3)
           .max(100)
           .nullable(true)
+          .transform((_, val) => (val.length > 0 ? val : undefined))
           .label("Slug"),
         image: yup.number().min(0).max(10).nullable(true).label("Image"),
         description: yup.string().nullable(true).label("Description"),
       });
     });
+    /************************************************************************* */
+    const formValues = {};
     /************************************************************************* */
     const { setFieldValue, setFieldError, handleSubmit, resetForm } = useForm({
       validationSchema: schema,
@@ -194,6 +250,7 @@ export default {
     /************************************************************************* */
     function onInvalidSubmit({ values, errors, results }) {
       console.log(errors);
+      console.log(values);
     }
     const onSubmit = handleSubmit((values, { resetForm }) => {
       console.log(values);
@@ -203,7 +260,7 @@ export default {
         if (data.success == true) {
           addCategories();
           resetForm();
-           window.PROD_NEW_CATEGORY_MODAL.hide();
+          window.PROD_NEW_CATEGORY_L1_MODAL.hide();
           notifyApiResponse(data);
         } else {
           if (data.errors) {
@@ -231,11 +288,21 @@ export default {
         );
       }
     }
+    function resetCustom() {
+      // preserve
+      resetForm({
+        values: {
+          category: category.value,
+        },
+      });
+    }
     function close() {
-       resetForm();
-       window.PROD_NEW_CATEGORY_MODAL.hide();
+      resetCustom();
+      window.PROD_NEW_CATEGORY_MODAL.hide();
     }
     /************************************************************************* */
+    const { value: category, errorMessage: errorCategory } =
+      useField("category");
     const { value: name, errorMessage: errorName } = useField("name");
     const { value: code, errorMessage: errorCode } = useField("code");
     const { value: slug, errorMessage: errorSlug } = useField("slug");
@@ -248,6 +315,8 @@ export default {
       handleChangeName,
       handleChangeSlug,
       /******* fields   */
+      category,
+      errorCategory,
       name,
       errorName,
       code,
@@ -263,6 +332,7 @@ export default {
       isValid,
       onSubmit,
       resetForm,
+      resetCustom,
       close,
       /******************/
       addCategories,
@@ -271,11 +341,12 @@ export default {
   data() {
     return {};
   },
-  methods: {
-    test() {
-      alert();
+  watch: {
+    propCategory(value, oldValue) {
+      value.id ? (this.category = value.id) : undefined;
     },
   },
+  methods: {},
   created() {},
   mounted() {},
 };

@@ -1,4 +1,14 @@
 <template>
+  <AdminProductNewCategoryL1Modal
+    :propCategory="
+      categories && category
+        ? categories.find((obj) => {
+            return obj.id === category;
+          })
+        : []
+    "
+  />
+  <AdminProductNewBrandModal />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
@@ -248,7 +258,7 @@
                   type="button"
                   v-if="category"
                   class="input-group-text text-primary"
-                  @click="newCategory"
+                  @click="newCategoryL1"
                   :disabled="!category"
                 >
                   <i class="fa-solid fa-plus"></i>
@@ -289,7 +299,7 @@
                 <span
                   class="input-group-text text-info"
                   role="button"
-                  @click="newCategory"
+                  @click="newBrand"
                   ><i class="fa-solid fa-plus"></i
                 ></span>
               </div>
@@ -332,11 +342,11 @@
         <div class="">
           <button
             type="button"
-            class="btn btn-info"
+            class="btn btn-secondary"
             :disabled="!isDirty"
-            @click="resetForm()"
+            @click="resetCustom"
           >
-            Reset
+            <i class="fa-solid fa-rotate-left"></i>
           </button>
         </div>
       </div>
@@ -346,6 +356,9 @@
 <style>
 </style>
 <script>
+import AdminProductNewCategoryL1Modal from "./CategoryLevel1NewModal.vue";
+import AdminProductNewBrandModal from "./BrandNewModal.vue";
+import { Modal } from "bootstrap";
 /* eslint-disable */
 import {
   useForm,
@@ -360,6 +373,10 @@ import { useStore } from "vuex";
 import admin from "@/mixins/admin.js";
 import adminProduct from "@/mixins/adminProduct.js";
 export default {
+  components: {
+    AdminProductNewCategoryL1Modal,
+    AdminProductNewBrandModal,
+  },
   setup() {
     const { randCode } = adminProduct();
     const {
@@ -399,7 +416,7 @@ export default {
     const formValues = {
       type: defType,
       symbology: defSymbology,
-      category: defCategory,
+      category: null,
       sub_category: null,
       brand: null,
     };
@@ -448,9 +465,7 @@ export default {
         category: yup
           .number()
           .required()
-          .min(1)
           .nullable(true)
-          .default(1)
           .transform((_, val) => (val === Number(val) ? val : null))
           .label("Category"),
         sub_category: yup.number().nullable(true).label("Subcategory"),
@@ -517,6 +532,12 @@ export default {
     function newCategory() {
       window.PROD_NEW_CATEGORY_MODAL.show();
     }
+    function newCategoryL1() {
+      window.PROD_NEW_CATEGORY_L1_MODAL.show();
+    }
+     function newBrand() {
+      window.PROD_NEW_BRAND_MODAL.show();
+    }
 
     function handleChangeName() {
       if (name.value) {
@@ -549,6 +570,18 @@ export default {
         sub_category.value = null;
       }
     }
+    function resetCustom() {
+      // preserve
+      resetForm({
+        values: {
+          type: null,
+          symbology: 1,
+          category: 1,
+          sub_category: null,
+          brand: null,
+        },
+      });
+    }
 
     return {
       /**************** default form sel values */
@@ -559,7 +592,11 @@ export default {
       schema,
       /**************** event handler */
       genRandCode,
+      //
       newCategory,
+      newCategoryL1,
+      newBrand,
+      //
       handleChangeName,
       handleChangeSlug,
       handleChangeCat,
@@ -595,6 +632,7 @@ export default {
       isValid,
       onSubmit,
       resetForm,
+      resetCustom,
       subCats,
       /******************/
       addProductTypes,
@@ -607,6 +645,12 @@ export default {
   data() {
     return {};
   },
+  watch: {
+    category(value, oldValue) {
+      // load subcats on cat change
+      this.handleChangeCat();
+    },
+  },
   methods: {},
   created() {},
   mounted() {
@@ -614,7 +658,22 @@ export default {
     this.addSymbologies(); // get symbologies
     this.addCategories(); // get categories
     this.addBrands(); // get brands
-    this.handleChangeCat(); // first time load for default category
+    this.category = this.defCategory;
+    //
+    window.PROD_NEW_CATEGORY_L1_MODAL = new Modal(
+      $("#prodNewCategoryLevel1Modal"),
+      {
+        backdrop: true,
+        show: true,
+      }
+    );
+    window.PROD_NEW_BRAND_MODAL = new Modal(
+      $("#prodNewBrandModal"),
+      {
+        backdrop: true,
+        show: true,
+      }
+    );
   },
 };
 </script>

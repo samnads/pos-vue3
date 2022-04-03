@@ -1,10 +1,10 @@
 <template>
-  <div class="modal" id="prodNewCategoryModal" tabindex="-1" aria-hidden="true">
+  <div class="modal" id="prodNewBrandModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-md modal-dialog-centered">
       <div class="modal-content">
-        <form id="newCategory" @submit="onSubmit" class="needs-validation">
+        <form @submit="onSubmit" class="needs-validation">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">New Category</h5>
+            <h5 class="modal-title">New Brand</h5>
             <button
               type="button"
               class="btn-close"
@@ -197,13 +197,13 @@ export default {
     }
     const onSubmit = handleSubmit((values, { resetForm }) => {
       console.log(values);
-      axiosCall("post", "category", {
+      axiosCall("post", "brand", {
         data: values,
       }).then(function (data) {
         if (data.success == true) {
           addCategories();
           resetForm();
-           window.PROD_NEW_CATEGORY_MODAL.hide();
+           window.PROD_NEW_BRAND_MODAL.hide();
           notifyApiResponse(data);
         } else {
           if (data.errors) {
