@@ -189,6 +189,8 @@ import admin from "@/mixins/admin.js";
 export default {
   props: {
     propCategory: Object,
+    propHandleChangeCat: Function,
+    subCatsUpdated:Function
   },
   setup(props) {
     // data retrieve
@@ -258,7 +260,8 @@ export default {
         data: values,
       }).then(function (data) {
         if (data.success == true) {
-          addCategories();
+          props.propHandleChangeCat();
+          props.subCatsUpdated(data.id);
           resetForm();
           window.PROD_NEW_CATEGORY_L1_MODAL.hide();
           notifyApiResponse(data);

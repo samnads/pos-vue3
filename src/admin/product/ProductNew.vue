@@ -1,5 +1,8 @@
 <template>
+  <AdminProductNewCategoryModal :greeting-message="greetingMessage" />
   <AdminProductNewCategoryL1Modal
+    v-bind:propHandleChangeCat="handleChangeCat"
+    v-bind:subCatsUpdated="subCatsUpdated"
     :propCategory="
       categories && category
         ? categories.find((obj) => {
@@ -13,7 +16,8 @@
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
         <h5 class="title">
-          <i class="fa-solid fa-cart-arrow-down"></i><span>New Product</span>
+          <i class="fa-solid fa-cart-arrow-down"></i
+          ><span>New Product{{ greetingMessage }}</span>
         </h5>
       </div>
       <div class="p-2 bd-highlight"></div>
@@ -196,7 +200,6 @@
                 <select
                   class="form-select"
                   name="category"
-                  @change="handleChangeCat"
                   :disabled="!categories"
                   v-model="category"
                   v-bind:class="[
@@ -227,7 +230,7 @@
               <div class="invalid-feedback">{{ errorCategory }}</div>
             </div>
             <div class="col">
-              <label class="form-label">Sub Category</label>
+              <label class="form-label">Sub Category - Level 1</label>
               <div class="input-group">
                 <select
                   class="form-select"
@@ -343,7 +346,7 @@
           <button
             type="button"
             class="btn btn-secondary"
-            :disabled="!isDirty"
+            v-if="isDirty"
             @click="resetCustom"
           >
             <i class="fa-solid fa-rotate-left"></i>
@@ -356,6 +359,7 @@
 <style>
 </style>
 <script>
+import AdminProductNewCategoryModal from "./CategoryNewModal.vue";
 import AdminProductNewCategoryL1Modal from "./CategoryLevel1NewModal.vue";
 import AdminProductNewBrandModal from "./BrandNewModal.vue";
 import { Modal } from "bootstrap";
@@ -373,11 +377,15 @@ import { useStore } from "vuex";
 import admin from "@/mixins/admin.js";
 import adminProduct from "@/mixins/adminProduct.js";
 export default {
+  props: {
+    greetingMessage: String,
+  },
   components: {
+    AdminProductNewCategoryModal,
     AdminProductNewCategoryL1Modal,
     AdminProductNewBrandModal,
   },
-  setup() {
+  setup(props) {
     const { randCode } = adminProduct();
     const {
       addProductTypes,
@@ -416,7 +424,7 @@ export default {
     const formValues = {
       type: defType,
       symbology: defSymbology,
-      category: null,
+      category: defCategory,
       sub_category: null,
       brand: null,
     };
@@ -535,7 +543,7 @@ export default {
     function newCategoryL1() {
       window.PROD_NEW_CATEGORY_L1_MODAL.show();
     }
-     function newBrand() {
+    function newBrand() {
       window.PROD_NEW_BRAND_MODAL.show();
     }
 
@@ -556,12 +564,13 @@ export default {
       }
     }
     function handleChangeCat() {
-      if (category.value) {
+      var id = category.value;
+      if (id) {
         subCats.value = undefined;
         sub_category.value = null;
         axiosCall("get", "category", {
           action: "subcats",
-          id: category.value,
+          id: id,
         }).then(function (response) {
           subCats.value = response.data;
         });
@@ -571,16 +580,7 @@ export default {
       }
     }
     function resetCustom() {
-      // preserve
-      resetForm({
-        values: {
-          type: null,
-          symbology: 1,
-          category: 1,
-          sub_category: null,
-          brand: null,
-        },
-      });
+      resetForm();
     }
 
     return {
@@ -651,15 +651,23 @@ export default {
       this.handleChangeCat();
     },
   },
-  methods: {},
+  methods: {
+    subCatsUpdated: function (id) {
+      this.sub_category = id;
+    },
+  },
   created() {},
   mounted() {
     this.addProductTypes(); // get product types
     this.addSymbologies(); // get symbologies
     this.addCategories(); // get categories
     this.addBrands(); // get brands
-    this.category = this.defCategory;
+    this.handleChangeCat();
     //
+    window.PROD_NEW_CATEGORY_MODAL = new Modal($("#prodNewCategoryModal"), {
+      backdrop: true,
+      show: true,
+    });
     window.PROD_NEW_CATEGORY_L1_MODAL = new Modal(
       $("#prodNewCategoryLevel1Modal"),
       {
@@ -667,13 +675,10 @@ export default {
         show: true,
       }
     );
-    window.PROD_NEW_BRAND_MODAL = new Modal(
-      $("#prodNewBrandModal"),
-      {
-        backdrop: true,
-        show: true,
-      }
-    );
+    window.PROD_NEW_BRAND_MODAL = new Modal($("#prodNewBrandModal"), {
+      backdrop: true,
+      show: true,
+    });
   },
 };
 </script>

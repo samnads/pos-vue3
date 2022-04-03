@@ -50,7 +50,6 @@ export default createStore({
         productTypes: undefined,
         symbologies: undefined,
         categories: undefined,
-        subCatLevel1: undefined,
     },
     mutations: {
         storeProductTypes(state, item) {

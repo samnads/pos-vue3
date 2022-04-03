@@ -133,6 +133,13 @@ export default function () {
             this.notifyCatchResponse({ message: error.message });
         });
     }
+    function addSubCatsLevel1(id) {
+        axios.get("http://localhost/CyberLikes-POS/admin/ajax/category", { params: { action: 'subcats', id: id }, }).then(function (response) {
+            store.commit("storeSubCatLevel1", response.data.data);
+        }).catch((error) => {
+            notifyCatchResponse({ message: error.message });
+        });
+    }
     function addBrands() {
         this.axios.get("http://localhost/CyberLikes-POS/admin/ajax/brand", { params: { action: 'dropdown' }, }).then(function (response) {
             store.commit("storeBrands", response.data.data);
@@ -156,6 +163,7 @@ export default function () {
         addProductTypes,
         addSymbologies,
         addCategories,
+        addSubCatsLevel1,
         addBrands,
         /******************* */
         axiosCall,
