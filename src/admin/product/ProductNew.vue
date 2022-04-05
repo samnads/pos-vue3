@@ -1,5 +1,5 @@
 <template>
-  <AdminProductNewCategoryModal/>
+  <AdminProductNewCategoryModal />
   <AdminProductNewCategoryL1Modal
     v-bind:propHandleChangeCat="handleChangeCat"
     v-bind:subCatsUpdated="subCatsUpdated"
@@ -13,11 +13,17 @@
   />
   <AdminProductNewBrandModal v-bind:propUpdateBrands="loadBrands" />
   <AdminProductNewUnitModal v-bind:propUpdateUnits="loadUnits" />
-  <AdminProductNewUnitBulkModal v-bind:propUpdateUnitsBulk="loadUnitsBulk" :propTest="unit" :propUnit="units && unit
+  <AdminProductNewUnitBulkModal
+    v-bind:propUpdateUnitsBulk="loadUnitsBulk"
+    :propTest="unit"
+    :propUnit="
+      units && unit
         ? units.find((obj) => {
             return obj.id === unit;
           })
-        : []" />
+        : []
+    "
+  />
 
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
@@ -466,6 +472,30 @@
                 </button>
               </div>
               <div class="invalid-feedback">{{ errorSUnit }}</div>
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col">
+              <label class="form-label">Stock Alert Quantity<i>*</i></label>
+              <div class="input-group is-invalid">
+                <span class="input-group-text">
+                  <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+                </span>
+                <input
+                  type="number"
+                  name="alert_quantity"
+                  v-model="alert_quantity"
+                  class="form-control"
+                  v-bind:class="[
+                    errorAlertQuantity
+                      ? 'is-invalid'
+                      : !errorAlertQuantity && alert_quantity
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                />
+              </div>
+              <div class="invalid-feedback">{{ errorAlertQuantity }}</div>
             </div>
           </div>
         </div>
