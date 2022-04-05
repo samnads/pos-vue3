@@ -1,10 +1,10 @@
 <template>
-  <div class="modal" id="prodNewCategoryModal" tabindex="-1" aria-hidden="true">
+  <div class="modal" id="prodNewUnitBulkModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-md modal-dialog-centered">
       <div class="modal-content">
-        <form id="newCategory" @submit="onSubmit" class="needs-validation">
+        <form @submit="onSubmit" class="needs-validation">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">New Category</h5>
+            <h5 class="modal-title">New Sub Unit</h5>
             <button
               type="button"
               class="btn-close"
@@ -15,13 +15,53 @@
           <div class="modal-body">
             <div class="row">
               <div class="col">
+                <label class="form-label">Base Unit<i>*</i></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  :value="propUnit.name"
+                  v-bind:class="[
+                    errorUnit
+                      ? 'is-invalid'
+                      : !errorUnit && unit
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                  disabled
+                />
+                <input
+                  type="number"
+                  class="form-control d-none"
+                  v-model="unit"
+                />
+                <div class="invalid-feedback">{{ errorUnit }}</div>
+              </div>
+              <div class="col">
+                <label for="" class="form-label">Quantity<i>*</i></label>
+                <input
+                  type="number"
+                  name="quantity"
+                  v-model="quantity"
+                  class="form-control"
+                  v-bind:class="[
+                    errorQuantity
+                      ? 'is-invalid'
+                      : !errorQuantity && quantity
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                />
+                <div class="invalid-feedback">{{ errorQuantity }}</div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
                 <label for="" class="form-label">Name<i>*</i></label>
                 <input
                   type="text"
                   name="name"
                   v-model="name"
                   class="form-control"
-                  @input="handleChangeName"
                   v-bind:class="[
                     errorName
                       ? 'is-invalid'
@@ -39,7 +79,6 @@
                   name="code"
                   v-model="code"
                   class="form-control"
-                  @input="handleChangeCode"
                   v-bind:class="[
                     errorCode
                       ? 'is-invalid'
@@ -49,43 +88,6 @@
                   ]"
                 />
                 <div class="invalid-feedback">{{ errorCode }}</div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <label for="" class="form-label">URL Slug<i>*</i></label>
-                <input
-                  type="text"
-                  name="slug"
-                  v-model="slug"
-                  class="form-control"
-                  @input="handleChangeSlug"
-                  v-bind:class="[
-                    errorSlug
-                      ? 'is-invalid'
-                      : !errorSlug && slug
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                />
-                <div class="invalid-feedback">{{ errorSlug }}</div>
-              </div>
-              <div class="col">
-                <label for="" class="form-label">Image</label>
-                <input
-                  type="text"
-                  name="image"
-                  v-model="image"
-                  class="form-control"
-                  v-bind:class="[
-                    errorImage
-                      ? 'is-invalid'
-                      : !errorImage && image
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                />
-                <div class="invalid-feedback">{{ errorImage }}</div>
               </div>
             </div>
             <div class="row">
@@ -125,10 +127,10 @@
               <i class="fa-solid fa-stop"></i>Cancel
             </button>
             <button
-              type="button"
+               type="button"
               class="btn btn-secondary"
               v-show="isDirty"
-              @click="resetForm"
+              @click="resetCustom"
             >
               <i class="fa-solid fa-rotate-left"></i>
             </button>
@@ -152,14 +154,15 @@ import {
 import * as yup from "yup";
 import { ref, toRef, computed } from "vue";
 import admin from "@/mixins/admin.js";
+import { number } from "yup/lib/locale";
 export default {
   props: {
-    greetingMessage: String
+    propUpdateUnitsBulk: Function,
+    propUnit: Object,
   },
   setup(props) {
     // data retrieve
     const {
-      addCategories,
       notifyDefault,
       notifyFormError,
       notifyApiResponse,
@@ -171,6 +174,13 @@ export default {
     /************************************************************************* */
     const schema = computed(() => {
       return yup.object({
+        unit: yup.number().required().min(1).nullable(true).label("Base Unit"),
+        quantity: yup
+          .number()
+          .required()
+          .nullable(true)
+          .transform((_, val) => (val === Number(val) ? val : undefined))
+          .label("Quantity"),
         name: yup
           .string()
           .required()
@@ -186,22 +196,17 @@ export default {
           .nullable(true)
           .transform((_, val) => (val.length > 0 ? val : undefined))
           .label("Code"),
-        slug: yup
+        description: yup
           .string()
-          .required()
-          .min(3)
-          .max(100)
           .nullable(true)
           .transform((_, val) => (val.length > 0 ? val : undefined))
-          .label("Slug"),
-        image: yup.number().min(0).max(10).nullable(true).label("Image"),
-        description: yup.string().nullable(true).label("Description"),
+          .label("Description"),
       });
     });
     /************************************************************************* */
     const { setFieldValue, setFieldError, handleSubmit, resetForm } = useForm({
       validationSchema: schema,
-      initialValues: formValues,
+
       initialErrors: {},
     });
     /************************************************************************* */
@@ -213,13 +218,13 @@ export default {
     }
     const onSubmit = handleSubmit((values, { resetForm }) => {
       console.log(values);
-      axiosCall("post", "category", {
+      axiosCall("post", "unit", {
         data: values,
       }).then(function (data) {
         if (data.success == true) {
-          addCategories();
+          props.propUpdateUnitsBulk(data.id);
           resetForm();
-          window.PROD_NEW_CATEGORY_MODAL.hide();
+          window.PROD_NEW_UNIT_BULK_MODAL.hide();
           notifyApiResponse(data);
         } else {
           if (data.errors) {
@@ -231,47 +236,38 @@ export default {
       });
     }, onInvalidSubmit);
     /************************************************************************* */
-    function handleChangeName() {
-      if (name.value) {
-        setFieldValue(
-          "slug",
-          name.value.trim().replace(/\s+/g, "-").toLowerCase()
-        );
-      }
-    }
-    function handleChangeSlug() {
-      if (slug.value) {
-        setFieldValue(
-          "slug",
-          slug.value.trim().replace(/\s+/g, "-").toLowerCase()
-        );
-      }
+    function resetCustom() {
+      // preserve
+      resetForm({
+        values: {
+          unit: unit.value,
+        },
+      });
     }
     function close() {
-      resetForm();
-      window.PROD_NEW_CATEGORY_MODAL.hide();
+      resetCustom();
+      window.PROD_NEW_UNIT_BULK_MODAL.hide();
     }
     /************************************************************************* */
+    const { value: unit, errorMessage: errorUnit } = useField("unit");
+    const { value: quantity, errorMessage: errorQuantity } =
+      useField("quantity");
     const { value: name, errorMessage: errorName } = useField("name");
     const { value: code, errorMessage: errorCode } = useField("code");
-    const { value: slug, errorMessage: errorSlug } = useField("slug");
-    const { value: image, errorMessage: errorImage } = useField("image");
     const { value: description, errorMessage: errorDescription } =
       useField("description");
     /*************************************** */
     return {
       /**************** event handler */
-      handleChangeName,
-      handleChangeSlug,
       /******* fields   */
+      unit,
+      errorUnit,
+      quantity,
+      errorQuantity,
       name,
       errorName,
       code,
       errorCode,
-      slug,
-      errorSlug,
-      image,
-      errorImage,
       description,
       errorDescription,
       /*************** */
@@ -279,16 +275,19 @@ export default {
       isValid,
       onSubmit,
       resetForm,
+      resetCustom,
       close,
-      /******************/
-      addCategories,
     };
   },
   data() {
     return {};
   },
-  methods: {
+  watch: {
+    propUnit(value, oldValue) {
+      value.id ? (this.unit = value.id) : undefined;
+    },
   },
+  methods: {},
   created() {},
   mounted() {},
 };

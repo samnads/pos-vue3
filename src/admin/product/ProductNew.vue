@@ -1,5 +1,5 @@
 <template>
-  <AdminProductNewCategoryModal :greeting-message="greetingMessage" />
+  <AdminProductNewCategoryModal/>
   <AdminProductNewCategoryL1Modal
     v-bind:propHandleChangeCat="handleChangeCat"
     v-bind:subCatsUpdated="subCatsUpdated"
@@ -12,6 +12,13 @@
     "
   />
   <AdminProductNewBrandModal v-bind:propUpdateBrands="loadBrands" />
+  <AdminProductNewUnitModal v-bind:propUpdateUnits="loadUnits" />
+  <AdminProductNewUnitBulkModal v-bind:propUpdateUnitsBulk="loadUnitsBulk" :propTest="unit" :propUnit="units && unit
+        ? units.find((obj) => {
+            return obj.id === unit;
+          })
+        : []" />
+
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
@@ -409,7 +416,7 @@
                 <button
                   class="input-group-text text-info"
                   type="button"
-                  @click="newBrand"
+                  @click="newUnitBulk"
                   v-if="unitsBulk && unit"
                 >
                   <i class="fa-solid fa-plus"></i>
@@ -452,7 +459,7 @@
                 <button
                   class="input-group-text text-info"
                   type="button"
-                  @click="newBrand"
+                  @click="newUnitBulk"
                   v-if="unitsBulk && unit"
                 >
                   <i class="fa-solid fa-plus"></i>
@@ -491,6 +498,8 @@
 import AdminProductNewCategoryModal from "./CategoryNewModal.vue";
 import AdminProductNewCategoryL1Modal from "./CategoryLevel1NewModal.vue";
 import AdminProductNewBrandModal from "./BrandNewModal.vue";
+import AdminProductNewUnitModal from "./UnitNewModal.vue";
+import AdminProductNewUnitBulkModal from "./UnitBulkNewModal.vue";
 import { Modal } from "bootstrap";
 /* eslint-disable */
 import {
@@ -513,6 +522,8 @@ export default {
     AdminProductNewCategoryModal,
     AdminProductNewCategoryL1Modal,
     AdminProductNewBrandModal,
+    AdminProductNewUnitModal,
+    AdminProductNewUnitBulkModal,
   },
   setup(props) {
     const { randCode } = adminProduct();
@@ -701,6 +712,12 @@ export default {
     function newBrand() {
       window.PROD_NEW_BRAND_MODAL.show();
     }
+    function newUnit() {
+      window.PROD_NEW_UNIT_MODAL.show();
+    }
+    function newUnitBulk() {
+      window.PROD_NEW_UNIT_BULK_MODAL.show();
+    }
 
     function handleChangeName() {
       if (name.value) {
@@ -743,10 +760,12 @@ export default {
       formValues,
       /**************** event handler */
       genRandCode,
-      //
+      // modals
       newCategory,
       newCategoryL1,
       newBrand,
+      newUnit,
+      newUnitBulk,
       //
       handleChangeName,
       handleChangeSlug,
@@ -823,14 +842,36 @@ export default {
       this.addBrands();
       this.brand = id;
     },
+    loadUnits: function (id) {
+      this.addUnits();
+      this.unit = id;
+    },
+    loadUnitsBulk: function (id) {
+      //
+    },
   },
   created() {},
   mounted() {
-    this.addProductTypes(); // get product types
-    this.addSymbologies(); // get symbologies
-    this.addCategories(); // get categories
-    this.addBrands(); // get brands
-    this.addUnits();
+    if (!this.productTypes) {
+      // if not found on store
+      this.addProductTypes(); // get product types
+    }
+    if (!this.symbologies) {
+      // if not found on store
+      this.addSymbologies(); // get symbologies
+    }
+    if (!this.categories) {
+      // if not found on store
+      this.addCategories(); // get categories
+    }
+    if (!this.brands) {
+      // if not found on store
+      this.addBrands(); // get brands
+    }
+    if (!this.units) {
+      // if not found on store
+      this.addUnits(); // get units
+    }
     this.addUnitsBulk(1);
     this.handleChangeCat();
     //
@@ -846,6 +887,14 @@ export default {
       }
     );
     window.PROD_NEW_BRAND_MODAL = new Modal($("#prodNewBrandModal"), {
+      backdrop: true,
+      show: true,
+    });
+    window.PROD_NEW_UNIT_MODAL = new Modal($("#prodNewUnitModal"), {
+      backdrop: true,
+      show: true,
+    });
+    window.PROD_NEW_UNIT_BULK_MODAL = new Modal($("#prodNewUnitBulkModal"), {
       backdrop: true,
       show: true,
     });
