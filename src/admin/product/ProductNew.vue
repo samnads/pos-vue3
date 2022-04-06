@@ -24,7 +24,7 @@
         : []
     "
   />
-
+  <AdminProductNewTaxRateModal :propUpdateTaxRates="loadTaxRates" />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
@@ -572,7 +572,7 @@
                       <button
                         class="input-group-text text-info"
                         type="button"
-                        @click="newUnitBulk"
+                        @click="newTaxRate"
                         v-if="unitsBulk && unit"
                       >
                         <i class="fa-solid fa-plus"></i>
@@ -614,6 +614,7 @@ import AdminProductNewCategoryL1Modal from "./CategoryLevel1NewModal.vue";
 import AdminProductNewBrandModal from "./BrandNewModal.vue";
 import AdminProductNewUnitModal from "./UnitNewModal.vue";
 import AdminProductNewUnitBulkModal from "./UnitBulkNewModal.vue";
+import AdminProductNewTaxRateModal from "./TaxRateNewModal.vue";
 import { Modal } from "bootstrap";
 /* eslint-disable */
 import {
@@ -636,6 +637,7 @@ export default {
     AdminProductNewBrandModal,
     AdminProductNewUnitModal,
     AdminProductNewUnitBulkModal,
+    AdminProductNewTaxRateModal,
   },
   setup(props) {
     const { randCode } = adminProduct();
@@ -859,6 +861,9 @@ export default {
     function newUnitBulk() {
       window.PROD_NEW_UNIT_BULK_MODAL.show();
     }
+    function newTaxRate() {
+      window.PROD_NEW_TAXRATE_MODAL.show();
+    }
     function toggleAlert() {
       if (!isalert.value) {
         alert_quantity.value = null;
@@ -914,6 +919,7 @@ export default {
       newBrand,
       newUnit,
       newUnitBulk,
+      newTaxRate,
       toggleAlert,
       //
       handleChangeName,
@@ -1004,6 +1010,10 @@ export default {
       this.addUnits();
       this.unit = id;
     },
+    loadTaxRates: function (id) {
+      this.addTaxes();
+      this.tax_rate = id;
+    },
     loadUnitsBulk: function (id) {
       //
     },
@@ -1057,6 +1067,10 @@ export default {
       show: true,
     });
     window.PROD_NEW_UNIT_BULK_MODAL = new Modal($("#prodNewUnitBulkModal"), {
+      backdrop: true,
+      show: true,
+    });
+    window.PROD_NEW_TAXRATE_MODAL = new Modal($("#prodNewTaxRateModal"), {
       backdrop: true,
       show: true,
     });
