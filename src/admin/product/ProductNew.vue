@@ -29,8 +29,7 @@
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
         <h5 class="title">
-          <i class="fa-solid fa-cart-arrow-down"></i
-          ><span>New Product{{ greetingMessage }}</span>
+          <i class="fa-solid fa-cart-arrow-down"></i><span>New Product</span>
         </h5>
       </div>
       <div class="p-2 bd-highlight"></div>
@@ -292,7 +291,7 @@
           </div>
         </div>
         <!-- column section 2 -->
-        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-4">
+        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
           <div class="row mb-1">
             <div class="col">
               <label for="" class="form-label">Brand Name</label>
@@ -477,27 +476,18 @@
           </div>
           <div class="row mb-1">
             <div class="col">
-              <label class="form-label">Stock Alert Quantity<i>*</i></label>
+              <label class="form-label"
+                >Stock Alert Quantity<i v-if="isalert">*</i></label
+              >
               <div class="input-group is-invalid">
-                <div
-                  class="input-group-text"
-                  role="button"
-                  @click="toggleAlert"
-                >
-                  <input
-                    class="form-check-input mt-0"
-                    type="checkbox"
-                    name="isalert"
-                    v-model="isalert"
-                  />
-                </div>
                 <span class="form-control" v-if="!isalert">{{
-                  isalert ? "Enabled ✅" : "Disabled ❌"
+                  isalert ? "Enabled ✅" : "Alert Disabled ❌"
                 }}</span>
                 <input
                   type="number"
                   name="alert_quantity"
                   v-model="alert_quantity"
+                  placeholder="Quantity for alert"
                   class="form-control"
                   v-bind:class="[
                     errorAlertQuantity
@@ -508,6 +498,19 @@
                   ]"
                   v-if="isalert"
                 />
+                <div
+                  class="input-group-text"
+                  role="button"
+                  @click="toggleAlert"
+                >
+                  <input
+                    class="form-check-input mt-0"
+                    type="checkbox"
+                    name="isalert"
+                    v-model="isalert"
+                    role="button"
+                  />
+                </div>
               </div>
               <div class="invalid-feedback">{{ errorIsalert }}</div>
               <div class="invalid-feedback">{{ errorAlertQuantity }}</div>
@@ -527,7 +530,61 @@
           </div>
         </div>
         <!-- column section 3 -->
-        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">Col 3</div>
+        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Default Purchase Information</h5>
+              <hr />
+              <div class="row mb-1">
+                <div class="row mb-1">
+                  <div class="col">
+                    <label for="taxrate" class="form-label">Tax Rate</label>
+                    <div class="input-group is-invalid">
+                      <select
+                        class="form-select"
+                        name="tax_rate"
+                        :disabled="!taxes"
+                        v-model="tax_rate"
+                        id="taxrate"
+                        v-bind:class="[
+                          errorTaxRate
+                            ? 'is-invalid'
+                            : !errorTaxRate && tax_rate
+                            ? 'is-valid'
+                            : '',
+                        ]"
+                      >
+                        <option
+                          :value="!taxes ? formValues.tax_rate : null"
+                          selected
+                        >
+                          {{ !taxes ? "Loading..." : "-- No Tax --" }}
+                        </option>
+                        <option v-for="tr in taxes" :key="tr.id" :value="tr.id">
+                          {{
+                            tr.name +
+                            " ~ " +
+                            parseInt(tr.rate).toFixed(2) +
+                            (tr.type == "P" ? " %" : " (Fixed Rate)")
+                          }}
+                        </option>
+                      </select>
+                      <button
+                        class="input-group-text text-info"
+                        type="button"
+                        @click="newUnitBulk"
+                        v-if="unitsBulk && unit"
+                      >
+                        <i class="fa-solid fa-plus"></i>
+                      </button>
+                    </div>
+                    <div class="invalid-feedback">{{ errorTaxRate }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="d-flex pt-3">
         <div class="me-auto">
@@ -572,9 +629,7 @@ import { useStore } from "vuex";
 import admin from "@/mixins/admin.js";
 import adminProduct from "@/mixins/adminProduct.js";
 export default {
-  props: {
-    greetingMessage: String,
-  },
+  props: {},
   components: {
     AdminProductNewCategoryModal,
     AdminProductNewCategoryL1Modal,
@@ -591,6 +646,7 @@ export default {
       addBrands,
       addUnits,
       addUnitsBulk,
+      addTaxes,
       notifyDefault,
       notifyFormError,
       notifyApiResponse,
@@ -619,6 +675,9 @@ export default {
     let unitsBulk = computed(function () {
       return store.state.units_bulk;
     });
+    let taxes = computed(function () {
+      return store.state.TAXES;
+    });
     /**************************************** */ // Default values
     var subCats = ref(0);
     /************************************************************************* */
@@ -631,8 +690,9 @@ export default {
       unit: 1,
       p_unit: null,
       s_unit: null,
-      isalert: true,
-      alert_quantity: 10,
+      isalert: false,
+      alert_quantity: null,
+      tax_rate: null,
     };
     /************************************************************************* */
     const schema = computed(() => {
@@ -718,6 +778,11 @@ export default {
               .required(),
           })
           .label("Alert Quantity"),
+        tax_rate: yup
+          .number()
+          .nullable(true)
+          .transform((_, val) => (val === Number(val) ? val : null))
+          .label("Tax Rate"),
       });
     });
     /************************************************************************* */
@@ -753,6 +818,8 @@ export default {
     const { value: isalert, errorMessage: errorIsalert } = useField("isalert");
     const { value: alert_quantity, errorMessage: errorAlertQuantity } =
       useField("alert_quantity");
+    const { value: tax_rate, errorMessage: errorTaxRate } =
+      useField("tax_rate");
     /************************************************************************* */
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
@@ -794,7 +861,7 @@ export default {
     }
     function toggleAlert() {
       if (!isalert.value) {
-        alert_quantity.value = 10;
+        alert_quantity.value = null;
         isalert.value = true;
       } else {
         alert_quantity.value = null;
@@ -859,6 +926,7 @@ export default {
       brands,
       units,
       unitsBulk,
+      taxes,
       /******* fields   */
       type,
       errorType,
@@ -891,6 +959,8 @@ export default {
       errorIsalert,
       alert_quantity,
       errorAlertQuantity,
+      tax_rate,
+      errorTaxRate,
       /*************** */
       isDirty,
       isValid,
@@ -906,6 +976,7 @@ export default {
       addBrands,
       addUnits,
       addUnitsBulk,
+      addTaxes,
     };
   },
   mixins: [],
@@ -958,6 +1029,10 @@ export default {
     if (!this.units) {
       // if not found on store
       this.addUnits(); // get units
+    }
+    if (!this.taxes) {
+      // if not found on store
+      this.addTaxes(); // get tax rates
     }
     this.addUnitsBulk(1);
     this.handleChangeCat();

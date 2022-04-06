@@ -162,6 +162,13 @@ export default function () {
             this.notifyCatchResponse({ message: error.message });
         });
     }
+    function addTaxes() {
+        this.axios.get("http://localhost/CyberLikes-POS/admin/ajax/tax", { params: { action: 'dropdown' }, }).then(function (response) {
+            store.commit("storeTaxes", response.data.data);
+        }).catch((error) => {
+            this.notifyCatchResponse({ message: error.message });
+        });
+    }
     function adminTest() {
         router.push({ name: "adminDashboard" }).catch((e) => {
             console.log(e);
@@ -182,6 +189,7 @@ export default function () {
         addBrands,
         addUnits,
         addUnitsBulk,
+        addTaxes,
         /******************* */
         axiosCall,
         productTypes,
