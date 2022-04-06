@@ -336,6 +336,7 @@
                 <input
                   type="number"
                   name="mrp"
+                  placeholder="Maximum retail price"
                   v-model="mrp"
                   class="form-control"
                   id="productcode"
@@ -478,9 +479,21 @@
             <div class="col">
               <label class="form-label">Stock Alert Quantity<i>*</i></label>
               <div class="input-group is-invalid">
-                <span class="input-group-text">
-                  <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
-                </span>
+                <div
+                  class="input-group-text"
+                  role="button"
+                  @click="toggleAlert"
+                >
+                  <input
+                    class="form-check-input mt-0"
+                    type="checkbox"
+                    name="isalert"
+                    v-model="isalert"
+                  />
+                </div>
+                <span class="form-control" v-if="!isalert">{{
+                  isalert ? "Enabled ✅" : "Disabled ❌"
+                }}</span>
                 <input
                   type="number"
                   name="alert_quantity"
@@ -493,9 +506,23 @@
                       ? 'is-valid'
                       : '',
                   ]"
+                  v-if="isalert"
                 />
               </div>
+              <div class="invalid-feedback">{{ errorIsalert }}</div>
               <div class="invalid-feedback">{{ errorAlertQuantity }}</div>
+            </div>
+            <div class="col">
+              <label class="form-label">Product Image</label>
+              <div class="input-group">
+                <input
+                  type="file"
+                  class="form-control"
+                  id="inputGroupFile04"
+                  aria-describedby="inputGroupFileAddon04"
+                  aria-label="Upload"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -604,6 +631,8 @@ export default {
       unit: 1,
       p_unit: null,
       s_unit: null,
+      isalert: true,
+      alert_quantity: 10,
     };
     /************************************************************************* */
     const schema = computed(() => {
@@ -658,7 +687,6 @@ export default {
         mrp: yup
           .number()
           .nullable(true)
-          .min(1)
           .transform((_, val) => (val === Number(val) ? val : null))
           .label("MRP"),
         unit: yup
@@ -677,6 +705,19 @@ export default {
           .nullable(true)
           .transform((_, val) => (val === Number(val) ? val : null))
           .label("Sale Unit"),
+        alert_quantity: yup
+          .number()
+          .nullable(true)
+          .transform((_, val) => (val === Number(val) ? val : null))
+          .when("isalert", {
+            is: true,
+            then: yup
+              .number()
+              .nullable(true)
+              .transform((_, val) => (val === Number(val) ? val : null))
+              .required(),
+          })
+          .label("Alert Quantity"),
       });
     });
     /************************************************************************* */
@@ -709,6 +750,9 @@ export default {
     const { value: unit, errorMessage: errorUnit } = useField("unit");
     const { value: p_unit, errorMessage: errorPUnit } = useField("p_unit");
     const { value: s_unit, errorMessage: errorSUnit } = useField("s_unit");
+    const { value: isalert, errorMessage: errorIsalert } = useField("isalert");
+    const { value: alert_quantity, errorMessage: errorAlertQuantity } =
+      useField("alert_quantity");
     /************************************************************************* */
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
@@ -748,7 +792,15 @@ export default {
     function newUnitBulk() {
       window.PROD_NEW_UNIT_BULK_MODAL.show();
     }
-
+    function toggleAlert() {
+      if (!isalert.value) {
+        alert_quantity.value = 10;
+        isalert.value = true;
+      } else {
+        alert_quantity.value = null;
+        isalert.value = false;
+      }
+    }
     function handleChangeName() {
       if (name.value) {
         setFieldValue(
@@ -784,7 +836,6 @@ export default {
     function resetCustom() {
       resetForm();
     }
-
     return {
       /**************** default form sel values */
       formValues,
@@ -796,6 +847,7 @@ export default {
       newBrand,
       newUnit,
       newUnitBulk,
+      toggleAlert,
       //
       handleChangeName,
       handleChangeSlug,
@@ -835,6 +887,10 @@ export default {
       errorPUnit,
       s_unit,
       errorSUnit,
+      isalert,
+      errorIsalert,
+      alert_quantity,
+      errorAlertQuantity,
       /*************** */
       isDirty,
       isValid,
@@ -842,6 +898,7 @@ export default {
       resetForm,
       resetCustom,
       subCats,
+      isalert,
       /******************/
       addProductTypes,
       addSymbologies,
