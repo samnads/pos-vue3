@@ -163,6 +163,7 @@ export default function () {
         });
     }
     function addTaxes() {
+        store.commit("storeTaxes", undefined);
         this.axios.get("http://localhost/CyberLikes-POS/admin/ajax/tax", { params: { action: 'dropdown' }, }).then(function (response) {
             store.commit("storeTaxes", response.data.data);
         }).catch((error) => {

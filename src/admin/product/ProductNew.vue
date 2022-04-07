@@ -555,7 +555,7 @@
                         ]"
                       >
                         <option
-                          :value="!taxes ? formValues.tax_rate : null"
+                          :value="null"
                           selected
                         >
                           {{ !taxes ? "Loading..." : "-- No Tax --" }}
@@ -1011,8 +1011,9 @@ export default {
       this.unit = id;
     },
     loadTaxRates: function (id) {
+      this.tax_rate = null;
       this.addTaxes();
-      this.tax_rate = id;
+      //this.tax_rate = id;
     },
     loadUnitsBulk: function (id) {
       //
