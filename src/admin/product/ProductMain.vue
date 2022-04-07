@@ -11,8 +11,8 @@
 <script>
 import AdminProductList from "./ProductList.vue";
 import AdminProductNew from "./ProductNew.vue";
-import AdminProductDetailsModal from "./ProductDetailsModal.vue";
-import AdminProductDeleteConfirmModal from "./ProductDelete.vue";
+import AdminProductDetailsModal from "../modal/ProductDetailsModal.vue";
+import AdminProductDeleteConfirmModal from "../modal/ProductDeleteModal.vue";
 import { Modal } from "bootstrap";
 export default {
   components: {

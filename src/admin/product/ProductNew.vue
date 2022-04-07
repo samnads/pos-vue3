@@ -609,12 +609,12 @@
 <style>
 </style>
 <script>
-import AdminProductNewCategoryModal from "./CategoryNewModal.vue";
-import AdminProductNewCategoryL1Modal from "./CategoryLevel1NewModal.vue";
-import AdminProductNewBrandModal from "./BrandNewModal.vue";
-import AdminProductNewUnitModal from "./UnitNewModal.vue";
-import AdminProductNewUnitBulkModal from "./UnitBulkNewModal.vue";
-import AdminProductNewTaxRateModal from "./TaxRateNewModal.vue";
+import AdminProductNewCategoryModal from "../modal/CategoryNewModal.vue";
+import AdminProductNewCategoryL1Modal from "../modal/CategoryLevel1NewModal.vue";
+import AdminProductNewBrandModal from "../modal/BrandNewModal.vue";
+import AdminProductNewUnitModal from "../modal/UnitNewModal.vue";
+import AdminProductNewUnitBulkModal from "../modal/UnitBulkNewModal.vue";
+import AdminProductNewTaxRateModal from "../modal/TaxRateNewModal.vue";
 import { Modal } from "bootstrap";
 /* eslint-disable */
 import {
