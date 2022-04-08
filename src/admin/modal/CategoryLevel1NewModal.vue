@@ -262,7 +262,7 @@ export default {
         if (data.success == true) {
           props.propHandleChangeCat();
           props.subCatsUpdated(data.id);
-          resetForm();
+          resetCustom();
           window.PROD_NEW_CATEGORY_L1_MODAL.hide();
           notifyApiResponse(data);
         } else {

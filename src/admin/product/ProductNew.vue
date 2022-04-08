@@ -24,7 +24,7 @@
         : []
     "
   />
-  <AdminProductNewTaxRateModal :propUpdateTaxRates="loadTaxRates" />
+  <AdminProductNewTaxRateModal :propUpdateTaxRates="updateTaxRates" />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
@@ -554,10 +554,7 @@
                             : '',
                         ]"
                       >
-                        <option
-                          :value="null"
-                          selected
-                        >
+                        <option :value="null" selected>
                           {{ !taxes ? "Loading..." : "-- No Tax --" }}
                         </option>
                         <option v-for="tr in taxes" :key="tr.id" :value="tr.id">
@@ -573,7 +570,7 @@
                         class="input-group-text text-info"
                         type="button"
                         @click="newTaxRate"
-                        v-if="unitsBulk && unit"
+                        v-if="taxes"
                       >
                         <i class="fa-solid fa-plus"></i>
                       </button>
@@ -654,6 +651,7 @@ export default {
       notifyApiResponse,
       notifyCatchResponse,
       axiosCall,
+      axiosCallAndCommit,
       adminTest,
     } = admin();
 
@@ -975,12 +973,14 @@ export default {
       resetCustom,
       subCats,
       isalert,
+      notifyDefault,
       /******************/
       addProductTypes,
       addSymbologies,
       addCategories,
       addBrands,
       addUnits,
+      axiosCallAndCommit,
       addUnitsBulk,
       addTaxes,
     };
@@ -1010,10 +1010,18 @@ export default {
       this.addUnits();
       this.unit = id;
     },
-    loadTaxRates: function (id) {
+    updateTaxRates: function (id) {
       this.tax_rate = null;
-      this.addTaxes();
-      //this.tax_rate = id;
+      let self = this;
+      this.axiosCallAndCommit("storeTaxes","get","ta",{ action: 'dropdown' }).then(function (data) {
+        if (data.success == true) {
+          self.tax_rate = id;
+        }
+      })
+      .catch(function () {
+        self.notifyDefault({ title: 'Failed to set new id !' });
+        self.addTaxes()
+      });
     },
     loadUnitsBulk: function (id) {
       //

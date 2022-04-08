@@ -49,20 +49,13 @@ export default function () {
                 }
             } else if (resData.success == true && resData.location) {
                 notifyApiResponse(resData);
-                if (resData.location) { // redirect found
-                    router.push({ path: "/" + resData.location }).catch((e) => {
-                        console.log(e);
-                    });
-                }
+                router.push({ path: "/" + resData.location }).catch((e) => {
+                    console.log(e);
+                });
             }
             else if (resData.success == true) {
-                if (resData.location) { // redirect found
-                    router.push({ path: "/" + resData.location }).catch((e) => {
-                        console.log(e);
-                    });
-                }
+                //
             }
-
             /******************************* */
             // Don't forget to return something   
             return res.data
@@ -170,6 +163,66 @@ export default function () {
             this.notifyCatchResponse({ message: error.message });
         });
     }
+    async function axiosCallAndCommit(mutation,method,url,data) {
+        const endpoint = "http://localhost/pos-vue3/server/admin/ajax/";
+        store.commit("storeTaxes", undefined);
+        try {
+            let res = await axios({
+                url: endpoint + url,
+                method: method,
+                data: data,
+                params: method == 'get' ? data : undefined,
+                timeout: 8000,
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            if (res.status == 200) {
+                // test for status you want, etc
+                //console.log(res.data)
+            }
+            /******************************* */ // common things for all response
+            let resData = res.data;
+            if (resData.success == false) {
+                if (resData.location) { // redirect found
+                    notifyApiResponse(resData);
+                    router.push({ path: "/" + resData.location }).catch((e) => {
+                        console.log(e);
+                    });
+                } else if (resData.errors) { // may be form errors
+                    notifyFormError({
+                        message: "Server Validation Errors Found !",
+                        type: "warning",
+                    });
+                }
+                else {
+                    notifyApiResponse(resData);
+                }
+            } else if (resData.success == true && resData.location) {
+                notifyApiResponse(resData);
+                router.push({ path: "/" + resData.location }).catch((e) => {
+                    console.log(e);
+                });
+            }
+            else if (resData.success == true) {
+                //
+            }
+            /******************************* */
+            // Don't forget to return something 
+            store.commit(mutation, res.data.data);
+            return res.data
+        }
+        catch (err) {
+            notifyCatchResponse({ title: err });
+        }
+    }
+
+
+
+
+
+
+
     function adminTest() {
         router.push({ name: "adminDashboard" }).catch((e) => {
             console.log(e);
@@ -193,6 +246,7 @@ export default function () {
         addTaxes,
         /******************* */
         axiosCall,
+        axiosCallAndCommit,
         productTypes,
     }
 }
