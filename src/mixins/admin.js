@@ -163,9 +163,9 @@ export default function () {
             this.notifyCatchResponse({ message: error.message });
         });
     }
-    async function axiosCallAndCommit(mutation,method,url,data) {
+    async function axiosCallAndCommit(mutation, method, url, data) {
         const endpoint = "http://localhost/pos-vue3/server/admin/ajax/";
-        store.commit("storeTaxes", undefined);
+        store.commit(mutation, undefined); // reset specific store data
         try {
             let res = await axios({
                 url: endpoint + url,
@@ -183,34 +183,27 @@ export default function () {
             }
             /******************************* */ // common things for all response
             let resData = res.data;
-            if (resData.success == false) {
-                if (resData.location) { // redirect found
+            if (resData.success == true) {
+                if (resData.location) {
                     notifyApiResponse(resData);
                     router.push({ path: "/" + resData.location }).catch((e) => {
                         console.log(e);
                     });
-                } else if (resData.errors) { // may be form errors
-                    notifyFormError({
-                        message: "Server Validation Errors Found !",
-                        type: "warning",
+                }
+                else{
+                    store.commit(mutation, resData.data); // store new data
+                }
+            }
+            else if (resData.success == false) {
+                notifyApiResponse(resData);
+                if (resData.location) { // redirect found
+                    router.push({ path: "/" + resData.location }).catch((e) => {
+                        console.log(e);
                     });
                 }
-                else {
-                    notifyApiResponse(resData);
-                }
-            } else if (resData.success == true && resData.location) {
-                notifyApiResponse(resData);
-                router.push({ path: "/" + resData.location }).catch((e) => {
-                    console.log(e);
-                });
             }
-            else if (resData.success == true) {
-                //
-            }
-            /******************************* */
             // Don't forget to return something 
-            store.commit(mutation, res.data.data);
-            return res.data
+            return resData
         }
         catch (err) {
             notifyCatchResponse({ title: err });

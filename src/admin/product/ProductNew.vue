@@ -1007,19 +1007,28 @@ export default {
       this.brand = id;
     },
     loadUnits: function (id) {
-      this.addUnits();
-      this.unit = id;
+      let self = this;
+      this.unit = null;
+      this.axiosCallAndCommit("storeUnits","get","unit",{ action: 'list_base' }).then(function (data) {
+        if (data.success == true) {
+          self.unit = id;
+        }
+      })
+      .catch(function () {
+        self.notifyDefault({ title: 'Failed to select unit, select manually !' });
+        self.addUnits()
+      });
     },
     updateTaxRates: function (id) {
-      this.tax_rate = null;
       let self = this;
-      this.axiosCallAndCommit("storeTaxes","get","ta",{ action: 'dropdown' }).then(function (data) {
+      this.tax_rate = null;
+      this.axiosCallAndCommit("storeTaxes","get","tax",{ action: 'dropdown' }).then(function (data) {
         if (data.success == true) {
           self.tax_rate = id;
         }
       })
       .catch(function () {
-        self.notifyDefault({ title: 'Failed to set new id !' });
+        self.notifyDefault({ title: 'Failed to select tax rate, select manually !' });
         self.addTaxes()
       });
     },
