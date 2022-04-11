@@ -385,11 +385,7 @@
                     Loading...
                   </option>
                   <option :value="null" selected>
-                    {{
-                      units == false
-                        ? "Updating..."
-                        : "-- Select --"
-                    }}
+                    {{ units == false ? "Updating..." : "-- Select --" }}
                   </option>
                   <option v-for="u in units" :key="u.id" :value="u.id">
                     {{ u.name }}
@@ -549,12 +545,80 @@
         </div>
         <!-- column section 3 -->
         <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Default Purchase Information</h5>
-              <hr />
-              <div class="row mb-1">
-                <div class="row mb-1">
+            <div class="card mb-1">
+              <h5 class="card-header bg-secondary text-light">Purchase Information</h5>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col">
+                    <label class="form-label">Cost</label>
+                    <div class="input-group is-invalid">
+                      <input
+                        type="number"
+                        name="cost"
+                        v-model="cost"
+                        class="form-control"
+                        v-bind:class="[
+                          errorCost
+                            ? 'is-invalid'
+                            : !errorCost && cost
+                            ? 'is-valid'
+                            : '',
+                        ]"
+                      /><span class="input-group-text">₹</span>
+                    </div>
+                    <div class="invalid-feedback">{{ errorCost }}</div>
+                  </div>
+                  <div class="col">
+                    <label class="form-label">Cost</label>
+                    <div class="input-group is-invalid">
+                      <input
+                        type="number"
+                        name="cost"
+                        v-model="cost"
+                        class="form-control"
+                        id="productcode"
+                        v-bind:class="[
+                          errorCost
+                            ? 'is-invalid'
+                            : !errorCost && cost
+                            ? 'is-valid'
+                            : '',
+                        ]"
+                      /><span class="input-group-text">₹</span>
+                    </div>
+                    <div class="invalid-feedback">{{ errorCost }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <h5 class="card-header bg-secondary text-light">Selling Information</h5>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col">
+                    <label for="tax_method" class="form-label"
+                      >Tax Method<i>*</i></label
+                    >
+                    <div class="input-group is-invalid">
+                      <select
+                        class="form-select"
+                        name="tax_method"
+                        v-model="tax_method"
+                        id="tax_method"
+                        v-bind:class="[
+                          errorTaxMethod
+                            ? 'is-invalid'
+                            : tax_method
+                            ? 'is-valid'
+                            : '',
+                        ]"
+                      >
+                        <option value="I">Inclusive</option>
+                        <option value="E">Exclusive</option>
+                      </select>
+                    </div>
+                    <div class="invalid-feedback">{{ errorTaxMethod }}</div>
+                  </div>
                   <div class="col">
                     <label for="taxrate" class="form-label">Tax Rate</label>
                     <div class="input-group is-invalid">
@@ -603,6 +667,141 @@
                     <div class="invalid-feedback">{{ errorTaxRate }}</div>
                   </div>
                 </div>
+                <div class="row mb-1">
+                  <div class="col">
+                    <label class="form-label">Profit Margin<i>*</i></label>
+                    <div class="input-group is-invalid">
+                      <input
+                        type="number"
+                        name="profit_margin"
+                        v-model="profit_margin"
+                        class="form-control"
+                        v-bind:class="[
+                          errorProfitMargin
+                            ? 'is-invalid'
+                            : !errorProfitMargin && profit_margin
+                            ? 'is-valid'
+                            : '',
+                        ]"
+                      />
+                      <span class="input-group-text"
+                        ><i class="fa-solid fa-percent"></i
+                      ></span>
+                    </div>
+                    <div class="invalid-feedback">{{ errorProfitMargin }}</div>
+                  </div>
+                  <div class="col">
+                    <label class="form-label">Tax</label>
+                    <div class="input-group is-invalid">
+                      <input
+                        type="number"
+                        class="form-control"
+                        value="100"
+                        disabled
+                      />
+                      <span class="input-group-text">₹</span>
+                    </div>
+                    <div class="invalid-feedback">{{}}</div>
+                  </div>
+                </div>
+                <div class="row mb-1">
+                  <div class="col">
+                    <label class="form-label">Auto Discount</label>
+                    <div class="input-group is-invalid">
+                      <input
+                        type="number"
+                        name="auto_discount"
+                        v-model="auto_discount"
+                        class="form-control"
+                        id="productcode"
+                        v-bind:class="[
+                          errorAutoDiscount
+                            ? 'is-invalid'
+                            : !errorAutoDiscount && auto_discount
+                            ? 'is-valid'
+                            : '',
+                        ]"
+                      />
+                      <span class="input-group-text">₹</span>
+                    </div>
+                    <div class="invalid-feedback">{{ errorAutoDiscount }}</div>
+                  </div>
+                  <div class="col">
+                    <label class="form-label text-success"
+                      >Selling Price<i>*</i></label
+                    >
+                    <div class="input-group is-invalid">
+                      <input
+                        type="number"
+                        name="price"
+                        v-model="price"
+                        class="form-control"
+                        v-bind:class="[
+                          errorPrice
+                            ? 'is-invalid'
+                            : !errorPrice && price
+                            ? 'is-valid'
+                            : '',
+                        ]"
+                      />
+                      <span class="input-group-text">₹</span>
+                    </div>
+                    <div class="invalid-feedback">{{ errorPrice }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
+          <div class="card">
+            <h5 class="card-header bg-secondary text-light">Stock Adjustment</h5>
+            <div class="card-body">
+              <p class="card-text">
+                You can add an opening stock or adjust the current stock.
+              </p>
+            
+              <div class="row mb-1">
+                <div class="col">
+                  <label class="form-label">Cost</label>
+                  <div class="input-group is-invalid">
+                    <input
+                      type="number"
+                      name="cost"
+                      v-model="cost"
+                      class="form-control"
+                      v-bind:class="[
+                        errorCost
+                          ? 'is-invalid'
+                          : !errorCost && cost
+                          ? 'is-valid'
+                          : '',
+                      ]"
+                    /><span class="input-group-text">₹</span>
+                  </div>
+                  <div class="invalid-feedback">{{ errorCost }}</div>
+                </div>
+                <div class="col">
+                  <label class="form-label">Cost</label>
+                  <div class="input-group is-invalid">
+                    <input
+                      type="number"
+                      name="cost"
+                      v-model="cost"
+                      class="form-control"
+                      id="productcode"
+                      v-bind:class="[
+                        errorCost
+                          ? 'is-invalid'
+                          : !errorCost && cost
+                          ? 'is-valid'
+                          : '',
+                      ]"
+                    /><span class="input-group-text">₹</span>
+                  </div>
+                  <div class="invalid-feedback">{{ errorCost }}</div>
+                </div>
               </div>
             </div>
           </div>
@@ -610,7 +809,7 @@
       </div>
       <div class="d-flex pt-3">
         <div class="me-auto">
-          <button type="submit" class="btn btn-success" :disabled="!isValid">
+          <button type="submit" class="btn btn-success" :disable="!isValid">
             Save
           </button>
         </div>
@@ -718,6 +917,11 @@ export default {
       isalert: false,
       alert_quantity: null,
       tax_rate: null,
+      tax_method: "I",
+      cost: null,
+      profit_margin: null,
+      auto_discount: null,
+      price: null,
     };
     /************************************************************************* */
     const schema = computed(() => {
@@ -772,6 +976,7 @@ export default {
         mrp: yup
           .number()
           .nullable(true)
+          .moreThan(0)
           .transform((_, val) => (val === Number(val) ? val : null))
           .label("MRP"),
         unit: yup
@@ -808,6 +1013,36 @@ export default {
           .nullable(true)
           .transform((_, val) => (val === Number(val) ? val : null))
           .label("Tax Rate"),
+        cost: yup
+          .number()
+          .nullable(true)
+          .typeError("Cost must be a number")
+          .label("Cost"),
+        profit_margin: yup
+          .number()
+          .nullable(true)
+          .typeError("Margin must be a number")
+          .label("Margin"),
+        auto_discount: yup
+          .number()
+          .nullable(true)
+          .typeError("Discount must be a number")
+          .label("Auto Discount"),
+        price: yup
+          .number()
+          .required()
+          .nullable(true)
+          .typeError("Selling Price must be a number")
+          .when("mrp", {
+            is: (mrp) => Number(mrp),
+            then: yup
+              .number()
+              .required()
+              .nullable(true)
+              .typeError("Selling Price must be a number")
+              .lessThan(yup.ref("mrp"), "Selling Price must be less than MRP"),
+          })
+          .label("Selling Price"),
       });
     });
     /************************************************************************* */
@@ -845,6 +1080,14 @@ export default {
       useField("alert_quantity");
     const { value: tax_rate, errorMessage: errorTaxRate } =
       useField("tax_rate");
+    const { value: tax_method, errorMessage: errorTaxMethod } =
+      useField("tax_method");
+    const { value: cost, errorMessage: errorCost } = useField("cost");
+    const { value: profit_margin, errorMessage: errorProfitMargin } =
+      useField("profit_margin");
+    const { value: auto_discount, errorMessage: errorAutoDiscount } =
+      useField("auto_discount");
+    const { value: price, errorMessage: errorPrice } = useField("price");
     /************************************************************************* */
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
@@ -990,6 +1233,16 @@ export default {
       errorAlertQuantity,
       tax_rate,
       errorTaxRate,
+      tax_method,
+      errorTaxMethod,
+      cost,
+      errorCost,
+      profit_margin,
+      errorProfitMargin,
+      auto_discount,
+      errorAutoDiscount,
+      price,
+      errorPrice,
       /*************** */
       isDirty,
       isValid,
