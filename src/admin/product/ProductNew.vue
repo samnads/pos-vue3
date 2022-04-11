@@ -799,7 +799,9 @@
                   <div class="invalid-feedback">{{ errorWareHouse }}</div>
                 </div>
                 <div class="col">
-                  <label class="form-label">Adjustment Quantity<i v-if="warehouse">*</i></label>
+                  <label class="form-label"
+                    >Adjustment Quantity<i v-if="warehouse">*</i></label
+                  >
                   <div class="input-group is-invalid">
                     <input
                       type="number"
@@ -816,7 +818,7 @@
                       ]"
                     />
                   </div>
-                  <div class="invalid-feedback">{{errorStockAdjCount}}</div>
+                  <div class="invalid-feedback">{{ errorStockAdjCount }}</div>
                 </div>
                 <div class="col">
                   <label class="form-label">Reference No.</label>
@@ -844,7 +846,7 @@
                   </div>
                   <div class="invalid-feedback">{{}}</div>
                 </div>
-                 <div class="col">
+                <div class="col">
                   <label class="form-label">Opening Stock</label>
                   <div class="input-group is-invalid">
                     <input
@@ -870,7 +872,8 @@
       </div>
       <div class="d-flex pt-3">
         <div class="me-auto">
-          <button type="submit" class="btn btn-success" :disable="!isValid">
+          <button type="submit" class="btn btn-success" :disabled="isSubmitting">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" v-if="isSubmitting"></span>
             Save
           </button>
         </div>
@@ -878,7 +881,7 @@
           <button
             type="button"
             class="btn btn-secondary"
-            v-if="isDirty"
+            v-if="isDirty && !isSubmitting"
             @click="resetCustom"
           >
             <i class="fa-solid fa-rotate-left"></i>
@@ -988,7 +991,7 @@ export default {
       auto_discount: null,
       price: null,
       warehouse: null,
-      stock_adj_count:null
+      stock_adj_count: null,
     };
     /************************************************************************* */
     const schema = computed(() => {
@@ -1107,7 +1110,7 @@ export default {
               .required()
               .nullable(true)
               .typeError("Selling Price must be a number")
-              .lessThan(yup.ref("mrp"), "Selling Price must be less than MRP"),
+              .max(yup.ref("mrp"), "Selling Price must be less than MRP"),
           })
           .label("Selling Price"),
         warehouse: yup
@@ -1125,13 +1128,13 @@ export default {
               .number()
               .required()
               .nullable(true)
-              .typeError("Invalid input")
+              .typeError("Invalid input"),
           })
           .label("Stock Adj. Count"),
       });
     });
     /************************************************************************* */
-    const { setFieldValue, handleSubmit, resetForm } = useForm({
+    const { setFieldValue, handleSubmit, isSubmitting, resetForm } = useForm({
       validationSchema: schema,
       initialValues: formValues,
       initialErrors: {},
@@ -1175,7 +1178,7 @@ export default {
     const { value: price, errorMessage: errorPrice } = useField("price");
     const { value: warehouse, errorMessage: errorWareHouse } =
       useField("warehouse");
-      const { value: stock_adj_count, errorMessage: errorStockAdjCount } =
+    const { value: stock_adj_count, errorMessage: errorStockAdjCount } =
       useField("stock_adj_count");
     /************************************************************************* */
     const isDirty = useIsFormDirty();
@@ -1284,6 +1287,7 @@ export default {
       productTypes,
       symbologies,
       categories,
+      subCats,
       brands,
       units,
       unitsBulk,
@@ -1341,10 +1345,9 @@ export default {
       isDirty,
       isValid,
       onSubmit,
+      isSubmitting,
       resetForm,
       resetCustom,
-      subCats,
-      isalert,
       notifyDefault,
       /******************/
       addProductTypes,

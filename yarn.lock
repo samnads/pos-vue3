@@ -2,6 +2,14 @@
 # yarn lockfile v1
 
 
+"@aacassandra/vue3-progressbar@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@aacassandra/vue3-progressbar/-/vue3-progressbar-1.0.3.tgz#12df4a135968a43af2d2a5753174587e5cc5cb95"
+  integrity sha512-e4SlgYwXiNABJbHYOChs3aSiCyR+1D6WAjWR1zo3vCs/9k6Vjj2GIPXWNJA/YP4RhlQS4eSC3RtCPC95CfAEbw==
+  dependencies:
+    core-js "^3.6.5"
+    vue "^3.0.0"
+
 "@ampproject/remapping@^2.1.0":
   version "2.1.2"
   resolved "https://registry.npmjs.org/@ampproject/remapping/-/remapping-2.1.2.tgz"
@@ -2660,7 +2668,7 @@ core-js-compat@^3.20.2, core-js-compat@^3.21.0, core-js-compat@^3.8.3:
     browserslist "^4.19.1"
     semver "7.0.0"
 
-core-js@^3.8.3:
+core-js@^3.6.5, core-js@^3.8.3:
   version "3.21.1"
   resolved "https://registry.npmjs.org/core-js/-/core-js-3.21.1.tgz"
   integrity sha512-FRq5b/VMrWlrmCzwRrpDYNxyHP9BcAZC+xHJaqTgIE5091ZV1NTmyh0sGOg5XqpnHvR0svdy0sv1gWA1zmhxig==
@@ -6739,7 +6747,7 @@ vue-template-es2015-compiler@^1.9.0:
   resolved "https://registry.npmjs.org/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz"
   integrity sha512-4gDntzrifFnCEvyoO8PqyJDmguXgVPxKiIxrBKjIowvL9l+N66196+72XVYR8BBf1Uv1Fgt3bGevJ+sEmxfZzw==
 
-vue@^3.2.31:
+vue@^3.0.0, vue@^3.2.31:
   version "3.2.31"
   resolved "https://registry.yarnpkg.com/vue/-/vue-3.2.31.tgz#e0c49924335e9f188352816788a4cca10f817ce6"
   integrity sha512-odT3W2tcffTiQCy57nOT93INw1auq5lYLLYtWpPYQQYQOOdHiqFct9Xhna6GJ+pJQaF67yZABraH47oywkJgFw==
