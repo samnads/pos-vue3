@@ -545,224 +545,12 @@
         </div>
         <!-- column section 3 -->
         <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
-            <div class="card mb-1">
-              <h5 class="card-header bg-secondary text-light">Purchase Information</h5>
-              <div class="card-body">
-                <div class="row">
-                  <div class="col">
-                    <label class="form-label">Cost</label>
-                    <div class="input-group is-invalid">
-                      <input
-                        type="number"
-                        name="cost"
-                        v-model="cost"
-                        class="form-control"
-                        v-bind:class="[
-                          errorCost
-                            ? 'is-invalid'
-                            : !errorCost && cost
-                            ? 'is-valid'
-                            : '',
-                        ]"
-                      /><span class="input-group-text">₹</span>
-                    </div>
-                    <div class="invalid-feedback">{{ errorCost }}</div>
-                  </div>
-                  <div class="col">
-                    <label class="form-label">Cost</label>
-                    <div class="input-group is-invalid">
-                      <input
-                        type="number"
-                        name="cost"
-                        v-model="cost"
-                        class="form-control"
-                        id="productcode"
-                        v-bind:class="[
-                          errorCost
-                            ? 'is-invalid'
-                            : !errorCost && cost
-                            ? 'is-valid'
-                            : '',
-                        ]"
-                      /><span class="input-group-text">₹</span>
-                    </div>
-                    <div class="invalid-feedback">{{ errorCost }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="card">
-              <h5 class="card-header bg-secondary text-light">Selling Information</h5>
-              <div class="card-body">
-                <div class="row">
-                  <div class="col">
-                    <label for="tax_method" class="form-label"
-                      >Tax Method<i>*</i></label
-                    >
-                    <div class="input-group is-invalid">
-                      <select
-                        class="form-select"
-                        name="tax_method"
-                        v-model="tax_method"
-                        id="tax_method"
-                        v-bind:class="[
-                          errorTaxMethod
-                            ? 'is-invalid'
-                            : tax_method
-                            ? 'is-valid'
-                            : '',
-                        ]"
-                      >
-                        <option value="I">Inclusive</option>
-                        <option value="E">Exclusive</option>
-                      </select>
-                    </div>
-                    <div class="invalid-feedback">{{ errorTaxMethod }}</div>
-                  </div>
-                  <div class="col">
-                    <label for="taxrate" class="form-label">Tax Rate</label>
-                    <div class="input-group is-invalid">
-                      <select
-                        class="form-select"
-                        name="tax_rate"
-                        :disabled="!taxes"
-                        v-model="tax_rate"
-                        id="taxrate"
-                        v-bind:class="[
-                          errorTaxRate
-                            ? 'is-invalid'
-                            : taxes && tax_rate
-                            ? 'is-valid'
-                            : '',
-                        ]"
-                      >
-                        <option
-                          :value="formValues.tax_rate"
-                          v-if="taxes == undefined"
-                          selected
-                        >
-                          Loading...
-                        </option>
-                        <option :value="null" selected>
-                          {{ taxes == false ? "Updating..." : "-- No Tax --" }}
-                        </option>
-                        <option v-for="tr in taxes" :key="tr.id" :value="tr.id">
-                          {{
-                            tr.name +
-                            " ~ " +
-                            parseInt(tr.rate).toFixed(2) +
-                            (tr.type == "P" ? " %" : " (Fixed Rate)")
-                          }}
-                        </option>
-                      </select>
-                      <button
-                        class="input-group-text text-info"
-                        type="button"
-                        @click="newTaxRate"
-                        v-if="taxes"
-                      >
-                        <i class="fa-solid fa-plus"></i>
-                      </button>
-                    </div>
-                    <div class="invalid-feedback">{{ errorTaxRate }}</div>
-                  </div>
-                </div>
-                <div class="row mb-1">
-                  <div class="col">
-                    <label class="form-label">Profit Margin<i>*</i></label>
-                    <div class="input-group is-invalid">
-                      <input
-                        type="number"
-                        name="profit_margin"
-                        v-model="profit_margin"
-                        class="form-control"
-                        v-bind:class="[
-                          errorProfitMargin
-                            ? 'is-invalid'
-                            : !errorProfitMargin && profit_margin
-                            ? 'is-valid'
-                            : '',
-                        ]"
-                      />
-                      <span class="input-group-text"
-                        ><i class="fa-solid fa-percent"></i
-                      ></span>
-                    </div>
-                    <div class="invalid-feedback">{{ errorProfitMargin }}</div>
-                  </div>
-                  <div class="col">
-                    <label class="form-label">Tax</label>
-                    <div class="input-group is-invalid">
-                      <input
-                        type="number"
-                        class="form-control"
-                        value="100"
-                        disabled
-                      />
-                      <span class="input-group-text">₹</span>
-                    </div>
-                    <div class="invalid-feedback">{{}}</div>
-                  </div>
-                </div>
-                <div class="row mb-1">
-                  <div class="col">
-                    <label class="form-label">Auto Discount</label>
-                    <div class="input-group is-invalid">
-                      <input
-                        type="number"
-                        name="auto_discount"
-                        v-model="auto_discount"
-                        class="form-control"
-                        id="productcode"
-                        v-bind:class="[
-                          errorAutoDiscount
-                            ? 'is-invalid'
-                            : !errorAutoDiscount && auto_discount
-                            ? 'is-valid'
-                            : '',
-                        ]"
-                      />
-                      <span class="input-group-text">₹</span>
-                    </div>
-                    <div class="invalid-feedback">{{ errorAutoDiscount }}</div>
-                  </div>
-                  <div class="col">
-                    <label class="form-label text-success"
-                      >Selling Price<i>*</i></label
-                    >
-                    <div class="input-group is-invalid">
-                      <input
-                        type="number"
-                        name="price"
-                        v-model="price"
-                        class="form-control"
-                        v-bind:class="[
-                          errorPrice
-                            ? 'is-invalid'
-                            : !errorPrice && price
-                            ? 'is-valid'
-                            : '',
-                        ]"
-                      />
-                      <span class="input-group-text">₹</span>
-                    </div>
-                    <div class="invalid-feedback">{{ errorPrice }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
-          <div class="card">
-            <h5 class="card-header bg-secondary text-light">Stock Adjustment</h5>
+          <div class="card mb-1">
+            <h5 class="card-header bg-secondary text-light">
+              Purchase Information
+            </h5>
             <div class="card-body">
-              <p class="card-text">
-                You can add an opening stock or adjust the current stock.
-              </p>
-            
-              <div class="row mb-1">
+              <div class="row">
                 <div class="col">
                   <label class="form-label">Cost</label>
                   <div class="input-group is-invalid">
@@ -801,6 +589,279 @@
                     /><span class="input-group-text">₹</span>
                   </div>
                   <div class="invalid-feedback">{{ errorCost }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <h5 class="card-header bg-secondary text-light">
+              Selling Information
+            </h5>
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <label for="tax_method" class="form-label"
+                    >Tax Method<i>*</i></label
+                  >
+                  <div class="input-group is-invalid">
+                    <select
+                      class="form-select"
+                      name="tax_method"
+                      v-model="tax_method"
+                      id="tax_method"
+                      v-bind:class="[
+                        errorTaxMethod
+                          ? 'is-invalid'
+                          : tax_method
+                          ? 'is-valid'
+                          : '',
+                      ]"
+                    >
+                      <option value="I">Inclusive</option>
+                      <option value="E">Exclusive</option>
+                    </select>
+                  </div>
+                  <div class="invalid-feedback">{{ errorTaxMethod }}</div>
+                </div>
+                <div class="col">
+                  <label for="taxrate" class="form-label">Tax Rate</label>
+                  <div class="input-group is-invalid">
+                    <select
+                      class="form-select"
+                      name="tax_rate"
+                      :disabled="!taxes"
+                      v-model="tax_rate"
+                      id="taxrate"
+                      v-bind:class="[
+                        errorTaxRate
+                          ? 'is-invalid'
+                          : taxes && tax_rate
+                          ? 'is-valid'
+                          : '',
+                      ]"
+                    >
+                      <option
+                        :value="formValues.tax_rate"
+                        v-if="taxes == undefined"
+                        selected
+                      >
+                        Loading...
+                      </option>
+                      <option :value="null" selected>
+                        {{ taxes == false ? "Updating..." : "-- No Tax --" }}
+                      </option>
+                      <option v-for="tr in taxes" :key="tr.id" :value="tr.id">
+                        {{
+                          tr.name +
+                          " ~ " +
+                          parseInt(tr.rate).toFixed(2) +
+                          (tr.type == "P" ? " %" : " (Fixed Rate)")
+                        }}
+                      </option>
+                    </select>
+                    <button
+                      class="input-group-text text-info"
+                      type="button"
+                      @click="newTaxRate"
+                      v-if="taxes"
+                    >
+                      <i class="fa-solid fa-plus"></i>
+                    </button>
+                  </div>
+                  <div class="invalid-feedback">{{ errorTaxRate }}</div>
+                </div>
+              </div>
+              <div class="row mb-1">
+                <div class="col">
+                  <label class="form-label">Profit Margin<i>*</i></label>
+                  <div class="input-group is-invalid">
+                    <input
+                      type="number"
+                      name="profit_margin"
+                      v-model="profit_margin"
+                      class="form-control"
+                      v-bind:class="[
+                        errorProfitMargin
+                          ? 'is-invalid'
+                          : !errorProfitMargin && profit_margin
+                          ? 'is-valid'
+                          : '',
+                      ]"
+                    />
+                    <span class="input-group-text"
+                      ><i class="fa-solid fa-percent"></i
+                    ></span>
+                  </div>
+                  <div class="invalid-feedback">{{ errorProfitMargin }}</div>
+                </div>
+                <div class="col">
+                  <label class="form-label">Tax</label>
+                  <div class="input-group is-invalid">
+                    <input
+                      type="number"
+                      class="form-control"
+                      value="100"
+                      disabled
+                    />
+                    <span class="input-group-text">₹</span>
+                  </div>
+                  <div class="invalid-feedback">{{}}</div>
+                </div>
+              </div>
+              <div class="row mb-1">
+                <div class="col">
+                  <label class="form-label">Auto Discount</label>
+                  <div class="input-group is-invalid">
+                    <input
+                      type="number"
+                      name="auto_discount"
+                      v-model="auto_discount"
+                      class="form-control"
+                      id="productcode"
+                      v-bind:class="[
+                        errorAutoDiscount
+                          ? 'is-invalid'
+                          : !errorAutoDiscount && auto_discount
+                          ? 'is-valid'
+                          : '',
+                      ]"
+                    />
+                    <span class="input-group-text">₹</span>
+                  </div>
+                  <div class="invalid-feedback">{{ errorAutoDiscount }}</div>
+                </div>
+                <div class="col">
+                  <label class="form-label text-success"
+                    >Selling Price<i>*</i></label
+                  >
+                  <div class="input-group is-invalid">
+                    <input
+                      type="number"
+                      name="price"
+                      v-model="price"
+                      class="form-control"
+                      v-bind:class="[
+                        errorPrice
+                          ? 'is-invalid'
+                          : !errorPrice && price
+                          ? 'is-valid'
+                          : '',
+                      ]"
+                    />
+                    <span class="input-group-text">₹</span>
+                  </div>
+                  <div class="invalid-feedback">{{ errorPrice }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
+          <div class="card">
+            <h5 class="card-header bg-secondary text-light">
+              Stock Adjustment
+            </h5>
+            <div class="card-body">
+              <p class="card-text text-muted">
+                You can add an opening stock or adjust the current stock.
+              </p>
+              <div class="row mb-1">
+                <div class="col">
+                  <label class="form-label">Warehouse</label>
+                  <div class="input-group is-invalid">
+                    <select
+                      class="form-select"
+                      name="warehouse"
+                      :disabled="!warehouses"
+                      v-model="warehouse"
+                      v-bind:class="[
+                        errorWareHouse
+                          ? 'is-invalid'
+                          : warehouses && warehouse
+                          ? 'is-valid'
+                          : '',
+                      ]"
+                    >
+                      <option :value="null" selected>
+                        {{ warehouses ? "-- Select --" : "Loading..." }}
+                      </option>
+                      <option
+                        v-for="wh in warehouses"
+                        :key="wh.id"
+                        :value="wh.id"
+                      >
+                        {{ wh.name }}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="invalid-feedback">{{ errorWareHouse }}</div>
+                </div>
+                <div class="col">
+                  <label class="form-label">Adjustment Quantity<i v-if="warehouse">*</i></label>
+                  <div class="input-group is-invalid">
+                    <input
+                      type="number"
+                      name="stock_adj_count"
+                      v-model="stock_adj_count"
+                      class="form-control"
+                      placeholder="+/-"
+                      v-bind:class="[
+                        errorStockAdjCount
+                          ? 'is-invalid'
+                          : stock_adj_count
+                          ? 'is-valid'
+                          : '',
+                      ]"
+                    />
+                  </div>
+                  <div class="invalid-feedback">{{errorStockAdjCount}}</div>
+                </div>
+                <div class="col">
+                  <label class="form-label">Reference No.</label>
+                  <div class="input-group is-invalid">
+                    <input
+                      type="number"
+                      name="ref_no"
+                      v-model="ref_no"
+                      class="form-control"
+                    />
+                  </div>
+                  <div class="invalid-feedback">{{}}</div>
+                </div>
+                <div class="col">
+                  <label class="form-label">Adustment Note</label>
+                  <div class="input-group is-invalid">
+                    <textarea
+                      type="number"
+                      name="stock_adj_note"
+                      v-model="stock_adj_note"
+                      class="form-control"
+                      rows="1"
+                    >
+                    </textarea>
+                  </div>
+                  <div class="invalid-feedback">{{}}</div>
+                </div>
+                 <div class="col">
+                  <label class="form-label">Opening Stock</label>
+                  <div class="input-group is-invalid">
+                    <input
+                      type="number"
+                      class="form-control"
+                      :value="0"
+                      disabled
+                    />
+                  </div>
+                  <div class="invalid-feedback">{{}}</div>
+                </div>
+                <div class="col">
+                  <label class="form-label">Final Stock</label>
+                  <div class="input-group is-invalid">
+                    <input type="number" class="form-control" disabled />
+                  </div>
+                  <div class="invalid-feedback">{{}}</div>
                 </div>
               </div>
             </div>
@@ -870,6 +931,7 @@ export default {
       addUnits,
       addUnitsBulk,
       addTaxes,
+      addWareHouses,
       notifyDefault,
       notifyFormError,
       notifyApiResponse,
@@ -902,6 +964,9 @@ export default {
     let taxes = computed(function () {
       return store.state.TAXES;
     });
+    let warehouses = computed(function () {
+      return store.state.WARE_HOUSES;
+    });
     /**************************************** */ // Default values
     var subCats = ref(0);
     /************************************************************************* */
@@ -922,6 +987,8 @@ export default {
       profit_margin: null,
       auto_discount: null,
       price: null,
+      warehouse: null,
+      stock_adj_count:null
     };
     /************************************************************************* */
     const schema = computed(() => {
@@ -1043,6 +1110,24 @@ export default {
               .lessThan(yup.ref("mrp"), "Selling Price must be less than MRP"),
           })
           .label("Selling Price"),
+        warehouse: yup
+          .number()
+          .nullable(true)
+          .transform((_, val) => (val === Number(val) ? val : null))
+          .label("Warehouse"),
+        stock_adj_count: yup
+          .number()
+          .nullable(true)
+          .typeError("Invalid input")
+          .when("warehouse", {
+            is: (warehouse) => Number(warehouse),
+            then: yup
+              .number()
+              .required()
+              .nullable(true)
+              .typeError("Invalid input")
+          })
+          .label("Stock Adj. Count"),
       });
     });
     /************************************************************************* */
@@ -1088,6 +1173,10 @@ export default {
     const { value: auto_discount, errorMessage: errorAutoDiscount } =
       useField("auto_discount");
     const { value: price, errorMessage: errorPrice } = useField("price");
+    const { value: warehouse, errorMessage: errorWareHouse } =
+      useField("warehouse");
+      const { value: stock_adj_count, errorMessage: errorStockAdjCount } =
+      useField("stock_adj_count");
     /************************************************************************* */
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
@@ -1199,6 +1288,7 @@ export default {
       units,
       unitsBulk,
       taxes,
+      warehouses,
       /******* fields   */
       type,
       errorType,
@@ -1243,6 +1333,10 @@ export default {
       errorAutoDiscount,
       price,
       errorPrice,
+      warehouse,
+      errorWareHouse,
+      stock_adj_count,
+      errorStockAdjCount,
       /*************** */
       isDirty,
       isValid,
@@ -1261,6 +1355,7 @@ export default {
       axiosCallAndCommit,
       addUnitsBulk,
       addTaxes,
+      addWareHouses,
     };
   },
   mixins: [],
@@ -1363,6 +1458,10 @@ export default {
     if (!this.taxes) {
       // if not found on store
       this.addTaxes(); // get tax rates
+    }
+    if (!this.warehouses) {
+      // if not found on store
+      this.addWareHouses(); // get ware houses
     }
     this.addUnitsBulk(1);
     this.handleChangeCat();

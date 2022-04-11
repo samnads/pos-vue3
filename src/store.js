@@ -9,6 +9,7 @@ export default createStore({
         units: undefined,
         units_bulk: undefined,
         TAXES: undefined,
+        WARE_HOUSES: undefined,
     },
     mutations: {
         storeProductTypes(state, item) {
@@ -31,6 +32,9 @@ export default createStore({
         },
         storeTaxes(state, item) {
             state.TAXES = item;
+        },
+        storeWareHouses(state, item) {
+            state.WARE_HOUSES = item;
         }
     }
 });

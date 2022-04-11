@@ -148,7 +148,6 @@ export default function () {
         });
     }
     function addUnitsBulk(id) {
-        store.commit("storeUnitsBulk", undefined);
         this.axios.get("http://localhost/CyberLikes-POS/admin/ajax/unit", { params: { action: 'list_sub', id: id }, }).then(function (response) {
             store.commit("storeUnitsBulk", response.data.data);
         }).catch((error) => {
@@ -156,9 +155,15 @@ export default function () {
         });
     }
     function addTaxes() {
-        store.commit("storeTaxes", undefined);
         this.axios.get("http://localhost/CyberLikes-POS/admin/ajax/tax", { params: { action: 'dropdown' }, }).then(function (response) {
             store.commit("storeTaxes", response.data.data);
+        }).catch((error) => {
+            this.notifyCatchResponse({ message: error.message });
+        });
+    }
+    function addWareHouses() {
+        this.axios.get("http://localhost/CyberLikes-POS/admin/ajax/warehouse", { params: { action: 'dropdown' }, }).then(function (response) {
+            store.commit("storeWareHouses", response.data.data);
         }).catch((error) => {
             this.notifyCatchResponse({ message: error.message });
         });
@@ -237,6 +242,7 @@ export default function () {
         addUnits,
         addUnitsBulk,
         addTaxes,
+        addWareHouses,
         /******************* */
         axiosCall,
         axiosCallAndCommit,
