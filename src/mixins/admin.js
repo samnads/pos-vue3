@@ -165,7 +165,7 @@ export default function () {
     }
     async function axiosCallAndCommit(mutation, method, url, data) {
         const endpoint = "http://localhost/pos-vue3/server/admin/ajax/";
-        store.commit(mutation, undefined); // reset specific store data
+        store.commit(mutation, false); // reset specific store data
         try {
             let res = await axios({
                 url: endpoint + url,

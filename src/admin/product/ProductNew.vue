@@ -64,7 +64,7 @@
                 v-bind:class="[
                   errorType
                     ? 'is-invalid'
-                    : !errorType && type
+                    : productTypes && type
                     ? 'is-valid'
                     : '',
                 ]"
@@ -127,7 +127,7 @@
                 v-bind:class="[
                   errorSymbology
                     ? 'is-invalid'
-                    : !errorSymbology && symbology
+                    : symbologies && symbology
                     ? 'is-valid'
                     : '',
                 ]"
@@ -221,7 +221,7 @@
                   v-bind:class="[
                     errorCategory
                       ? 'is-invalid'
-                      : !errorCategory && category
+                      : categories && category
                       ? 'is-valid'
                       : '',
                   ]"
@@ -233,8 +233,12 @@
                   >
                     Loading...
                   </option>
-                  <option selected :value="null" v-if="categories">
-                    -- Select ({{ categories.length }}) --
+                  <option :value="null" selected>
+                    {{
+                      !categories
+                        ? "Updating..."
+                        : "-- Select (" + categories.length + ")--"
+                    }}
                   </option>
                   <option v-for="c in categories" :key="c.id" :value="c.id">
                     {{ c.name }}
@@ -304,16 +308,20 @@
                   v-bind:class="[
                     errorBrand
                       ? 'is-invalid'
-                      : !errorBrand && brand
+                      : brands && brand
                       ? 'is-valid'
                       : '',
                   ]"
                 >
-                  <option selected :value="formValues.brand" v-if="!brands">
+                  <option
+                    :value="formValues.brand"
+                    v-if="brands == undefined"
+                    selected
+                  >
                     Loading...
                   </option>
-                  <option selected :value="null" v-if="brands">
-                    -- Select ({{ brands.length }}) --
+                  <option :value="null" selected>
+                    {{ brands == false ? "Updating..." : " -- Select --" }}
                   </option>
                   <option v-for="b in brands" :key="b.id" :value="b.id">
                     {{ b.name }}
@@ -323,6 +331,7 @@
                   class="input-group-text text-info"
                   role="button"
                   @click="newBrand"
+                  v-if="brands"
                   ><i class="fa-solid fa-plus"></i
                 ></span>
               </div>
@@ -361,18 +370,26 @@
                   :disabled="!units"
                   v-model="unit"
                   v-bind:class="[
-                    errorUnit
+                    units && errorUnit
                       ? 'is-invalid'
-                      : !errorUnit && unit
+                      : units && unit
                       ? 'is-valid'
                       : '',
                   ]"
                 >
-                  <option selected :value="formValues.unit" v-if="!units">
+                  <option
+                    :value="formValues.unit"
+                    v-if="units == undefined"
+                    selected
+                  >
                     Loading...
                   </option>
-                  <option selected :value="null" v-if="units">
-                    -- Select ({{ units.length }}) --
+                  <option :value="null" selected>
+                    {{
+                      units == false
+                        ? "Updating..."
+                        : "-- Select --"
+                    }}
                   </option>
                   <option v-for="u in units" :key="u.id" :value="u.id">
                     {{ u.name }}
@@ -382,10 +399,11 @@
                   class="input-group-text text-info"
                   role="button"
                   @click="newUnit"
+                  v-if="units"
                   ><i class="fa-solid fa-plus"></i
                 ></span>
               </div>
-              <div class="invalid-feedback">{{ errorUnit }}</div>
+              <div class="invalid-feedback">{{ units ? errorUnit : "" }}</div>
             </div>
             <div class="col">
               <label for="" class="form-label">Purchase Unit</label>
@@ -549,13 +567,20 @@
                         v-bind:class="[
                           errorTaxRate
                             ? 'is-invalid'
-                            : !errorTaxRate && tax_rate
+                            : taxes && tax_rate
                             ? 'is-valid'
                             : '',
                         ]"
                       >
+                        <option
+                          :value="formValues.tax_rate"
+                          v-if="taxes == undefined"
+                          selected
+                        >
+                          Loading...
+                        </option>
                         <option :value="null" selected>
-                          {{ !taxes ? "Loading..." : "-- No Tax --" }}
+                          {{ taxes == false ? "Updating..." : "-- No Tax --" }}
                         </option>
                         <option v-for="tr in taxes" :key="tr.id" :value="tr.id">
                           {{
@@ -585,7 +610,7 @@
       </div>
       <div class="d-flex pt-3">
         <div class="me-auto">
-          <button type="submit" class="btn btn-success" :disable="!isValid">
+          <button type="submit" class="btn btn-success" :disabled="!isValid">
             Save
           </button>
         </div>
@@ -1003,34 +1028,58 @@ export default {
       this.sub_category = id;
     },
     loadBrands: function (id) {
-      this.addBrands();
-      this.brand = id;
+      let self = this;
+      this.brand = null;
+      this.axiosCallAndCommit("storeBrands", "get", "brand", {
+        action: "dropdown",
+      })
+        .then(function (data) {
+          if (data.success == true) {
+            self.brand = id;
+          }
+        })
+        .catch(function () {
+          self.addBrands();
+          self.notifyDefault({
+            title: "Failed to select brand, select manually !",
+          });
+        });
     },
     loadUnits: function (id) {
       let self = this;
       this.unit = null;
-      this.axiosCallAndCommit("storeUnits","get","unit",{ action: 'list_base' }).then(function (data) {
-        if (data.success == true) {
-          self.unit = id;
-        }
+      this.axiosCallAndCommit("storeUnits", "get", "unit", {
+        action: "list_base",
       })
-      .catch(function () {
-        self.notifyDefault({ title: 'Failed to select unit, select manually !' });
-        self.addUnits()
-      });
+        .then(function (data) {
+          if (data.success == true) {
+            self.unit = id;
+          }
+        })
+        .catch(function () {
+          self.addUnits();
+          self.notifyDefault({
+            title: "Failed to select unit, select manually !",
+          });
+        });
     },
     updateTaxRates: function (id) {
       let self = this;
       this.tax_rate = null;
-      this.axiosCallAndCommit("storeTaxes","get","tax",{ action: 'dropdown' }).then(function (data) {
-        if (data.success == true) {
-          self.tax_rate = id;
-        }
+      this.axiosCallAndCommit("storeTaxes", "get", "tax", {
+        action: "dropdown",
       })
-      .catch(function () {
-        self.notifyDefault({ title: 'Failed to select tax rate, select manually !' });
-        self.addTaxes()
-      });
+        .then(function (data) {
+          if (data.success == true) {
+            self.tax_rate = id;
+          }
+        })
+        .catch(function () {
+          self.addTaxes();
+          self.notifyDefault({
+            title: "Failed to select tax rate, select manually !",
+          });
+        });
     },
     loadUnitsBulk: function (id) {
       //
