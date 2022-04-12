@@ -1202,20 +1202,22 @@ export default {
       console.log(values);
     }
     const onSubmit = handleSubmit((values) => {
-      axiosCall("post", "product", {
+      return axiosCall("post", "product", {
         data: values,
-      }).then(function (data) {
-        if (data.success == true) {
-          console.log("Product added !");
-        } else {
-          console.log("Product not added !");
-          if (data.errors) {
-            for (var key in data.errors) {
-              setFieldError(key, data.errors[key]);
+      })
+        .then(function (data) {
+          if (data.success == true) {
+            console.log("Product added !");
+          } else {
+            console.log("Product not added !");
+            if (data.errors) {
+              for (var key in data.errors) {
+                setFieldError(key, data.errors[key]);
+              }
             }
           }
-        }
-      });
+        })
+        .catch(() => {});
     }, onInvalidSubmit);
     /************************************************************************* */
     function genRandCode() {
