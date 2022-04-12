@@ -248,6 +248,7 @@
                   class="input-group-text text-primary"
                   role="button"
                   @click="newCategory"
+                  v-if="categories"
                   ><i class="fa-solid fa-plus"></i
                 ></span>
               </div>
@@ -283,10 +284,9 @@
                 </select>
                 <button
                   type="button"
-                  v-if="category"
+                  v-if="subCats"
                   class="input-group-text text-primary"
                   @click="newCategoryL1"
-                  :disabled="!category"
                 >
                   <i class="fa-solid fa-plus"></i>
                 </button>
@@ -872,8 +872,17 @@
       </div>
       <div class="d-flex pt-3">
         <div class="me-auto">
-          <button type="submit" class="btn btn-success" :disabled="isSubmitting">
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" v-if="isSubmitting"></span>
+          <button
+            type="submit"
+            class="btn btn-success"
+            :disabled="isSubmitting"
+          >
+            <span
+              class="spinner-border spinner-border-sm"
+              role="status"
+              aria-hidden="true"
+              v-if="isSubmitting"
+            ></span>
             Save
           </button>
         </div>
@@ -982,16 +991,11 @@ export default {
       unit: 1,
       p_unit: null,
       s_unit: null,
-      isalert: false,
-      alert_quantity: null,
+      isalert: true,
       tax_rate: null,
       tax_method: "I",
-      cost: null,
-      profit_margin: null,
-      auto_discount: null,
-      price: null,
+      profit_margin: 50,
       warehouse: null,
-      stock_adj_count: null,
     };
     /************************************************************************* */
     const schema = computed(() => {
@@ -1134,7 +1138,13 @@ export default {
       });
     });
     /************************************************************************* */
-    const { setFieldValue, handleSubmit, isSubmitting, resetForm } = useForm({
+    const {
+      setFieldValue,
+      handleSubmit,
+      setFieldError,
+      isSubmitting,
+      resetForm,
+    } = useForm({
       validationSchema: schema,
       initialValues: formValues,
       initialErrors: {},
@@ -1180,12 +1190,15 @@ export default {
       useField("warehouse");
     const { value: stock_adj_count, errorMessage: errorStockAdjCount } =
       useField("stock_adj_count");
+    const { value: ref_no, errorMessage: errorRefNo } = useField("ref_no");
+    const { value: stock_adj_note, errorMessage: errorStockAdjNote } =
+      useField("stock_adj_note");
     /************************************************************************* */
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
     /************************************************************************* */
     function onInvalidSubmit({ values, errors, results }) {
-      console.log("Frontend Errors Found !");
+      console.log("Form field errors found !");
       console.log(values);
     }
     const onSubmit = handleSubmit((values) => {
@@ -1193,10 +1206,14 @@ export default {
         data: values,
       }).then(function (data) {
         if (data.success == true) {
-          console.log("Everything OK !");
+          console.log("Product added !");
         } else {
-          console.log("Error Found from CI !");
-          console.log(data.errors);
+          console.log("Product not added !");
+          if (data.errors) {
+            for (var key in data.errors) {
+              setFieldError(key, data.errors[key]);
+            }
+          }
         }
       });
     }, onInvalidSubmit);
@@ -1255,9 +1272,11 @@ export default {
         axiosCall("get", "category", {
           action: "subcats",
           id: id,
-        }).then(function (response) {
-          subCats.value = response.data;
-        });
+        })
+          .then(function (response) {
+            subCats.value = response.data;
+          })
+          .catch(() => {});
       } else {
         subCats.value = undefined;
         sub_category.value = null;
@@ -1341,6 +1360,10 @@ export default {
       errorWareHouse,
       stock_adj_count,
       errorStockAdjCount,
+      ref_no,
+      errorRefNo,
+      stock_adj_note,
+      errorStockAdjNote,
       /*************** */
       isDirty,
       isValid,

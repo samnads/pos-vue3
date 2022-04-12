@@ -111,19 +111,23 @@ export default {
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {
+            self.$Progress.fail();
             self.notifyCatchResponse({ title: "Network Error !", message: "" });
           },
           data: function (d) {
+            self.$Progress.start();
             d["action"] = "datatable";
             return d;
           },
           dataSrc: function (response) {
             if (response.success == false && response.location) {
+              self.$Progress.fail();
               self.notifyCatchResponse(response);
               self.$router
                 .push({ path: "/" + response.location })
                 .catch((e) => {});
             } else {
+              self.$Progress.finish();
               return response.data;
             }
           },
@@ -337,6 +341,7 @@ export default {
           $("#buttons").html(self.table.buttons().container());
         },
         drawCallback: function (settings) {
+           
           let rows = self.table.rows(".selected").data().toArray();
           self.table.button(2).enable(rows.length >= 1);
           $("#checkall").prop("indeterminate", false);

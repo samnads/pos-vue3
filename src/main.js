@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+import VueProgressBar from "@aacassandra/vue3-progressbar";
 // bootsrap 5
 import "bootstrap/dist/css/bootstrap.min.css" // css
 import "bootstrap" // js
@@ -13,11 +14,27 @@ import "@fortawesome/fontawesome-free/js/all.min" // js
 //
 import Notifications from '@kyvg/vue3-notification'
 //
+const options = {
+    color: "green",
+    failedColor: "red",
+    thickness: "3px",
+    transition: {
+        speed: "0.2s",
+        opacity: "0.6s",
+        termination: 300,
+    },
+    autoRevert: true,
+    location: "top",
+    inverse: false,
+    autoFinish:true
+};
+//
 axios.defaults.withCredentials = true
 // eslint-disable-next-line
 const app = createApp(App);
 app.use(store);
 app.use(router);
 app.use(VueAxios, axios);
-app.use(Notifications)
-app.mount('#app')
+app.use(VueProgressBar, options);
+app.use(Notifications);
+app.mount('#app');

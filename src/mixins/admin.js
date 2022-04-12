@@ -1,8 +1,8 @@
-import { computed } from "vue";
 import { notify } from "@kyvg/vue3-notification";
 import { useStore } from "vuex";
 import axios from "axios";
 import router from "@/router";
+import { getCurrentInstance } from "vue";
 export default function () {
     var notType = 'warning'
     var notTitle = ''
@@ -10,10 +10,9 @@ export default function () {
     var notDuration = 3000
     var notSpeed = 300
     const store = useStore();
-    let productTypes = computed(function () {
-        return store.state.productTypes
-    });
+    const internalInstance = getCurrentInstance();
     async function axiosCall(method, url, data) {
+        internalInstance.appContext.config.globalProperties.$Progress.start();
         const endpoint = "http://localhost/pos-vue3/server/admin/ajax/";
         try {
             let res = await axios({
@@ -33,6 +32,7 @@ export default function () {
             /******************************* */ // common things for all response
             let resData = res.data;
             if (resData.success == false) {
+                internalInstance.appContext.config.globalProperties.$Progress.fail();
                 if (resData.location) { // redirect found
                     notifyApiResponse(resData);
                     router.push({ path: "/" + resData.location }).catch((e) => {
@@ -48,12 +48,14 @@ export default function () {
                     notifyApiResponse(resData);
                 }
             } else if (resData.success == true && resData.location) {
+                internalInstance.appContext.config.globalProperties.$Progress.finish();
                 notifyApiResponse(resData);
                 router.push({ path: "/" + resData.location }).catch((e) => {
                     console.log(e);
                 });
             }
             else if (resData.success == true) {
+                internalInstance.appContext.config.globalProperties.$Progress.finish();
                 //
             }
             /******************************* */
@@ -61,6 +63,7 @@ export default function () {
             return res.data
         }
         catch (err) {
+            internalInstance.appContext.config.globalProperties.$Progress.fail();
             notifyCatchResponse({ title: err });
         }
     }
@@ -106,69 +109,90 @@ export default function () {
         });
     }
     function addProductTypes() {
-        this.axios.get("http://localhost/CyberLikes-POS/admin/ajax/type", { params: { action: 'all' }, }).then(function (response) {
-            store.commit("storeProductTypes", response.data.data);
+        axiosCall("get", "type", {
+            action: "all",
+        }).then(function (response) {
+            store.commit("storeProductTypes", response.data);
         }).catch((error) => {
             this.notifyCatchResponse({ message: error.message });
         });
     }
     function addSymbologies() {
-        this.axios.get("http://localhost/CyberLikes-POS/admin/ajax/symbology", { params: { action: 'dropdown' }, }).then(function (response) {
-            store.commit("storeSymbologies", response.data.data);
+        axiosCall("get", "symbology", {
+            action: "dropdown",
+        }).then(function (response) {
+            store.commit("storeSymbologies", response.data);
         }).catch((error) => {
             this.notifyCatchResponse({ message: error.message });
         });
     }
     function addCategories() {
-        axios.get("http://localhost/CyberLikes-POS/admin/ajax/category", { params: { action: 'getall' }, }).then(function (response) {
-            store.commit("storeCategories", response.data.data);
+        axiosCall("get", "category", {
+            action: "getall",
+        }).then(function (response) {
+            store.commit("storeCategories", response.data);
         }).catch((error) => {
             this.notifyCatchResponse({ message: error.message });
         });
     }
     function addSubCatsLevel1(id) {
-        axios.get("http://localhost/CyberLikes-POS/admin/ajax/category", { params: { action: 'subcats', id: id }, }).then(function (response) {
-            store.commit("storeSubCatLevel1", response.data.data);
+        axiosCall("get", "category", {
+            action: "category",
+            id: id
+        }).then(function (response) {
+            store.commit("storeSubCatLevel1", response.data);
         }).catch((error) => {
-            notifyCatchResponse({ message: error.message });
+            this.notifyCatchResponse({ message: error.message });
         });
     }
     function addBrands() {
-        this.axios.get("http://localhost/CyberLikes-POS/admin/ajax/brand", { params: { action: 'dropdown' }, }).then(function (response) {
-            store.commit("storeBrands", response.data.data);
+        axiosCall("get", "brand", {
+            action: "dropdown",
+        }).then(function (response) {
+            store.commit("storeBrands", response.data);
         }).catch((error) => {
             this.notifyCatchResponse({ message: error.message });
         });
     }
     function addUnits() {
-        this.axios.get("http://localhost/CyberLikes-POS/admin/ajax/unit", { params: { action: 'list_base' }, }).then(function (response) {
-            store.commit("storeUnits", response.data.data);
+        axiosCall("get", "unit", {
+            action: "list_base",
+        }).then(function (response) {
+            store.commit("storeUnits", response.data);
         }).catch((error) => {
             this.notifyCatchResponse({ message: error.message });
         });
     }
     function addUnitsBulk(id) {
-        this.axios.get("http://localhost/CyberLikes-POS/admin/ajax/unit", { params: { action: 'list_sub', id: id }, }).then(function (response) {
-            store.commit("storeUnitsBulk", response.data.data);
+        axiosCall("get", "unit", {
+            action: "list_sub",
+            id: id
+        }).then(function (response) {
+            store.commit("storeUnitsBulk", response.data);
         }).catch((error) => {
             this.notifyCatchResponse({ message: error.message });
         });
     }
     function addTaxes() {
-        this.axios.get("http://localhost/CyberLikes-POS/admin/ajax/tax", { params: { action: 'dropdown' }, }).then(function (response) {
-            store.commit("storeTaxes", response.data.data);
+        axiosCall("get", "tax", {
+            action: "dropdown",
+        }).then(function (response) {
+            store.commit("storeTaxes", response.data);
         }).catch((error) => {
             this.notifyCatchResponse({ message: error.message });
         });
     }
     function addWareHouses() {
-        this.axios.get("http://localhost/CyberLikes-POS/admin/ajax/warehouse", { params: { action: 'dropdown' }, }).then(function (response) {
-            store.commit("storeWareHouses", response.data.data);
+        axiosCall("get", "warehouse", {
+            action: "dropdown",
+        }).then(function (response) {
+            store.commit("storeWareHouses", response.data);
         }).catch((error) => {
             this.notifyCatchResponse({ message: error.message });
         });
     }
     async function axiosCallAndCommit(mutation, method, url, data) {
+        internalInstance.appContext.config.globalProperties.$Progress.start();
         const endpoint = "http://localhost/pos-vue3/server/admin/ajax/";
         store.commit(mutation, false); // reset specific store data
         try {
@@ -189,17 +213,19 @@ export default function () {
             /******************************* */ // common things for all response
             let resData = res.data;
             if (resData.success == true) {
+                internalInstance.appContext.config.globalProperties.$Progress.finish();
                 if (resData.location) {
                     notifyApiResponse(resData);
                     router.push({ path: "/" + resData.location }).catch((e) => {
                         console.log(e);
                     });
                 }
-                else{
+                else {
                     store.commit(mutation, resData.data); // store new data
                 }
             }
             else if (resData.success == false) {
+                internalInstance.appContext.config.globalProperties.$Progress.fail();
                 notifyApiResponse(resData);
                 if (resData.location) { // redirect found
                     router.push({ path: "/" + resData.location }).catch((e) => {
@@ -211,6 +237,7 @@ export default function () {
             return resData
         }
         catch (err) {
+            internalInstance.appContext.config.globalProperties.$Progress.fail();
             notifyCatchResponse({ title: err });
         }
     }
@@ -245,7 +272,6 @@ export default function () {
         addWareHouses,
         /******************* */
         axiosCall,
-        axiosCallAndCommit,
-        productTypes,
+        axiosCallAndCommit
     }
 }
