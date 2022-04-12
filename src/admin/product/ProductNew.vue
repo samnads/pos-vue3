@@ -517,13 +517,15 @@
                   role="button"
                   @click="toggleAlert"
                 >
-                  <input
-                    class="form-check-input mt-0"
-                    type="checkbox"
-                    name="isalert"
-                    v-model="isalert"
-                    role="button"
-                  />
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      name="isalert"
+                      v-model="isalert"
+                    />
+                  </div>
                 </div>
               </div>
               <div class="invalid-feedback">{{ errorIsalert }}</div>
@@ -761,6 +763,124 @@
         <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
           <div class="card">
             <h5 class="card-header bg-secondary text-light">
+              Product POS Settings
+            </h5>
+            <div class="card-body">
+              <p class="card-text text-muted">
+                This options are only for product level pos settings.
+              </p>
+              <div class="row mb-1">
+                <div class="col">
+                  <label class="form-check-label">POS Sale</label>
+                  <div class="input-group is-invalid">
+                    <span class="input-group-text form-control"
+                      ><div class="form-check form-switch">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          role="switch"
+                          name="pos_sale"
+                          v-model="pos_sale"
+                        /></div
+                    ></span>
+                  </div>
+                  <div class="invalid-feedback">{{}}</div>
+                </div>
+                <div class="col">
+                  <label class="form-check-label">Custom Discount</label>
+                  <div class="input-group is-invalid">
+                    <span class="input-group-text form-control"
+                      ><div class="form-check form-switch">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          role="switch"
+                          name="pos_sale_custom_discount"
+                          v-model="pos_sale_custom_discount"
+                        /></div
+                    ></span>
+                  </div>
+                  <div class="invalid-feedback">{{}}</div>
+                </div>
+                <div class="col">
+                  <label class="form-check-label">Custom Tax</label>
+                  <div class="input-group is-invalid">
+                    <span class="input-group-text form-control"
+                      ><div class="form-check form-switch">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          role="switch"
+                          name="pos_sale_custom_tax"
+                          v-model="pos_sale_custom_tax"
+                        /></div
+                    ></span>
+                  </div>
+                  <div class="invalid-feedback">{{}}</div>
+                </div>
+                <div class="col">
+                  <label class="form-check-label">Product Sale Note</label>
+                  <div class="input-group is-invalid">
+                    <span class="input-group-text form-control"
+                      ><div class="form-check form-switch">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          role="switch"
+                          name="pos_sale_note"
+                          v-model="pos_sale_note"
+                        /></div
+                    ></span>
+                  </div>
+                  <div class="invalid-feedback">{{}}</div>
+                </div>
+                <div class="col">
+                  <label class="form-label"
+                    >Minimum Sale Quantity<i>*</i></label
+                  >
+                  <div class="input-group is-invalid">
+                    <input type="number" class="form-control" :value="1" />
+                    <span class="input-group-text" v-if="unitsBulk">{{
+                      unitsBulk && unit && s_unit == null
+                        ? units.find((obj) => {
+                            return obj.id === unit;
+                          })["name"]
+                        : unitsBulk && s_unit > 0
+                        ? unitsBulk.find((obj) => {
+                            return obj.id === s_unit;
+                          })["name"]
+                        : "?"
+                    }}</span>
+                  </div>
+                  <div class="invalid-feedback">{{ errorRefNo }}</div>
+                </div>
+                <div class="col">
+                  <label class="form-label">Maximum Sale Quantity</label>
+                  <div class="input-group is-invalid">
+                    <input type="number" class="form-control" />
+                    <span class="input-group-text" v-if="unitsBulk">{{
+                      unitsBulk && unit && s_unit == null
+                        ? units.find((obj) => {
+                            return obj.id === unit;
+                          })["name"]
+                        : unitsBulk && s_unit > 0
+                        ? unitsBulk.find((obj) => {
+                            return obj.id === s_unit;
+                          })["name"]
+                        : "?"
+                    }}</span>
+                  </div>
+                  <div class="invalid-feedback">{{ errorRefNo }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
+          <div class="card">
+            <h5 class="card-header bg-secondary text-light">
               Stock Adjustment
             </h5>
             <div class="card-body">
@@ -830,7 +950,7 @@
                       class="form-control"
                     />
                   </div>
-                  <div class="invalid-feedback">{{}}</div>
+                  <div class="invalid-feedback">{{ errorRefNo }}</div>
                 </div>
                 <div class="col">
                   <label class="form-label">Adustment Note</label>
@@ -844,7 +964,7 @@
                     >
                     </textarea>
                   </div>
-                  <div class="invalid-feedback">{{}}</div>
+                  <div class="invalid-feedback">{{ errorStockAdjNote }}</div>
                 </div>
                 <div class="col">
                   <label class="form-label">Opening Stock</label>
@@ -861,7 +981,12 @@
                 <div class="col">
                   <label class="form-label">Final Stock</label>
                   <div class="input-group is-invalid">
-                    <input type="number" class="form-control" disabled />
+                    <input
+                      type="number"
+                      class="form-control"
+                      :value="0"
+                      disabled
+                    />
                   </div>
                   <div class="invalid-feedback">{{}}</div>
                 </div>
@@ -877,13 +1002,13 @@
             class="btn btn-success"
             :disabled="isSubmitting"
           >
+            {{ isSubmitting ? "Saving..." : "Save" }}
             <span
               class="spinner-border spinner-border-sm"
               role="status"
               aria-hidden="true"
               v-if="isSubmitting"
             ></span>
-            Save
           </button>
         </div>
         <div class="">
@@ -996,6 +1121,9 @@ export default {
       tax_method: "I",
       profit_margin: 50,
       warehouse: null,
+      pos_sale: true,
+      pos_sale_custom_discount:true,
+      pos_sale_note:true,
     };
     /************************************************************************* */
     const schema = computed(() => {
@@ -1193,6 +1321,11 @@ export default {
     const { value: ref_no, errorMessage: errorRefNo } = useField("ref_no");
     const { value: stock_adj_note, errorMessage: errorStockAdjNote } =
       useField("stock_adj_note");
+    // pos settings
+    const { value: pos_sale } = useField("pos_sale");
+    const { value: pos_sale_custom_discount } = useField("pos_sale_custom_discount");
+    const { value: pos_sale_custom_tax } = useField("pos_sale_custom_tax");
+     const { value: pos_sale_note } = useField("pos_sale_note");
     /************************************************************************* */
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
@@ -1366,6 +1499,11 @@ export default {
       errorRefNo,
       stock_adj_note,
       errorStockAdjNote,
+      //
+      pos_sale,
+      pos_sale_custom_discount,
+      pos_sale_custom_tax,
+      pos_sale_note,
       /*************** */
       isDirty,
       isValid,
