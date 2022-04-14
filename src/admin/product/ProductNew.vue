@@ -48,7 +48,7 @@
     <form id="newProduct" @submit="onSubmit" class="needs-validation">
       <div class="row">
         <!-- main row -->
-        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-3">
           <!-- column section 1 -->
           <div class="row mb-1">
             <div class="col">
@@ -295,7 +295,7 @@
           </div>
         </div>
         <!-- column section 2 -->
-        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-5">
           <div class="row mb-1">
             <div class="col">
               <label for="" class="form-label">Brand Name</label>
@@ -544,9 +544,37 @@
               </div>
             </div>
           </div>
+          <div class="row mb-1">
+            <div class="col">
+              <label class="form-label">Mfg. Date</label>
+              <div class="input-group is-invalid">
+                <span class="input-group-text"><i class="fa-solid fa-calendar"></i></span>
+                <input
+                  type="datetime-local"
+                  name="mfg_date"
+                  v-model="mfg_date"
+                  class="form-control"
+                />
+              </div>
+              <div class="invalid-feedback">{{}}</div>
+            </div>
+            <div class="col">
+              <label class="form-label">Exp. Date</label>
+              <div class="input-group is-invalid">
+                <span class="input-group-text"><i class="fa-solid fa-calendar"></i></span>
+                <input
+                  type="datetime-local"
+                  name="exp_date"
+                  v-model="exp_date"
+                  class="form-control"
+                />
+              </div>
+              <div class="invalid-feedback">{{}}</div>
+            </div>
+          </div>
         </div>
         <!-- column section 3 -->
-        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6 col-xxl-4">
           <div class="card mb-1">
             <h5 class="card-header bg-secondary text-light">
               Purchase Information
@@ -769,6 +797,7 @@
               <p class="card-text text-muted">
                 This options are only for product level pos settings.
               </p>
+              <hr />
               <div class="row mb-1">
                 <div class="col">
                   <label class="form-check-label">POS Sale</label>
@@ -844,11 +873,11 @@
                       unitsBulk && unit && s_unit == null
                         ? units.find((obj) => {
                             return obj.id === unit;
-                          })["name"]
+                          })["code"]
                         : unitsBulk && s_unit > 0
                         ? unitsBulk.find((obj) => {
                             return obj.id === s_unit;
-                          })["name"]
+                          })["code"]
                         : "?"
                     }}</span>
                   </div>
@@ -862,15 +891,90 @@
                       unitsBulk && unit && s_unit == null
                         ? units.find((obj) => {
                             return obj.id === unit;
-                          })["name"]
+                          })["code"]
                         : unitsBulk && s_unit > 0
                         ? unitsBulk.find((obj) => {
                             return obj.id === s_unit;
-                          })["name"]
+                          })["code"]
                         : "?"
                     }}</span>
                   </div>
                   <div class="invalid-feedback">{{ errorRefNo }}</div>
+                </div>
+              </div>
+              <p class="card-text text-muted">
+                Custom Product Data Fields ( for example Serial No. or IMEI
+                etc.)
+              </p>
+              <hr />
+              <div class="row mb-1">
+                <div class="col">
+                  <label class="form-check-label">POS Data Field - 1</label>
+                  <select
+                    class="form-select"
+                    name="pos_data_field_1"
+                    v-model="pos_data_field_1"
+                  >
+                    <option :value="null" selected>-- Select --</option>
+                    <option value="Serial No.">Serial No.</option>
+                    <option value="Color">Color</option>
+                    <option value="IMEI No.">IMEI No.</option>
+                  </select>
+                  <div class="invalid-feedback">{{}}</div>
+                </div>
+                <div class="col">
+                  <label class="form-check-label">POS Data Field - 2</label>
+                  <select
+                    class="form-select"
+                    name="pos_data_field_2"
+                    v-model="pos_data_field_2"
+                  >
+                    <option :value="null" selected>-- Select --</option>
+                    <option value="Serial No.">Serial No.</option>
+                    <option value="Color">Color</option>
+                    <option value="IMEI No.">IMEI No.</option>
+                  </select>
+                  <div class="invalid-feedback">{{}}</div>
+                </div>
+                <div class="col">
+                  <label class="form-check-label">POS Data Field - 3</label>
+                  <input
+                    type="text"
+                    name="pos_data_field_3"
+                    v-model="pos_data_field_3"
+                    class="form-control"
+                  />
+                  <div class="invalid-feedback">{{}}</div>
+                </div>
+                <div class="col">
+                  <label class="form-check-label">POS Data Field - 4</label>
+                  <input
+                    type="text"
+                    name="pos_data_field_4"
+                    v-model="pos_data_field_4"
+                    class="form-control"
+                  />
+                  <div class="invalid-feedback">{{}}</div>
+                </div>
+                <div class="col">
+                  <label class="form-check-label">POS Data Field - 5</label>
+                  <input
+                    type="text"
+                    name="pos_data_field_5"
+                    v-model="pos_data_field_5"
+                    class="form-control"
+                  />
+                  <div class="invalid-feedback">{{}}</div>
+                </div>
+                <div class="col">
+                  <label class="form-check-label">POS Data Field - 6</label>
+                  <input
+                    type="text"
+                    name="pos_data_field_6"
+                    v-model="pos_data_field_6"
+                    class="form-control"
+                  />
+                  <div class="invalid-feedback">{{}}</div>
                 </div>
               </div>
             </div>
@@ -1122,8 +1226,10 @@ export default {
       profit_margin: 50,
       warehouse: null,
       pos_sale: true,
-      pos_sale_custom_discount:true,
-      pos_sale_note:true,
+      pos_sale_custom_discount: true,
+      pos_sale_note: true,
+      pos_data_field_1: null,
+      pos_data_field_2: null,
     };
     /************************************************************************* */
     const schema = computed(() => {
@@ -1323,9 +1429,17 @@ export default {
       useField("stock_adj_note");
     // pos settings
     const { value: pos_sale } = useField("pos_sale");
-    const { value: pos_sale_custom_discount } = useField("pos_sale_custom_discount");
+    const { value: pos_sale_custom_discount } = useField(
+      "pos_sale_custom_discount"
+    );
     const { value: pos_sale_custom_tax } = useField("pos_sale_custom_tax");
-     const { value: pos_sale_note } = useField("pos_sale_note");
+    const { value: pos_sale_note } = useField("pos_sale_note");
+    const { value: pos_data_field_1 } = useField("pos_data_field_1");
+    const { value: pos_data_field_2 } = useField("pos_data_field_2");
+    const { value: pos_data_field_3 } = useField("pos_data_field_3");
+    const { value: pos_data_field_4 } = useField("pos_data_field_4");
+    const { value: pos_data_field_5 } = useField("pos_data_field_5");
+    const { value: pos_data_field_6 } = useField("pos_data_field_6");
     /************************************************************************* */
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
@@ -1504,6 +1618,13 @@ export default {
       pos_sale_custom_discount,
       pos_sale_custom_tax,
       pos_sale_note,
+      //
+      pos_data_field_1,
+      pos_data_field_2,
+      pos_data_field_3,
+      pos_data_field_4,
+      pos_data_field_5,
+      pos_data_field_6,
       /*************** */
       isDirty,
       isValid,
