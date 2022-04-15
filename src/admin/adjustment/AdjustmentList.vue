@@ -1,9 +1,14 @@
 <template>
+  <AdjustmentDetailsModal
+    :propAdjustRow="adjustRow"
+    :propAdjustInfo="adjustInfo"
+  />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
         <h5 class="title">
-          <i class="fa-solid fa-cart-shopping"></i><span>Stock Adjustments</span>
+          <i class="fa-solid fa-cart-shopping"></i
+          ><span>Stock Adjustments</span>
         </h5>
       </div>
       <div class="p-2 bd-highlight">
@@ -62,18 +67,28 @@
 <style>
 </style>
 <script>
+import { ref } from "vue";
 import admin from "@/mixins/admin.js";
+import AdjustmentDetailsModal from "../modal/AdjustmentDetailsModal.vue";
+import { Modal } from "bootstrap";
 export default {
-  components: {},
+  components: {
+    AdjustmentDetailsModal,
+  },
   /* eslint-disable */
-  mixins: [],
   setup() {
+    var adjustRow = ref({});
+    var adjustInfo = ref({});
     // notify
-    const { notifyDefault, notifyApiResponse, notifyCatchResponse } = admin();
+    const { notifyDefault, notifyApiResponse, notifyCatchResponse, axiosCall } =
+      admin();
     return {
       notifyDefault,
       notifyApiResponse,
       notifyCatchResponse,
+      axiosCall,
+      adjustRow,
+      adjustInfo,
     };
   },
   methods: {},
@@ -247,7 +262,7 @@ export default {
             defaultContent: '<i class="fas fa-paperclip"></i>',
             orderable: false,
             searchable: false,
-             width: "2%"
+            width: "2%",
           },
           {
             targets: [9],
@@ -352,9 +367,19 @@ export default {
         "click",
         "td:not(:first-child):not(:last-child),#details",
         function () {
-          // show single product info
-          self.row = self.table.row($(this).parents("tr")).data();
-          //self.$parent.product = self.row;
+          // show adjustment info
+          self.adjustRow = self.table.row($(this).parents("tr")).data();
+          self.axiosCall("get", "stock_adjustment", {
+            action: "getInfo",
+            id: self.adjustRow.id,
+          })
+            .then(function (data) {
+              if (data.success == true) {
+                self.adjustInfo = data.data;
+              } else {
+              }
+            })
+            .catch(() => {});
           window.PROD_ADJ_DETAILS_MODAL.show();
         }
       );
@@ -407,6 +432,10 @@ export default {
           // search clear button clicked
           self.table.search("").draw();
         });
+    });
+    window.PROD_ADJ_DETAILS_MODAL = new Modal($("#prodAdjDetailsModal"), {
+      backdrop: true,
+      show: true,
     });
   },
   data: function () {

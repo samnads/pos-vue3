@@ -15,24 +15,35 @@
           <div class="container border border-dark border-bottom-0 rounded-top">
             <div class="row pt-2">
               <div class="col">
-                <p class="mb-1"><span class="fw-bold">Date : </span>DD/MM/YY</p>
+                <p class="mb-1">
+                  <span class="fw-bold">Date : </span>{{ propAdjustRow.date }}
+                </p>
                 <p class="mb-1">
                   <span class="fw-bold">Warehouse : </span
-                  ><span class="badge bg-secondary">Primary</span>
+                  >{{ propAdjustRow.warehouse_name }}
                 </p>
                 <p class="mb-1">
-                  <span class="fw-bold">Reference No. : </span>
+                  <span class="fw-bold">Reference No. : </span
+                  >{{ propAdjustRow.reference_no }}
                 </p>
-                <p class="mb-1"><span class="fw-bold">Note : </span></p>
+                <p class="mb-1">
+                  <span class="fw-bold">Note : </span>{{ propAdjustRow.note }}
+                </p>
               </div>
               <div class="col">
                 <table class="table">
                   <tbody>
                     <tr>
-                      <td><span class="fw-bold">Added By : </span>Admin Last</td>
+                      <td class="text-end">
+                        <span class="fw-bold">Added By : </span
+                        >{{ propAdjustRow.added_by }}
+                      </td>
                     </tr>
                     <tr>
-                      <td><span class="fw-bold">Total Products : </span>gfhgf</td>
+                      <td class="text-end">
+                        <span class="fw-bold">No. of products : </span
+                        >{{ propAdjustRow.total_products }}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -51,17 +62,11 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-              </tr>
-              <tr>
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
+              <tr v-for="(product,index) in propAdjustInfo" :key="product.id">
+                <th scope="row">{{index+1}}</th>
+                <td>{{ product.code + " | " + product.name }}</td>
+                <td v-bind:class="[product.quantity > 0 ? 'text-success' : 'text-danger']">{{ product.quantity > 0 ? "+ Added" : "- Removed" }}</td>
+                <td>{{ product.quantity }}</td>
               </tr>
             </tbody>
           </table>
@@ -90,7 +95,10 @@
 </template>
 <script>
 export default {
-  props: {},
+  props: {
+    propAdjustRow: Object,
+    propAdjustInfo: Object,
+  },
   data: function () {
     return {};
   },
