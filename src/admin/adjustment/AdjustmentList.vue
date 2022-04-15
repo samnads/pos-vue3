@@ -3,7 +3,7 @@
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
         <h5 class="title">
-          <i class="fa-solid fa-cart-shopping"></i><span>Adjustments</span>
+          <i class="fa-solid fa-cart-shopping"></i><span>Stock Adjustments</span>
         </h5>
       </div>
       <div class="p-2 bd-highlight">
@@ -41,17 +41,15 @@
               id="checkall"
             />
           </th>
-          <th scope="col"><i class="fa-solid fa-image"></i></th>
           <th scope="col">ID</th>
-          <th scope="col">Code</th>
-          <th scope="col">Name</th>
-          <th scope="col">Brand</th>
-          <th scope="col">Category</th>
-          <th scope="col">MRP</th>
-          <th scope="col">Stock</th>
-          <th scope="col">Unit</th>
-          <th scope="col">Cost</th>
-          <th scope="col">Price</th>
+          <th scope="col">Date</th>
+          <th scope="col">Reference No.</th>
+          <th scope="col">Warehouse</th>
+          <th scope="col">Products Adjusted</th>
+          <th scope="col">Added by</th>
+          <th scope="col">Note</th>
+          <th scope="col">File</th>
+          <th scope="col">Updated at</th>
           <th scope="col"><i class="fa-solid fa-bars"></i></th>
         </tr>
       </thead>
@@ -104,10 +102,10 @@ export default {
           fixedColumnsLeft: 1,
           fixedColumnsRight: 1,
         },
-        order: [[2, "desc"]],
+        order: [[1, "desc"]],
         ajax: {
           method: "GET",
-          url: "http://localhost/CyberLikes-POS/admin/ajax/product",
+          url: "http://localhost/CyberLikes-POS/admin/ajax/stock_adjustment",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {
@@ -136,11 +134,11 @@ export default {
           processing:
             '<div class="spinner-grow" style="width: 3rem; height: 3rem;" role="status"> <span class="visually-hidden">Loading...</span></div>',
           emptyTable: "No data available in table",
-          zeroRecords: "No matching products found",
-          info: "Showing _START_ to _END_ of _TOTAL_ Products",
-          infoEmpty: "No product info found",
-          emptyTable: "No products found",
-          infoFiltered: "(filtered from _MAX_ Products)",
+          zeroRecords: "No matching adjustments found",
+          info: "Showing _START_ to _END_ of _TOTAL_ adjustments",
+          infoEmpty: "No adjustment info found",
+          emptyTable: "No adjustments found",
+          infoFiltered: "(filtered from _MAX_ adjustments)",
           paginate: {
             first: "First",
             last: "Last",
@@ -153,37 +151,31 @@ export default {
             data: null,
           },
           {
-            data: "thumbnail",
-          },
-          {
             data: "id",
           },
           {
-            data: "code",
+            data: "date",
           },
           {
-            data: "name",
+            data: "reference_no",
           },
           {
-            data: "brand_name",
+            data: "warehouse_name",
           },
           {
-            data: "category_name",
+            data: "total_products",
           },
           {
-            data: "mrp",
+            data: "added_by",
           },
           {
-            data: "quantity",
+            data: "note",
           },
           {
-            data: "unit_code",
+            data: null,
           },
           {
-            data: "cost",
-          },
-          {
-            data: "price",
+            data: "updated_at",
           },
           {
             data: null,
@@ -200,66 +192,75 @@ export default {
           },
           {
             targets: [1],
+            visible: false,
             orderable: false,
             searchable: false,
-            className: "text-center",
             render: function (data, type, full, meta) {
-              return (
-                '<img src="' +
-                (data || "http://localhost/CyberLikes-POS/gd/50/50") +
-                '" class="rounded thumbnail" width="20px"/>'
-              );
+              return data;
             },
           },
           {
             targets: [2],
-            visible: false,
-            searchable: false,
+            visible: true,
+            searchable: true,
+          },
+          {
+            targets: [3],
+            render: function (data, type, row, meta) {
+              return data == null
+                ? '<i class="text-muted small">NIL</i>'
+                : data;
+            },
+          },
+          {
+            targets: [4],
+            render: function (data, type, row, meta) {
+              return data;
+            },
+          },
+          {
+            targets: [5],
+            className: "text-center",
+            render: function (data, type, row, meta) {
+              return data;
+            },
+          },
+          {
+            targets: [6],
+            render: function (data, type, row, meta) {
+              return data == null
+                ? '<i class="text-muted small">NIL</i>'
+                : data;
+            },
           },
           {
             targets: [7],
             render: function (data, type, row, meta) {
               return data == null
-                ? '<i class="text-muted small">-</i>'
-                : parseFloat(data).toFixed(2);
+                ? '<i class="text-muted small">NIL</i>'
+                : data;
             },
           },
           {
             targets: [8],
             className: "text-center",
-            render: function (data, type, row, meta) {
-              return data == 0
-                ? '<i class="text-secondary small">' +
-                    parseFloat(data).toFixed(2) +
-                    "</i>"
-                : parseFloat(data).toFixed(2);
-            },
+            defaultContent: '<i class="fas fa-paperclip"></i>',
+            orderable: false,
+            searchable: false,
+             width: "2%"
           },
           {
             targets: [9],
-          },
-          {
-            targets: [10],
-            render: function (data, type, row, meta) {
-              return data == null
-                ? '<i class="text-muted small">-</i>'
-                : parseFloat(data).toFixed(2);
-            },
-          },
-          {
-            targets: [11],
-            render: function (data, type, row, meta) {
-              return parseFloat(data).toFixed(2);
-            },
+            visible: false,
           },
           {
             targets: -1,
             orderable: false,
-            className: "text-center",
             searchable: false,
             width: "2%",
+            className: "text-center",
             defaultContent:
-              '<div class="dropdown dropstart">  <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">    Action  </button>  <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">    <li id="details"><button class="dropdown-item" type="button"><i class="fa-solid fa-circle-info"></i>Details</button></li>    <li id="edit"><button class="dropdown-item" type="button"><i class="fa-solid fa-pen-to-square"></i>Edit</button></li>    <li id="copy"><button class="dropdown-item" type="button"><i class="fa-solid fa-copy"></i>Duplicate</button></li>  </ul></div>',
+              "<div class='btn-group dropleft'><button type='button' class='btn btn-secondary dropdown-toggle btn-sm' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> Action</button><div class='dropdown-menu'> <a class='dropdown-item' id='edit' href='#'><i class='fa fa-edit fa-fw' aria-hidden='true'></i>Edit</a><div class='dropdown-divider'></div><a class='dropdown-item' id='delete' href='#'><i class='fa fa-trash fa-fw' aria-hidden='true'></i>Delete</a> </div></div>",
           },
         ],
         buttons: [
@@ -341,7 +342,6 @@ export default {
           $("#buttons").html(self.table.buttons().container());
         },
         drawCallback: function (settings) {
-           
           let rows = self.table.rows(".selected").data().toArray();
           self.table.button(2).enable(rows.length >= 1);
           $("#checkall").prop("indeterminate", false);
@@ -354,8 +354,8 @@ export default {
         function () {
           // show single product info
           self.row = self.table.row($(this).parents("tr")).data();
-          self.$parent.product = self.row;
-          window.PROD_DETAILS_MODAL.show();
+          //self.$parent.product = self.row;
+          window.PROD_ADJ_DETAILS_MODAL.show();
         }
       );
       $("#datatable tbody").on("click", "#edit", function () {
