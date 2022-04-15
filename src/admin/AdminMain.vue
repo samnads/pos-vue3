@@ -48,14 +48,14 @@
                 <li>
                   <router-link
                     class="dropdown-item"
-                    to="/admin/product/adjustments"
+                    to="/admin/adjustment"
                     >Adjustments</router-link
                   >
                 </li>
                 <li>
                   <router-link
                     class="dropdown-item"
-                    to="/admin/product/adjustments/new"
+                    to="/admin/adjustment/new"
                     >Add Adjustment</router-link
                   >
                 </li>
@@ -224,7 +224,9 @@ a {
 #datatable_wrapper table tbody > tr .dropdown .dropdown-item > svg {
   margin-right: 10px;
 }
-
+#datatable_wrapper table.dataTable > tbody > tr > td[class*='sorting_'] {
+    background-color: rgb(0 0 0 / 10%);
+}
 /* pagination */
 .page-item.active .page-link {
   background-color: #5f9ea0 !important;

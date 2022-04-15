@@ -88,13 +88,25 @@
             <button
               type="button"
               class="btn btn-secondary"
-              v-show="isDirty"
               @click="resetForm"
+              :disabled="isSubmitting || !isDirty"
             >
               <i class="fa-solid fa-rotate-left"></i>
             </button>
-            <button type="submit" class="btn btn-secondary" :disable="!isValid">
-              <i class="fa-solid fa-save"></i>Save
+            <button
+              type="submit"
+              class="btn"
+              :disabled="isSubmitting"
+              v-bind:class="[isValid ? 'btn-success' : 'btn-secondary']"
+            >
+              <span v-if="!isSubmitting"><i class="fa-solid fa-save"></i></span>
+              <span
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+                v-if="isSubmitting"
+              ></span>
+              Save
             </button>
           </div>
         </form>
@@ -115,7 +127,7 @@ import { ref, toRef, computed } from "vue";
 import admin from "@/mixins/admin.js";
 export default {
   props: {
-    propUpdateUnits:Function
+    propUpdateUnits: Function,
   },
   setup(props) {
     // data retrieve
@@ -154,10 +166,15 @@ export default {
       });
     });
     /************************************************************************* */
-    const { setFieldValue, setFieldError, handleSubmit, resetForm } = useForm({
+    const {
+      setFieldValue,
+      setFieldError,
+      isSubmitting,
+      handleSubmit,
+      resetForm,
+    } = useForm({
       validationSchema: schema,
       initialValues: formValues,
-      initialErrors: {},
     });
     /************************************************************************* */
     const isDirty = useIsFormDirty();
@@ -167,8 +184,7 @@ export default {
       console.log(errors);
     }
     const onSubmit = handleSubmit((values, { resetForm }) => {
-      console.log(values);
-      axiosCall("post", "unit", {
+      return axiosCall("post", "unit", {
         data: values,
       }).then(function (data) {
         if (data.success == true) {
@@ -192,7 +208,7 @@ export default {
     }
     /************************************************************************* */
     const { value: name, errorMessage: errorName } = useField("name");
-     const { value: code, errorMessage: errorCode } = useField("code");
+    const { value: code, errorMessage: errorCode } = useField("code");
     const { value: description, errorMessage: errorDescription } =
       useField("description");
     /*************************************** */
@@ -209,6 +225,7 @@ export default {
       isDirty,
       isValid,
       onSubmit,
+      isSubmitting,
       resetForm,
       close,
     };
@@ -216,8 +233,7 @@ export default {
   data() {
     return {};
   },
-  methods: {
-  },
+  methods: {},
   created() {},
   mounted() {},
 };

@@ -164,6 +164,7 @@ export default function () {
         });
     }
     function addUnitsBulk(id) {
+        store.commit("storeUnitsBulk", undefined);
         axiosCall("get", "unit", {
             action: "list_sub",
             id: id

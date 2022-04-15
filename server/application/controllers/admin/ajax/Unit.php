@@ -70,10 +70,10 @@ class Unit extends CI_Controller
 				break;
 			case 'POST': // create
 				$_POST = $this->input->post('data');
-				if ($this->input->post('sub')) { // NEW SUB UNIT
+				if ($this->input->post('unit')) { // NEW SUB UNIT
 					$data = array(
 						'unit'			=> $this->input->post('unit')['id'],
-						'value'			=> $this->input->post('value'),
+						'value'			=> $this->input->post('quantity'),
 
 						'name'			=> $this->input->post('name'),
 						'code'			=> $this->input->post('code'),

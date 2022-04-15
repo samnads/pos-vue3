@@ -127,15 +127,27 @@
               <i class="fa-solid fa-stop"></i>Cancel
             </button>
             <button
-               type="button"
+              type="button"
               class="btn btn-secondary"
-              v-show="isDirty"
               @click="resetCustom"
+              :disabled="isSubmitting || !isDirty"
             >
               <i class="fa-solid fa-rotate-left"></i>
             </button>
-            <button type="submit" class="btn btn-secondary" :disable="!isValid">
-              <i class="fa-solid fa-save"></i>Save
+            <button
+              type="submit"
+              class="btn"
+              :disabled="isSubmitting"
+               v-bind:class="[isValid ? 'btn-success' : 'btn-secondary']"
+            >
+              <span v-if="!isSubmitting"><i class="fa-solid fa-save"></i></span>
+              <span
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+                v-if="isSubmitting"
+              ></span>
+              Save
             </button>
           </div>
         </form>
@@ -157,7 +169,7 @@ import admin from "@/mixins/admin.js";
 import { number } from "yup/lib/locale";
 export default {
   props: {
-    propUpdateUnitsBulk: Function,
+    propUpdatePunitSUnit: Function,
     propUnit: Object,
   },
   setup(props) {
@@ -174,7 +186,7 @@ export default {
     /************************************************************************* */
     const schema = computed(() => {
       return yup.object({
-        unit: yup.number().required().min(1).nullable(true).label("Base Unit"),
+        unit: yup.object().required().nullable(true).label("Base Unit"),
         quantity: yup
           .number()
           .required()
@@ -204,9 +216,14 @@ export default {
       });
     });
     /************************************************************************* */
-    const { setFieldValue, setFieldError, handleSubmit, resetForm } = useForm({
+    const {
+      setFieldValue,
+      setFieldError,
+      isSubmitting,
+      handleSubmit,
+      resetForm,
+    } = useForm({
       validationSchema: schema,
-
       initialErrors: {},
     });
     /************************************************************************* */
@@ -217,23 +234,24 @@ export default {
       console.log(errors);
     }
     const onSubmit = handleSubmit((values, { resetForm }) => {
-      console.log(values);
-      axiosCall("post", "unit", {
+      return axiosCall("post", "unit", {
         data: values,
-      }).then(function (data) {
-        if (data.success == true) {
-          props.propUpdateUnitsBulk(data.id);
-          resetForm();
-          window.PROD_NEW_UNIT_BULK_MODAL.hide();
-          notifyApiResponse(data);
-        } else {
-          if (data.errors) {
-            for (var key in data.errors) {
-              setFieldError(key, data.errors[key]);
+      })
+        .then(function (data) {
+          if (data.success == true) {
+            props.propUpdatePunitSUnit(data.id);
+            resetCustom();
+            window.PROD_NEW_UNIT_BULK_MODAL.hide();
+            notifyApiResponse(data);
+          } else {
+            if (data.errors) {
+              for (var key in data.errors) {
+                setFieldError(key, data.errors[key]);
+              }
             }
           }
-        }
-      });
+        })
+        .catch(() => {});
     }, onInvalidSubmit);
     /************************************************************************* */
     function resetCustom() {
@@ -274,6 +292,7 @@ export default {
       isDirty,
       isValid,
       onSubmit,
+      isSubmitting,
       resetForm,
       resetCustom,
       close,
@@ -284,7 +303,7 @@ export default {
   },
   watch: {
     propUnit(value, oldValue) {
-      value.id ? (this.unit = value.id) : undefined;
+      value.id ? (this.unit = value) : undefined;
     },
   },
   methods: {},

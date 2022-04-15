@@ -11,10 +11,10 @@
         : []
     "
   />
-  <AdminProductNewBrandModal v-bind:propUpdateBrands="loadBrands" />
+  <AdminProductNewBrandModal v-bind:propUpdateBrandsAndSet="loadBrandsAndSet" />
   <AdminProductNewUnitModal v-bind:propUpdateUnits="loadUnits" />
   <AdminProductNewUnitBulkModal
-    v-bind:propUpdateUnitsBulk="loadUnitsBulk"
+    v-bind:propUpdatePunitSUnit="changePunitSunit"
     :propTest="unit"
     :propUnit="
       units && unit
@@ -418,7 +418,7 @@
                   ]"
                 >
                   <option selected :value="formValues.p_unit" v-if="!unitsBulk">
-                    Loading...
+                    {{ unitsBulk == undefined ? "Loading..." : "Updating..." }}
                   </option>
                   <option selected :value="null" v-if="unitsBulk">
                     {{
@@ -461,7 +461,7 @@
                   ]"
                 >
                   <option selected :value="formValues.s_unit" v-if="!unitsBulk">
-                    Loading...
+                    {{ unitsBulk == undefined ? "Loading..." : "Updating..." }}
                   </option>
                   <option selected :value="null" v-if="unitsBulk">
                     {{
@@ -548,7 +548,9 @@
             <div class="col">
               <label class="form-label">Mfg. Date</label>
               <div class="input-group is-invalid">
-                <span class="input-group-text"><i class="fa-solid fa-calendar"></i></span>
+                <span class="input-group-text"
+                  ><i class="fa-solid fa-calendar"></i
+                ></span>
                 <input
                   type="datetime-local"
                   name="mfg_date"
@@ -561,7 +563,9 @@
             <div class="col">
               <label class="form-label">Exp. Date</label>
               <div class="input-group is-invalid">
-                <span class="input-group-text"><i class="fa-solid fa-calendar"></i></span>
+                <span class="input-group-text"
+                  ><i class="fa-solid fa-calendar"></i
+                ></span>
                 <input
                   type="datetime-local"
                   name="exp_date"
@@ -1410,6 +1414,8 @@ export default {
     const { value: isalert, errorMessage: errorIsalert } = useField("isalert");
     const { value: alert_quantity, errorMessage: errorAlertQuantity } =
       useField("alert_quantity");
+    const { value: mfg_date } = useField("mfg_date");
+    const { value: exp_date } = useField("exp_date");
     const { value: tax_rate, errorMessage: errorTaxRate } =
       useField("tax_rate");
     const { value: tax_method, errorMessage: errorTaxMethod } =
@@ -1593,6 +1599,8 @@ export default {
       errorIsalert,
       alert_quantity,
       errorAlertQuantity,
+      mfg_date,
+      exp_date,
       tax_rate,
       errorTaxRate,
       tax_method,
@@ -1639,6 +1647,7 @@ export default {
       addCategories,
       addBrands,
       addUnits,
+      axiosCall,
       axiosCallAndCommit,
       addUnitsBulk,
       addTaxes,
@@ -1662,9 +1671,9 @@ export default {
     subCatsUpdated: function (id) {
       this.sub_category = id;
     },
-    loadBrands: function (id) {
-      let self = this;
+    loadBrandsAndSet: function (id) {
       this.brand = null;
+      let self = this;
       this.axiosCallAndCommit("storeBrands", "get", "brand", {
         action: "dropdown",
       })
@@ -1716,8 +1725,23 @@ export default {
           });
         });
     },
-    loadUnitsBulk: function (id) {
-      //
+    changePunitSunit: function (id) {
+      let self = this;
+      this.axiosCallAndCommit("storeUnitsBulk", "get", "unit", {
+        action: "list_sub",
+        id: self.unit,
+      })
+        .then(function (data) {
+          if (data.success == true) {
+            self.p_unit = self.s_unit = id;
+          }
+        })
+        .catch(function () {
+          self.addUnitsBulk(self.unit);
+          self.notifyDefault({
+            title: "Failed to select sub unit, select manually !",
+          });
+        });
     },
   },
   created() {},

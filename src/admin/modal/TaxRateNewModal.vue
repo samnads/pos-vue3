@@ -73,7 +73,7 @@
                       class="form-check-input mt-0"
                       type="radio"
                       name="type"
-                       v-model="type"
+                      v-model="type"
                       value="P"
                     />&nbsp;<strong>%</strong>
                   </div>
@@ -130,13 +130,25 @@
             <button
               type="button"
               class="btn btn-secondary"
-              v-show="isDirty"
               @click="resetForm"
+              :disabled="isSubmitting || !isDirty"
             >
               <i class="fa-solid fa-rotate-left"></i>
             </button>
-            <button type="submit" class="btn btn-secondary" :disable="!isValid">
-              <i class="fa-solid fa-save"></i>Save
+            <button
+              type="submit"
+              class="btn"
+              :disabled="isSubmitting"
+              v-bind:class="[isValid ? 'btn-success' : 'btn-secondary']"
+            >
+              <span v-if="!isSubmitting"><i class="fa-solid fa-save"></i></span>
+              <span
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+                v-if="isSubmitting"
+              ></span>
+              Save
             </button>
           </div>
         </form>
@@ -170,7 +182,7 @@ export default {
     } = admin();
     /************************************************************************* */
     const formValues = {
-      type:"P"
+      type: "P",
     };
     /************************************************************************* */
     const schema = computed(() => {
@@ -204,10 +216,15 @@ export default {
       });
     });
     /************************************************************************* */
-    const { setFieldValue, setFieldError, handleSubmit, resetForm } = useForm({
+    const {
+      setFieldValue,
+      setFieldError,
+      isSubmitting,
+      handleSubmit,
+      resetForm,
+    } = useForm({
       validationSchema: schema,
       initialValues: formValues,
-      initialErrors: {},
     });
     /************************************************************************* */
     const isDirty = useIsFormDirty();
@@ -217,23 +234,24 @@ export default {
       console.log(errors);
     }
     const onSubmit = handleSubmit((values, { resetForm }) => {
-      console.log(values);
-      axiosCall("post", "tax", {
+      return axiosCall("post", "tax", {
         data: values,
-      }).then(function (data) {
-        if (data.success == true) {
-          props.propUpdateTaxRates(data.id);
-          resetForm();
-          window.PROD_NEW_TAXRATE_MODAL.hide();
-          notifyApiResponse(data);
-        } else {
-          if (data.errors) {
-            for (var key in data.errors) {
-              setFieldError(key, data.errors[key]);
+      })
+        .then(function (data) {
+          if (data.success == true) {
+            props.propUpdateTaxRates(data.id);
+            resetForm();
+            window.PROD_NEW_TAXRATE_MODAL.hide();
+            notifyApiResponse(data);
+          } else {
+            if (data.errors) {
+              for (var key in data.errors) {
+                setFieldError(key, data.errors[key]);
+              }
             }
           }
-        }
-      });
+        })
+        .catch(() => {});
     }, onInvalidSubmit);
     /************************************************************************* */
     function close() {
@@ -244,7 +262,7 @@ export default {
     const { value: name, errorMessage: errorName } = useField("name");
     const { value: code, errorMessage: errorCode } = useField("code");
     const { value: rate, errorMessage: errorRate } = useField("rate");
-    const { value: type, errorMessage: errorType} = useField("type");
+    const { value: type, errorMessage: errorType } = useField("type");
     const { value: description, errorMessage: errorDescription } =
       useField("description");
     /*************************************** */
@@ -264,6 +282,7 @@ export default {
       isDirty,
       isValid,
       onSubmit,
+      isSubmitting,
       resetForm,
       close,
     };

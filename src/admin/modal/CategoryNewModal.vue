@@ -127,13 +127,25 @@
             <button
               type="button"
               class="btn btn-secondary"
-              v-show="isDirty"
               @click="resetForm"
+              :disabled="isSubmitting || !isDirty"
             >
               <i class="fa-solid fa-rotate-left"></i>
             </button>
-            <button type="submit" class="btn btn-secondary" :disable="!isValid">
-              <i class="fa-solid fa-save"></i>Save
+            <button
+              type="submit"
+              class="btn"
+              :disabled="isSubmitting"
+              v-bind:class="[isValid ? 'btn-success' : 'btn-secondary']"
+            >
+              <span v-if="!isSubmitting"><i class="fa-solid fa-save"></i></span>
+              <span
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+                v-if="isSubmitting"
+              ></span>
+              Save
             </button>
           </div>
         </form>
@@ -154,7 +166,7 @@ import { ref, toRef, computed } from "vue";
 import admin from "@/mixins/admin.js";
 export default {
   props: {
-    greetingMessage: String
+    greetingMessage: String,
   },
   setup(props) {
     // data retrieve
@@ -199,7 +211,13 @@ export default {
       });
     });
     /************************************************************************* */
-    const { setFieldValue, setFieldError, handleSubmit, resetForm } = useForm({
+    const {
+      setFieldValue,
+      setFieldError,
+      isSubmitting,
+      handleSubmit,
+      resetForm,
+    } = useForm({
       validationSchema: schema,
       initialValues: formValues,
       initialErrors: {},
@@ -212,23 +230,24 @@ export default {
       console.log(errors);
     }
     const onSubmit = handleSubmit((values, { resetForm }) => {
-      console.log(values);
-      axiosCall("post", "category", {
+      return axiosCall("post", "category", {
         data: values,
-      }).then(function (data) {
-        if (data.success == true) {
-          addCategories();
-          resetForm();
-          window.PROD_NEW_CATEGORY_MODAL.hide();
-          notifyApiResponse(data);
-        } else {
-          if (data.errors) {
-            for (var key in data.errors) {
-              setFieldError(key, data.errors[key]);
+      })
+        .then(function (data) {
+          if (data.success == true) {
+            addCategories();
+            resetForm();
+            window.PROD_NEW_CATEGORY_MODAL.hide();
+            notifyApiResponse(data);
+          } else {
+            if (data.errors) {
+              for (var key in data.errors) {
+                setFieldError(key, data.errors[key]);
+              }
             }
           }
-        }
-      });
+        })
+        .catch(() => {});
     }, onInvalidSubmit);
     /************************************************************************* */
     function handleChangeName() {
@@ -278,6 +297,7 @@ export default {
       isDirty,
       isValid,
       onSubmit,
+      isSubmitting,
       resetForm,
       close,
       /******************/
@@ -287,8 +307,7 @@ export default {
   data() {
     return {};
   },
-  methods: {
-  },
+  methods: {},
   created() {},
   mounted() {},
 };

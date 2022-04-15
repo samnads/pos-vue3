@@ -127,13 +127,25 @@
             <button
               type="button"
               class="btn btn-secondary"
-              v-show="isDirty"
               @click="resetForm"
+              :disabled="isSubmitting || !isDirty"
             >
               <i class="fa-solid fa-rotate-left"></i>
             </button>
-            <button type="submit" class="btn btn-secondary" :disable="!isValid">
-              <i class="fa-solid fa-save"></i>Save
+            <button
+              type="submit"
+              class="btn"
+              :disabled="isSubmitting"
+              v-bind:class="[isValid ? 'btn-success' : 'btn-secondary']"
+            >
+              <span v-if="!isSubmitting"><i class="fa-solid fa-save"></i></span>
+              <span
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+                v-if="isSubmitting"
+              ></span>
+              Save
             </button>
           </div>
         </form>
@@ -154,7 +166,7 @@ import { ref, toRef, computed } from "vue";
 import admin from "@/mixins/admin.js";
 export default {
   props: {
-    propUpdateBrands:Function
+    propUpdateBrandsAndSet: Function,
   },
   setup(props) {
     // data retrieve
@@ -202,10 +214,15 @@ export default {
       });
     });
     /************************************************************************* */
-    const { setFieldValue, setFieldError, handleSubmit, resetForm } = useForm({
+    const {
+      setFieldValue,
+      setFieldError,
+      isSubmitting,
+      handleSubmit,
+      resetForm,
+    } = useForm({
       validationSchema: schema,
       initialValues: formValues,
-      initialErrors: {},
     });
     /************************************************************************* */
     const isDirty = useIsFormDirty();
@@ -214,24 +231,26 @@ export default {
     function onInvalidSubmit({ values, errors, results }) {
       console.log(errors);
     }
-    const onSubmit = handleSubmit((values, { resetForm }) => {
-      console.log(values);
-      axiosCall("post", "brand", {
+    const onSubmit = handleSubmit((values) => {
+      return axiosCall("post", "brand", {
         data: values,
-      }).then(function (data) {
-        if (data.success == true) {
-          props.propUpdateBrands(data.id);
-          resetForm();
-          window.PROD_NEW_BRAND_MODAL.hide();
-          notifyApiResponse(data);
-        } else {
-          if (data.errors) {
-            for (var key in data.errors) {
-              setFieldError(key, data.errors[key]);
+      })
+        .then(function (data) {
+          if (data.success == true) {
+            props.propUpdateBrandsAndSet(data.id);
+            resetForm();
+            window.PROD_NEW_BRAND_MODAL.hide();
+            notifyApiResponse(data);
+          } else {
+            if (data.errors) {
+              // form validation error
+              for (var key in data.errors) {
+                setFieldError(key, data.errors[key]);
+              }
             }
           }
-        }
-      });
+        })
+        .catch(() => {});
     }, onInvalidSubmit);
     /************************************************************************* */
     function handleChangeName() {
@@ -281,6 +300,7 @@ export default {
       isDirty,
       isValid,
       onSubmit,
+      isSubmitting,
       resetForm,
       close,
     };
@@ -288,8 +308,7 @@ export default {
   data() {
     return {};
   },
-  methods: {
-  },
+  methods: {},
   created() {},
   mounted() {},
 };

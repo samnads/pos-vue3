@@ -9,6 +9,9 @@ import AdminDashboard from '../admin/AdminDashboard.vue'
 import AdminProductMain from '../admin/product/ProductMain.vue'
 import AdminProductList from '../admin/product/ProductList.vue'
 import AdminProductNew from '../admin/product/ProductNew.vue'
+// Product Adjustment Based Pages
+import AdjustmentMain from '../admin/adjustment/AdjustmentMain.vue'
+import AdjustmentList from '../admin/adjustment/AdjustmentList.vue'
 // error pages
 import PageNotFound from '../admin/PageNotFound.vue'
 
@@ -60,6 +63,19 @@ const routes = [
             path: 'new',
             name: 'adminProductNew',
             component: AdminProductNew,
+          },
+        ],
+      },
+      {
+        path: 'adjustment',
+        name: 'adminProductAdjustment',
+        component: AdjustmentMain,
+        redirect: '/admin/adjustment/list',
+        children: [
+          {
+            path: 'list',
+            name: 'adminProductAdjustmentList',
+            component: AdjustmentList,
           },
         ],
       },
