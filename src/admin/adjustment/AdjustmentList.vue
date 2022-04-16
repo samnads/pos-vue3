@@ -71,6 +71,7 @@ import { ref } from "vue";
 import admin from "@/mixins/admin.js";
 import AdjustmentDetailsModal from "../modal/AdjustmentDetailsModal.vue";
 import { Modal } from "bootstrap";
+import axios from "axios";
 export default {
   components: {
     AdjustmentDetailsModal,
@@ -79,6 +80,8 @@ export default {
   setup() {
     var adjustRow = ref({});
     var adjustInfo = ref({});
+    var cancelSource = axios.CancelToken.source();
+    var controller = new AbortController();
     // notify
     const { notifyDefault, notifyApiResponse, notifyCatchResponse, axiosCall } =
       admin();
@@ -86,6 +89,8 @@ export default {
       notifyDefault,
       notifyApiResponse,
       notifyCatchResponse,
+      cancelSource,
+      controller,
       axiosCall,
       adjustRow,
       adjustInfo,
@@ -369,10 +374,12 @@ export default {
         function () {
           // show adjustment info
           self.adjustRow = self.table.row($(this).parents("tr")).data();
-          self.axiosCall("get", "stock_adjustment", {
-            action: "getInfo",
-            id: self.adjustRow.id,
-          })
+          self.adjustInfo = undefined;
+          /*self
+            .axiosCall("get", "stock_adjustment", {
+              action: "getInfo",
+              id: self.adjustRow.id,
+            })
             .then(function (data) {
               if (data.success == true) {
                 self.adjustInfo = data.data;
@@ -380,6 +387,57 @@ export default {
               }
             })
             .catch(() => {});
+            */
+
+          /*     Cancel Token
+          self.cancelSource.cancel();
+          self.cancelSource = axios.CancelToken.source();
+          self.axios
+            .get(
+              "http://localhost/pos-vue3/server/admin/ajax/stock_adjustment",
+              {
+                params: {
+                  action: "getInfo",
+                  id: self.adjustRow.id,
+                },
+                cancelToken: self.cancelSource.token,
+              }
+            )
+            .then(function (response) {
+              self.adjustInfo = response.data.data;
+            })
+            .catch(function (error) {
+              console.log(error);
+            })
+            .then(function () {
+              // always executed
+            });
+            */
+
+          self.controller.abort();
+          self.controller = new AbortController();
+
+          self.axios
+            .get(
+              "http://localhost/pos-vue3/server/admin/ajax/stock_adjustment",
+              {
+                params: {
+                  action: "getInfo",
+                  id: self.adjustRow.id,
+                },
+                signal: self.controller.signal,
+              }
+            )
+            .then(function (response) {
+              self.adjustInfo = response.data.data;
+            })
+            .catch(function (error) {
+              console.log(error);
+            })
+            .then(function () {
+              // always executed
+            });
+
           window.PROD_ADJ_DETAILS_MODAL.show();
         }
       );

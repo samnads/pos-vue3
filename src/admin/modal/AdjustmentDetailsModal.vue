@@ -12,7 +12,7 @@
           ></button>
         </div>
         <div class="modal-body">
-          <div class="container border border-dark border-bottom-0 rounded-top">
+          <div class="container border border-dark">
             <div class="row pt-2">
               <div class="col">
                 <p class="mb-1">
@@ -50,8 +50,9 @@
               </div>
             </div>
           </div>
+          <LoadingSpinnerDiv v-if="!propAdjustInfo"/>
           <table
-            class="table table-bordered border-dark table-striped table-hover"
+            class="table table-bordered border-dark table-striped table-hover" v-if="propAdjustInfo"
           >
             <thead class="table-dark">
               <tr>
@@ -62,10 +63,16 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(product,index) in propAdjustInfo" :key="product.id">
-                <th scope="row">{{index+1}}</th>
+              <tr v-for="(product, index) in propAdjustInfo" :key="product.id">
+                <th scope="row">{{ index + 1 }}</th>
                 <td>{{ product.code + " | " + product.name }}</td>
-                <td v-bind:class="[product.quantity > 0 ? 'text-success' : 'text-danger']">{{ product.quantity > 0 ? "+ Added" : "- Removed" }}</td>
+                <td
+                  v-bind:class="[
+                    product.quantity > 0 ? 'text-success' : 'text-danger',
+                  ]"
+                >
+                  {{ product.quantity > 0 ? "+ Added" : "- Removed" }}
+                </td>
                 <td>{{ product.quantity }}</td>
               </tr>
             </tbody>
@@ -85,16 +92,17 @@
           <button type="button" class="btn btn-warning" v-on:click="edit()">
             <i class="fa-solid fa-pen-to-square"></i>Edit
           </button>
-          <button type="button" class="btn btn-dark" v-on:click="copy()">
-            <i class="fa-solid fa-copy"></i>Copy
-          </button>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
+import LoadingSpinnerDiv from "./LoadingSpinnerDiv.vue";
 export default {
+  components: {
+    LoadingSpinnerDiv,
+  },
   props: {
     propAdjustRow: Object,
     propAdjustInfo: Object,
