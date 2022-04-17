@@ -11,7 +11,7 @@ export default function () {
     var notSpeed = 300
     const store = useStore();
     const internalInstance = getCurrentInstance();
-    async function axiosCall(method, url, data) {
+    async function axiosCall(method, url, data, AbortController, options = { showCatchNotification: true }) {
         internalInstance.appContext.config.globalProperties.$Progress.start();
         const endpoint = "http://localhost/pos-vue3/server/admin/ajax/";
         try {
@@ -20,6 +20,7 @@ export default function () {
                 method: method,
                 data: data,
                 params: method == 'get' ? data : undefined,
+                signal: AbortController ? AbortController.signal : undefined,
                 timeout: 8000,
                 headers: {
                     'Content-Type': 'application/json',
@@ -63,8 +64,13 @@ export default function () {
             return res.data
         }
         catch (err) {
-            internalInstance.appContext.config.globalProperties.$Progress.fail();
-            notifyCatchResponse({ title: err });
+            internalInstance.appContext.config.globalProperties.$Progress.fail(); // show fail progress
+            if (AbortController && err.message == "canceled") {
+                //
+            } else {
+                options.showCatchNotification == true ? notifyCatchResponse({ title: err.message }) : undefined;
+            }
+            return err;
         }
     }
     function notifyDefault(data) {

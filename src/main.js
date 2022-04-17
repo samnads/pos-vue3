@@ -16,17 +16,7 @@ import Notifications from '@kyvg/vue3-notification'
 //
 const options = {
     color: "green",
-    failedColor: "red",
-    thickness: "3px",
-    transition: {
-        speed: "0.2s",
-        opacity: "0.6s",
-        termination: 300,
-    },
-    autoRevert: true,
-    location: "top",
-    inverse: false,
-    autoFinish:true
+    failedColor: "red"
 };
 //
 axios.defaults.withCredentials = true

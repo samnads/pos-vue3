@@ -71,7 +71,6 @@ import { ref } from "vue";
 import admin from "@/mixins/admin.js";
 import AdjustmentDetailsModal from "../modal/AdjustmentDetailsModal.vue";
 import { Modal } from "bootstrap";
-import axios from "axios";
 export default {
   components: {
     AdjustmentDetailsModal,
@@ -80,8 +79,6 @@ export default {
   setup() {
     var adjustRow = ref({});
     var adjustInfo = ref({});
-    var cancelSource = axios.CancelToken.source();
-    var controller = new AbortController();
     // notify
     const { notifyDefault, notifyApiResponse, notifyCatchResponse, axiosCall } =
       admin();
@@ -89,14 +86,52 @@ export default {
       notifyDefault,
       notifyApiResponse,
       notifyCatchResponse,
-      cancelSource,
-      controller,
       axiosCall,
       adjustRow,
       adjustInfo,
     };
   },
-  methods: {},
+  methods: {
+    getAdjustInfo() {
+      var self = this;
+      self.adjustInfo = undefined; // reset previous data
+      if (self.controller) {
+        self.controller.abort();
+      }
+      self.controller = new AbortController();
+      window.PROD_ADJ_DETAILS_MODAL.show();
+      self
+        .axiosCall(
+          "get",
+          "stock_adjustment",
+          {
+            action: "getInfo",
+            id: self.adjustRow.id,
+          },
+          self.controller,
+          { showCatchNotification: false }
+        )
+        .then(function (data) {
+          if (data.success == true) {
+            // ok
+            self.adjustInfo = data.data;
+          } else {
+            if (data.success == false) {
+              // not ok
+              window.PROD_ADJ_DETAILS_MODAL.hide();
+            } else {
+              // other error
+              if (data.message == "canceled") {
+                //
+              } else {
+                window.PROD_ADJ_DETAILS_MODAL.hide();
+                self.notifyCatchResponse({ title: data.message });
+              }
+            }
+          }
+        });
+    },
+  },
   created() {},
   mounted() {
     var self = this;
@@ -344,7 +379,7 @@ export default {
             text: '<i class="fa-solid fa-plus"></i>',
             className: "btn-light",
             action: function () {
-              self.$router.push({ name: "adminProductNew" }).catch((e) => {});
+              self.$router.push({ name: "adminProductAdjustmentNew" }).catch((e) => {});
             },
             attr: {
               "data-bs-toggle": "tooltip",
@@ -372,73 +407,8 @@ export default {
         "click",
         "td:not(:first-child):not(:last-child),#details",
         function () {
-          // show adjustment info
-          self.adjustRow = self.table.row($(this).parents("tr")).data();
-          self.adjustInfo = undefined;
-          /*self
-            .axiosCall("get", "stock_adjustment", {
-              action: "getInfo",
-              id: self.adjustRow.id,
-            })
-            .then(function (data) {
-              if (data.success == true) {
-                self.adjustInfo = data.data;
-              } else {
-              }
-            })
-            .catch(() => {});
-            */
-
-          /*     Cancel Token
-          self.cancelSource.cancel();
-          self.cancelSource = axios.CancelToken.source();
-          self.axios
-            .get(
-              "http://localhost/pos-vue3/server/admin/ajax/stock_adjustment",
-              {
-                params: {
-                  action: "getInfo",
-                  id: self.adjustRow.id,
-                },
-                cancelToken: self.cancelSource.token,
-              }
-            )
-            .then(function (response) {
-              self.adjustInfo = response.data.data;
-            })
-            .catch(function (error) {
-              console.log(error);
-            })
-            .then(function () {
-              // always executed
-            });
-            */
-
-          self.controller.abort();
-          self.controller = new AbortController();
-
-          self.axios
-            .get(
-              "http://localhost/pos-vue3/server/admin/ajax/stock_adjustment",
-              {
-                params: {
-                  action: "getInfo",
-                  id: self.adjustRow.id,
-                },
-                signal: self.controller.signal,
-              }
-            )
-            .then(function (response) {
-              self.adjustInfo = response.data.data;
-            })
-            .catch(function (error) {
-              console.log(error);
-            })
-            .then(function () {
-              // always executed
-            });
-
-          window.PROD_ADJ_DETAILS_MODAL.show();
+          self.adjustRow = self.table.row($(this).parents("tr")).data(); // row data
+          self.getAdjustInfo();
         }
       );
       $("#datatable tbody").on("click", "#edit", function () {
@@ -446,13 +416,6 @@ export default {
         self.row = self.table.row($(this).parents("tr")).data();
         self.$router
           .push({ path: "/admin/product/edit/" + self.row.id })
-          .catch(() => {});
-      });
-      $("#datatable tbody").on("click", "#copy", function () {
-        // copy from action menu
-        self.row = self.table.row($(this).parents("tr")).data();
-        self.$router
-          .push({ path: "/admin/product/copy/" + self.row.id })
           .catch(() => {});
       });
       self.table.on("select deselect", function () {
@@ -498,10 +461,7 @@ export default {
   },
   data: function () {
     return {
-      products: [],
-      product: {
-        details: {},
-      },
+      products: []
     };
   },
 };

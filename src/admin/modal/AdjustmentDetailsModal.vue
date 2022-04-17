@@ -50,9 +50,8 @@
               </div>
             </div>
           </div>
-          <LoadingSpinnerDiv v-if="!propAdjustInfo"/>
           <table
-            class="table table-bordered border-dark table-striped table-hover" v-if="propAdjustInfo"
+            class="table table-bordered border-dark table-striped table-hover"
           >
             <thead class="table-dark">
               <tr>
@@ -62,7 +61,11 @@
                 <th scope="col">Quantity</th>
               </tr>
             </thead>
+
             <tbody>
+              <tr v-if="!propAdjustInfo">
+                <td colspan="4"><LoadingSpinnerDiv /></td>
+              </tr>
               <tr v-for="(product, index) in propAdjustInfo" :key="product.id">
                 <th scope="row">{{ index + 1 }}</th>
                 <td>{{ product.code + " | " + product.name }}</td>
@@ -83,13 +86,23 @@
             type="button"
             class="btn btn-danger me-auto"
             v-on:click="deleteModal()"
+            :disabled="!propAdjustInfo"
           >
             <i class="fa-solid fa-trash"></i>DELETE
           </button>
-          <button type="button" class="btn btn-primary">
+          <button
+            type="button"
+            class="btn btn-primary"
+            :disabled="!propAdjustInfo"
+          >
             <i class="fa-solid fa-print"></i>Print
           </button>
-          <button type="button" class="btn btn-warning" v-on:click="edit()">
+          <button
+            type="button"
+            class="btn btn-warning"
+            v-on:click="edit(propAdjustRow.id)"
+            :disabled="!propAdjustInfo"
+          >
             <i class="fa-solid fa-pen-to-square"></i>Edit
           </button>
         </div>
@@ -112,18 +125,13 @@ export default {
   },
   computed: {},
   methods: {
-    edit() {
-      //window.PROD_DETAILS_MODAL.toggle();
-      //this.$router.push({ path: "/admin/edit/1" }).catch(() => {});
+    edit(id) {
+      window.PROD_ADJ_DETAILS_MODAL.hide();
+      this.$router
+        .push({ path: "/admin/adjustment/list/" + id })
+        .catch(() => {});
     },
-    copy() {
-      //window.PROD_DETAILS_MODAL.toggle();
-      //this.$router.push({ path: "/admin/copy/1" }).catch(() => {});
-    },
-    deleteModal() {
-      //window.PROD_DETAILS_MODAL.toggle();
-      //window.PROD_DELETE_MODAL.show();
-    },
+    deleteModal() {},
   },
   mounted() {},
 };
