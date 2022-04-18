@@ -1,4 +1,5 @@
 <template>
+  <AdminProductDetailsModal :propProductRow="productRow" :propProductInfo="productInfo" />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
@@ -64,21 +65,71 @@
 <style>
 </style>
 <script>
+import { ref } from "vue";
+import AdminProductDetailsModal from "../modal/ProductDetailsModal.vue";
+import { Modal } from "bootstrap";
 import admin from "@/mixins/admin.js";
 export default {
-  components: {},
+  components: {
+    AdminProductDetailsModal,
+  },
   /* eslint-disable */
-  mixins: [],
   setup() {
+    var productRow = ref({});
+    var productInfo = ref({});
     // notify
-    const { notifyDefault, notifyApiResponse, notifyCatchResponse } = admin();
+    const { axiosCall, notifyDefault, notifyApiResponse, notifyCatchResponse } =
+      admin();
     return {
+      productRow,
+      productInfo,
+      axiosCall,
       notifyDefault,
       notifyApiResponse,
       notifyCatchResponse,
     };
   },
-  methods: {},
+  methods: {
+    getProductInfo() {
+      this.productInfo = undefined; // reset previous data
+      var self = this;
+      if (self.controller) {
+        self.controller.abort();
+      }
+      self.controller = new AbortController();
+      window.PROD_DETAILS_MODAL.show();
+      self
+        .axiosCall(
+          "get",
+          "product",
+          {
+            action: "getInfo",
+            id: self.productRow.id,
+          },
+          self.controller,
+          { showCatchNotification: false, showProgress: true }
+        )
+        .then(function (data) {
+          if (data.success == true) {
+            // ok
+            self.productInfo = data.data;
+          } else {
+            if (data.success == false) {
+              // not ok
+              window.PROD_DETAILS_MODAL.hide();
+            } else {
+              // other error
+              if (data.message == "canceled") {
+                //
+              } else {
+                window.PROD_DETAILS_MODAL.hide();
+                self.notifyCatchResponse({ title: data.message });
+              }
+            }
+          }
+        });
+    },
+  },
   created() {},
   mounted() {
     var self = this;
@@ -341,7 +392,6 @@ export default {
           $("#buttons").html(self.table.buttons().container());
         },
         drawCallback: function (settings) {
-           
           let rows = self.table.rows(".selected").data().toArray();
           self.table.button(2).enable(rows.length >= 1);
           $("#checkall").prop("indeterminate", false);
@@ -353,9 +403,8 @@ export default {
         "td:not(:first-child):not(:last-child),#details",
         function () {
           // show single product info
-          self.row = self.table.row($(this).parents("tr")).data();
-          self.$parent.product = self.row;
-          window.PROD_DETAILS_MODAL.show();
+          self.productRow = self.table.row($(this).parents("tr")).data();
+          self.getProductInfo();
         }
       );
       $("#datatable tbody").on("click", "#edit", function () {
@@ -407,6 +456,15 @@ export default {
           // search clear button clicked
           self.table.search("").draw();
         });
+    });
+    /******************** */
+    window.PROD_DETAILS_MODAL = new Modal($("#detailsModal"), {
+      backdrop: true,
+      show: true,
+    });
+    window.PROD_DELETE_MODAL = new Modal($("#deleteModal"), {
+      backdrop: true,
+      show: true,
     });
   },
   data: function () {

@@ -18,42 +18,58 @@
           ></button>
         </div>
         <div class="modal-body">
-          <div class="row justify-content-start">
-            <div class="col-12">
-              <table
-                class="table table-bordered border-secondary table-primary"
-              >
-                <tbody>
-                  <tr>
-                    <th scope="row">Name</th>
-                    <td>
-                      {{ product.name }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Code</th>
-                    <td>{{ product.code }}</td>
-                  </tr>
-                </tbody>
-              </table>
+          <div class="container mb-3">
+            <div class="row pt-2">
+              <div class="col">
+                <p class="mb-1">
+                  <span class="fw-bold">Product Name : </span
+                  >{{ propProductRow.name }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Product Code : </span
+                  >{{ propProductRow.code }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Brand Name : </span
+                  >{{ propProductRow.brand_name || "-"}}
+                </p>
+              </div>
+              <div class="col">
+                <table class="table">
+                  <tbody>
+                    <tr>
+                      <td class="text-end">
+                        <span class="fw-bold">Stock Count : </span
+                        >{{ propProductRow.stock || "0"}}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="text-end">
+                        <span class="fw-bold">Model : </span
+                        >{{ propProductRow.model_name || "General" }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-          <table class="table table-sm"></table>
-          <div class="row justify-content-start">
+          <LoadingSpinnerDiv v-if="!propProductInfo" />
+          <div class="row justify-content-start" v-if="propProductInfo">
             <div class="col-4">
               <table class="table table-bordered border-secondary table-info">
                 <tbody>
                   <tr>
-                    <th scope="row">Name</th>
-                    <td>Avariery product with different types of colors.</td>
+                    <th scope="row">Tax</th>
+                    <td>{{ propProductInfo.tax_name || "-" }}</td>
                   </tr>
                   <tr>
-                    <th scope="row">Code</th>
-                    <td>561561051</td>
+                    <th scope="row">Tax Rate</th>
+                    <td>{{ propProductInfo.tax_rate }}</td>
                   </tr>
                   <tr>
-                    <th scope="row">Rack</th>
-                    <td>RL1</td>
+                    <th scope="row">Rack / Shelf</th>
+                    <td>{{ propProductInfo.rack || "-" }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -64,16 +80,16 @@
               >
                 <tbody>
                   <tr>
-                    <th scope="row">50</th>
-                    <td>Mark</td>
+                    <th scope="row">MRP</th>
+                    <td>{{ propProductInfo.mrp || "-" }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Cost</th>
-                    <td>20</td>
+                    <td>{{ propProductInfo.cost || "-" }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Price</th>
-                    <td>30</td>
+                    <td>{{ propProductInfo.price }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -85,15 +101,17 @@
                 <tbody>
                   <tr>
                     <th scope="row">Brand</th>
-                    <td>Dell</td>
+                    <td>
+                      {{ propProductInfo.brand_name || "-" }}
+                    </td>
                   </tr>
                   <tr>
                     <th scope="row">Category</th>
-                    <td>Electronics</td>
+                    <td>{{ propProductInfo.category_name }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Subcategory</th>
-                    <td>Laptops</td>
+                    <td>{{ propProductInfo.sub_category_name || "-" }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -123,17 +141,21 @@
   </div>
 </template>
 <script>
+import LoadingSpinnerDiv from "./LoadingSpinnerDiv.vue";
 export default {
+  components: {
+    LoadingSpinnerDiv,
+  },
   props: {
-    productData: Object,
+    propProductRow: Object,
+    propProductInfo: Object,
   },
   data: function () {
-    return {
-    };
+    return {};
   },
   computed: {
     product: function () {
-      return  this.productData;
+      return this.productData;
     },
   },
   methods: {

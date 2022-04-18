@@ -2,7 +2,6 @@
   <div id="adminProductRoute">
     <AdminProductList v-if="this.$route.name == 'adminProductList'" />
     <AdminProductNew v-if="this.$route.name == 'adminProductNew'" />
-    <AdminProductDetailsModal :productData="product" />
     <AdminProductDeleteConfirmModal :productData="product" />
   </div>
 </template>
@@ -11,31 +10,19 @@
 <script>
 import AdminProductList from "./ProductList.vue";
 import AdminProductNew from "./ProductNew.vue";
-import AdminProductDetailsModal from "../modal/ProductDetailsModal.vue";
 import AdminProductDeleteConfirmModal from "../modal/ProductDeleteModal.vue";
-import { Modal } from "bootstrap";
 export default {
   components: {
     AdminProductList,
     AdminProductNew,
-    AdminProductDetailsModal,
     AdminProductDeleteConfirmModal,
   },
   data() {
     return {
       product: {},
-      hello:" - Some Dynamic Data"
+      hello: " - Some Dynamic Data",
     };
   },
-  mounted() {
-    window.PROD_DETAILS_MODAL = new Modal($("#detailsModal"), {
-      backdrop: true,
-      show: true,
-    });
-    window.PROD_DELETE_MODAL = new Modal($("#deleteModal"), {
-      backdrop: true,
-      show: true,
-    });
-  },
+  mounted() {},
 };
 </script>

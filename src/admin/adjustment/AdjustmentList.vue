@@ -93,8 +93,8 @@ export default {
   },
   methods: {
     getAdjustInfo() {
+      this.adjustInfo = undefined; // reset previous data
       var self = this;
-      self.adjustInfo = undefined; // reset previous data
       if (self.controller) {
         self.controller.abort();
       }
@@ -109,7 +109,7 @@ export default {
             id: self.adjustRow.id,
           },
           self.controller,
-          { showCatchNotification: false }
+          { showCatchNotification: false, showProgress: true }
         )
         .then(function (data) {
           if (data.success == true) {
@@ -379,7 +379,9 @@ export default {
             text: '<i class="fa-solid fa-plus"></i>',
             className: "btn-light",
             action: function () {
-              self.$router.push({ name: "adminProductAdjustmentNew" }).catch((e) => {});
+              self.$router
+                .push({ name: "adminProductAdjustmentNew" })
+                .catch((e) => {});
             },
             attr: {
               "data-bs-toggle": "tooltip",
@@ -461,7 +463,7 @@ export default {
   },
   data: function () {
     return {
-      products: []
+      products: [],
     };
   },
 };

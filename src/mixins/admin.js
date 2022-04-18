@@ -11,8 +11,8 @@ export default function () {
     var notSpeed = 300
     const store = useStore();
     const internalInstance = getCurrentInstance();
-    async function axiosCall(method, url, data, AbortController, options = { showCatchNotification: true }) {
-        internalInstance.appContext.config.globalProperties.$Progress.start();
+    async function axiosCall(method, url, data, AbortController, options = { showCatchNotification: true, showProgress: true }) {
+        options.showProgress && internalInstance.appContext.config.globalProperties.$Progress.start();
         const endpoint = "http://localhost/pos-vue3/server/admin/ajax/";
         try {
             let res = await axios({
@@ -33,7 +33,7 @@ export default function () {
             /******************************* */ // common things for all response
             let resData = res.data;
             if (resData.success == false) {
-                internalInstance.appContext.config.globalProperties.$Progress.fail();
+                options.showProgress && internalInstance.appContext.config.globalProperties.$Progress.fail();
                 if (resData.location) { // redirect found
                     notifyApiResponse(resData);
                     router.push({ path: "/" + resData.location }).catch((e) => {
@@ -49,14 +49,14 @@ export default function () {
                     notifyApiResponse(resData);
                 }
             } else if (resData.success == true && resData.location) {
-                internalInstance.appContext.config.globalProperties.$Progress.finish();
+                options.showProgress && internalInstance.appContext.config.globalProperties.$Progress.finish();
                 notifyApiResponse(resData);
                 router.push({ path: "/" + resData.location }).catch((e) => {
                     console.log(e);
                 });
             }
             else if (resData.success == true) {
-                internalInstance.appContext.config.globalProperties.$Progress.finish();
+                options.showProgress && internalInstance.appContext.config.globalProperties.$Progress.finish();
                 //
             }
             /******************************* */
@@ -64,10 +64,10 @@ export default function () {
             return res.data
         }
         catch (err) {
-            internalInstance.appContext.config.globalProperties.$Progress.fail(); // show fail progress
             if (AbortController && err.message == "canceled") {
                 //
             } else {
+                options.showProgress && internalInstance.appContext.config.globalProperties.$Progress.fail();
                 options.showCatchNotification == true ? notifyCatchResponse({ title: err.message }) : undefined;
             }
             return err;

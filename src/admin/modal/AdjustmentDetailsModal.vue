@@ -93,6 +93,7 @@
           <button
             type="button"
             class="btn btn-primary"
+            v-on:click="print()"
             :disabled="!propAdjustInfo"
           >
             <i class="fa-solid fa-print"></i>Print
@@ -110,6 +111,8 @@
     </div>
   </div>
 </template>
+<style>
+</style>
 <script>
 import LoadingSpinnerDiv from "./LoadingSpinnerDiv.vue";
 export default {
@@ -131,7 +134,9 @@ export default {
         .push({ path: "/admin/adjustment/list/" + id })
         .catch(() => {});
     },
-    deleteModal() {},
+    print() {
+      window.print();
+    },
   },
   mounted() {},
 };
