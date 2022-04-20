@@ -11,7 +11,7 @@ export default function () {
     var notSpeed = 300
     const store = useStore();
     const internalInstance = getCurrentInstance();
-    async function axiosCall(method, url, data, AbortController, options = { showCatchNotification: true, showProgress: true }) {
+    async function axiosCall(method, url, data, AbortController, options = { showSuccessNotification: true, showCatchNotification: true, showProgress: true }) {
         options.showProgress && internalInstance.appContext.config.globalProperties.$Progress.start();
         const endpoint = "http://localhost/pos-vue3/server/admin/ajax/";
         try {
@@ -56,8 +56,8 @@ export default function () {
                 });
             }
             else if (resData.success == true) {
-                options.showProgress && internalInstance.appContext.config.globalProperties.$Progress.finish();
-                //
+                options.showSuccessNotification == true ? notifyApiResponse(resData) : undefined; // show success notify
+                options.showProgress && internalInstance.appContext.config.globalProperties.$Progress.finish(); // finish progress
             }
             /******************************* */
             // Don't forget to return something   

@@ -1,5 +1,13 @@
 <template>
-  <AdminProductDetailsModal :propProductRow="productRow" :propProductInfo="productInfo" />
+  <AdminProductDetailsModal
+    :propProductRow="productRow"
+    :propProductInfo="productInfo"
+  />
+  <AdminProductDeleteConfirmModal
+    :propProductData="delete_modal_row"
+    :propConfirmDeleteProduct="confirmDeleteProduct"
+    :propDeleting="delete_modal_delete"
+  />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
@@ -67,22 +75,28 @@
 <script>
 import { ref } from "vue";
 import AdminProductDetailsModal from "../modal/ProductDetailsModal.vue";
+import AdminProductDeleteConfirmModal from "../modal/ProductDeleteModal.vue";
 import { Modal } from "bootstrap";
 import admin from "@/mixins/admin.js";
 export default {
   components: {
     AdminProductDetailsModal,
+    AdminProductDeleteConfirmModal,
   },
   /* eslint-disable */
   setup() {
     var productRow = ref({});
     var productInfo = ref({});
+    var delete_modal_row = ref({});
+    var delete_modal_delete = ref(false);
     // notify
     const { axiosCall, notifyDefault, notifyApiResponse, notifyCatchResponse } =
       admin();
     return {
       productRow,
       productInfo,
+      delete_modal_row,
+      delete_modal_delete,
       axiosCall,
       notifyDefault,
       notifyApiResponse,
@@ -112,7 +126,7 @@ export default {
         .then(function (data) {
           if (data.success == true) {
             // ok
-            self.productInfo = data.data;
+            self.productInfo = data.data || {}; // {} - because sometimes the product is already deleted so gets a null response data
           } else {
             if (data.success == false) {
               // not ok
@@ -127,6 +141,49 @@ export default {
               }
             }
           }
+        });
+    },
+    confirmDeleteProduct(row) {
+      alert(row.length ? "Mulltiple " : "Single")
+      var self = this;
+      self.delete_modal_delete = true;
+      if (self.controller_delete) {
+        self.controller_delete.abort();
+      }
+      self.controller_delete = new AbortController();
+      self
+        .axiosCall(
+          "delete",
+          "product",
+          {
+            data: { data: row, action: "delete", bulk: false },
+          },
+          self.controller_delete,
+          {
+            showSuccessNotification: true,
+            showCatchNotification: true,
+            showProgress: true,
+          }
+        )
+        .then(function (data) {
+          if (data.success == true) {
+            // success
+            window.PROD_DELETE_MODAL.hide();
+            self.table.ajax.reload();
+          } else {
+            if (data.success == false) {
+              // not ok
+              window.PROD_DELETE_MODAL.hide();
+            } else {
+              // other error
+              if (data.message == "canceled") {
+                // duplicate cancelled
+              } else {
+                window.PROD_DELETE_MODAL.hide();
+              }
+            }
+          }
+          self.delete_modal_delete = false;
         });
     },
   },
@@ -310,7 +367,7 @@ export default {
             searchable: false,
             width: "2%",
             defaultContent:
-              '<div class="dropdown dropstart">  <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">    Action  </button>  <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">    <li id="details"><button class="dropdown-item" type="button"><i class="fa-solid fa-circle-info"></i>Details</button></li>    <li id="edit"><button class="dropdown-item" type="button"><i class="fa-solid fa-pen-to-square"></i>Edit</button></li>    <li id="copy"><button class="dropdown-item" type="button"><i class="fa-solid fa-copy"></i>Duplicate</button></li>  </ul></div>',
+              '<div class="dropdown dropstart">  <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">    Action  </button>  <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">    <li id="details"><button class="dropdown-item" type="button"><i class="fa-solid fa-circle-info"></i>Details</button></li>    <li id="edit"><button class="dropdown-item" type="button"><i class="fa-solid fa-pen-to-square"></i>Edit</button></li>    <li id="copy"><button class="dropdown-item" type="button"><i class="fa-solid fa-copy"></i>Copy</button></li>  <li id="delete"><button class="dropdown-item text-danger" type="button"><i class="fa-solid fa-trash"></i>Delete</button></li>  </ul></div>',
           },
         ],
         buttons: [
@@ -346,8 +403,8 @@ export default {
             className: "btn-light",
             enabled: false,
             action: function () {
-              self.rows = self.table.rows(".selected").data().toArray();
-              //$scope.confDel($scope.rows);
+              self.delete_modal_row = self.table.rows(".selected").data().toArray();
+              window.PROD_DELETE_MODAL.show();
             },
             attr: {
               title: "Delete",
@@ -420,6 +477,11 @@ export default {
         self.$router
           .push({ path: "/admin/product/copy/" + self.row.id })
           .catch(() => {});
+      });
+      $("#datatable tbody").on("click", "#delete", function () {
+        // delete from row action
+        self.delete_modal_row = self.table.row($(this).parents("tr")).data();
+        window.PROD_DELETE_MODAL.show();
       });
       self.table.on("select deselect", function () {
         self.rows = self.table.rows(".selected").data().toArray();

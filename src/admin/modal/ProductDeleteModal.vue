@@ -1,17 +1,9 @@
 <template>
-  <div
-    class="modal"
-    id="deleteModal"
-    tabindex="-1"
-    aria-labelledby="exampleModalLabel"
-    aria-hidden="true"
-  >
+  <div class="modal" id="deleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-md modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header bg-danger">
-          <h5 class="modal-title" id="exampleModalLabel">
-            Confirm Delete Product ?
-          </h5>
+          <h5 class="modal-title">Confirm Delete Product ?</h5>
           <button
             type="button"
             class="btn-close"
@@ -19,19 +11,32 @@
             aria-label="Close"
           ></button>
         </div>
-        <div class="modal-body">{{ product.name }} | {{ product.code }}</div>
+        <div class="modal-body">
+          {{ propProductData.name }} | {{ propProductData.code }}
+        </div>
         <div class="modal-footer">
           <button
             type="button"
             class="btn btn-danger me-auto"
-            v-on:click="confirmDeleteProduct(product)"
+            v-on:click="propConfirmDeleteProduct(propProductData)"
+            :disabled="propDeleting"
           >
-            <i class="fa-solid fa-trash"></i>YES
+            <span v-if="!propDeleting">
+              <i class="fa-solid fa-trash"></i>
+            </span>
+            <span
+              class="spinner-border spinner-border-sm"
+              role="status"
+              aria-hidden="true"
+              v-if="propDeleting"
+            ></span>
+            YES
           </button>
           <button
             type="button"
             class="btn btn-secondary"
             data-bs-dismiss="modal"
+            :disabled="propDeleting"
           >
             <i class="fa-solid fa-stop"></i>NO
           </button>
@@ -41,51 +46,25 @@
   </div>
 </template>
 <script>
-import admin from "@/mixins/admin.js";
 export default {
-  components: {},
+  props: {
+    propProductData: Object,
+    propConfirmDeleteProduct: Function,
+    propDeleting: Boolean,
+  },
   setup() {
-    // notify
-    const { notifyDefault, notifyApiResponse, notifyCatchResponse } = admin();
-    return {
-      notifyDefault,
-      notifyApiResponse,
-      notifyCatchResponse,
-    };
+    return {};
   },
   data() {
     return {};
   },
-  mixins: [],
-  props: {
-    productData: Object,
-  },
   computed: {
     product: function () {
-      return this.productData;
+      return this.propProductData;
     },
   },
   mounted() {},
-  methods: {
-    confirmDeleteProduct(product) {
-      var self = this;
-      //let data = JSON.parse(JSON.stringify(product));
-      //window.PROD_DELETE_MODAL.toggle();
-      let json = { data: product, action: "delete", bulk: false };
-      this.axios
-        .delete("http://localhost/CyberLikes-POS/admin/ajax/product", {
-          data: json,
-        })
-        .then(function (response) {
-          let data = response.data;
-          self.notifyApiResponse(data);
-          window.PROD_DELETE_MODAL.toggle();
-        })
-        .catch((error) => {
-          self.notifyCatchResponse({message:error.message});
-        });
-    },
-  },
+  methods: {},
 };
 </script>
 
