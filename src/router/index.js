@@ -64,6 +64,16 @@ const routes = [
             name: 'adminProductNew',
             component: AdminProductNew,
           },
+          {
+            path: 'edit/:id',
+            name: 'adminProductEdit',
+            component: AdminProductNew,
+          },
+          {
+            path: 'copy/:id',
+            name: 'adminProductCopy',
+            component: AdminProductNew,
+          },
         ],
       },
       {

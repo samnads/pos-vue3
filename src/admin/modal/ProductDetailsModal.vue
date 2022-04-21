@@ -31,7 +31,7 @@
                 </p>
                 <p class="mb-1">
                   <span class="fw-bold">Brand Name : </span
-                  >{{ propProductRow.brand_name || "-"}}
+                  >{{ propProductRow.brand_name || "-" }}
                 </p>
               </div>
               <div class="col">
@@ -40,7 +40,7 @@
                     <tr>
                       <td class="text-end">
                         <span class="fw-bold">Stock Count : </span
-                        >{{ propProductRow.stock || "0"}}
+                        >{{ propProductRow.stock || "0" }}
                       </td>
                     </tr>
                     <tr>
@@ -123,16 +123,31 @@
             type="button"
             class="btn btn-danger me-auto"
             v-on:click="deleteModal()"
+            :disabled="!propProductInfo"
           >
             <i class="fa-solid fa-trash"></i>DELETE
           </button>
-          <button type="button" class="btn btn-primary">
+          <button
+            type="button"
+            class="btn btn-primary"
+            :disabled="!propProductInfo"
+          >
             <i class="fa-solid fa-print"></i>Print
           </button>
-          <button type="button" class="btn btn-warning" v-on:click="edit()">
+          <button
+            type="button"
+            class="btn btn-warning"
+            v-on:click="edit(propProductInfo.id)"
+            :disabled="!propProductInfo"
+          >
             <i class="fa-solid fa-pen-to-square"></i>Edit
           </button>
-          <button type="button" class="btn btn-dark" v-on:click="copy()">
+          <button
+            type="button"
+            class="btn btn-dark"
+            v-on:click="copy(propProductInfo.id)"
+            :disabled="!propProductInfo"
+          >
             <i class="fa-solid fa-copy"></i>Copy
           </button>
         </div>
@@ -149,6 +164,7 @@ export default {
   props: {
     propProductRow: Object,
     propProductInfo: Object,
+    propConfirmDeleteModal: Function,
   },
   data: function () {
     return {};
@@ -159,17 +175,21 @@ export default {
     },
   },
   methods: {
-    edit() {
+    edit(id) {
       window.PROD_DETAILS_MODAL.toggle();
-      this.$router.push({ path: "/admin/edit/1" }).catch(() => {});
+      this.$router
+        .push({ name: "adminProductEdit", params: { id: id } })
+        .catch(() => {});
     },
-    copy() {
+    copy(id) {
       window.PROD_DETAILS_MODAL.toggle();
-      this.$router.push({ path: "/admin/copy/1" }).catch(() => {});
+      this.$router
+        .push({ name: "adminProductCopy", params: { id: id } })
+        .catch(() => {});
     },
     deleteModal() {
       window.PROD_DETAILS_MODAL.toggle();
-      window.PROD_DELETE_MODAL.show();
+      this.propConfirmDeleteModal(this.propProductRow);
     },
   },
   mounted() {},

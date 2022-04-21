@@ -219,6 +219,7 @@ a {
 /* selected row color */
 #datatable_wrapper table tbody > tr.selected {
   background-color: #8197a6 !important;
+  color: #fff !important;
 }
 /* action menu styles */
 #datatable_wrapper table tbody > tr .dropdown .dropdown-item > svg {

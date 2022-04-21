@@ -2,6 +2,7 @@
   <AdminProductDetailsModal
     :propProductRow="productRow"
     :propProductInfo="productInfo"
+    :propConfirmDeleteModal="confirmDeleteModal"
   />
   <AdminProductDeleteConfirmModal
     :propProductData="delete_modal_row"
@@ -75,7 +76,7 @@
 <script>
 import { ref } from "vue";
 import AdminProductDetailsModal from "../modal/ProductDetailsModal.vue";
-import AdminProductDeleteConfirmModal from "../modal/ProductDeleteModal.vue";
+import AdminProductDeleteConfirmModal from "../modal/ProductDeleteConfirmModal.vue";
 import { Modal } from "bootstrap";
 import admin from "@/mixins/admin.js";
 export default {
@@ -143,8 +144,11 @@ export default {
           }
         });
     },
+    confirmDeleteModal(row) {
+      this.delete_modal_row = row;
+      window.PROD_DELETE_MODAL.show();
+    },
     confirmDeleteProduct(row) {
-      alert(row.length ? "Mulltiple " : "Single")
       var self = this;
       self.delete_modal_delete = true;
       if (self.controller_delete) {
@@ -156,7 +160,9 @@ export default {
           "delete",
           "product",
           {
-            data: { data: row, action: "delete", bulk: false },
+            data: row,
+            action: "delete",
+            bulk: row.length ? true : false,
           },
           self.controller_delete,
           {
@@ -403,7 +409,10 @@ export default {
             className: "btn-light",
             enabled: false,
             action: function () {
-              self.delete_modal_row = self.table.rows(".selected").data().toArray();
+              self.delete_modal_row = self.table
+                .rows(".selected")
+                .data()
+                .toArray();
               window.PROD_DELETE_MODAL.show();
             },
             attr: {
@@ -468,14 +477,14 @@ export default {
         // edit from action menu
         self.row = self.table.row($(this).parents("tr")).data();
         self.$router
-          .push({ path: "/admin/product/edit/" + self.row.id })
+          .push({ name: "adminProductEdit", params: { id: self.row.id } })
           .catch(() => {});
       });
       $("#datatable tbody").on("click", "#copy", function () {
         // copy from action menu
         self.row = self.table.row($(this).parents("tr")).data();
         self.$router
-          .push({ path: "/admin/product/copy/" + self.row.id })
+          .push({ name: "adminProductCopy", params: { id: self.row.id } })
           .catch(() => {});
       });
       $("#datatable tbody").on("click", "#delete", function () {

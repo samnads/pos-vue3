@@ -3,7 +3,9 @@
     <div class="modal-dialog modal-md modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header bg-danger">
-          <h5 class="modal-title">Confirm Delete Product ?</h5>
+          <h5 class="modal-title">
+            Confirm Delete Product{{ products.length > 1 ? "s" : "" }} ?
+          </h5>
           <button
             type="button"
             class="btn-close"
@@ -12,13 +14,25 @@
           ></button>
         </div>
         <div class="modal-body">
-          {{ propProductData.name }} | {{ propProductData.code }}
+          <div v-if="!products.length">
+            <p>{{ products.name }} | {{ products.code }}</p>
+          </div>
+          <div v-if="products.length > 1">
+            <li v-for="product in products" :key="product.id">
+              {{ product.name }} | {{ product.code }}
+            </li>
+          </div>
+          <div v-if="products.length == 1">
+            <p v-for="product in products" :key="product.id">
+              {{ product.name }} | {{ product.code }}
+            </p>
+          </div>
         </div>
         <div class="modal-footer">
           <button
             type="button"
             class="btn btn-danger me-auto"
-            v-on:click="propConfirmDeleteProduct(propProductData)"
+            v-on:click="propConfirmDeleteProduct(products)"
             :disabled="propDeleting"
           >
             <span v-if="!propDeleting">
@@ -52,19 +66,11 @@ export default {
     propConfirmDeleteProduct: Function,
     propDeleting: Boolean,
   },
-  setup() {
-    return {};
-  },
-  data() {
-    return {};
-  },
   computed: {
-    product: function () {
+    products: function () {
       return this.propProductData;
     },
   },
-  mounted() {},
-  methods: {},
 };
 </script>
 
