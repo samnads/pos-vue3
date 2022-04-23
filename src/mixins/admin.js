@@ -3,6 +3,8 @@ import { useStore } from "vuex";
 import axios from "axios";
 import router from "@/router";
 import { getCurrentInstance } from "vue";
+const endpoint = "http://localhost/pos-vue3/server/admin/ajax/";
+const timeout = 8000;
 export default function () {
     var notType = 'warning'
     var notTitle = ''
@@ -13,7 +15,6 @@ export default function () {
     const internalInstance = getCurrentInstance();
     async function axiosCall(method, url, data, AbortController, options = { showSuccessNotification: true, showCatchNotification: true, showProgress: true }) {
         options.showProgress && internalInstance.appContext.config.globalProperties.$Progress.start();
-        const endpoint = "http://localhost/pos-vue3/server/admin/ajax/";
         try {
             let res = await axios({
                 url: endpoint + url,
@@ -114,16 +115,28 @@ export default function () {
             speed: notSpeed
         });
     }
-    function addProductTypes() {
-        axiosCall("get", "type", {
-            action: "all",
-        }, null, {
-            showSuccessNotification: false,
-            showCatchNotification: true,
-            showProgress: true,
-        }).then(function (response) {
-            store.commit("storeProductTypes", response.data);
-        });
+    async function axiosApiCommitReturnBoolean(mutation, url, data, method = "get") {
+        try {
+            let res = await axios({
+                url: endpoint + url,
+                method: method,
+                data: data,
+                params: method == 'get' ? data : undefined,
+                timeout: timeout,
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            let response = res.data;
+            if (response.success == true) {
+                store.commit(mutation, response.data);
+                return true;
+            }
+            return false;
+        }
+        catch (error) {
+            return false;
+        }
     }
     function addSymbologies() {
         axiosCall("get", "symbology", {
@@ -133,7 +146,9 @@ export default function () {
             showCatchNotification: true,
             showProgress: true,
         }).then(function (response) {
-            store.commit("storeSymbologies", response.data);
+            if (response.success == true) {
+                store.commit("storeSymbologies", response.data);
+            }
         });
     }
     function addCategories() {
@@ -144,7 +159,9 @@ export default function () {
             showCatchNotification: true,
             showProgress: true,
         }).then(function (response) {
-            store.commit("storeCategories", response.data);
+            if (response.success == true) {
+                store.commit("storeCategories", response.data);
+            }
         });
     }
     function addSubCatsLevel1(id) {
@@ -156,7 +173,9 @@ export default function () {
             showCatchNotification: true,
             showProgress: true,
         }).then(function (response) {
-            store.commit("storeSubCatLevel1", response.data);
+            if (response.success == true) {
+                store.commit("storeSubCatLevel1", response.data);
+            }
         });
     }
     function addBrands() {
@@ -167,7 +186,9 @@ export default function () {
             showCatchNotification: true,
             showProgress: true,
         }).then(function (response) {
-            store.commit("storeBrands", response.data);
+            if (response.success == true) {
+                store.commit("storeBrands", response.data);
+            }
         });
     }
     function addUnits() {
@@ -178,7 +199,9 @@ export default function () {
             showCatchNotification: true,
             showProgress: true,
         }).then(function (response) {
-            store.commit("storeUnits", response.data);
+            if (response.success == true) {
+                store.commit("storeUnits", response.data);
+            }
         });
     }
     function addUnitsBulk(id) {
@@ -191,7 +214,9 @@ export default function () {
             showCatchNotification: true,
             showProgress: true,
         }).then(function (response) {
-            store.commit("storeUnitsBulk", response.data);
+            if (response.success == true) {
+                store.commit("storeUnitsBulk", response.data);
+            }
         });
     }
     function addTaxes() {
@@ -202,7 +227,9 @@ export default function () {
             showCatchNotification: true,
             showProgress: true,
         }).then(function (response) {
-            store.commit("storeTaxes", response.data);
+            if (response.success == true) {
+                store.commit("storeTaxes", response.data);
+            }
         });
     }
     function addWareHouses() {
@@ -213,7 +240,9 @@ export default function () {
             showCatchNotification: true,
             showProgress: true,
         }).then(function (response) {
-            store.commit("storeWareHouses", response.data);
+            if (response.success == true) {
+                store.commit("storeWareHouses", response.data);
+            }
         });
     }
     async function axiosCallAndCommit(mutation, method, url, data) {
@@ -286,7 +315,6 @@ export default function () {
         notifyCatchResponse,
         notifyFormError,
         /******************* for data */
-        addProductTypes,
         addSymbologies,
         addCategories,
         addSubCatsLevel1,
@@ -297,6 +325,7 @@ export default function () {
         addWareHouses,
         /******************* */
         axiosCall,
-        axiosCallAndCommit
+        axiosCallAndCommit,
+        axiosApiCommitReturnBoolean
     }
 }

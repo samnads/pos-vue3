@@ -1184,6 +1184,7 @@ export default {
       notifyCatchResponse,
       axiosCall,
       axiosCallAndCommit,
+      axiosApiCommitReturnBoolean,
       adminTest,
     } = admin();
     axios
@@ -1192,7 +1193,6 @@ export default {
       )
       .then((resp) => {
         let data = resp.data;
-
       })
       .catch((error) => {
         alert(error);
@@ -1671,12 +1671,12 @@ export default {
       addUnits,
       axiosCall,
       axiosCallAndCommit,
+      axiosApiCommitReturnBoolean,
       addUnitsBulk,
       addTaxes,
       addWareHouses,
     };
   },
-  mixins: [],
   data() {
     return {};
   },
@@ -1773,33 +1773,50 @@ export default {
     //
     if (!this.productTypes) {
       // if not found on store
-      this.addProductTypes(); // get product types
+      this.axiosApiCommitReturnBoolean("storeProductTypes", "type", {
+        action: "all",
+      });
+      // get product types
     }
     if (!this.symbologies) {
       // if not found on store
-      this.addSymbologies(); // get symbologies
+      this.axiosApiCommitReturnBoolean("storeSymbologies", "symbology", {
+        action: "all",
+      }); // get symbologies
     }
     if (!this.categories) {
       // if not found on store
-      this.addCategories(); // get categories
+      this.axiosApiCommitReturnBoolean("storeCategories", "category", {
+        action: "getall",
+      }); // get categories
     }
     if (!this.brands) {
       // if not found on store
-      this.addBrands(); // get brands
+      this.axiosApiCommitReturnBoolean("storeBrands", "brand", {
+        action: "dropdown",
+      }); // get brands
     }
     if (!this.units) {
       // if not found on store
-      this.addUnits(); // get units
+      this.axiosApiCommitReturnBoolean("storeUnits", "unit", {
+        action: "list_base",
+      }); // get units
     }
     if (!this.taxes) {
       // if not found on store
-      this.addTaxes(); // get tax rates
+      this.axiosApiCommitReturnBoolean("storeTaxes", "tax", {
+        action: "dropdown",
+      }); // get tax rates
     }
     if (!this.warehouses) {
       // if not found on store
-      this.addWareHouses(); // get ware houses
+      this.axiosApiCommitReturnBoolean("storeWareHouses", "warehouse", {
+        action: "dropdown",
+      }); // get ware houses
     }
-    this.addUnitsBulk(1);
+    this.axiosApiCommitReturnBoolean("storeUnitsBulk", "unit", {
+      action: "list_sub",
+    });
     this.handleChangeCat();
     //
     window.PROD_NEW_CATEGORY_MODAL = new Modal($("#prodNewCategoryModal"), {
