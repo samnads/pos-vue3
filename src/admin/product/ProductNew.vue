@@ -1142,6 +1142,7 @@ import AdminProductNewBrandModal from "../modal/BrandNewModal.vue";
 import AdminProductNewUnitModal from "../modal/UnitNewModal.vue";
 import AdminProductNewUnitBulkModal from "../modal/UnitBulkNewModal.vue";
 import AdminProductNewTaxRateModal from "../modal/TaxRateNewModal.vue";
+import axios from "axios";
 import { Modal } from "bootstrap";
 /* eslint-disable */
 import {
@@ -1185,7 +1186,17 @@ export default {
       axiosCallAndCommit,
       adminTest,
     } = admin();
+    axios
+      .get(
+        "http://localhost/pos-vue3/server/admin/ajax/product?action=edit&id=177"
+      )
+      .then((resp) => {
+        let data = resp.data;
 
+      })
+      .catch((error) => {
+        alert(error);
+      });
     /**************************************** */ // from store
     const store = useStore();
     let productTypes = computed(function () {
@@ -1457,20 +1468,21 @@ export default {
     const onSubmit = handleSubmit((values) => {
       return axiosCall("post", "product", {
         data: values,
-      })
-        .then(function (data) {
-          if (data.success == true) {
-            console.log("Product added !");
-          } else {
-            console.log("Product not added !");
-            if (data.errors) {
-              for (var key in data.errors) {
-                setFieldError(key, data.errors[key]);
-              }
+      }).then(function (data) {
+        if (data.success == true) {
+          console.log("Product added !");
+        } else if (data.success == false) {
+          console.log("Product not added !");
+          // valid error
+          if (data.errors) {
+            for (var key in data.errors) {
+              setFieldError(key, data.errors[key]);
             }
           }
-        })
-        .catch(() => {});
+        } else {
+          // other error
+        }
+      });
     }, onInvalidSubmit);
     /************************************************************************* */
     function genRandCode() {
@@ -1524,10 +1536,20 @@ export default {
       if (id) {
         subCats.value = undefined;
         sub_category.value = null;
-        axiosCall("get", "category", {
-          action: "subcats",
-          id: id,
-        })
+        axiosCall(
+          "get",
+          "category",
+          {
+            action: "subcats",
+            id: id,
+          },
+          null,
+          {
+            showSuccessNotification: false,
+            showCatchNotification: true,
+            showProgress: true,
+          }
+        )
           .then(function (response) {
             subCats.value = response.data;
           })
@@ -1746,6 +1768,9 @@ export default {
   },
   created() {},
   mounted() {
+    //
+
+    //
     if (!this.productTypes) {
       // if not found on store
       this.addProductTypes(); // get product types

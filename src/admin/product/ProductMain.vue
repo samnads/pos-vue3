@@ -1,7 +1,7 @@
 <template>
   <div id="adminProductRoute">
     <AdminProductList v-if="this.$route.name == 'adminProductList'" />
-    <AdminProductNew v-if="this.$route.name == 'adminProductNew'" />
+    <AdminProductNew v-if="this.$route.name == 'adminProductNew' || this.$route.name == 'adminProductEdit' || this.$route.name == 'adminProductCopy'" />
   </div>
 </template>
 <style>

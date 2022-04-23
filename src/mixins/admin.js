@@ -117,56 +117,68 @@ export default function () {
     function addProductTypes() {
         axiosCall("get", "type", {
             action: "all",
+        }, null, {
+            showSuccessNotification: false,
+            showCatchNotification: true,
+            showProgress: true,
         }).then(function (response) {
             store.commit("storeProductTypes", response.data);
-        }).catch((error) => {
-            this.notifyCatchResponse({ message: error.message });
         });
     }
     function addSymbologies() {
         axiosCall("get", "symbology", {
             action: "dropdown",
+        }, null, {
+            showSuccessNotification: false,
+            showCatchNotification: true,
+            showProgress: true,
         }).then(function (response) {
             store.commit("storeSymbologies", response.data);
-        }).catch((error) => {
-            this.notifyCatchResponse({ message: error.message });
         });
     }
     function addCategories() {
         axiosCall("get", "category", {
             action: "getall",
+        }, null, {
+            showSuccessNotification: false,
+            showCatchNotification: true,
+            showProgress: true,
         }).then(function (response) {
             store.commit("storeCategories", response.data);
-        }).catch((error) => {
-            this.notifyCatchResponse({ message: error.message });
         });
     }
     function addSubCatsLevel1(id) {
         axiosCall("get", "category", {
             action: "category",
             id: id
+        }, null, {
+            showSuccessNotification: false,
+            showCatchNotification: true,
+            showProgress: true,
         }).then(function (response) {
             store.commit("storeSubCatLevel1", response.data);
-        }).catch((error) => {
-            this.notifyCatchResponse({ message: error.message });
         });
     }
     function addBrands() {
         axiosCall("get", "brand", {
             action: "dropdown",
+        }, null, {
+            showSuccessNotification: false,
+            showCatchNotification: true,
+            showProgress: true,
         }).then(function (response) {
             store.commit("storeBrands", response.data);
-        }).catch((error) => {
-            this.notifyCatchResponse({ message: error.message });
         });
     }
     function addUnits() {
         axiosCall("get", "unit", {
             action: "list_base",
+        }, null, {
+            showSuccessNotification: false,
+            showCatchNotification: true,
+            showProgress: true,
         }).then(function (response) {
             store.commit("storeUnits", response.data);
-        }).catch((error) => {
-            this.notifyCatchResponse({ message: error.message });
         });
     }
     function addUnitsBulk(id) {
@@ -174,28 +186,34 @@ export default function () {
         axiosCall("get", "unit", {
             action: "list_sub",
             id: id
+        }, null, {
+            showSuccessNotification: false,
+            showCatchNotification: true,
+            showProgress: true,
         }).then(function (response) {
             store.commit("storeUnitsBulk", response.data);
-        }).catch((error) => {
-            this.notifyCatchResponse({ message: error.message });
         });
     }
     function addTaxes() {
         axiosCall("get", "tax", {
             action: "dropdown",
+        }, null, {
+            showSuccessNotification: false,
+            showCatchNotification: true,
+            showProgress: true,
         }).then(function (response) {
             store.commit("storeTaxes", response.data);
-        }).catch((error) => {
-            this.notifyCatchResponse({ message: error.message });
         });
     }
     function addWareHouses() {
         axiosCall("get", "warehouse", {
             action: "dropdown",
+        }, null, {
+            showSuccessNotification: false,
+            showCatchNotification: true,
+            showProgress: true,
         }).then(function (response) {
             store.commit("storeWareHouses", response.data);
-        }).catch((error) => {
-            this.notifyCatchResponse({ message: error.message });
         });
     }
     async function axiosCallAndCommit(mutation, method, url, data) {

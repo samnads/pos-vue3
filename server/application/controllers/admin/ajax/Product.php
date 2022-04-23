@@ -19,6 +19,12 @@ class Product extends CI_Controller
                         $data['success'] = true;
                         echo json_encode($data);
                         break;
+                    case 'edit':
+                        $query = $this->Product_model->getProduct($this->input->get('id'));
+                        $data['data'] = $query->row();
+                        $data['success'] = true;
+                        echo json_encode($data);
+                        break;
                     case 'autocomplete': // search products for add to cart
                         $type = $this->input->get('type');
                         switch ($type) {
