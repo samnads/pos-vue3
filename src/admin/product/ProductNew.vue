@@ -1142,9 +1142,7 @@ import AdminProductNewBrandModal from "../modal/BrandNewModal.vue";
 import AdminProductNewUnitModal from "../modal/UnitNewModal.vue";
 import AdminProductNewUnitBulkModal from "../modal/UnitBulkNewModal.vue";
 import AdminProductNewTaxRateModal from "../modal/TaxRateNewModal.vue";
-import axios from "axios";
 import { Modal } from "bootstrap";
-/* eslint-disable */
 import {
   useForm,
   useField,
@@ -1152,7 +1150,7 @@ import {
   useIsFormValid,
 } from "vee-validate";
 import * as yup from "yup";
-import { ref, toRef, computed } from "vue";
+import { ref, computed } from "vue";
 import { useStore } from "vuex";
 //import adminMixin from "@/mixins/admin.js";
 import admin from "@/mixins/admin.js";
@@ -1167,36 +1165,15 @@ export default {
     AdminProductNewUnitBulkModal,
     AdminProductNewTaxRateModal,
   },
-  setup(props) {
+  setup() {
     const { randCode } = adminProduct();
     const {
-      addProductTypes,
-      addSymbologies,
-      addCategories,
-      addBrands,
-      addUnits,
       addUnitsBulk,
-      addTaxes,
-      addWareHouses,
       notifyDefault,
-      notifyFormError,
-      notifyApiResponse,
-      notifyCatchResponse,
-      axiosCall,
-      axiosCallAndCommit,
-      axiosApiCommitReturnBoolean,
-      adminTest,
+      axiosAsyncCallReturnData,
+      axiosAsyncStoreUpdateReturnData,
+      axiosAsyncStoreReturnBool,
     } = admin();
-    axios
-      .get(
-        "http://localhost/pos-vue3/server/admin/ajax/product?action=edit&id=177"
-      )
-      .then((resp) => {
-        let data = resp.data;
-      })
-      .catch((error) => {
-        alert(error);
-      });
     /**************************************** */ // from store
     const store = useStore();
     let productTypes = computed(function () {
@@ -1410,11 +1387,8 @@ export default {
     } = useField("name");
     const { value: slug, errorMessage: errorSlug } = useField("slug");
     const { value: weight, errorMessage: errorWeight } = useField("weight");
-    const {
-      value: category,
-      errorMessage: errorCategory,
-      resetField,
-    } = useField("category");
+    const { value: category, errorMessage: errorCategory } =
+      useField("category");
     const { value: sub_category, errorMessage: errorSubCategory } =
       useField("sub_category");
     const { value: brand, errorMessage: errorBrand } = useField("brand");
@@ -1461,12 +1435,12 @@ export default {
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
     /************************************************************************* */
-    function onInvalidSubmit({ values, errors, results }) {
+    function onInvalidSubmit({ values }) {
       console.log("Form field errors found !");
       console.log(values);
     }
     const onSubmit = handleSubmit((values) => {
-      return axiosCall("post", "product", {
+      return axiosAsyncCallReturnData("post", "product", {
         data: values,
       }).then(function (data) {
         if (data.success == true) {
@@ -1533,10 +1507,10 @@ export default {
     }
     function handleChangeCat() {
       var id = category.value;
+      subCats.value = undefined;
+      sub_category.value = null;
       if (id) {
-        subCats.value = undefined;
-        sub_category.value = null;
-        axiosCall(
+        axiosAsyncCallReturnData(
           "get",
           "category",
           {
@@ -1549,14 +1523,11 @@ export default {
             showCatchNotification: true,
             showProgress: true,
           }
-        )
-          .then(function (response) {
-            subCats.value = response.data;
-          })
-          .catch(() => {});
-      } else {
-        subCats.value = undefined;
-        sub_category.value = null;
+        ).then(function (data) {
+          if (data.success == true) {
+            subCats.value = data.data;
+          }
+        });
       }
     }
     function resetCustom() {
@@ -1664,27 +1635,21 @@ export default {
       resetCustom,
       notifyDefault,
       /******************/
-      addProductTypes,
-      addSymbologies,
-      addCategories,
-      addBrands,
-      addUnits,
-      axiosCall,
-      axiosCallAndCommit,
-      axiosApiCommitReturnBoolean,
+      axiosAsyncCallReturnData,
+      axiosAsyncStoreUpdateReturnData,
+      axiosAsyncStoreReturnBool,
       addUnitsBulk,
-      addTaxes,
-      addWareHouses,
     };
   },
   data() {
     return {};
   },
   watch: {
-    category(value, oldValue) {
+    category() {
+      // trigger when manual cat change only
       this.handleChangeCat();
     },
-    unit(value, oldValue) {
+    unit(value) {
       this.p_unit = this.s_unit = null;
       if (value) this.addUnitsBulk(value);
     },
@@ -1694,127 +1659,128 @@ export default {
       this.sub_category = id;
     },
     loadBrandsAndSet: function (id) {
-      this.brand = null;
+      this.brand = null; // form data
       let self = this;
-      this.axiosCallAndCommit("storeBrands", "get", "brand", {
+      this.axiosAsyncStoreUpdateReturnData("storeBrands", "brand", {
         action: "dropdown",
-      })
-        .then(function (data) {
-          if (data.success == true) {
-            self.brand = id;
-          }
-        })
-        .catch(function () {
-          self.addBrands();
-          self.notifyDefault({
-            title: "Failed to select brand, select manually !",
-          });
-        });
+      }).then(function (data) {
+        if (data.success == true) {
+          self.brand = id;
+        }
+      });
     },
     loadUnits: function (id) {
       let self = this;
-      this.unit = null;
-      this.axiosCallAndCommit("storeUnits", "get", "unit", {
+      this.unit = null; // form data
+      this.axiosAsyncStoreUpdateReturnData("storeUnits", "unit", {
         action: "list_base",
-      })
-        .then(function (data) {
-          if (data.success == true) {
-            self.unit = id;
-          }
-        })
-        .catch(function () {
-          self.addUnits();
-          self.notifyDefault({
-            title: "Failed to select unit, select manually !",
-          });
-        });
+      }).then(function (data) {
+        if (data.success == true) {
+          self.unit = id;
+        }
+      });
     },
     updateTaxRates: function (id) {
       let self = this;
       this.tax_rate = null;
-      this.axiosCallAndCommit("storeTaxes", "get", "tax", {
+      this.axiosAsyncStoreUpdateReturnData("storeTaxes", "tax", {
         action: "dropdown",
-      })
-        .then(function (data) {
-          if (data.success == true) {
-            self.tax_rate = id;
-          }
-        })
-        .catch(function () {
-          self.addTaxes();
-          self.notifyDefault({
-            title: "Failed to select tax rate, select manually !",
-          });
-        });
+      }).then(function (data) {
+        if (data.success == true) {
+          self.tax_rate = id;
+        }
+      });
     },
     changePunitSunit: function (id) {
       let self = this;
-      this.axiosCallAndCommit("storeUnitsBulk", "get", "unit", {
+      this.axiosAsyncStoreUpdateReturnData("storeUnitsBulk", "unit", {
         action: "list_sub",
         id: self.unit,
-      })
-        .then(function (data) {
-          if (data.success == true) {
-            self.p_unit = self.s_unit = id;
-          }
-        })
-        .catch(function () {
-          self.addUnitsBulk(self.unit);
-          self.notifyDefault({
-            title: "Failed to select sub unit, select manually !",
-          });
-        });
+      }).then(function (data) {
+        if (data.success == true) {
+          self.p_unit = self.s_unit = id;
+        }
+      });
     },
   },
   created() {},
   mounted() {
     //
-
+    var self = this;
+    self
+      .axiosAsyncCallReturnData(
+        "get",
+        "product",
+        {
+          action: "edit",
+          id: 160,
+        },
+        self.controller,
+        {
+          showSuccessNotification: false,
+          showCatchNotification: false,
+          showProgress: true,
+        }
+      )
+      .then(function (data) {
+        if (data.success == true) {
+          // ok
+          console.log(data);
+           self.setFieldValue("code", data.code);
+        } else {
+          if (data.success == false) {
+            console.log(data);
+          } else {
+            // other error
+            console.log(data);
+          }
+        }
+      });
     //
     if (!this.productTypes) {
       // if not found on store
-      this.axiosApiCommitReturnBoolean("storeProductTypes", "type", {
+      this.axiosAsyncStoreReturnBool("storeProductTypes", "type", {
         action: "all",
       });
       // get product types
     }
     if (!this.symbologies) {
       // if not found on store
-      this.axiosApiCommitReturnBoolean("storeSymbologies", "symbology", {
-        action: "all",
+      this.axiosAsyncStoreReturnBool("storeSymbologies", "symbology", {
+        action: "dropdown",
       }); // get symbologies
     }
     if (!this.categories) {
       // if not found on store
-      this.axiosApiCommitReturnBoolean("storeCategories", "category", {
+      this.axiosAsyncStoreReturnBool("storeCategories", "category", {
         action: "getall",
       }); // get categories
     }
     if (!this.brands) {
       // if not found on store
-      this.axiosApiCommitReturnBoolean("storeBrands", "brand", {
+      this.axiosAsyncStoreReturnBool("storeBrands", "brand", {
         action: "dropdown",
       }); // get brands
     }
     if (!this.units) {
       // if not found on store
-      this.axiosApiCommitReturnBoolean("storeUnits", "unit", {
+      this.axiosAsyncStoreReturnBool("storeUnits", "unit", {
         action: "list_base",
       }); // get units
     }
     if (!this.taxes) {
       // if not found on store
-      this.axiosApiCommitReturnBoolean("storeTaxes", "tax", {
+      this.axiosAsyncStoreReturnBool("storeTaxes", "tax", {
         action: "dropdown",
       }); // get tax rates
     }
     if (!this.warehouses) {
       // if not found on store
-      this.axiosApiCommitReturnBoolean("storeWareHouses", "warehouse", {
+      this.axiosAsyncStoreReturnBool("storeWareHouses", "warehouse", {
         action: "dropdown",
       }); // get ware houses
     }
-    this.axiosApiCommitReturnBoolean("storeUnitsBulk", "unit", {
+    this.axiosAsyncStoreReturnBool("storeUnitsBulk", "unit", {
       action: "list_sub",
     });
     this.handleChangeCat();

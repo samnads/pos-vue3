@@ -91,14 +91,14 @@ export default {
     var delete_modal_row = ref({});
     var delete_modal_delete = ref(false);
     // notify
-    const { axiosCall, notifyDefault, notifyApiResponse, notifyCatchResponse } =
+    const { axiosAsyncCallReturnData, notifyDefault, notifyApiResponse, notifyCatchResponse } =
       admin();
     return {
       productRow,
       productInfo,
       delete_modal_row,
       delete_modal_delete,
-      axiosCall,
+      axiosAsyncCallReturnData,
       notifyDefault,
       notifyApiResponse,
       notifyCatchResponse,
@@ -114,7 +114,7 @@ export default {
       self.controller = new AbortController();
       window.PROD_DETAILS_MODAL.show();
       self
-        .axiosCall(
+        .axiosAsyncCallReturnData(
           "get",
           "product",
           {
@@ -122,7 +122,7 @@ export default {
             id: self.productRow.id,
           },
           self.controller,
-          { showCatchNotification: false, showProgress: true }
+          { showSuccessNotification:false,showCatchNotification: false, showProgress: true }
         )
         .then(function (data) {
           if (data.success == true) {
@@ -134,9 +134,7 @@ export default {
               window.PROD_DETAILS_MODAL.hide();
             } else {
               // other error
-              if (data.message == "canceled") {
-                //
-              } else {
+              if (data.message != "canceled") {
                 window.PROD_DETAILS_MODAL.hide();
                 self.notifyCatchResponse({ title: data.message });
               }
@@ -156,7 +154,7 @@ export default {
       }
       self.controller_delete = new AbortController();
       self
-        .axiosCall(
+        .axiosAsyncCallReturnData(
           "delete",
           "product",
           {
@@ -182,9 +180,7 @@ export default {
               window.PROD_DELETE_MODAL.hide();
             } else {
               // other error
-              if (data.message == "canceled") {
-                // duplicate cancelled
-              } else {
+              if (data.message != "canceled") {
                 window.PROD_DELETE_MODAL.hide();
               }
             }

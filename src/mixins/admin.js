@@ -13,7 +13,7 @@ export default function () {
     var notSpeed = 300
     const store = useStore();
     const internalInstance = getCurrentInstance();
-    async function axiosCall(method, url, data, AbortController, options = { showSuccessNotification: true, showCatchNotification: true, showProgress: true }) {
+    async function axiosAsyncCallReturnData(method, url, data, AbortController, options = { showSuccessNotification: true, showCatchNotification: true, showProgress: true }) {
         options.showProgress && internalInstance.appContext.config.globalProperties.$Progress.start();
         try {
             let res = await axios({
@@ -115,7 +115,7 @@ export default function () {
             speed: notSpeed
         });
     }
-    async function axiosApiCommitReturnBoolean(mutation, url, data, method = "get") {
+    async function axiosAsyncStoreReturnBool(mutation, url, data, method = "get") {
         try {
             let res = await axios({
                 url: endpoint + url,
@@ -138,34 +138,8 @@ export default function () {
             return false;
         }
     }
-    function addSymbologies() {
-        axiosCall("get", "symbology", {
-            action: "dropdown",
-        }, null, {
-            showSuccessNotification: false,
-            showCatchNotification: true,
-            showProgress: true,
-        }).then(function (response) {
-            if (response.success == true) {
-                store.commit("storeSymbologies", response.data);
-            }
-        });
-    }
-    function addCategories() {
-        axiosCall("get", "category", {
-            action: "getall",
-        }, null, {
-            showSuccessNotification: false,
-            showCatchNotification: true,
-            showProgress: true,
-        }).then(function (response) {
-            if (response.success == true) {
-                store.commit("storeCategories", response.data);
-            }
-        });
-    }
     function addSubCatsLevel1(id) {
-        axiosCall("get", "category", {
+        axiosAsyncCallReturnData("get", "category", {
             action: "category",
             id: id
         }, null, {
@@ -178,35 +152,9 @@ export default function () {
             }
         });
     }
-    function addBrands() {
-        axiosCall("get", "brand", {
-            action: "dropdown",
-        }, null, {
-            showSuccessNotification: false,
-            showCatchNotification: true,
-            showProgress: true,
-        }).then(function (response) {
-            if (response.success == true) {
-                store.commit("storeBrands", response.data);
-            }
-        });
-    }
-    function addUnits() {
-        axiosCall("get", "unit", {
-            action: "list_base",
-        }, null, {
-            showSuccessNotification: false,
-            showCatchNotification: true,
-            showProgress: true,
-        }).then(function (response) {
-            if (response.success == true) {
-                store.commit("storeUnits", response.data);
-            }
-        });
-    }
     function addUnitsBulk(id) {
         store.commit("storeUnitsBulk", undefined);
-        axiosCall("get", "unit", {
+        axiosAsyncCallReturnData("get", "unit", {
             action: "list_sub",
             id: id
         }, null, {
@@ -219,35 +167,8 @@ export default function () {
             }
         });
     }
-    function addTaxes() {
-        axiosCall("get", "tax", {
-            action: "dropdown",
-        }, null, {
-            showSuccessNotification: false,
-            showCatchNotification: true,
-            showProgress: true,
-        }).then(function (response) {
-            if (response.success == true) {
-                store.commit("storeTaxes", response.data);
-            }
-        });
-    }
-    function addWareHouses() {
-        axiosCall("get", "warehouse", {
-            action: "dropdown",
-        }, null, {
-            showSuccessNotification: false,
-            showCatchNotification: true,
-            showProgress: true,
-        }).then(function (response) {
-            if (response.success == true) {
-                store.commit("storeWareHouses", response.data);
-            }
-        });
-    }
-    async function axiosCallAndCommit(mutation, method, url, data) {
+    async function axiosAsyncStoreUpdateReturnData(mutation, url, data, method = "get") {
         internalInstance.appContext.config.globalProperties.$Progress.start();
-        const endpoint = "http://localhost/pos-vue3/server/admin/ajax/";
         store.commit(mutation, false); // reset specific store data
         try {
             let res = await axios({
@@ -255,7 +176,7 @@ export default function () {
                 method: method,
                 data: data,
                 params: method == 'get' ? data : undefined,
-                timeout: 8000,
+                timeout: timeout,
                 headers: {
                     'Content-Type': 'application/json',
                 }
@@ -268,15 +189,7 @@ export default function () {
             let resData = res.data;
             if (resData.success == true) {
                 internalInstance.appContext.config.globalProperties.$Progress.finish();
-                if (resData.location) {
-                    notifyApiResponse(resData);
-                    router.push({ path: "/" + resData.location }).catch((e) => {
-                        console.log(e);
-                    });
-                }
-                else {
-                    store.commit(mutation, resData.data); // store new data
-                }
+                store.commit(mutation, resData.data); // store new data
             }
             else if (resData.success == false) {
                 internalInstance.appContext.config.globalProperties.$Progress.fail();
@@ -293,15 +206,9 @@ export default function () {
         catch (err) {
             internalInstance.appContext.config.globalProperties.$Progress.fail();
             notifyCatchResponse({ title: err });
+            return err
         }
     }
-
-
-
-
-
-
-
     function adminTest() {
         router.push({ name: "adminDashboard" }).catch((e) => {
             console.log(e);
@@ -315,17 +222,11 @@ export default function () {
         notifyCatchResponse,
         notifyFormError,
         /******************* for data */
-        addSymbologies,
-        addCategories,
         addSubCatsLevel1,
-        addBrands,
-        addUnits,
         addUnitsBulk,
-        addTaxes,
-        addWareHouses,
         /******************* */
-        axiosCall,
-        axiosCallAndCommit,
-        axiosApiCommitReturnBoolean
+        axiosAsyncCallReturnData,
+        axiosAsyncStoreUpdateReturnData,
+        axiosAsyncStoreReturnBool
     }
 }
