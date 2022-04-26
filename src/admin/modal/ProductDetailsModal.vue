@@ -137,7 +137,7 @@
           <button
             type="button"
             class="btn btn-warning"
-            v-on:click="edit(propProductInfo.id)"
+            v-on:click="edit(propProductRow)"
             :disabled="!propProductInfo"
           >
             <i class="fa-solid fa-pen-to-square"></i>Edit
@@ -145,10 +145,10 @@
           <button
             type="button"
             class="btn btn-dark"
-            v-on:click="copy(propProductInfo.id)"
+            v-on:click="copy(propProductRow)"
             :disabled="!propProductInfo"
           >
-            <i class="fa-solid fa-copy"></i>Copy
+            <i class="fa-solid fa-copy"></i>Duplicate
           </button>
         </div>
       </div>
@@ -175,16 +175,22 @@ export default {
     },
   },
   methods: {
-    edit(id) {
+    edit(data) {
       window.PROD_DETAILS_MODAL.toggle();
       this.$router
-        .push({ name: "adminProductEdit", params: { id: id } })
+        .push({
+          name: "adminProductEdit",
+          params: { id: data.id, data: JSON.stringify(data) },
+        })
         .catch(() => {});
     },
-    copy(id) {
+    copy(data) {
       window.PROD_DETAILS_MODAL.toggle();
-      this.$router
-        .push({ name: "adminProductCopy", params: { id: id } })
+       this.$router
+        .push({
+          name: "adminProductCopy",
+          params: { id: data.id, data: JSON.stringify(data) },
+        })
         .catch(() => {});
     },
     deleteModal() {

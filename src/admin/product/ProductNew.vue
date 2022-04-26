@@ -604,26 +604,6 @@
                   </div>
                   <div class="invalid-feedback">{{ errorCost }}</div>
                 </div>
-                <div class="col">
-                  <label class="form-label">Cost</label>
-                  <div class="input-group is-invalid">
-                    <input
-                      type="number"
-                      name="cost"
-                      v-model="cost"
-                      class="form-control"
-                      id="productcode"
-                      v-bind:class="[
-                        errorCost
-                          ? 'is-invalid'
-                          : !errorCost && cost
-                          ? 'is-valid'
-                          : '',
-                      ]"
-                    /><span class="input-group-text">₹</span>
-                  </div>
-                  <div class="invalid-feedback">{{ errorCost }}</div>
-                </div>
               </div>
             </div>
           </div>
@@ -828,8 +808,8 @@
                           class="form-check-input"
                           type="checkbox"
                           role="switch"
-                          name="pos_sale_custom_discount"
-                          v-model="pos_sale_custom_discount"
+                          name="pos_custom_discount"
+                          v-model="pos_custom_discount"
                         /></div
                     ></span>
                   </div>
@@ -844,8 +824,8 @@
                           class="form-check-input"
                           type="checkbox"
                           role="switch"
-                          name="pos_sale_custom_tax"
-                          v-model="pos_sale_custom_tax"
+                          name="pos_custom_tax"
+                          v-model="pos_custom_tax"
                         /></div
                     ></span>
                   </div>
@@ -985,7 +965,7 @@
           </div>
         </div>
       </div>
-      <div class="row">
+      <div class="row" v-if="route.name != 'adminProductEdit'">
         <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
           <div class="card">
             <h5 class="card-header bg-secondary text-light">
@@ -1155,6 +1135,7 @@ import { useStore } from "vuex";
 //import adminMixin from "@/mixins/admin.js";
 import admin from "@/mixins/admin.js";
 import adminProduct from "@/mixins/adminProduct.js";
+import { useRouter, useRoute } from "vue-router";
 export default {
   props: {},
   components: {
@@ -1166,6 +1147,8 @@ export default {
     AdminProductNewTaxRateModal,
   },
   setup() {
+    const route = useRoute();
+    const router = useRouter();
     const { randCode } = adminProduct();
     const {
       addUnitsBulk,
@@ -1203,26 +1186,72 @@ export default {
     /**************************************** */ // Default values
     var subCats = ref(0);
     /************************************************************************* */
-    const formValues = {
-      type: 1,
-      symbology: 1,
-      category: 1,
-      sub_category: null,
-      brand: null,
-      unit: 1,
-      p_unit: null,
-      s_unit: null,
-      isalert: true,
-      tax_rate: null,
-      tax_method: "I",
-      profit_margin: 50,
-      warehouse: null,
-      pos_sale: true,
-      pos_sale_custom_discount: true,
-      pos_sale_note: true,
-      pos_data_field_1: null,
-      pos_data_field_2: null,
-    };
+    var formValues = {};
+    if (route.name == "adminProductEdit" && route.params.data) {
+      let dbData = JSON.parse(route.params.data);
+      formValues = {
+        type: dbData.type,
+        code: dbData.code,
+        symbology: dbData.symbology,
+        name: dbData.name,
+        slug: dbData.slug,
+        weight: dbData.weight,
+        category: dbData.category,
+        sub_category: dbData.sub_category,
+        cost: dbData.cost,
+        tax_method: dbData.tax_method,
+        tax_rate: dbData.tax_rate,
+        profit_margin: dbData.profit_margin,
+        brand: dbData.brand,
+        mrp: dbData.mrp,
+        unit: dbData.unit,
+        p_unit: dbData.p_unit,
+        s_unit: dbData.s_unit,
+        alert: dbData.alert == "1" ? true : false,
+        alert_quantity: dbData.alert_quantity,
+        mfg_date: dbData.mfg_date,
+        exp_date: dbData.exp_date,
+        price: dbData.price,
+        pos_sale: dbData.pos_sale == "1" ? true : false,
+        pos_custom_discount: dbData.pos_custom_discount == "1" ? true : false,
+        pos_custom_tax: dbData.pos_custom_tax == "1" ? true : false,
+        pos_sale_note: dbData.pos_sale_note == "1" ? true : false,
+        pos_min_sale_qty: dbData.pos_min_sale_qty,
+        pos_max_sale_qty: dbData.pos_max_sale_qty,
+        pos_data_field_1: dbData.pos_data_field_1,
+        pos_data_field_2: dbData.pos_data_field_2,
+        pos_data_field_3: dbData.pos_data_field_3,
+        pos_data_field_4: dbData.pos_data_field_4,
+        pos_data_field_5: dbData.pos_data_field_5,
+        pos_data_field_6: dbData.pos_data_field_6,
+      };
+    } else if (route.name == "adminProductCopy" && route.params.data) {
+      formValues = {};
+    } else if (route.name == "adminProductNew") {
+      formValues = {
+        type: 1,
+        symbology: 1,
+        category: 1,
+        sub_category: null,
+        brand: null,
+        unit: 1,
+        p_unit: null,
+        s_unit: null,
+        isalert: true,
+        tax_rate: null,
+        tax_method: "I",
+        profit_margin: 50,
+        warehouse: null,
+        pos_sale: true,
+        pos_custom_discount: true,
+        pos_sale_note: true,
+        pos_data_field_1: null,
+        pos_data_field_2: null,
+      };
+    } else {
+      router.push({ name: "adminProductList" }).catch(() => {});
+    }
+
     /************************************************************************* */
     const schema = computed(() => {
       return yup.object({
@@ -1420,10 +1449,10 @@ export default {
       useField("stock_adj_note");
     // pos settings
     const { value: pos_sale } = useField("pos_sale");
-    const { value: pos_sale_custom_discount } = useField(
-      "pos_sale_custom_discount"
+    const { value: pos_custom_discount } = useField(
+      "pos_custom_discount"
     );
-    const { value: pos_sale_custom_tax } = useField("pos_sale_custom_tax");
+    const { value: pos_custom_tax } = useField("pos_custom_tax");
     const { value: pos_sale_note } = useField("pos_sale_note");
     const { value: pos_data_field_1 } = useField("pos_data_field_1");
     const { value: pos_data_field_2 } = useField("pos_data_field_2");
@@ -1440,9 +1469,13 @@ export default {
       console.log(values);
     }
     const onSubmit = handleSubmit((values) => {
-      return axiosAsyncCallReturnData("post", "product", {
-        data: values,
-      }).then(function (data) {
+      return axiosAsyncCallReturnData(
+        route.name == "adminProductEdit" ? "PUT" : "POST",
+        "product",
+        {
+          data: values,
+        }
+      ).then(function (data) {
         if (data.success == true) {
           console.log("Product added !");
         } else if (data.success == false) {
@@ -1534,6 +1567,7 @@ export default {
       resetForm();
     }
     return {
+      route,
       /**************** default form sel values */
       formValues,
       /**************** event handler */
@@ -1616,8 +1650,8 @@ export default {
       errorStockAdjNote,
       //
       pos_sale,
-      pos_sale_custom_discount,
-      pos_sale_custom_tax,
+      pos_custom_discount,
+      pos_custom_tax,
       pos_sale_note,
       //
       pos_data_field_1,
@@ -1705,38 +1739,6 @@ export default {
   },
   created() {},
   mounted() {
-    //
-    var self = this;
-    self
-      .axiosAsyncCallReturnData(
-        "get",
-        "product",
-        {
-          action: "edit",
-          id: 160,
-        },
-        self.controller,
-        {
-          showSuccessNotification: false,
-          showCatchNotification: false,
-          showProgress: true,
-        }
-      )
-      .then(function (data) {
-        if (data.success == true) {
-          // ok
-          console.log(data);
-           self.setFieldValue("code", data.code);
-        } else {
-          if (data.success == false) {
-            console.log(data);
-          } else {
-            // other error
-            console.log(data);
-          }
-        }
-      });
-    //
     if (!this.productTypes) {
       // if not found on store
       this.axiosAsyncStoreReturnBool("storeProductTypes", "type", {
@@ -1782,6 +1784,7 @@ export default {
     }
     this.axiosAsyncStoreReturnBool("storeUnitsBulk", "unit", {
       action: "list_sub",
+      id: this.unit,
     });
     this.handleChangeCat();
     //

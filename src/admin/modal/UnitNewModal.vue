@@ -136,7 +136,7 @@ export default {
       notifyFormError,
       notifyApiResponse,
       notifyCatchResponse,
-      axiosCall,
+      axiosAsyncCallReturnData,
     } = admin();
     /************************************************************************* */
     const formValues = {};
@@ -184,14 +184,13 @@ export default {
       console.log(errors);
     }
     const onSubmit = handleSubmit((values, { resetForm }) => {
-      return axiosCall("post", "unit", {
+      return axiosAsyncCallReturnData("post", "unit", {
         data: values,
       }).then(function (data) {
         if (data.success == true) {
           props.propUpdateUnits(data.id);
           resetForm();
           window.PROD_NEW_UNIT_MODAL.hide();
-          notifyApiResponse(data);
         } else {
           if (data.errors) {
             for (var key in data.errors) {

@@ -91,8 +91,12 @@ export default {
     var delete_modal_row = ref({});
     var delete_modal_delete = ref(false);
     // notify
-    const { axiosAsyncCallReturnData, notifyDefault, notifyApiResponse, notifyCatchResponse } =
-      admin();
+    const {
+      axiosAsyncCallReturnData,
+      notifyDefault,
+      notifyApiResponse,
+      notifyCatchResponse,
+    } = admin();
     return {
       productRow,
       productInfo,
@@ -122,7 +126,11 @@ export default {
             id: self.productRow.id,
           },
           self.controller,
-          { showSuccessNotification:false,showCatchNotification: false, showProgress: true }
+          {
+            showSuccessNotification: false,
+            showCatchNotification: false,
+            showProgress: true,
+          }
         )
         .then(function (data) {
           if (data.success == true) {
@@ -217,7 +225,7 @@ export default {
         order: [[2, "desc"]],
         ajax: {
           method: "GET",
-          url: "http://localhost/CyberLikes-POS/admin/ajax/product",
+          url: "http://localhost/pos-vue3/server/admin/ajax/product",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {
@@ -235,7 +243,7 @@ export default {
               self.notifyCatchResponse(response);
               self.$router
                 .push({ path: "/" + response.location })
-                .catch((e) => {});
+                .catch(() => {});
             } else {
               self.$Progress.finish();
               return response.data;
@@ -369,7 +377,7 @@ export default {
             searchable: false,
             width: "2%",
             defaultContent:
-              '<div class="dropdown dropstart">  <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">    Action  </button>  <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">    <li id="details"><button class="dropdown-item" type="button"><i class="fa-solid fa-circle-info"></i>Details</button></li>    <li id="edit"><button class="dropdown-item" type="button"><i class="fa-solid fa-pen-to-square"></i>Edit</button></li>    <li id="copy"><button class="dropdown-item" type="button"><i class="fa-solid fa-copy"></i>Copy</button></li>  <li id="delete"><button class="dropdown-item text-danger" type="button"><i class="fa-solid fa-trash"></i>Delete</button></li>  </ul></div>',
+              '<div class="dropdown dropstart">  <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">    Action  </button>  <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">    <li id="details"><button class="dropdown-item" type="button"><i class="fa-solid fa-circle-info"></i>Details</button></li>    <li id="edit"><button class="dropdown-item" type="button"><i class="fa-solid fa-pen-to-square"></i>Edit</button></li>    <li id="copy"><button class="dropdown-item" type="button"><i class="fa-solid fa-copy"></i>Duplicate</button></li>  <li id="delete"><button class="dropdown-item text-danger" type="button"><i class="fa-solid fa-trash"></i>Delete</button></li>  </ul></div>',
           },
         ],
         buttons: [
@@ -472,15 +480,22 @@ export default {
       $("#datatable tbody").on("click", "#edit", function () {
         // edit from action menu
         self.row = self.table.row($(this).parents("tr")).data();
+        console.log(self.row)
         self.$router
-          .push({ name: "adminProductEdit", params: { id: self.row.id } })
+          .push({
+            name: "adminProductEdit",
+            params: { id: self.row.id, data: JSON.stringify(self.row) },
+          })
           .catch(() => {});
       });
       $("#datatable tbody").on("click", "#copy", function () {
         // copy from action menu
         self.row = self.table.row($(this).parents("tr")).data();
         self.$router
-          .push({ name: "adminProductCopy", params: { id: self.row.id } })
+          .push({
+            name: "adminProductCopy",
+            params: { id: self.row.id, data: JSON.stringify(self.row) },
+          })
           .catch(() => {});
       });
       $("#datatable tbody").on("click", "#delete", function () {

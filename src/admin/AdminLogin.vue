@@ -101,9 +101,9 @@ export default {
     };
   },
   setup() {
-    const { axiosCall } = admin();
+    const { axiosAsyncCallReturnData } = admin();
     return {
-      axiosCall,
+      axiosAsyncCallReturnData,
     };
   },
   methods: {
@@ -114,7 +114,7 @@ export default {
         action: "login",
         data: { username: this.username, password: this.password },
       };
-      this.axiosCall("post", "login", formData).then(function () {});
+      this.axiosAsyncCallReturnData("post", "login", formData).then(function () {});
     },
   },
 };

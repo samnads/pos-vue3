@@ -178,7 +178,7 @@ export default {
       notifyFormError,
       notifyApiResponse,
       notifyCatchResponse,
-      axiosCall,
+      axiosAsyncCallReturnData,
     } = admin();
     /************************************************************************* */
     const formValues = {
@@ -234,7 +234,7 @@ export default {
       console.log(errors);
     }
     const onSubmit = handleSubmit((values, { resetForm }) => {
-      return axiosCall("post", "tax", {
+      return axiosAsyncCallReturnData("post", "tax", {
         data: values,
       })
         .then(function (data) {
@@ -242,7 +242,6 @@ export default {
             props.propUpdateTaxRates(data.id);
             resetForm();
             window.PROD_NEW_TAXRATE_MODAL.hide();
-            notifyApiResponse(data);
           } else {
             if (data.errors) {
               for (var key in data.errors) {
@@ -250,8 +249,7 @@ export default {
               }
             }
           }
-        })
-        .catch(() => {});
+        });
     }, onInvalidSubmit);
     /************************************************************************* */
     function close() {

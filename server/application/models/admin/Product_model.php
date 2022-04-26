@@ -156,6 +156,7 @@ class Product_model extends CI_Model
 		$search = trim($search);
 		$this->db->select('
 		p.id		as id,
+		p.symbology	as symbology,
 		p.code		as code,
 		p.name		as name,
 		p.slug		as slug,
@@ -164,21 +165,41 @@ class Product_model extends CI_Model
 		p.mrp 		as mrp,
 		p.cost 		as cost,
 		p.price 	as price,
+		p.alert 	as alert,
+		p.alert_quantity 	as alert_quantity,
 		p.mfg_date 	as mfg_date,
 		p.exp_date 	as exp_date,
+		p.pos_sale 	as pos_sale,
+		p.pos_custom_discount 	as pos_custom_discount,
+		p.pos_custom_tax 	as pos_custom_tax,
+		p.pos_sale_note 	as pos_sale_note,
+		p.pos_data_field_1 	as pos_data_field_1,
+		p.pos_data_field_2 	as pos_data_field_2,
+		p.pos_data_field_3 	as pos_data_field_3,
+		p.pos_data_field_4 	as pos_data_field_4,
+		p.pos_data_field_5 	as pos_data_field_5,
+		p.pos_data_field_6 	as pos_data_field_6,
 		
+		t.id 		as type,
 		t.name 		as type_name,
 		
 		bs.code 	as symbology_code,
 		
+		c.id 		as category,
 		c.name 		as category_name,
+		sc.id 		as sub_category,
 		sc.name 	as sub_category_name,
 		
+		b.id 		as brand,
 		b.code 		as brand_code,
 		b.name 		as brand_name,
 
+		u.id 		as unit,
 		u.code 		as unit_code,
 		u.name 		as unit_name,
+
+		ubp.id 		as p_unit,
+		ubs.id 		as s_unit,
 
 		tr.code		as tax_code,
 		tr.name		as tax_name,
@@ -186,14 +207,16 @@ class Product_model extends CI_Model
 		
 		COALESCE(SUM(ps.quantity),0)  as quantity');
 		$this->db->from(TABLE_PRODUCT . '			p');
-		$this->db->join(TABLE_PRODUCT_TYPE . '		t',	't.id=p.type',	'left');
+		$this->db->join(TABLE_PRODUCT_TYPE . '		t',		't.id=p.type',			'left');
 		$this->db->join(TABLE_BARCODE_SYMBOLOGY . '	bs',	'bs.id=p.symbology',	'left');
-		$this->db->join(TABLE_CATEGORY . '			c',	'c.id=p.category',	'left');
+		$this->db->join(TABLE_CATEGORY . '			c',		'c.id=p.category',		'left');
 		$this->db->join(TABLE_SUB_CATEGORY . '		sc',	'sc.id=p.sub_category',	'left');
-		$this->db->join(TABLE_BRAND . '				b',	'b.id=p.brand',	'left');
-		$this->db->join(TABLE_UNIT . '				u',	'u.id=p.unit',	'left');
-		$this->db->join(TABLE_TAX_RATE . '			tr',	'tr.id=p.tax_rate',	'left');
-		$this->db->join(TABLE_PRODUCT_STOCK . '		ps',	'ps.product=p.id',	'left');
+		$this->db->join(TABLE_BRAND . '				b',		'b.id=p.brand',			'left');
+		$this->db->join(TABLE_UNIT . '				u',		'u.id=p.unit',			'left');
+		$this->db->join(TABLE_UNIT_BULK . '			ubp',	'ubp.id=p.p_unit',		'left');
+		$this->db->join(TABLE_UNIT_BULK . '			ubs',	'ubs.id=p.s_unit',		'left');
+		$this->db->join(TABLE_TAX_RATE . '			tr',	'tr.id=p.tax_rate',		'left');
+		$this->db->join(TABLE_PRODUCT_STOCK . '		ps',	'ps.product=p.id',		'left');
 		$this->db->order_by($order_by, $order);
 		$this->db->group_by('p.id');
 

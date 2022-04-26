@@ -175,7 +175,7 @@ export default {
       notifyFormError,
       notifyApiResponse,
       notifyCatchResponse,
-      axiosCall,
+      axiosAsyncCallReturnData,
     } = admin();
     /************************************************************************* */
     const formValues = {};
@@ -232,7 +232,7 @@ export default {
       console.log(errors);
     }
     const onSubmit = handleSubmit((values) => {
-      return axiosCall("post", "brand", {
+      return axiosAsyncCallReturnData("post", "brand", {
         data: values,
       })
         .then(function (data) {
@@ -240,7 +240,6 @@ export default {
             props.propUpdateBrandsAndSet(data.id);
             resetForm();
             window.PROD_NEW_BRAND_MODAL.hide();
-            notifyApiResponse(data);
           } else {
             if (data.errors) {
               // form validation error
@@ -249,8 +248,7 @@ export default {
               }
             }
           }
-        })
-        .catch(() => {});
+        });
     }, onInvalidSubmit);
     /************************************************************************* */
     function handleChangeName() {

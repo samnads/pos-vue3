@@ -80,13 +80,13 @@ export default {
     var adjustRow = ref({});
     var adjustInfo = ref({});
     // notify
-    const { notifyDefault, notifyApiResponse, notifyCatchResponse, axiosCall } =
+    const { notifyDefault, notifyApiResponse, notifyCatchResponse, axiosAsyncCallReturnData } =
       admin();
     return {
       notifyDefault,
       notifyApiResponse,
       notifyCatchResponse,
-      axiosCall,
+      axiosAsyncCallReturnData,
       adjustRow,
       adjustInfo,
     };
@@ -101,7 +101,7 @@ export default {
       self.controller = new AbortController();
       window.PROD_ADJ_DETAILS_MODAL.show();
       self
-        .axiosCall(
+        .axiosAsyncCallReturnData(
           "get",
           "stock_adjustment",
           {

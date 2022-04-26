@@ -212,7 +212,7 @@ export default {
       notifyFormError,
       notifyApiResponse,
       notifyCatchResponse,
-      axiosCall,
+      axiosAsyncCallReturnData,
     } = admin();
     /************************************************************************* */
     const schema = computed(() => {
@@ -272,7 +272,7 @@ export default {
       console.log(values);
     }
     const onSubmit = handleSubmit((values, { resetForm }) => {
-      return axiosCall("post", "category", {
+      return axiosAsyncCallReturnData("post", "category", {
         data: values,
       })
         .then(function (data) {
@@ -281,7 +281,6 @@ export default {
             props.subCatsUpdated(data.id);
             resetCustom();
             window.PROD_NEW_CATEGORY_L1_MODAL.hide();
-            notifyApiResponse(data);
           } else {
             if (data.errors) {
               for (var key in data.errors) {
@@ -289,8 +288,7 @@ export default {
               }
             }
           }
-        })
-        .catch(() => {});
+        });
     }, onInvalidSubmit);
     /************************************************************************* */
     function handleChangeName() {
