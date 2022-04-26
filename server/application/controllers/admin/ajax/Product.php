@@ -182,7 +182,7 @@ class Product extends CI_Controller
                     'auto_discount' => $this->input->post('auto_discount'),
                     'mfg_date' => $this->input->post('mfg_date') ? date('Y-m-d', strtotime($this->input->post('mfg_date'))) : NULL,
                     'exp_date' => $this->input->post('exp_date') ? date('Y-m-d', strtotime($this->input->post('exp_date'))) : NULL,
-                    'tax_method' => $this->input->post('tax_method') == 'E' ? 'E' : 'I',
+                    'tax_method' => $this->input->post('tax_method'),
                     'tax_rate' => $this->input->post('tax_rate') ?: NULL,
                     'alert_quantity' => is_numeric($this->input->post('alert_quantity')) ? $this->input->post('alert_quantity') : NULL,
                     'alert' => is_numeric($this->input->post('alert_quantity')) ? '1' : '0',
@@ -464,16 +464,28 @@ class Product extends CI_Controller
                     'p_unit' => $this->input->post('p_unit') ?: NULL,
                     's_unit' => $this->input->post('s_unit') ?: NULL,
                     'cost' => $this->input->post('cost') ?: NULL,
-                    'pos_custom_tax' => $this->input->post('pos_custom_tax') == 1 ? '1' : '0',
-                    'is_auto_cost' => $this->input->post('cost') ? '0' : '1',
+                    'profit_margin' => $this->input->post('profit_margin') ?: NULL,
                     'price' => $this->input->post('price'),
                     'auto_discount' => $this->input->post('auto_discount'),
                     'mfg_date' => $this->input->post('mfg_date') ? date('Y-m-d', strtotime($this->input->post('mfg_date'))) : NULL,
                     'exp_date' => $this->input->post('exp_date') ? date('Y-m-d', strtotime($this->input->post('exp_date'))) : NULL,
-                    'tax_method' => $this->input->post('tax_method') == 'E' ? 'E' : 'I',
+                    'tax_method' => $this->input->post('tax_method'),
                     'tax_rate' => $this->input->post('tax_rate') ?: NULL,
                     'alert_quantity' => is_numeric($this->input->post('alert_quantity')) ? $this->input->post('alert_quantity') : NULL,
-                    'alert' => is_numeric($this->input->post('alert_quantity')) ? '1' : '0'
+                    'alert' => is_numeric($this->input->post('alert_quantity')) ? '1' : '0',
+                    //
+                    'pos_sale' => $this->input->post('pos_sale') ? '1' : '0',
+                    'pos_min_sale_qty' => $this->input->post('pos_min_sale_qty'),
+                    'pos_max_sale_qty' => $this->input->post('pos_max_sale_qty'),
+                    'pos_sale_note' => $this->input->post('pos_sale_note') ? '1' : '0',
+                    'pos_custom_discount' => $this->input->post('pos_custom_discount') ? '1' : '0',
+                    'pos_custom_tax' => $this->input->post('pos_custom_tax') ? '1' : '0',
+                    'pos_data_field_1' => $this->input->post('pos_data_field_1') ?: NULL,
+                    'pos_data_field_2' => $this->input->post('pos_data_field_2') ?: NULL,
+                    'pos_data_field_3' => $this->input->post('pos_data_field_3') ?: NULL,
+                    'pos_data_field_4' => $this->input->post('pos_data_field_4') ?: NULL,
+                    'pos_data_field_5' => $this->input->post('pos_data_field_5') ?: NULL,
+                    'pos_data_field_6' => $this->input->post('pos_data_field_6') ?: NULL
                 );
                 //$data['type'] = 'error';
                 $this->form_validation->set_data($data);
@@ -599,10 +611,10 @@ class Product extends CI_Controller
                     echo json_encode(array('success' => false, 'errors' => $this->form_validation->error_array()));
                 } else {
                     //$data['manual_error'] = 'error';
-                    $this->Product_model->update($this->input->post('id'), $data);
+                    $this->Product_model->update($this->input->post('db')['id'], $data);
                     $error = $this->db->error();
                     if ($this->db->affected_rows() == 1) {
-                        $alert['added'] = array('success' => true, 'type' => 'success', 'id' => (int)$this->input->post('db')['id'], 'timeout' => '5000', 'message' => 'Successfully updated product <strong><i>' . $data['name'] . '</strong></i> !', 'location' => "admin/products");
+                        $alert['added'] = array('success' => true, 'type' => 'success', 'id' => (int)$this->input->post('db')['id'], 'timeout' => '5000', 'message' => 'Successfully updated product <strong><i>' . $data['name'] . '</strong></i> !', 'location' => "admin/product/list");
                         $this->session->set_flashdata('alert', $alert);
                         echo json_encode($alert['added']);
                     } else if ($error['code'] == 0) {

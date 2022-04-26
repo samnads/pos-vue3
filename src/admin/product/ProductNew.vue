@@ -1186,9 +1186,10 @@ export default {
     /**************************************** */ // Default values
     var subCats = ref(0);
     /************************************************************************* */
-    var formValues = {};
+    var formValues = {}; // pre form values
+    var dbData = {}; // pre form data for edit product
     if (route.name == "adminProductEdit" && route.params.data) {
-      let dbData = JSON.parse(route.params.data);
+      dbData = JSON.parse(route.params.data); // required
       formValues = {
         type: dbData.type,
         code: dbData.code,
@@ -1449,9 +1450,7 @@ export default {
       useField("stock_adj_note");
     // pos settings
     const { value: pos_sale } = useField("pos_sale");
-    const { value: pos_custom_discount } = useField(
-      "pos_custom_discount"
-    );
+    const { value: pos_custom_discount } = useField("pos_custom_discount");
     const { value: pos_custom_tax } = useField("pos_custom_tax");
     const { value: pos_sale_note } = useField("pos_sale_note");
     const { value: pos_data_field_1 } = useField("pos_data_field_1");
@@ -1469,6 +1468,7 @@ export default {
       console.log(values);
     }
     const onSubmit = handleSubmit((values) => {
+      values.db = route.name == "adminProductEdit" ? dbData : undefined; // for edit product
       return axiosAsyncCallReturnData(
         route.name == "adminProductEdit" ? "PUT" : "POST",
         "product",

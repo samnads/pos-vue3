@@ -165,6 +165,7 @@ class Product_model extends CI_Model
 		p.mrp 		as mrp,
 		p.cost 		as cost,
 		p.price 	as price,
+		p.tax_method as tax_method,
 		p.alert 	as alert,
 		p.alert_quantity 	as alert_quantity,
 		p.mfg_date 	as mfg_date,
@@ -201,9 +202,9 @@ class Product_model extends CI_Model
 		ubp.id 		as p_unit,
 		ubs.id 		as s_unit,
 
+		tr.id		as tax_rate,
 		tr.code		as tax_code,
 		tr.name		as tax_name,
-		tr.rate		as tax_rate,
 		
 		COALESCE(SUM(ps.quantity),0)  as quantity');
 		$this->db->from(TABLE_PRODUCT . '			p');
