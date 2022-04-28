@@ -900,9 +900,19 @@
                     v-model="pos_data_field_1"
                   >
                     <option :value="null" selected>-- Select --</option>
-                    <option value="Serial No.">Serial No.</option>
-                    <option value="Color">Color</option>
-                    <option value="IMEI No.">IMEI No.</option>
+                    <option
+                      :value="formValues.pos_data_field_1"
+                      v-if="route.name == 'adminProductEdit'"
+                    >
+                      {{ pos_data_field_1 }}
+                    </option>
+                    <option
+                      v-for="dataField in dataFields"
+                      :key="dataField.value"
+                      :value="dataField.value"
+                    >
+                      {{ dataField.value }}
+                    </option>
                   </select>
                   <div class="invalid-feedback">{{}}</div>
                 </div>
@@ -914,9 +924,19 @@
                     v-model="pos_data_field_2"
                   >
                     <option :value="null" selected>-- Select --</option>
-                    <option value="Serial No.">Serial No.</option>
-                    <option value="Color">Color</option>
-                    <option value="IMEI No.">IMEI No.</option>
+                    <option
+                      :value="formValues.pos_data_field_2"
+                      v-if="route.name == 'adminProductEdit'"
+                    >
+                      {{ pos_data_field_2 }}
+                    </option>
+                    <option
+                      v-for="dataField in dataFields"
+                      :key="dataField.value"
+                      :value="dataField.value"
+                    >
+                      {{ dataField.value }}
+                    </option>
                   </select>
                   <div class="invalid-feedback">{{}}</div>
                 </div>
@@ -1188,6 +1208,11 @@ export default {
     /************************************************************************* */
     var formValues = {}; // pre form values
     var dbData = {}; // pre form data for edit product
+    var dataFields = [
+      { value: "Serial No." },
+      { value: "Color" },
+      { value: "IMEI No." },
+    ];
     if (route.name == "adminProductEdit" && route.params.data) {
       dbData = JSON.parse(route.params.data); // required
       formValues = {
@@ -1208,7 +1233,7 @@ export default {
         unit: dbData.unit,
         p_unit: dbData.p_unit,
         s_unit: dbData.s_unit,
-        alert: dbData.alert == "1" ? true : false,
+        isalert: dbData.alert == "1" ? true : false,
         alert_quantity: dbData.alert_quantity,
         mfg_date: dbData.mfg_date,
         exp_date: dbData.exp_date,
@@ -1654,6 +1679,7 @@ export default {
       pos_custom_tax,
       pos_sale_note,
       //
+      dataFields,
       pos_data_field_1,
       pos_data_field_2,
       pos_data_field_3,
