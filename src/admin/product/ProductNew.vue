@@ -552,13 +552,13 @@
                   ><i class="fa-solid fa-calendar"></i
                 ></span>
                 <input
-                  type="datetime-local"
+                  type="date"
                   name="mfg_date"
                   v-model="mfg_date"
                   class="form-control"
                 />
               </div>
-              <div class="invalid-feedback">{{}}</div>
+              <div class="invalid-feedback">{{ errorMfgDate }}</div>
             </div>
             <div class="col">
               <label class="form-label">Exp. Date</label>
@@ -567,13 +567,13 @@
                   ><i class="fa-solid fa-calendar"></i
                 ></span>
                 <input
-                  type="datetime-local"
+                  type="date"
                   name="exp_date"
                   v-model="exp_date"
                   class="form-control"
                 />
               </div>
-              <div class="invalid-feedback">{{}}</div>
+              <div class="invalid-feedback">{{ errorExpDate }}</div>
             </div>
           </div>
         </div>
@@ -1410,6 +1410,27 @@ export default {
               .max(yup.ref("mrp"), "Selling Price must be less than MRP"),
           })
           .label("Selling Price"),
+        mfg_date: yup
+          .date()
+          .nullable(true)
+          .transform((_, val) => (val === Date(val) ? val : null))
+          .label("Mfg. date"),
+        exp_date: yup
+          .date()
+          .nullable(true)
+           .transform((_, val) => (val === Date(val) ? val : null))
+          .when("mfg_date", {
+            is: (mfg_date) => Date(mfg_date),
+            then: yup
+              .date()
+              .nullable(true)
+              .transform((_, val) => (val === Date(val) ? val : null))
+              .min(
+                yup.ref("mfg_date"),
+                "Exp. date must be higher than or equal to Mfg. date"
+              ),
+          })
+          .label("Exp. date"),
         warehouse: yup
           .number()
           .nullable(true)
@@ -1466,8 +1487,10 @@ export default {
     const { value: isalert, errorMessage: errorIsalert } = useField("isalert");
     const { value: alert_quantity, errorMessage: errorAlertQuantity } =
       useField("alert_quantity");
-    const { value: mfg_date } = useField("mfg_date");
-    const { value: exp_date } = useField("exp_date");
+    const { value: mfg_date, errorMessage: errorMfgDate } =
+      useField("mfg_date");
+    const { value: exp_date, errorMessage: errorExpDate } =
+      useField("exp_date");
     const { value: tax_rate, errorMessage: errorTaxRate } =
       useField("tax_rate");
     const { value: tax_method, errorMessage: errorTaxMethod } =
@@ -1664,6 +1687,8 @@ export default {
       alert_quantity,
       errorAlertQuantity,
       mfg_date,
+      errorMfgDate,
+      errorExpDate,
       exp_date,
       tax_rate,
       errorTaxRate,
