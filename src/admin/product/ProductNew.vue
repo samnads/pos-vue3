@@ -902,7 +902,13 @@
                     <option :value="null" selected>-- Select --</option>
                     <option
                       :value="formValues.pos_data_field_1"
-                      v-if="route.name == 'adminProductEdit'"
+                      v-if="
+                        route.name == 'adminProductEdit' &&
+                        pos_data_field_1 &&
+                        !dataFields.filter(
+                          (n) => n.value == formValues.pos_data_field_1
+                        )[0]
+                      "
                     >
                       {{ pos_data_field_1 }}
                     </option>
@@ -926,7 +932,13 @@
                     <option :value="null" selected>-- Select --</option>
                     <option
                       :value="formValues.pos_data_field_2"
-                      v-if="route.name == 'adminProductEdit'"
+                      v-if="
+                        route.name == 'adminProductEdit' &&
+                        pos_data_field_2 &&
+                        !dataFields.filter(
+                          (n) => n.value == formValues.pos_data_field_2
+                        )[0]
+                      "
                     >
                       {{ pos_data_field_2 }}
                     </option>

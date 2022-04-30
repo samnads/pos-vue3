@@ -335,6 +335,14 @@ export default {
             searchable: false,
           },
           {
+            targets: [5],
+            render: function (data, type, row, meta) {
+              return data == null
+                ? '<i class="text-muted small">-</i>'
+                : data;
+            },
+          },
+          {
             targets: [7],
             render: function (data, type, row, meta) {
               return data == null
@@ -355,6 +363,10 @@ export default {
           },
           {
             targets: [9],
+            className: "text-center",
+            render: function (data, type, row, meta) {
+              return '<span class="text-secondary small" title="'+row.unit_name+'">' +data+ "</span>";
+            },
           },
           {
             targets: [10],
