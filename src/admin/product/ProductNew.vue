@@ -1413,21 +1413,21 @@ export default {
         mfg_date: yup
           .date()
           .nullable(true)
-          .transform((_, val) => (val === Date(val) ? val : null))
+          .transform((curr, orig) => orig === '' ? null : curr)
           .label("Mfg. date"),
         exp_date: yup
           .date()
           .nullable(true)
-           .transform((_, val) => (val === Date(val) ? val : null))
+          .transform((curr, orig) => orig === '' ? null : curr)
           .when("mfg_date", {
-            is: (mfg_date) => Date(mfg_date),
+            is: (mfg_date) => mfg_date,
             then: yup
               .date()
               .nullable(true)
-              .transform((_, val) => (val === Date(val) ? val : null))
+              .transform((curr, orig) => orig === '' ? null : curr)
               .min(
                 yup.ref("mfg_date"),
-                "Exp. date must be higher than or equal to Mfg. date"
+                "Exp. date can't be less than Mfg. date"
               ),
           })
           .label("Exp. date"),
