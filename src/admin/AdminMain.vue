@@ -20,9 +20,6 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
           <ul class="navbar-nav me-auto mb-2 mb-md-0">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Test</a>
-            </li>
             <li class="nav-item dropdown">
               <a
                 class="nav-link dropdown-toggle"
@@ -239,7 +236,7 @@ a {
 .page-item.active .page-link {
   color: #fff !important;
 }
-.btn > svg:not(.fa-rotate-left) {
+.btn > svg:not(.solo) { /* solo is a custom class to fix icon only button */
   padding-right: 10px;
 }
 /* from control styles */

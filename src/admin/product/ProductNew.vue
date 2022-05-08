@@ -45,7 +45,7 @@
     </div>
   </div>
   <div class="wrap_content" id="wrap_content">
-    <form id="newProduct" @submit="onSubmit" class="needs-validation">
+    <form @submit="onSubmit" class="needs-validation">
       <div class="row">
         <!-- main row -->
         <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-3">
@@ -1138,7 +1138,7 @@
             v-if="isDirty && !isSubmitting"
             @click="resetCustom"
           >
-            <i class="fa-solid fa-rotate-left"></i>
+            <i class="fa-solid fa-rotate-left solo"></i>
           </button>
         </div>
       </div>

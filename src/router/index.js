@@ -12,6 +12,7 @@ import AdminProductNew from '../admin/product/ProductNew.vue'
 // Product Adjustment Based Pages
 import AdjustmentMain from '../admin/adjustment/AdjustmentMain.vue'
 import AdjustmentList from '../admin/adjustment/AdjustmentList.vue'
+import AdjustmentNew from '../admin/adjustment/AdjustmentNew.vue'
 // error pages
 import PageNotFound from '../admin/PageNotFound.vue'
 
@@ -86,6 +87,11 @@ const routes = [
             path: 'list',
             name: 'adminProductAdjustmentList',
             component: AdjustmentList,
+          },
+          {
+            path: 'new',
+            name: 'adminProductAdjustmentNew',
+            component: AdjustmentNew,
           },
         ],
       },
