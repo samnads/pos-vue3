@@ -78,7 +78,7 @@
       <div class="card">
         <h5 class="card-header bg-secondary text-light">Products</h5>
         <div class="card-body">
-          <div class="col-12 mb-2">
+          <div class="col-12">
             <div class="input-group is-invalid">
               <span class="input-group-text"
                 ><i class="fa-solid fa-magnifying-glass"></i
@@ -91,8 +91,18 @@
                 placeholder="Scan or type product name..."
               />
             </div>
+            <ul class="auto-complete-result">
+              <a
+                href="#"
+                class="list-group-item list-group-item-action"
+                v-for="item in autocompleteList"
+                :key="item.id"
+                :value="item.name"
+                >{{ item.label }}</a
+              >
+            </ul>
           </div>
-          <table class="table table-striped table-bordered align-middle">
+          <table class="table table-striped table-bordered align-middle mt-2">
             <thead class="table-dark">
               <tr>
                 <th scope="col">#</th>
@@ -140,37 +150,32 @@
   </div>
 </template>
 <style>
+.auto-complete-result {
+  list-style: none;
+  margin: 0;
+  max-height: 207px;
+  overflow-y: auto;
+  padding: 0;
+}
+.auto-complete-result a:hover {
+  background-color: grey;
+  color: white;;
+}
 </style>
 <script>
 export default {
   props: {},
   components: {},
   setup() {
-    var tags = [
-      "ActionScript",
-      "AppleScript",
-      "Asp",
-      "BASIC",
-      "C",
-      "C++",
-      "Clojure",
-      "COBOL",
-      "ColdFusion",
-      "Erlang",
-      "Fortran",
-      "Groovy",
-      "Haskell",
-      "Java",
-      "JavaScript",
-      "Lisp",
-      "Perl",
-      "PHP",
-      "Python",
-      "Ruby",
-      "Scala",
-      "Scheme",
+    var autocompleteList = [
+      { id: 1, name: "aaa", label: "aaa" },
+      { id: 2, name: "bbb", label: "bbb" },
+      { id: 3, name: "ccc", label: "ccc" },
+      { id: 4, name: "ddd", label: "ddd" },
+      { id: 5, name: "eee", label: "eee" },
+      { id: 6, name: "fff", label: "fff" },
     ];
-    return { tags };
+    return { autocompleteList };
   },
   data() {
     return {};
@@ -180,7 +185,7 @@ export default {
   created() {},
   mounted() {
     $("#search").autocomplete({
-      source: tags,
+      source: this.autocompleteList,
     });
   },
 };
