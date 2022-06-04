@@ -893,7 +893,7 @@
               <hr />
               <div class="row mb-1">
                 <div class="col">
-                  <label class="form-check-label">POS Data Field - 1</label>
+                  <label class="form-check-label">POS Data Field - 1 {{dataFields.includes(dbData.pos_data_field_1)[0]}}</label>
                   <select
                     class="form-select"
                     name="pos_data_field_1"
@@ -901,16 +901,14 @@
                   >
                     <option :value="null" selected>-- Select --</option>
                     <option
-                      :value="formValues.pos_data_field_1"
+                      :value="dbData.pos_data_field_1"
                       v-if="
                         route.name == 'adminProductEdit' &&
-                        pos_data_field_1 &&
-                        !dataFields.filter(
-                          (n) => n.value == formValues.pos_data_field_1
-                        )[0]
+                        dbData.pos_data_field_1 &&
+                        !dataFields.find(o => o.value === dbData.pos_data_field_1)
                       "
                     >
-                      {{ pos_data_field_1 }}
+                      {{ dbData.pos_data_field_1 }}
                     </option>
                     <option
                       v-for="dataField in dataFields"
@@ -934,13 +932,11 @@
                       :value="formValues.pos_data_field_2"
                       v-if="
                         route.name == 'adminProductEdit' &&
-                        pos_data_field_2 &&
-                        !dataFields.filter(
-                          (n) => n.value == formValues.pos_data_field_2
-                        )[0]
+                        dbData.pos_data_field_2 &&
+                        !dataFields.find(o => o.value === dbData.pos_data_field_2)
                       "
                     >
-                      {{ pos_data_field_2 }}
+                      {{ dbData.pos_data_field_2 }}
                     </option>
                     <option
                       v-for="dataField in dataFields"
@@ -1219,49 +1215,49 @@ export default {
     var subCats = ref(0);
     /************************************************************************* */
     var formValues = {}; // pre form values
-    var dbData = {}; // pre form data for edit product
+    var dbData = ref({}); // pre form data for edit product
     var dataFields = [
       { value: "Serial No." },
-      { value: "Color" },
       { value: "IMEI No." },
+      { value: "Color" },
     ];
     if (route.name == "adminProductEdit" && route.params.data) {
-      dbData = JSON.parse(route.params.data); // required
+      dbData.value = JSON.parse(route.params.data); // required
       formValues = {
-        type: dbData.type,
-        code: dbData.code,
-        symbology: dbData.symbology,
-        name: dbData.name,
-        slug: dbData.slug,
-        weight: dbData.weight,
-        category: dbData.category,
-        sub_category: dbData.sub_category,
-        cost: dbData.cost,
-        tax_method: dbData.tax_method,
-        tax_rate: dbData.tax_rate,
-        profit_margin: dbData.profit_margin,
-        brand: dbData.brand,
-        mrp: dbData.mrp,
-        unit: dbData.unit,
-        p_unit: dbData.p_unit,
-        s_unit: dbData.s_unit,
-        isalert: dbData.alert == "1" ? true : false,
-        alert_quantity: dbData.alert_quantity,
-        mfg_date: dbData.mfg_date,
-        exp_date: dbData.exp_date,
-        price: dbData.price,
-        pos_sale: dbData.pos_sale == "1" ? true : false,
-        pos_custom_discount: dbData.pos_custom_discount == "1" ? true : false,
-        pos_custom_tax: dbData.pos_custom_tax == "1" ? true : false,
-        pos_sale_note: dbData.pos_sale_note == "1" ? true : false,
-        pos_min_sale_qty: dbData.pos_min_sale_qty,
-        pos_max_sale_qty: dbData.pos_max_sale_qty,
-        pos_data_field_1: dbData.pos_data_field_1,
-        pos_data_field_2: dbData.pos_data_field_2,
-        pos_data_field_3: dbData.pos_data_field_3,
-        pos_data_field_4: dbData.pos_data_field_4,
-        pos_data_field_5: dbData.pos_data_field_5,
-        pos_data_field_6: dbData.pos_data_field_6,
+        type: dbData.value.type,
+        code: dbData.value.code,
+        symbology: dbData.value.symbology,
+        name: dbData.value.name,
+        slug: dbData.value.slug,
+        weight: dbData.value.weight,
+        category: dbData.value.category,
+        sub_category: dbData.value.sub_category,
+        cost: dbData.value.cost,
+        tax_method: dbData.value.tax_method,
+        tax_rate: dbData.value.tax_rate,
+        profit_margin: dbData.value.profit_margin,
+        brand: dbData.value.brand,
+        mrp: dbData.value.mrp,
+        unit: dbData.value.unit,
+        p_unit: dbData.value.p_unit,
+        s_unit: dbData.value.s_unit,
+        isalert: dbData.value.alert == "1" ? true : false,
+        alert_quantity: dbData.value.alert_quantity,
+        mfg_date: dbData.value.mfg_date,
+        exp_date: dbData.value.exp_date,
+        price: dbData.value.price,
+        pos_sale: dbData.value.pos_sale == "1" ? true : false,
+        pos_custom_discount: dbData.value.pos_custom_discount == "1" ? true : false,
+        pos_custom_tax: dbData.value.pos_custom_tax == "1" ? true : false,
+        pos_sale_note: dbData.value.pos_sale_note == "1" ? true : false,
+        pos_min_sale_qty: dbData.value.pos_min_sale_qty,
+        pos_max_sale_qty: dbData.value.pos_max_sale_qty,
+        pos_data_field_1: dbData.value.pos_data_field_1,
+        pos_data_field_2: dbData.value.pos_data_field_2,
+        pos_data_field_3: dbData.value.pos_data_field_3,
+        pos_data_field_4: dbData.value.pos_data_field_4,
+        pos_data_field_5: dbData.value.pos_data_field_5,
+        pos_data_field_6: dbData.value.pos_data_field_6,
       };
     } else if (route.name == "adminProductCopy" && route.params.data) {
       formValues = {};
@@ -1528,7 +1524,7 @@ export default {
       console.log(values);
     }
     const onSubmit = handleSubmit((values) => {
-      values.db = route.name == "adminProductEdit" ? dbData : undefined; // for edit product
+      values.db = route.name == "adminProductEdit" ? dbData.value : undefined; // for edit product
       return axiosAsyncCallReturnData(
         route.name == "adminProductEdit" ? "PUT" : "POST",
         "product",
@@ -1716,6 +1712,7 @@ export default {
       pos_custom_tax,
       pos_sale_note,
       //
+      dbData,
       dataFields,
       pos_data_field_1,
       pos_data_field_2,
