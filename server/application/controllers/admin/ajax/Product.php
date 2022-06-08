@@ -177,7 +177,7 @@ class Product extends CI_Controller
                     'p_unit' => $this->input->post('p_unit') ?: NULL,
                     's_unit' => $this->input->post('s_unit') ?: NULL,
                     'cost' => $this->input->post('cost') ?: NULL,
-                    'profit_margin' => $this->input->post('profit_margin') ?: NULL,
+                    'markup' => $this->input->post('markup') ?: NULL,
                     'price' => $this->input->post('price'),
                     'auto_discount' => $this->input->post('auto_discount'),
                     'mfg_date' => $this->input->post('mfg_date') ? date('Y-m-d', strtotime($this->input->post('mfg_date'))) : NULL,
@@ -273,7 +273,7 @@ class Product extends CI_Controller
                         'rules' => 'trim|numeric|xss_clean'
                     ),
                     array(
-                        'field' => 'profit_margin',
+                        'field' => 'markup',
                         'label' => 'Profit Margin',
                         'rules' => 'trim|numeric|xss_clean'
                     ),
@@ -464,7 +464,7 @@ class Product extends CI_Controller
                     'p_unit' => $this->input->post('p_unit') ?: NULL,
                     's_unit' => $this->input->post('s_unit') ?: NULL,
                     'cost' => $this->input->post('cost') ?: NULL,
-                    'profit_margin' => $this->input->post('profit_margin') ?: NULL,
+                    'markup' => $this->input->post('markup') ?: NULL,
                     'price' => $this->input->post('price'),
                     'auto_discount' => $this->input->post('auto_discount'),
                     'mfg_date' => $this->input->post('mfg_date') ? date('Y-m-d', strtotime($this->input->post('mfg_date'))) : NULL,

@@ -165,6 +165,7 @@ class Product_model extends CI_Model
 		p.mrp 		as mrp,
 		p.cost 		as cost,
 		p.price 	as price,
+		p.markup 	as markup,
 		p.tax_method as tax_method,
 		p.alert 	as alert,
 		p.alert_quantity 	as alert_quantity,

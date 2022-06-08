@@ -65,7 +65,7 @@
                   </tr>
                   <tr>
                     <th scope="row">Tax Rate</th>
-                    <td>{{ propProductInfo.tax_rate }}</td>
+                    <td>{{ propProductInfo.tax_rate || "-"}}</td>
                   </tr>
                   <tr>
                     <th scope="row">Rack / Shelf</th>

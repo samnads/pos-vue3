@@ -687,17 +687,17 @@
               </div>
               <div class="row mb-1">
                 <div class="col">
-                  <label class="form-label">Profit Margin<i>*</i></label>
+                  <label class="form-label">Markup<i>*</i></label>
                   <div class="input-group is-invalid">
                     <input
                       type="number"
-                      name="profit_margin"
-                      v-model="profit_margin"
+                      name="markup"
+                      v-model="markup"
                       class="form-control"
                       v-bind:class="[
-                        errorProfitMargin
+                        errorMarkup
                           ? 'is-invalid'
-                          : !errorProfitMargin && profit_margin
+                          : !errorMarkup && markup
                           ? 'is-valid'
                           : '',
                       ]"
@@ -706,7 +706,7 @@
                       ><i class="fa-solid fa-percent"></i
                     ></span>
                   </div>
-                  <div class="invalid-feedback">{{ errorProfitMargin }}</div>
+                  <div class="invalid-feedback">{{ errorMarkup }}</div>
                 </div>
                 <div class="col">
                   <label class="form-label">Tax</label>
@@ -853,7 +853,7 @@
                   >
                   <div class="input-group is-invalid">
                     <input type="number" class="form-control" :value="1" />
-                    <span class="input-group-text" v-if="unitsBulk">{{
+                    <span class="input-group-text" v-if="unitsBulk"><!--{{
                       unitsBulk && unit && s_unit == null
                         ? units.find((obj) => {
                             return obj.id === unit;
@@ -863,7 +863,7 @@
                             return obj.id === s_unit;
                           })["code"]
                         : "?"
-                    }}</span>
+                    }}--></span>
                   </div>
                   <div class="invalid-feedback">{{ errorRefNo }}</div>
                 </div>
@@ -871,7 +871,7 @@
                   <label class="form-label">Maximum Sale Quantity</label>
                   <div class="input-group is-invalid">
                     <input type="number" class="form-control" />
-                    <span class="input-group-text" v-if="unitsBulk">{{
+                    <span class="input-group-text" v-if="unitsBulk"><!--{{
                       unitsBulk && unit && s_unit == null
                         ? units.find((obj) => {
                             return obj.id === unit;
@@ -881,7 +881,7 @@
                             return obj.id === s_unit;
                           })["code"]
                         : "?"
-                    }}</span>
+                    }}--></span>
                   </div>
                   <div class="invalid-feedback">{{ errorRefNo }}</div>
                 </div>
@@ -893,7 +893,10 @@
               <hr />
               <div class="row mb-1">
                 <div class="col">
-                  <label class="form-check-label">POS Data Field - 1 {{dataFields.includes(dbData.pos_data_field_1)[0]}}</label>
+                  <label class="form-check-label"
+                    >POS Data Field - 1
+                    {{ dataFields.includes(dbData.pos_data_field_1)[0] }}</label
+                  >
                   <select
                     class="form-select"
                     name="pos_data_field_1"
@@ -905,7 +908,9 @@
                       v-if="
                         route.name == 'adminProductEdit' &&
                         dbData.pos_data_field_1 &&
-                        !dataFields.find(o => o.value === dbData.pos_data_field_1)
+                        !dataFields.find(
+                          (o) => o.value === dbData.pos_data_field_1
+                        )
                       "
                     >
                       {{ dbData.pos_data_field_1 }}
@@ -933,7 +938,9 @@
                       v-if="
                         route.name == 'adminProductEdit' &&
                         dbData.pos_data_field_2 &&
-                        !dataFields.find(o => o.value === dbData.pos_data_field_2)
+                        !dataFields.find(
+                          (o) => o.value === dbData.pos_data_field_2
+                        )
                       "
                     >
                       {{ dbData.pos_data_field_2 }}
@@ -1235,7 +1242,7 @@ export default {
         cost: dbData.value.cost,
         tax_method: dbData.value.tax_method,
         tax_rate: dbData.value.tax_rate,
-        profit_margin: dbData.value.profit_margin,
+        markup: dbData.value.markup,
         brand: dbData.value.brand,
         mrp: dbData.value.mrp,
         unit: dbData.value.unit,
@@ -1247,7 +1254,8 @@ export default {
         exp_date: dbData.value.exp_date,
         price: dbData.value.price,
         pos_sale: dbData.value.pos_sale == "1" ? true : false,
-        pos_custom_discount: dbData.value.pos_custom_discount == "1" ? true : false,
+        pos_custom_discount:
+          dbData.value.pos_custom_discount == "1" ? true : false,
         pos_custom_tax: dbData.value.pos_custom_tax == "1" ? true : false,
         pos_sale_note: dbData.value.pos_sale_note == "1" ? true : false,
         pos_min_sale_qty: dbData.value.pos_min_sale_qty,
@@ -1274,7 +1282,7 @@ export default {
         isalert: true,
         tax_rate: null,
         tax_method: "I",
-        profit_margin: 50,
+        markup: 50,
         warehouse: null,
         pos_sale: true,
         pos_custom_discount: true,
@@ -1336,11 +1344,26 @@ export default {
           .label("Category"),
         sub_category: yup.number().nullable(true).label("Subcategory"),
         brand: yup.number().nullable(true).label("Brand Name"),
+        price: yup
+          .number()
+          .required()
+          .nullable(true)
+          .typeError("Selling Price must be a number")
+          .when("mrp", {
+            is: (mrp) => Number(mrp),
+            then: yup
+              .number()
+              .required()
+              .nullable(true)
+              .typeError("Selling Price must be a number")
+              .max(yup.ref("mrp"), "Selling Price must be less than MRP"),
+          })
+          .label("Selling Price"),
         mrp: yup
           .number()
           .nullable(true)
-          .moreThan(0)
-          .transform((_, val) => (val === Number(val) ? val : null))
+          .typeError("MRP must be a number")
+          .transform((_, val) => (val > 0 ? val : null))
           .label("MRP"),
         unit: yup
           .number()
@@ -1381,7 +1404,7 @@ export default {
           .nullable(true)
           .typeError("Cost must be a number")
           .label("Cost"),
-        profit_margin: yup
+        markup: yup
           .number()
           .nullable(true)
           .typeError("Margin must be a number")
@@ -1391,36 +1414,21 @@ export default {
           .nullable(true)
           .typeError("Discount must be a number")
           .label("Auto Discount"),
-        price: yup
-          .number()
-          .required()
-          .nullable(true)
-          .typeError("Selling Price must be a number")
-          .when("mrp", {
-            is: (mrp) => Number(mrp),
-            then: yup
-              .number()
-              .required()
-              .nullable(true)
-              .typeError("Selling Price must be a number")
-              .max(yup.ref("mrp"), "Selling Price must be less than MRP"),
-          })
-          .label("Selling Price"),
         mfg_date: yup
           .date()
           .nullable(true)
-          .transform((curr, orig) => orig === '' ? null : curr)
+          .transform((curr, orig) => (orig === "" ? null : curr))
           .label("Mfg. date"),
         exp_date: yup
           .date()
           .nullable(true)
-          .transform((curr, orig) => orig === '' ? null : curr)
+          .transform((curr, orig) => (orig === "" ? null : curr))
           .when("mfg_date", {
             is: (mfg_date) => mfg_date,
             then: yup
               .date()
               .nullable(true)
-              .transform((curr, orig) => orig === '' ? null : curr)
+              .transform((curr, orig) => (orig === "" ? null : curr))
               .min(
                 yup.ref("mfg_date"),
                 "Exp. date can't be less than Mfg. date"
@@ -1492,8 +1500,8 @@ export default {
     const { value: tax_method, errorMessage: errorTaxMethod } =
       useField("tax_method");
     const { value: cost, errorMessage: errorCost } = useField("cost");
-    const { value: profit_margin, errorMessage: errorProfitMargin } =
-      useField("profit_margin");
+    const { value: markup, errorMessage: errorMarkup } =
+      useField("markup");
     const { value: auto_discount, errorMessage: errorAutoDiscount } =
       useField("auto_discount");
     const { value: price, errorMessage: errorPrice } = useField("price");
@@ -1692,8 +1700,8 @@ export default {
       errorTaxMethod,
       cost,
       errorCost,
-      profit_margin,
-      errorProfitMargin,
+      markup,
+      errorMarkup,
       auto_discount,
       errorAutoDiscount,
       price,
@@ -1746,6 +1754,19 @@ export default {
     unit(value) {
       this.p_unit = this.s_unit = null;
       if (value) this.addUnitsBulk(value);
+    },
+    // eslint-disable-next-line
+    cost(value) {
+      if (this.markup) {
+        //if (value) alert(value);
+      }
+    },
+    // eslint-disable-next-line
+    markup(markup) {
+      if (this.cost) {
+        this.price = this.cost+(markup/100)*this.cost;
+        //setFieldValue("price", this.cost+(markup/100)*this.cost);
+      }
     },
   },
   methods: {
