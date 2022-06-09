@@ -166,6 +166,7 @@ class Product_model extends CI_Model
 		p.cost 		as cost,
 		p.price 	as price,
 		p.markup 	as markup,
+		p.auto_discount as auto_discount,
 		p.tax_method as tax_method,
 		p.alert 	as alert,
 		p.alert_quantity 	as alert_quantity,

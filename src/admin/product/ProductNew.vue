@@ -343,6 +343,7 @@
                 <span class="input-group-text">₹</span>
                 <input
                   type="number"
+                  step="any"
                   name="mrp"
                   placeholder="Maximum retail price"
                   v-model="mrp"
@@ -590,6 +591,7 @@
                   <div class="input-group is-invalid">
                     <input
                       type="number"
+                       step="any"
                       name="cost"
                       v-model="cost"
                       class="form-control"
@@ -687,10 +689,11 @@
               </div>
               <div class="row mb-1">
                 <div class="col">
-                  <label class="form-label">Markup<i>*</i></label>
+                  <label class="form-label">Markup</label>
                   <div class="input-group is-invalid">
                     <input
                       type="number"
+                       step="any"
                       name="markup"
                       v-model="markup"
                       class="form-control"
@@ -728,6 +731,7 @@
                   <div class="input-group is-invalid">
                     <input
                       type="number"
+                       step="any"
                       name="auto_discount"
                       v-model="auto_discount"
                       class="form-control"
@@ -746,14 +750,39 @@
                 </div>
                 <div class="col">
                   <label class="form-label text-success"
+                    >Tag Price<i>*</i></label
+                  >
+                  <div class="input-group is-invalid">
+                    <input
+                      type="number"
+                       step="any"
+                      name="price"
+                      v-model="price"
+                      class="form-control"
+                      v-bind:class="[
+                        errorPrice
+                          ? 'is-invalid'
+                          : !errorPrice && price
+                          ? 'is-valid'
+                          : '',
+                      ]"
+                    />
+                    <span class="input-group-text">₹</span>
+                  </div>
+                  <div class="invalid-feedback">{{ errorPrice }}</div>
+                </div>
+                <div class="col">
+                  <label class="form-label text-success"
                     >Selling Price<i>*</i></label
                   >
                   <div class="input-group is-invalid">
                     <input
                       type="number"
+                       step="any"
                       name="price"
                       v-model="price"
                       class="form-control"
+                      readonly
                       v-bind:class="[
                         errorPrice
                           ? 'is-invalid'
@@ -853,7 +882,8 @@
                   >
                   <div class="input-group is-invalid">
                     <input type="number" class="form-control" :value="1" />
-                    <span class="input-group-text" v-if="unitsBulk"><!--{{
+                    <span class="input-group-text" v-if="unitsBulk"
+                      ><!--{{
                       unitsBulk && unit && s_unit == null
                         ? units.find((obj) => {
                             return obj.id === unit;
@@ -863,7 +893,8 @@
                             return obj.id === s_unit;
                           })["code"]
                         : "?"
-                    }}--></span>
+                    }}--></span
+                    >
                   </div>
                   <div class="invalid-feedback">{{ errorRefNo }}</div>
                 </div>
@@ -871,7 +902,8 @@
                   <label class="form-label">Maximum Sale Quantity</label>
                   <div class="input-group is-invalid">
                     <input type="number" class="form-control" />
-                    <span class="input-group-text" v-if="unitsBulk"><!--{{
+                    <span class="input-group-text" v-if="unitsBulk"
+                      ><!--{{
                       unitsBulk && unit && s_unit == null
                         ? units.find((obj) => {
                             return obj.id === unit;
@@ -881,7 +913,8 @@
                             return obj.id === s_unit;
                           })["code"]
                         : "?"
-                    }}--></span>
+                    }}--></span
+                    >
                   </div>
                   <div class="invalid-feedback">{{ errorRefNo }}</div>
                 </div>
@@ -1253,6 +1286,7 @@ export default {
         mfg_date: dbData.value.mfg_date,
         exp_date: dbData.value.exp_date,
         price: dbData.value.price,
+        auto_discount:dbData.value.auto_discount,
         pos_sale: dbData.value.pos_sale == "1" ? true : false,
         pos_custom_discount:
           dbData.value.pos_custom_discount == "1" ? true : false,
@@ -1363,8 +1397,14 @@ export default {
           .number()
           .nullable(true)
           .typeError("MRP must be a number")
-          .transform((_, val) => (val > 0 ? val : null))
+          .transform((_, val) => (val ? Number(val) : null))
           .label("MRP"),
+        markup: yup
+          .number()
+          .nullable(true)
+          .typeError("Margin must be a number")
+          .transform((_, val) => (val ? Number(val) : null))
+          .label("Markup"),
         unit: yup
           .number()
           .required()
@@ -1403,16 +1443,13 @@ export default {
           .number()
           .nullable(true)
           .typeError("Cost must be a number")
+          .transform((_, val) => (val ? Number(val) : null))
           .label("Cost"),
-        markup: yup
-          .number()
-          .nullable(true)
-          .typeError("Margin must be a number")
-          .label("Margin"),
         auto_discount: yup
           .number()
           .nullable(true)
           .typeError("Discount must be a number")
+          .transform((_, val) => (val ? Number(val) : null))
           .label("Auto Discount"),
         mfg_date: yup
           .date()
@@ -1500,8 +1537,7 @@ export default {
     const { value: tax_method, errorMessage: errorTaxMethod } =
       useField("tax_method");
     const { value: cost, errorMessage: errorCost } = useField("cost");
-    const { value: markup, errorMessage: errorMarkup } =
-      useField("markup");
+    const { value: markup, errorMessage: errorMarkup } = useField("markup");
     const { value: auto_discount, errorMessage: errorAutoDiscount } =
       useField("auto_discount");
     const { value: price, errorMessage: errorPrice } = useField("price");
@@ -1755,17 +1791,33 @@ export default {
       this.p_unit = this.s_unit = null;
       if (value) this.addUnitsBulk(value);
     },
-    // eslint-disable-next-line
-    cost(value) {
-      if (this.markup) {
-        //if (value) alert(value);
+    cost(cost) {
+      if (cost) {
+        let markup = this.markup ? this.markup : 0
+        let auto_discount = this.auto_discount ? this.auto_discount : 0
+        this.price = cost + (markup / 100) * cost - auto_discount;
       }
     },
-    // eslint-disable-next-line
     markup(markup) {
+      let auto_discount = this.auto_discount || 0;
       if (this.cost) {
-        this.price = this.cost+(markup/100)*this.cost;
-        //setFieldValue("price", this.cost+(markup/100)*this.cost);
+        let cost = this.cost;
+        this.price = cost + (markup / 100) * cost - auto_discount;
+      }
+    },
+    auto_discount(auto_discount) {
+      auto_discount = auto_discount || 0;
+      if (this.cost & this.markup) {
+        let cost = this.cost;
+        let markup = this.markup;
+        this.price = cost + (markup / 100) * cost - auto_discount;
+      }
+      else if(this.price){
+        let price = this.price;
+        this.price = price-auto_discount;
+      }
+      else{
+        this.price = null;
       }
     },
   },
