@@ -750,26 +750,26 @@
                 </div>
                 <div class="col">
                   <label class="form-label text-success"
-                    >Tag Price<i>*</i></label
+                    >Price Tag<i>*</i></label
                   >
                   <div class="input-group is-invalid">
                     <input
                       type="number"
                        step="any"
-                      name="price"
-                      v-model="price"
+                      name="tag_price"
+                      v-model="tag_price"
                       class="form-control"
                       v-bind:class="[
-                        errorPrice
+                        errorTagPrice
                           ? 'is-invalid'
-                          : !errorPrice && price
+                          : !errorTagPrice && tag_price
                           ? 'is-valid'
                           : '',
                       ]"
                     />
                     <span class="input-group-text">₹</span>
                   </div>
-                  <div class="invalid-feedback">{{ errorPrice }}</div>
+                  <div class="invalid-feedback">{{ errorTagPrice }}</div>
                 </div>
                 <div class="col">
                   <label class="form-label text-success"
@@ -1285,7 +1285,8 @@ export default {
         alert_quantity: dbData.value.alert_quantity,
         mfg_date: dbData.value.mfg_date,
         exp_date: dbData.value.exp_date,
-        price: dbData.value.price,
+        tag_price: dbData.value.price,
+        price: dbData.value.price-dbData.value.auto_discount,
         auto_discount:dbData.value.auto_discount,
         pos_sale: dbData.value.pos_sale == "1" ? true : false,
         pos_custom_discount:
@@ -1378,6 +1379,21 @@ export default {
           .label("Category"),
         sub_category: yup.number().nullable(true).label("Subcategory"),
         brand: yup.number().nullable(true).label("Brand Name"),
+        tag_price: yup
+          .number()
+          .required()
+          .nullable(true)
+          .typeError("Tag Price must be a number")
+          .when("mrp", {
+            is: (mrp) => Number(mrp),
+            then: yup
+              .number()
+              .required()
+              .nullable(true)
+              .typeError("Tag Price must be a number")
+              .max(yup.ref("mrp"), "Tag Price must be less than MRP"),
+          })
+          .label("Tag Price"),
         price: yup
           .number()
           .required()
@@ -1449,6 +1465,7 @@ export default {
           .number()
           .nullable(true)
           .typeError("Discount must be a number")
+          .min(0,"Discount price can't be less than 0")
           .transform((_, val) => (val ? Number(val) : null))
           .label("Auto Discount"),
         mfg_date: yup
@@ -1541,6 +1558,7 @@ export default {
     const { value: auto_discount, errorMessage: errorAutoDiscount } =
       useField("auto_discount");
     const { value: price, errorMessage: errorPrice } = useField("price");
+     const { value: tag_price, errorMessage: errorTagPrice } = useField("tag_price");
     const { value: warehouse, errorMessage: errorWareHouse } =
       useField("warehouse");
     const { value: stock_adj_count, errorMessage: errorStockAdjCount } =
@@ -1741,6 +1759,8 @@ export default {
       auto_discount,
       errorAutoDiscount,
       price,
+      tag_price,
+      errorTagPrice,
       errorPrice,
       warehouse,
       errorWareHouse,
@@ -1795,14 +1815,16 @@ export default {
       if (cost) {
         let markup = this.markup ? this.markup : 0
         let auto_discount = this.auto_discount ? this.auto_discount : 0
-        this.price = cost + (markup / 100) * cost - auto_discount;
+        this.tag_price = cost + (markup / 100) * cost;
+        this.price = this.tag_price - auto_discount;
       }
     },
     markup(markup) {
       let auto_discount = this.auto_discount || 0;
       if (this.cost) {
         let cost = this.cost;
-        this.price = cost + (markup / 100) * cost - auto_discount;
+        this.tag_price = cost + (markup / 100) * cost;
+        this.price = this.tag_price - auto_discount;
       }
     },
     auto_discount(auto_discount) {
@@ -1810,14 +1832,17 @@ export default {
       if (this.cost & this.markup) {
         let cost = this.cost;
         let markup = this.markup;
-        this.price = cost + (markup / 100) * cost - auto_discount;
+        this.tag_price = cost + (markup / 100) * cost;
+        this.price = this.tag_price - auto_discount;
       }
       else if(this.price){
         let price = this.price;
-        this.price = price-auto_discount;
+        this.tag_price = price;
+        this.price = this.tag_price - auto_discount;
       }
       else{
-        this.price = null;
+        this.tag_price = null;
+         this.price = null;
       }
     },
   },
