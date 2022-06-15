@@ -162,7 +162,7 @@ class Product_model extends CI_Model
 		p.slug		as slug,
 		p.thumbnail	as thumbnail,
 		p.weight	as weight,
-		p.mrp 		as mrp,
+		cast(p.mrp AS decimal(10,2)) AS mrp,
 		cast(p.cost AS decimal(10,2)) AS cost,
 		cast(p.price AS decimal(10,2)) AS price,
 		cast(p.markup AS decimal(10,2)) AS markup,

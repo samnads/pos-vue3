@@ -214,6 +214,9 @@ export default function () {
             console.log(e);
         });
     }
+    function x_percentage_of_y(x,y) {
+        return (x/100)*y;
+    }
     return {
         adminTest,
         /******************* for notify */
@@ -227,6 +230,8 @@ export default function () {
         /******************* */
         axiosAsyncCallReturnData,
         axiosAsyncStoreUpdateReturnData,
-        axiosAsyncStoreReturnBool
+        axiosAsyncStoreReturnBool,
+        /******************* */ // calculations
+        x_percentage_of_y
     }
 }

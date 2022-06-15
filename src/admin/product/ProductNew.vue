@@ -585,13 +585,21 @@
               Purchase Information
             </h5>
             <div class="card-body">
+              <div class="row"></div>
+            </div>
+          </div>
+          <div class="card">
+            <h5 class="card-header bg-secondary text-light">
+              Selling Information
+            </h5>
+            <div class="card-body">
               <div class="row">
                 <div class="col">
-                  <label class="form-label">Cost</label>
+                  <label class="form-label">Cost<i>*</i></label>
                   <div class="input-group is-invalid">
                     <input
                       type="number"
-                       step="any"
+                      step="any"
                       name="cost"
                       v-model="cost"
                       class="form-control"
@@ -605,39 +613,6 @@
                     /><span class="input-group-text">₹</span>
                   </div>
                   <div class="invalid-feedback">{{ errorCost }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="card">
-            <h5 class="card-header bg-secondary text-light">
-              Selling Information
-            </h5>
-            <div class="card-body">
-              <div class="row">
-                <div class="col">
-                  <label for="tax_method" class="form-label"
-                    >Tax Method<i>*</i></label
-                  >
-                  <div class="input-group is-invalid">
-                    <select
-                      class="form-select"
-                      name="tax_method"
-                      v-model="tax_method"
-                      id="tax_method"
-                      v-bind:class="[
-                        errorTaxMethod
-                          ? 'is-invalid'
-                          : tax_method
-                          ? 'is-valid'
-                          : '',
-                      ]"
-                    >
-                      <option value="I">Inclusive</option>
-                      <option value="E">Exclusive</option>
-                    </select>
-                  </div>
-                  <div class="invalid-feedback">{{ errorTaxMethod }}</div>
                 </div>
                 <div class="col">
                   <label for="taxrate" class="form-label">Tax Rate</label>
@@ -687,13 +662,61 @@
                   <div class="invalid-feedback">{{ errorTaxRate }}</div>
                 </div>
               </div>
+              <div class="row">
+                <div class="col">
+                  <label for="tax_method" class="form-label"
+                    >Tax Method<i>*</i></label
+                  >
+                  <div class="input-group is-invalid">
+                    <select
+                      class="form-select"
+                      name="tax_method"
+                      v-model="tax_method"
+                      id="tax_method"
+                      v-bind:class="[
+                        errorTaxMethod
+                          ? 'is-invalid'
+                          : tax_method
+                          ? 'is-valid'
+                          : '',
+                      ]"
+                    >
+                      <option value="I">Inclusive</option>
+                      <option value="E">Exclusive</option>
+                    </select>
+                  </div>
+                  <div class="invalid-feedback">{{ errorTaxMethod }}</div>
+                </div>
+                <div class="col">
+                  <label class="form-label">Tax</label>
+                  <div class="input-group is-invalid">
+                    <input
+                      type="number"
+                      step="any"
+                      name="tax"
+                      v-model="tax"
+                      class="form-control"
+                      v-bind:class="[
+                        errorTax
+                          ? 'is-invalid'
+                          : !errorTax && tax
+                          ? 'is-valid'
+                          : '',
+                      ]"
+                      readonly
+                    />
+                    <span class="input-group-text">₹</span>
+                  </div>
+                  <div class="invalid-feedback">{{ errorTax }}</div>
+                </div>
+              </div>
               <div class="row mb-1">
                 <div class="col">
                   <label class="form-label">Markup</label>
                   <div class="input-group is-invalid">
                     <input
                       type="number"
-                       step="any"
+                      step="any"
                       name="markup"
                       v-model="markup"
                       class="form-control"
@@ -712,50 +735,13 @@
                   <div class="invalid-feedback">{{ errorMarkup }}</div>
                 </div>
                 <div class="col">
-                  <label class="form-label">Tax</label>
-                  <div class="input-group is-invalid">
-                    <input
-                      type="number"
-                      class="form-control"
-                      value="100"
-                      disabled
-                    />
-                    <span class="input-group-text">₹</span>
-                  </div>
-                  <div class="invalid-feedback">{{}}</div>
-                </div>
-              </div>
-              <div class="row mb-1">
-                <div class="col">
-                  <label class="form-label">Auto Discount</label>
-                  <div class="input-group is-invalid">
-                    <input
-                      type="number"
-                       step="any"
-                      name="auto_discount"
-                      v-model="auto_discount"
-                      class="form-control"
-                      id="productcode"
-                      v-bind:class="[
-                        errorAutoDiscount
-                          ? 'is-invalid'
-                          : !errorAutoDiscount && auto_discount
-                          ? 'is-valid'
-                          : '',
-                      ]"
-                    />
-                    <span class="input-group-text">₹</span>
-                  </div>
-                  <div class="invalid-feedback">{{ errorAutoDiscount }}</div>
-                </div>
-                <div class="col">
                   <label class="form-label text-success"
                     >Price Tag<i>*</i></label
                   >
                   <div class="input-group is-invalid">
                     <input
                       type="number"
-                       step="any"
+                      step="any"
                       name="tag_price"
                       v-model="tag_price"
                       class="form-control"
@@ -771,6 +757,48 @@
                   </div>
                   <div class="invalid-feedback">{{ errorTagPrice }}</div>
                 </div>
+              </div>
+              <div class="row mb-1">
+                <div class="col">
+                  <label class="form-label">Auto Discount</label>
+                  <div class="input-group is-invalid">
+                    <input
+                      type="number"
+                      step="any"
+                      name="auto_discount"
+                      v-model="auto_discount"
+                      class="form-control"
+                      id="productcode"
+                      v-bind:class="[
+                        errorAutoDiscount
+                          ? 'is-invalid'
+                          : !errorAutoDiscount && auto_discount
+                          ? 'is-valid'
+                          : '',
+                      ]"
+                    />
+                    <div class="input-group-text">
+                      <input
+                        class="form-check-input mt-0"
+                        type="radio"
+                        name="auto_disc_type"
+                        v-model="auto_disc_type"
+                        value="P"
+                      />&nbsp;<strong>%</strong>
+                    </div>
+                    <div class="input-group-text">
+                      <input
+                        class="form-check-input mt-0"
+                        type="radio"
+                        name="auto_disc_type"
+                        v-model="auto_disc_type"
+                        value="F"
+                      />&nbsp;<strong>₹</strong>
+                    </div>
+                  </div>
+                  <div class="invalid-feedback">{{ errorAutoDiscount }}</div>
+                  <div class="invalid-feedback">{{ errorAutoDiscType }}</div>
+                </div>
                 <div class="col">
                   <label class="form-label text-success"
                     >Selling Price<i>*</i></label
@@ -778,7 +806,7 @@
                   <div class="input-group is-invalid">
                     <input
                       type="number"
-                       step="any"
+                      step="any"
                       name="price"
                       v-model="price"
                       class="form-control"
@@ -1224,6 +1252,7 @@ export default {
       axiosAsyncCallReturnData,
       axiosAsyncStoreUpdateReturnData,
       axiosAsyncStoreReturnBool,
+      x_percentage_of_y,
     } = admin();
     /**************************************** */ // from store
     const store = useStore();
@@ -1272,10 +1301,10 @@ export default {
         weight: dbData.value.weight,
         category: dbData.value.category,
         sub_category: dbData.value.sub_category,
-        cost: dbData.value.cost,
+        cost: Number(dbData.value.cost),
         tax_method: dbData.value.tax_method,
         tax_rate: dbData.value.tax_rate,
-        markup: dbData.value.markup,
+        //markup: dbData.value.markup,
         brand: dbData.value.brand,
         mrp: dbData.value.mrp,
         unit: dbData.value.unit,
@@ -1286,8 +1315,8 @@ export default {
         mfg_date: dbData.value.mfg_date,
         exp_date: dbData.value.exp_date,
         tag_price: dbData.value.price,
-        price: dbData.value.price-dbData.value.auto_discount,
-        auto_discount:dbData.value.auto_discount,
+        price: dbData.value.price - dbData.value.auto_discount,
+        auto_discount: dbData.value.auto_discount,
         pos_sale: dbData.value.pos_sale == "1" ? true : false,
         pos_custom_discount:
           dbData.value.pos_custom_discount == "1" ? true : false,
@@ -1301,6 +1330,7 @@ export default {
         pos_data_field_4: dbData.value.pos_data_field_4,
         pos_data_field_5: dbData.value.pos_data_field_5,
         pos_data_field_6: dbData.value.pos_data_field_6,
+        auto_disc_type: "F",
       };
     } else if (route.name == "adminProductCopy" && route.params.data) {
       formValues = {};
@@ -1318,6 +1348,7 @@ export default {
         tax_rate: null,
         tax_method: "I",
         markup: 50,
+        auto_disc_type: "F",
         warehouse: null,
         pos_sale: true,
         pos_custom_discount: true,
@@ -1418,7 +1449,7 @@ export default {
         markup: yup
           .number()
           .nullable(true)
-          .typeError("Margin must be a number")
+          .typeError("Markupn must be a number")
           .transform((_, val) => (val ? Number(val) : null))
           .label("Markup"),
         unit: yup
@@ -1455,8 +1486,14 @@ export default {
           .nullable(true)
           .transform((_, val) => (val === Number(val) ? val : null))
           .label("Tax Rate"),
+        tax: yup
+          .number()
+          .nullable(true)
+          .transform((_, val) => (val === Number(val) ? val : null))
+          .label("Tax"),
         cost: yup
           .number()
+          .required()
           .nullable(true)
           .typeError("Cost must be a number")
           .transform((_, val) => (val ? Number(val) : null))
@@ -1465,9 +1502,13 @@ export default {
           .number()
           .nullable(true)
           .typeError("Discount must be a number")
-          .min(0,"Discount price can't be less than 0")
+          .min(0, "Discount price can't be less than 0")
           .transform((_, val) => (val ? Number(val) : null))
           .label("Auto Discount"),
+        auto_disc_type: yup
+          .string()
+          .matches(/(F|P)/)
+          .label("Auto Discount Type"),
         mfg_date: yup
           .date()
           .nullable(true)
@@ -1551,14 +1592,19 @@ export default {
       useField("exp_date");
     const { value: tax_rate, errorMessage: errorTaxRate } =
       useField("tax_rate");
+      const { value: tax, errorMessage: errorTax } =
+      useField("tax");
     const { value: tax_method, errorMessage: errorTaxMethod } =
       useField("tax_method");
     const { value: cost, errorMessage: errorCost } = useField("cost");
     const { value: markup, errorMessage: errorMarkup } = useField("markup");
     const { value: auto_discount, errorMessage: errorAutoDiscount } =
       useField("auto_discount");
+    const { value: auto_disc_type, errorMessage: errorAutoDiscType } =
+      useField("auto_disc_type");
     const { value: price, errorMessage: errorPrice } = useField("price");
-     const { value: tag_price, errorMessage: errorTagPrice } = useField("tag_price");
+    const { value: tag_price, errorMessage: errorTagPrice } =
+      useField("tag_price");
     const { value: warehouse, errorMessage: errorWareHouse } =
       useField("warehouse");
     const { value: stock_adj_count, errorMessage: errorStockAdjCount } =
@@ -1684,6 +1730,15 @@ export default {
     function resetCustom() {
       resetForm();
     }
+    function autoDiscConvert(tag_price, auto_discount, type) {
+      let ad = 0;
+      if (type == "F") {
+        ad = (auto_discount / 100) * tag_price;
+      } else {
+        ad = (auto_discount / tag_price) * 100;
+      }
+      return Number(ad).toFixed(2);
+    }
     return {
       route,
       /**************** default form sel values */
@@ -1749,6 +1804,8 @@ export default {
       errorExpDate,
       exp_date,
       tax_rate,
+      tax,
+      errorTax,
       errorTaxRate,
       tax_method,
       errorTaxMethod,
@@ -1758,6 +1815,8 @@ export default {
       errorMarkup,
       auto_discount,
       errorAutoDiscount,
+      auto_disc_type,
+      errorAutoDiscType,
       price,
       tag_price,
       errorTagPrice,
@@ -1791,12 +1850,15 @@ export default {
       isSubmitting,
       resetForm,
       resetCustom,
+      autoDiscConvert,
       notifyDefault,
       /******************/
       axiosAsyncCallReturnData,
       axiosAsyncStoreUpdateReturnData,
       axiosAsyncStoreReturnBool,
       addUnitsBulk,
+
+      x_percentage_of_y,
     };
   },
   data() {
@@ -1813,37 +1875,51 @@ export default {
     },
     cost(cost) {
       if (cost) {
-        let markup = this.markup ? this.markup : 0
-        let auto_discount = this.auto_discount ? this.auto_discount : 0
+        let markup = this.markup ? this.markup : 0;
+        let auto_discount = this.auto_discount ? this.auto_discount : 0;
         this.tag_price = cost + (markup / 100) * cost;
         this.price = this.tag_price - auto_discount;
       }
     },
     markup(markup) {
-      let auto_discount = this.auto_discount || 0;
       if (this.cost) {
-        let cost = this.cost;
-        this.tag_price = cost + (markup / 100) * cost;
-        this.price = this.tag_price - auto_discount;
+        this.tag_price = Number(
+          this.x_percentage_of_y(markup, this.cost) + this.cost
+        ).toFixed(2);
+      } else {
+        this.tag_price = null;
       }
     },
     auto_discount(auto_discount) {
-      auto_discount = auto_discount || 0;
-      if (this.cost & this.markup) {
-        let cost = this.cost;
-        let markup = this.markup;
-        this.tag_price = cost + (markup / 100) * cost;
-        this.price = this.tag_price - auto_discount;
+      if (this.auto_disc_type == "F") {
+        this.price = Number(this.tag_price - auto_discount).toFixed(2);
+      } else {
+        this.price = Number(
+          this.tag_price - this.x_percentage_of_y(auto_discount, this.tag_price)
+        ).toFixed(2);
       }
-      else if(this.price){
-        let price = this.price;
-        this.tag_price = price;
-        this.price = this.tag_price - auto_discount;
+    },
+    auto_disc_type(type) {
+      this.auto_discount = this.autoDiscConvert(
+        this.tag_price,
+        this.auto_discount,
+        type
+      );
+    },
+    tag_price(tag_price) {
+      if (this.cost) {
+        //let profit = this.tag_price - this.cost;
+        //this.markup = null;
+      } else {
+        //this.markup = null;
       }
-      else{
-        this.tag_price = null;
-         this.price = null;
-      }
+      this.price = Number(tag_price - this.auto_discount).toFixed(2);
+    },
+    tax_method() {
+
+    },
+    tax_rate(rate) {
+      this.tax = Number(this.x_percentage_of_y(rate,this.tag_price)).toFixed(2)
     },
   },
   methods: {
