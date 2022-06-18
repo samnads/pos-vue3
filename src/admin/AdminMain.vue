@@ -317,6 +317,18 @@ form .row {
   background-color: #00416a !important;
   color: #dee2e6;
 }
+/***************************************************************  input field custom */
+/***************************  dont show up-down button on number inputs */
+/* Chrome, Safari, Edge, Opera */
+input[type=number].no-arrow::-webkit-outer-spin-button,
+input[type=number].no-arrow::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+input[type=number].no-arrow{
+  -moz-appearance: textfield;
+}
 </style>
 <script>
 import "datatables.net-bs5/js/dataTables.bootstrap5";

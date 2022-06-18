@@ -103,6 +103,7 @@
               ></span>
               <input
                 type="text"
+                ref="searchBox"
                 name="search"
                 v-model="search"
                 class="form-control"
@@ -111,7 +112,7 @@
             </div>
             <ul class="auto-complete-result">
               <a
-                @click="clickList(item)"
+                @click="checkAndPush(item)"
                 class="list-group-item list-group-item-action"
                 v-for="item in autocompleteList"
                 :key="item.id"
@@ -120,12 +121,18 @@
               >
             </ul>
           </div>
-          <table class="table table-striped table-bordered align-middle mt-2">
+          <table
+            class="
+              table table-hover table-striped table-bordered
+              align-middle
+              mt-2
+            "
+          >
             <thead class="table-dark">
               <tr>
-                <th scope="col">#</th>
-                <th scope="col">Code | Name</th>
-                <th scope="col">Type</th>
+                <th scope="col" style="width: 1%">#</th>
+                <th scope="col" style="width: 50%">Code | Name</th>
+                <th scope="col" style="width: 5%">Type</th>
                 <th scope="col" class="text-center">Quantity</th>
                 <th scope="col">Note</th>
                 <th scope="col" style="width: 1%">
@@ -135,31 +142,52 @@
             </thead>
             <tbody>
               <tr
-                v-for="product in products"
+                v-for="(product, index) in products.slice().reverse()"
                 :key="product.id"
               >
-                <th scope="row">1</th>
-                <td>{{product.code}} | {{product.name}}</td>
-                <td>{{product.query > 0 ? 'Add' : 'Remove'}}</td>
+                <th scope="row">{{ index + 1 }}</th>
                 <td>
-                  <div class="input-group is-invalid">
+                  <i>{{ product.code }}</i> ~ <b>{{ product.name }}</b>
+                </td>
+                <td>{{ product.quantity > 0 ? "Add" : "Remove" }}</td>
+                <td>
+                  <div class="input-group input-group-sm is-invalid">
                     <button
                       type="button"
-                      class="btn btn-secondary input-group-text"
-                    >
-                      <i class="fa-solid fa-plus solo"></i>
-                    </button>
-                    <input type="number" class="form-control text-center" :value="product.quantity || 1" />
-                    <button
-                      type="button"
-                      class="btn btn-secondary input-group-text"
+                      class="btn btn-warning input-group-text"
+                      @click="quantityButton(product, '-')"
                     >
                       <i class="fa-solid fa-minus solo"></i>
                     </button>
+                    <input
+                      @input="changeQuantity(product.id, product.quantity)"
+                      type="number"
+                      v-model="product.quantity"
+                      class="form-control no-arrow text-center"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-info input-group-text"
+                      @click="quantityButton(product, '+')"
+                    >
+                      <i class="fa-solid fa-plus solo"></i>
+                    </button>
                   </div>
                 </td>
-                <td><textarea type="text" class="form-control" rows="1"></textarea></td>
-                <td class="text-danger" role="button">
+                <td>
+                  <div class="input-group input-group-sm is-invalid">
+                    <textarea
+                      type="text"
+                      class="form-control"
+                      rows="1"
+                    ></textarea>
+                  </div>
+                </td>
+                <td
+                  class="text-danger"
+                  role="button"
+                  @click="confirmDelete(product.id)"
+                >
                   <i class="fa-solid fa-trash-can"></i>
                 </td>
               </tr>
@@ -213,7 +241,7 @@
 <script>
 /* eslint-disable */
 import { useStore } from "vuex";
-import { ref, computed } from "vue";
+import { ref, refs, computed } from "vue";
 import {
   useForm,
   useField,
@@ -228,6 +256,7 @@ export default {
   setup() {
     const store = useStore();
     const route = useRoute();
+    const searchBox = ref(null);
     const {
       notifyDefault,
       axiosAsyncStoreReturnBool,
@@ -312,21 +341,216 @@ export default {
       });
     }, onInvalidSubmit);
     /************************************************************************* */
-    function clickList(product) {
-      this.products.push(product);
-      //
+    function checkAndPush(product) {
+      if (!this.products.some((data) => data.id === product.id)) {
+        // new
+        product.quantity = 1;
+        this.products.push(product);
+      } else {
+        // update
+        let index = this.products.findIndex((item) => item.id === product.id);
+        this.products[index].quantity++;
+      }
       this.autocompleteList = [];
       this.search = null;
+      this.searchBox.focus();
     }
-    /*var autocompleteList = [
-      { id: 1, name: "aaa", label: "aaa" },
-      { id: 2, name: "bbb", label: "bbb" },
-      { id: 3, name: "ccc", label: "ccc" },
-      { id: 4, name: "ddd", label: "ddd" },
-      { id: 5, name: "eee", label: "eee" },
-      { id: 6, name: "fff", label: "fff" },
-    ];*/
+    function changeQuantity(id, quantity) {
+      let index = this.products.findIndex((item) => item.id === id);
+      if (quantity) {
+        this.products[index].quantity = quantity;
+      } else {
+        this.products[index].quantity = 1;
+      }
+    }
+    function quantityButton(product, operator) {
+      let index = this.products.findIndex((item) => item.id === product.id);
+      if (operator == "+") {
+        this.products[index].quantity =
+          this.products[index].quantity + 1 == 0
+            ? 1
+            : this.products[index].quantity + 1;
+      } else {
+        this.products[index].quantity =
+          this.products[index].quantity - 1 == 0
+            ? -1
+            : this.products[index].quantity - 1;
+      }
+    }
+    function confirmDelete(id) {
+      alert("Delete ?" + id);
+    }
     var autocompleteList = ref([]);
+    /*autocompleteList = [
+      {
+        id: 5,
+        code: "38644788",
+        name: "Couple Photo Frame",
+        value: "Couple Photo Frame",
+        price: "200.0000",
+        unit_price: null,
+        mrp: "300.0000",
+        thumbnail:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7iyBDZf-tfvjCrGwONFuvg3Wj33FJ8xrsBg&usqp=CAU",
+        unit_discount: null,
+        discount: null,
+        tax_method: "E",
+        quantity: 1,
+        mfg_date: null,
+        exp_date: null,
+        type: "Standard Product",
+        symbology: "CODE128",
+        category_id: 1,
+        category_name: "School Items",
+        sub_category_id: null,
+        sub_category_name: null,
+        brand_id: 1,
+        brand_name: "Lexi",
+        brand_code: "L",
+        unit_id: 1,
+        unit_name: "Piece",
+        unit_code: "PC",
+        tax_id: 2,
+        tax_code: "IGST2",
+        tax_name: "IGST",
+        tax_rate: "2.1300",
+        label: "Couple Photo Frame | 38644788 | Rs. 200.00",
+      },
+      {
+        id: 186,
+        code: "96213555",
+        name: "have data field 1 - 2",
+        value: "have data field 1 - 2",
+        price: "150.0000",
+        unit_price: "140.0000",
+        mrp: "500.0000",
+        thumbnail: null,
+        unit_discount: "10.0000",
+        discount: "10.0000",
+        tax_method: "I",
+        quantity: 1,
+        mfg_date: "30/May/2022",
+        exp_date: "06/Jun/2022",
+        type: "Standard Product",
+        symbology: "CODE39",
+        category_id: 2,
+        category_name: "Office Items",
+        sub_category_id: null,
+        sub_category_name: null,
+        brand_id: 1,
+        brand_name: "Lexi",
+        brand_code: "L",
+        unit_id: 1,
+        unit_name: "Piece",
+        unit_code: "PC",
+        tax_id: null,
+        tax_code: null,
+        tax_name: null,
+        tax_rate: null,
+        label: "have data field 1 - 2 | 96213555 | Rs. 150.00",
+      },
+      {
+        id: 10,
+        code: "39741136",
+        name: "Keyboard Mouse Combo",
+        value: "Keyboard Mouse Combo",
+        price: "1000.0000",
+        unit_price: "750.0000",
+        mrp: "4500.0000",
+        thumbnail:
+          "https://images-na.ssl-images-amazon.com/images/I/619gY3%2BheVL._SL1000_.jpg",
+        unit_discount: "250.0000",
+        discount: "250.0000",
+        tax_method: "I",
+        quantity: 1,
+        mfg_date: null,
+        exp_date: null,
+        type: "Standard Product",
+        symbology: "CODE128",
+        category_id: 4,
+        category_name: "Electronics",
+        sub_category_id: null,
+        sub_category_name: null,
+        brand_id: 1,
+        brand_name: "Lexi",
+        brand_code: "L",
+        unit_id: 1,
+        unit_name: "Piece",
+        unit_code: "PC",
+        tax_id: 2,
+        tax_code: "IGST2",
+        tax_name: "IGST",
+        tax_rate: "2.1300",
+        label: "Keyboard Mouse Combo | 39741136 | Rs. 1000.00",
+      },
+      {
+        id: 180,
+        code: "54805482",
+        name: "Name 1",
+        value: "Name 1",
+        price: "50.0000",
+        unit_price: null,
+        mrp: "500.0000",
+        thumbnail: null,
+        unit_discount: null,
+        discount: null,
+        tax_method: "I",
+        quantity: 1,
+        mfg_date: null,
+        exp_date: null,
+        type: "Standard Product",
+        symbology: "CODE128",
+        category_id: 1,
+        category_name: "School Items",
+        sub_category_id: null,
+        sub_category_name: null,
+        brand_id: 1,
+        brand_name: "Lexi",
+        brand_code: "L",
+        unit_id: 1,
+        unit_name: "Piece",
+        unit_code: "PC",
+        tax_id: 1,
+        tax_code: "GST10",
+        tax_name: "GST",
+        tax_rate: "10.0000",
+        label: "Name 1 | 54805482 | Rs. 50.00",
+      },
+      {
+        id: 6,
+        code: "94426911",
+        name: "Wall Clock",
+        value: "Wall Clock",
+        price: "570.0000",
+        unit_price: null,
+        mrp: null,
+        thumbnail:
+          "https://images-na.ssl-images-amazon.com/images/I/51VjOomhxoL._SY355_.jpg",
+        unit_discount: null,
+        discount: null,
+        tax_method: "E",
+        quantity: 1,
+        mfg_date: null,
+        exp_date: null,
+        type: "Standard Product",
+        symbology: "CODE128",
+        category_id: 1,
+        category_name: "School Items",
+        sub_category_id: null,
+        sub_category_name: null,
+        brand_id: 1,
+        brand_name: "Lexi",
+        brand_code: "L",
+        unit_id: 1,
+        unit_name: "Piece",
+        unit_code: "PC",
+        tax_id: 2,
+        tax_code: "IGST2",
+        tax_name: "IGST",
+        tax_rate: "2.1300",
+        label: "Wall Clock | 94426911 | Rs. 570.00",
+      },
+    ];*/
     var products = ref([]);
     function resetCustom() {
       resetForm();
@@ -338,6 +562,7 @@ export default {
       warehouse,
       errorWareHouse,
       search,
+      searchBox,
       errorSearch,
       ref_no,
       errorRefNo,
@@ -352,7 +577,10 @@ export default {
       errorNote,
       axiosAsyncStoreReturnBool,
       axiosAsyncCallReturnData,
-      clickList,
+      changeQuantity,
+      quantityButton,
+      confirmDelete,
+      checkAndPush,
     };
   },
   data() {
@@ -364,6 +592,7 @@ export default {
     search(query) {
       var self = this;
       if (query) {
+        self.autocompleteList = [];
         if (self.controller) {
           self.controller.abort();
         }
@@ -384,12 +613,19 @@ export default {
           }
         ).then(function (data) {
           if (data.success == true) {
-            if (data.data.length > 0) {
+            let items = data.data;
+            if (items.length > 1) {
+              // many product found
+              self.autocompleteList = items;
+            } else if (items.length == 1) {
+              // One product found
+              self.checkAndPush(items[0]);
             } else {
-              alert("No product found for your search query " + query + " !");
+              // no product found
+              self.autocompleteList = [];
               self.search = null;
+              alert("No product found for your search query " + query + " !");
             }
-            self.autocompleteList = data.data;
           } else {
             console.log(data);
           }
