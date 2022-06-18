@@ -93,6 +93,11 @@ const routes = [
             name: 'adminProductAdjustmentNew',
             component: AdjustmentNew,
           },
+          {
+            path: 'edit',
+            name: 'adminProductAdjustmentEdit',
+            component: AdjustmentNew,
+          },
         ],
       },
       {

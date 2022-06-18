@@ -1857,7 +1857,6 @@ export default {
       axiosAsyncStoreUpdateReturnData,
       axiosAsyncStoreReturnBool,
       addUnitsBulk,
-
       x_percentage_of_y,
     };
   },
