@@ -1,4 +1,12 @@
 <template>
+  <DeleteConfirmDefault
+    :propId="deleteModalId"
+    :propProducts="deleteModalProducts"
+    :propTitle="deleteModalTitle"
+    :propBody="deleteModalBody"
+    :propConfirmDelete="confirmDelete"
+    :propDeleting="false"
+  />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
@@ -132,7 +140,7 @@
               <tr>
                 <th scope="col" style="width: 1%">#</th>
                 <th scope="col" style="width: 50%">Code | Name</th>
-                <th scope="col" style="width: 5%">Type</th>
+                <th scope="col" style="width: 1%" class="text-center">Type</th>
                 <th scope="col" class="text-center">Quantity</th>
                 <th scope="col">Note</th>
                 <th scope="col" style="width: 1%">
@@ -149,7 +157,13 @@
                 <td>
                   <i>{{ product.code }}</i> ~ <b>{{ product.name }}</b>
                 </td>
-                <td>{{ product.quantity > 0 ? "Add" : "Remove" }}</td>
+                <td class="text-center">
+                  <span v-if="product.quantity > 0"
+                    ><i class="fa-solid fa-square-plus text-success"></i></span
+                  ><span v-else
+                    ><i class="fa-solid fa-square-minus text-danger"></i
+                  ></span>
+                </td>
                 <td>
                   <div class="input-group input-group-sm is-invalid">
                     <button
@@ -160,7 +174,7 @@
                       <i class="fa-solid fa-minus solo"></i>
                     </button>
                     <input
-                      @input="changeQuantity(product.id, product.quantity)"
+                      @change="changeQuantity(product.id, product.quantity)"
                       type="number"
                       v-model="product.quantity"
                       class="form-control no-arrow text-center"
@@ -178,6 +192,7 @@
                   <div class="input-group input-group-sm is-invalid">
                     <textarea
                       type="text"
+                      v-model="product.note"
                       class="form-control"
                       rows="1"
                     ></textarea>
@@ -186,7 +201,7 @@
                 <td
                   class="text-danger"
                   role="button"
-                  @click="confirmDelete(product.id)"
+                  @click="confirmDeleteShow(product.id)"
                 >
                   <i class="fa-solid fa-trash-can"></i>
                 </td>
@@ -240,6 +255,8 @@
 </style>
 <script>
 /* eslint-disable */
+import DeleteConfirmDefault from "../modal/DeleteConfirmDefault.vue";
+import { Modal } from "bootstrap";
 import { useStore } from "vuex";
 import { ref, refs, computed } from "vue";
 import {
@@ -253,10 +270,17 @@ import admin from "@/mixins/admin.js";
 import adminProduct from "@/mixins/adminProduct.js";
 import { useRouter, useRoute } from "vue-router";
 export default {
+  components: {
+    DeleteConfirmDefault,
+  },
   setup() {
     const store = useStore();
     const route = useRoute();
     const searchBox = ref(null);
+    var deleteModalProducts = ref([]);
+    var deleteModalId = ref();
+    var deleteModalTitle = ref("");
+    var deleteModalBody = ref("");
     const {
       notifyDefault,
       axiosAsyncStoreReturnBool,
@@ -318,6 +342,8 @@ export default {
     }
     const onSubmit = handleSubmit((values) => {
       values.db = route.name == "adminProductEdit" ? dbData.value : undefined; // for edit product
+      values.products = products.value;
+      values.search = undefined;
       return axiosAsyncCallReturnData(
         route.name == "adminProductEdit" ? "PUT" : "POST",
         "stock_adjustment",
@@ -376,9 +402,21 @@ export default {
             ? -1
             : this.products[index].quantity - 1;
       }
+      this.searchBox.focus();
+    }
+    function confirmDeleteShow(id) {
+      this.deleteModalProducts = this.products;
+      this.deleteModalId = id;
+      this.deleteModalTitle = "Confirm delete product from list ?";
+      let index = this.products.findIndex((item) => item.id === id);
+      this.deleteModalBody = this.products[index].name;
+      window.DELETE_CONFIRM_DEFAULT_MODAL.show();
     }
     function confirmDelete(id) {
-      alert("Delete ?" + id);
+      window.DELETE_CONFIRM_DEFAULT_MODAL.hide();
+      //
+       let index = products.findIndex((item) => item.id === id);
+      this.products.splice(index, 1);
     }
     var autocompleteList = ref([]);
     /*autocompleteList = [
@@ -551,7 +589,7 @@ export default {
         label: "Wall Clock | 94426911 | Rs. 570.00",
       },
     ];*/
-    var products = ref([]);
+    const products = ref([]);
     function resetCustom() {
       resetForm();
     }
@@ -569,6 +607,7 @@ export default {
       date,
       errorDate,
       note,
+      errorNote,
       onSubmit,
       isDirty,
       isSubmitting,
@@ -579,8 +618,13 @@ export default {
       axiosAsyncCallReturnData,
       changeQuantity,
       quantityButton,
+      confirmDeleteShow,
       confirmDelete,
       checkAndPush,
+      deleteModalId,
+      deleteModalProducts,
+      deleteModalTitle,
+      deleteModalBody,
     };
   },
   data() {
@@ -643,9 +687,10 @@ export default {
         action: "dropdown",
       }); // get ware houses
     }
-    /*$("#search").autocomplete({
-      source: this.autocompleteList,
-    });*/
+    window.DELETE_CONFIRM_DEFAULT_MODAL = new Modal($("#deleteDefModal"), {
+      backdrop: true,
+      show: true,
+    });
   },
 };
 </script>

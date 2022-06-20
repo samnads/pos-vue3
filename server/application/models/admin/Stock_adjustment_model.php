@@ -91,6 +91,7 @@ class Stock_adjustment_model extends CI_Model
 		p.id		as id,
 		p.name	as name,
 		p.code	as code,
+		sap.note as note,
 		sap.quantity	as quantity');
 
 		$this->db->from(TABLE_STOCK_ADJUSTMENT_PRODUCT . '			sap');

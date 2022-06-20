@@ -139,7 +139,7 @@ class Stock_adjustment extends CI_Controller
                     'warehouse' => $this->input->post('warehouse') ?: NULL,
                     'date' => $this->input->post('date') ?: NULL,
                     'ref_no' => $this->input->post('ref_no') ?: NULL,
-                    'stock_adj_note' => $this->input->post('stock_adj_note') ?: NULL,
+                    'note' => $this->input->post('note') ?: NULL,
                 );
                 $this->form_validation->set_data($data);
                 $config = array(
@@ -149,18 +149,23 @@ class Stock_adjustment extends CI_Controller
                         'rules' => 'required|trim|max_length[10]'
                     ),
                     array(
+                        'field' => 'warehouse',
+                        'label' => 'Warehouse',
+                        'rules' => 'required|trim'
+                    ),
+                    array(
                         'field' => 'ref_no',
                         'label' => 'Reference No.',
                         'rules' => 'trim|xss_clean'
                     ),
                     array(
-                        'field' => 'stock_adj_note',
+                        'field' => 'note',
                         'label' => 'Adjustment Note',
                         'rules' => 'trim|xss_clean'
                     )
                 );
                 $this->form_validation->set_rules($config);
-                if ($this->form_validation->run() == FALSE) { // check product data fields
+                if ($this->form_validation->run() == FALSE) { // check adj data fields
                     echo json_encode(array('success' => false, 'errors' => $this->form_validation->error_array()));
                 } else if (empty($products)) {
                     $error = array('success' => false, 'type' => 'danger', 'error' => 'Please add some products !');
@@ -171,12 +176,12 @@ class Stock_adjustment extends CI_Controller
                     $data_stock_adjustment['date']          = $data['date'];
                     $data_stock_adjustment['added_by']      = $this->session->id;
                     $data_stock_adjustment['reference_no']  = $data['ref_no'];
-                    $data_stock_adjustment['note']          = $data['stock_adj_note'];
+                    $data_stock_adjustment['note']          = $data['note'];
                     /******************** CHECK STOCK ADJUSTMENT PRODUCT DATA */
                     $products = array_reverse($products, false);
                     foreach ($products as $key => $product) {
                         $data['quantity' . $key] = $product['quantity'] ?: NULL;
-                        $data['note' . $key] = $product['note'] ?: NULL;
+                        $data['note' . $key] = isset($product['note']) ? $product['note'] : NULL;
                         $this->form_validation->set_data($data);
                         $this->form_validation->set_rules('quantity' . $key, 'Quantity', 'required|trim');
                         $this->form_validation->set_rules('note' . $key, 'Note', 'trim|alpha_numeric|max_length[10]');
@@ -199,7 +204,7 @@ class Stock_adjustment extends CI_Controller
                                 if ($this->db->affected_rows() == 1) { // success - each adjustment product data
                                     if ($key === array_key_last($products)) {
                                         $this->db->trans_commit(); // all query ok
-                                        $alert['added'] = array('success' => true, 'type' => 'success', 'id' => $stock_adjustment_id, 'timeout' => '5000', 'message' => 'Successfully added new stock adjustment !', 'location' => "admin/stock_adjustment");
+                                        $alert['added'] = array('success' => true, 'type' => 'success', 'id' => $stock_adjustment_id, 'timeout' => '5000', 'message' => 'Successfully added new stock adjustment !', 'location' => "admin/adjustment/list");
                                         $this->session->set_flashdata('alert', $alert);
                                         echo json_encode($alert['added']);
                                     }

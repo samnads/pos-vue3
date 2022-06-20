@@ -57,6 +57,7 @@
               <tr>
                 <th scope="col">#</th>
                 <th scope="col">Code | Product</th>
+                <th scope="col">Note</th>
                 <th scope="col">Type ( + / - )</th>
                 <th scope="col">Quantity</th>
               </tr>
@@ -69,6 +70,7 @@
               <tr v-for="(product, index) in propAdjustInfo" :key="product.id">
                 <th scope="row">{{ index + 1 }}</th>
                 <td>{{ product.code + " | " + product.name }}</td>
+                 <td>{{ product.note }}</td>
                 <td
                   v-bind:class="[
                     product.quantity > 0 ? 'text-success' : 'text-danger',
@@ -131,7 +133,7 @@ export default {
     edit(id) {
       window.PROD_ADJ_DETAILS_MODAL.hide();
       this.$router
-        .push({ path: "/admin/adjustment/list/" + id })
+        .push({ path: "/admin/adjustment/edit/" + id })
         .catch(() => {});
     },
     print() {
