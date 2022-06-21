@@ -1,11 +1,13 @@
 <template>
   <vue-progress-bar></vue-progress-bar>
+  <AlertBoxDefault />
   <div class="header">
     <nav
       class="navbar navbar-expand-md navbar-dark fixed-top bg-dark"
       v-if="this.$route.name !== 'adminLogin'"
     >
       <div class="container-fluid">
+        <span class="navbar-brand" @click="sendData">POS</span>
         <a class="navbar-brand" href="#">POS</a>
         <button
           class="navbar-toggler"
@@ -46,16 +48,12 @@
                   >
                 </li>
                 <li>
-                  <router-link
-                    class="dropdown-item"
-                    to="/admin/adjustment"
+                  <router-link class="dropdown-item" to="/admin/adjustment"
                     >Adjustments</router-link
                   >
                 </li>
                 <li>
-                  <router-link
-                    class="dropdown-item"
-                    to="/admin/adjustment/new"
+                  <router-link class="dropdown-item" to="/admin/adjustment/new"
                     >Add Adjustment</router-link
                   >
                 </li>
@@ -225,8 +223,8 @@ a {
 #datatable_wrapper table tbody > tr .dropdown .dropdown-item > svg {
   margin-right: 10px;
 }
-#datatable_wrapper table.dataTable > tbody > tr > td[class*='sorting_'] {
-    background-color: rgb(0 0 0 / 10%);
+#datatable_wrapper table.dataTable > tbody > tr > td[class*="sorting_"] {
+  background-color: rgb(0 0 0 / 10%);
 }
 /* pagination */
 .page-item.active .page-link {
@@ -239,7 +237,8 @@ a {
 .page-item.active .page-link {
   color: #fff !important;
 }
-.btn > svg:not(.solo) { /* solo is a custom class to fix icon only button */
+.btn > svg:not(.solo) {
+  /* solo is a custom class to fix icon only button */
   padding-right: 10px;
 }
 /* from control styles */
@@ -320,13 +319,13 @@ form .row {
 /***************************************************************  input field custom */
 /***************************  dont show up-down button on number inputs */
 /* Chrome, Safari, Edge, Opera */
-input[type=number].no-arrow::-webkit-outer-spin-button,
-input[type=number].no-arrow::-webkit-inner-spin-button {
+input[type="number"].no-arrow::-webkit-outer-spin-button,
+input[type="number"].no-arrow::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 /* Firefox */
-input[type=number].no-arrow{
+input[type="number"].no-arrow {
   -moz-appearance: textfield;
 }
 </style>
@@ -342,9 +341,22 @@ import "datatables.net-buttons/js/buttons.print";
 import "datatables.net-buttons/js/dataTables.buttons";
 import "datatables.net-select-bs5/css/select.bootstrap5.css";
 import "datatables.net-select-bs5/js/select.bootstrap5";
+//
+import { Modal } from "bootstrap";
+import AlertBoxDefault from "./modal/AlertBoxDefault.vue";
+import { ref } from "vue";
 export default {
-  components: {},
-  mixins: [],
+  components: {
+    AlertBoxDefault,
+  },
+  setup() {
+    const alertModalTitle = ref("");
+    const alertModalBody = ref("");
+    return {
+      alertModalTitle,
+      alertModalBody,
+    };
+  },
   data: function () {
     return {
       // for notify
@@ -355,6 +367,11 @@ export default {
   mounted() {
     //  [App.vue specific] When App.vue is finish loading finish the progress bar
     this.$Progress.finish();
+    //
+    window.ALERT_DEFAULT_MODAL = new Modal($("#alertDefModal"), {
+      backdrop: true,
+      show: true,
+    });
   },
   created() {
     /* eslint-disable */

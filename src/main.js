@@ -14,6 +14,9 @@ import "@fortawesome/fontawesome-free/js/all.min" // js
 //
 import Notifications from '@kyvg/vue3-notification'
 //
+import mitt from 'mitt';                  // Import mitt
+const emitter = mitt();                   // Initialize mitt
+//
 const options = {
     color: "green",
     failedColor: "red"
@@ -27,4 +30,5 @@ app.use(router);
 app.use(VueAxios, axios);
 app.use(VueProgressBar, options);
 app.use(Notifications);
+app.provide('emitter',emitter);
 app.mount('#app');

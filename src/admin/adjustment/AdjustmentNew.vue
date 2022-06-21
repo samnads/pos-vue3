@@ -5,7 +5,7 @@
     :propTitle="deleteModalTitle"
     :propBody="deleteModalBody"
     :propConfirmDelete="confirmDelete"
-    :propDeleting="false"
+    :propDeleting="deletingProduct"
   />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
@@ -93,6 +93,7 @@
                   name="note"
                   v-model="note"
                   class="form-control"
+                  rows="1"
                 >
                 </textarea>
               </div>
@@ -136,7 +137,7 @@
               mt-2
             "
           >
-            <thead class="table-dark">
+            <thead class="table-dark" v-if="products.length > 0">
               <tr>
                 <th scope="col" style="width: 1%">#</th>
                 <th scope="col" style="width: 50%">Code | Name</th>
@@ -206,6 +207,11 @@
                   <i class="fa-solid fa-trash-can"></i>
                 </td>
               </tr>
+              <tr class="text-center" v-if="products.length == 0">
+                <td colspan="6" class="text-center text-danger">
+                  Minimum 1 Product Required !
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -269,7 +275,9 @@ import * as yup from "yup";
 import admin from "@/mixins/admin.js";
 import adminProduct from "@/mixins/adminProduct.js";
 import { useRouter, useRoute } from "vue-router";
+import { inject } from "vue";
 export default {
+  emits: ["sending-start", "sending-complete"],
   components: {
     DeleteConfirmDefault,
   },
@@ -277,10 +285,13 @@ export default {
     const store = useStore();
     const route = useRoute();
     const searchBox = ref(null);
+    var products = ref([]);
     var deleteModalProducts = ref([]);
     var deleteModalId = ref();
     var deleteModalTitle = ref("");
     var deleteModalBody = ref("");
+    var deletingProduct = ref(false);
+    const emitter = inject("emitter"); // Inject `emitter`
     const {
       notifyDefault,
       axiosAsyncStoreReturnBool,
@@ -411,12 +422,6 @@ export default {
       let index = this.products.findIndex((item) => item.id === id);
       this.deleteModalBody = this.products[index].name;
       window.DELETE_CONFIRM_DEFAULT_MODAL.show();
-    }
-    function confirmDelete(id) {
-      window.DELETE_CONFIRM_DEFAULT_MODAL.hide();
-      //
-       let index = products.findIndex((item) => item.id === id);
-      this.products.splice(index, 1);
     }
     var autocompleteList = ref([]);
     /*autocompleteList = [
@@ -589,8 +594,8 @@ export default {
         label: "Wall Clock | 94426911 | Rs. 570.00",
       },
     ];*/
-    const products = ref([]);
     function resetCustom() {
+      this.products = [];
       resetForm();
     }
     return {
@@ -619,19 +624,28 @@ export default {
       changeQuantity,
       quantityButton,
       confirmDeleteShow,
-      confirmDelete,
       checkAndPush,
       deleteModalId,
       deleteModalProducts,
       deleteModalTitle,
       deleteModalBody,
+      deletingProduct,
+      emitter,
     };
   },
   data() {
     return {};
   },
-  watch: {},
-  methods: {},
+  methods: {
+    confirmDelete(id) {
+      var self = this;
+      let index = self.products.findIndex((item) => item.id === id);
+      self.products.splice(index, 1);
+      self.deletingProduct = true;
+      window.DELETE_CONFIRM_DEFAULT_MODAL.hide();
+      self.deletingProduct = false;
+    },
+  },
   watch: {
     search(query) {
       var self = this;
@@ -668,7 +682,17 @@ export default {
               // no product found
               self.autocompleteList = [];
               self.search = null;
-              alert("No product found for your search query " + query + " !");
+              //alert("No product found for your search query " + query + " !");
+              window.ALERT_DEFAULT_MODAL.show();
+              //self.$parent.$data.propTitle = "gfhgf";
+              self.emitter.emit("alertbox", {
+                title: "Product Not Found !",
+                body:
+                  "No product found for your search query <b>" +
+                  query +
+                  "</b> !",
+                  type:"danger"
+              });
             }
           } else {
             console.log(data);

@@ -51,7 +51,6 @@
 export default {
   props: {
     propId: Number,
-    propProducts: Array,
     propTitle: String,
     propBody: String,
     propConfirmDelete: Function,
