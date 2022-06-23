@@ -1,13 +1,13 @@
 <template>
   <vue-progress-bar></vue-progress-bar>
   <AlertBoxDefault />
+  <PlaySound />
   <div class="header">
     <nav
       class="navbar navbar-expand-md navbar-dark fixed-top bg-dark"
       v-if="this.$route.name !== 'adminLogin'"
     >
       <div class="container-fluid">
-        <span class="navbar-brand" @click="sendData">POS</span>
         <a class="navbar-brand" href="#">POS</a>
         <button
           class="navbar-toggler"
@@ -344,10 +344,12 @@ import "datatables.net-select-bs5/js/select.bootstrap5";
 //
 import { Modal } from "bootstrap";
 import AlertBoxDefault from "./modal/AlertBoxDefault.vue";
+import PlaySound from "../admin/PlaySound.vue";
 import { ref } from "vue";
 export default {
   components: {
     AlertBoxDefault,
+    PlaySound
   },
   setup() {
     const alertModalTitle = ref("");

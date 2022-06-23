@@ -94,7 +94,7 @@ const routes = [
             component: AdjustmentNew,
           },
           {
-            path: 'edit',
+            path: 'edit/:id',
             name: 'adminProductAdjustmentEdit',
             component: AdjustmentNew,
           },

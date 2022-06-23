@@ -146,7 +146,7 @@ class Stock_adjustment extends CI_Controller
                     array(
                         'field' => 'date',
                         'label' => 'Date',
-                        'rules' => 'required|trim|max_length[10]'
+                        'rules' => 'required|trim|max_length[20]'
                     ),
                     array(
                         'field' => 'warehouse',
@@ -223,8 +223,100 @@ class Stock_adjustment extends CI_Controller
                     }
                 }
                 break;
+            case 'PUT': // add new stock adjustment
+                /******************** CHECK STOCK ADJUSTMENT DATA */
+                $_POST = $this->input->post('data');
+                $products = $this->input->post('products');
+                $data = array(
+                    'warehouse' => $this->input->post('warehouse') ?: NULL,
+                    'date' => $this->input->post('date') ?: NULL,
+                    'ref_no' => $this->input->post('ref_no') ?: NULL,
+                    'note' => $this->input->post('note') ?: NULL,
+                );
+                $this->form_validation->set_data($data);
+                $config = array(
+                    array(
+                        'field' => 'date',
+                        'label' => 'Date',
+                        'rules' => 'required|trim|max_length[20]'
+                    ),
+                    array(
+                        'field' => 'warehouse',
+                        'label' => 'Warehouse',
+                        'rules' => 'required|trim'
+                    ),
+                    array(
+                        'field' => 'ref_no',
+                        'label' => 'Reference No.',
+                        'rules' => 'trim|xss_clean'
+                    ),
+                    array(
+                        'field' => 'note',
+                        'label' => 'Adjustment Note',
+                        'rules' => 'trim|xss_clean'
+                    )
+                );
+                $this->form_validation->set_rules($config);
+                if ($this->form_validation->run() == FALSE) { // check adj data fields
+                    echo json_encode(array('success' => false, 'errors' => $this->form_validation->error_array()));
+                } else if (empty($products)) {
+                    $error = array('success' => false, 'type' => 'danger', 'error' => 'Please add some products !');
+                    echo json_encode($error);
+                } else {
+                    // for table fields
+                    $data_stock_adjustment['warehouse']     = $data['warehouse'];
+                    $data_stock_adjustment['date']          = $data['date'];
+                    $data_stock_adjustment['added_by']      = $this->session->id;
+                    $data_stock_adjustment['reference_no']  = $data['ref_no'];
+                    $data_stock_adjustment['note']          = $data['note'];
+                    /******************** CHECK STOCK ADJUSTMENT PRODUCT DATA */
+                    $products = array_reverse($products, false);
+                    foreach ($products as $key => $product) {
+                        $data['quantity' . $key] = $product['quantity'] ?: NULL;
+                        $data['note' . $key] = isset($product['note']) ? $product['note'] : NULL;
+                        $this->form_validation->set_data($data);
+                        $this->form_validation->set_rules('quantity' . $key, 'Quantity', 'required|trim');
+                        $this->form_validation->set_rules('note' . $key, 'Note', 'trim|alpha_numeric|max_length[10]');
+                        $data_stock_adjustment_product[$key]['product'] = $product['id'];
+                        $data_stock_adjustment_product[$key]['quantity'] = $data['quantity' . $key];
+                        $data_stock_adjustment_product[$key]['note'] = $data['note' . $key];
+                    }
+                    //array_reverse($data_stock_adjustment_product, true);
+                    if ($this->form_validation->run() == FALSE) {
+                        echo json_encode(array('success' => false, 'errors' => $this->form_validation->error_array()));
+                    } else {
+                        /******************** START DB */
+                        $this->db->trans_begin();
+                        $this->Stock_adjustment_model->update($data_stock_adjustment, $this->input->post('id')); // update stock adjustment
+                        if ($this->db->affected_rows() == 1) { // success - update stock adjustment
+                            $stock_adjustment_id = $this->input->post('id');
+                            foreach ($products as $key => $product) {
+                                $data_stock_adjustment_product[$key]['stock_adjustment'] = $stock_adjustment_id;
+                                $this->Stock_adjustment_product_model->create($data_stock_adjustment_product[$key]); // add each adjustment product data
+                                if ($this->db->affected_rows() == 1) { // success - each adjustment product data
+                                    if ($key === array_key_last($products)) {
+                                        $this->db->trans_commit(); // all query ok
+                                        $alert['added'] = array('success' => true, 'type' => 'success', 'id' => $stock_adjustment_id, 'timeout' => '5000', 'message' => 'Successfully updated stock adjustment !', 'location' => "admin/adjustment/list");
+                                        $this->session->set_flashdata('alert', $alert);
+                                        echo json_encode($alert['added']);
+                                    }
+                                } else {
+                                    $error = $this->db->error();
+                                    $this->db->trans_rollback();
+                                    echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
+                                    break;
+                                }
+                            }
+                        } else {
+                            $error = $this->db->error();
+                            $this->db->trans_rollback();
+                            echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
+                        }
+                    }
+                }
+                break;
             default:
-                $error = array('success' => false, 'type' => 'danger', 'error' => 'Unknown Request Method Found !');
+                $error = array('success' => false, 'type' => 'danger', 'error' => 'Request Method Not Defined !');
                 echo json_encode($error);
         }
     }

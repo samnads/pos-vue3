@@ -65,7 +65,7 @@
                   ><i class="fa-solid fa-calendar"></i
                 ></span>
                 <input
-                  type="date"
+                  type="datetime-local"
                   name="date"
                   v-model="date"
                   class="form-control"
@@ -137,7 +137,7 @@
               mt-2
             "
           >
-            <thead class="table-dark" v-if="products.length > 0">
+            <thead class="table-dark">
               <tr>
                 <th scope="col" style="width: 1%">#</th>
                 <th scope="col" style="width: 50%">Code | Name</th>
@@ -150,10 +150,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr
-                v-for="(product, index) in products.slice().reverse()"
-                :key="product.id"
-              >
+              <tr v-for="(product, index) in products" :key="product.id">
                 <th scope="row">{{ index + 1 }}</th>
                 <td>
                   <i>{{ product.code }}</i> ~ <b>{{ product.name }}</b>
@@ -208,8 +205,8 @@
                 </td>
               </tr>
               <tr class="text-center" v-if="products.length == 0">
-                <td colspan="6" class="text-center text-danger">
-                  Minimum 1 Product Required !
+                <td colspan="6" class="text-center text-muted">
+                  Empty product list, use the search bar to add products...
                 </td>
               </tr>
             </tbody>
@@ -260,20 +257,13 @@
 }
 </style>
 <script>
-/* eslint-disable */
 import DeleteConfirmDefault from "../modal/DeleteConfirmDefault.vue";
 import { Modal } from "bootstrap";
 import { useStore } from "vuex";
-import { ref, refs, computed } from "vue";
-import {
-  useForm,
-  useField,
-  useIsFormDirty,
-  useIsFormValid,
-} from "vee-validate";
+import { ref, computed } from "vue";
+import { useForm, useField, useIsFormDirty } from "vee-validate";
 import * as yup from "yup";
 import admin from "@/mixins/admin.js";
-import adminProduct from "@/mixins/adminProduct.js";
 import { useRouter, useRoute } from "vue-router";
 import { inject } from "vue";
 export default {
@@ -282,31 +272,38 @@ export default {
     DeleteConfirmDefault,
   },
   setup() {
+    const router = useRouter();
     const store = useStore();
     const route = useRoute();
     const searchBox = ref(null);
-    var products = ref([]);
+    const products = ref([]);
     var deleteModalProducts = ref([]);
     var deleteModalId = ref();
     var deleteModalTitle = ref("");
     var deleteModalBody = ref("");
     var deletingProduct = ref(false);
     const emitter = inject("emitter"); // Inject `emitter`
-    const {
-      notifyDefault,
-      axiosAsyncStoreReturnBool,
-      axiosAsyncCallReturnData,
-    } = admin();
+    const { axiosAsyncStoreReturnBool, axiosAsyncCallReturnData } = admin();
     let warehouses = computed(function () {
       return store.state.WARE_HOUSES;
     });
     /************************************************************************* */
     var formValues = {}; // pre form values
-    if (route.name == "adminProductAdjustmentEdit") {
-    } else {
+    var dbData = ref({}); // pre form data for edit product
+    if (route.name == "adminProductAdjustmentEdit" && route.params.data) {
+      dbData.value = JSON.parse(route.params.data); // required
+      //console.log(dbData.value)
+      formValues = {
+        warehouse: dbData.value.warehouse,
+        date: dbData.value.date,
+      };
+      products.value = dbData.value.products;
+    } else if (route.name == "adminProductAdjustmentNew") {
       formValues = {
         warehouse: null,
       };
+    } else {
+      router.push({ name: "adminProductAdjustmentList" }).catch(() => {});
     }
     const schema = computed(() => {
       return yup.object({
@@ -327,13 +324,7 @@ export default {
           .label("Date"),
       });
     });
-    const {
-      setFieldValue,
-      handleSubmit,
-      setFieldError,
-      isSubmitting,
-      resetForm,
-    } = useForm({
+    const { handleSubmit, setFieldError, isSubmitting, resetForm } = useForm({
       validationSchema: schema,
       initialValues: formValues,
       initialErrors: {},
@@ -345,23 +336,23 @@ export default {
     const { value: note, errorMessage: errorNote } = useField("note");
     const { value: date, errorMessage: errorDate } = useField("date");
     const isDirty = useIsFormDirty();
-    const isValid = useIsFormValid();
     /************************************************************************* */
     function onInvalidSubmit({ values }) {
       console.log("Form field errors found !");
       console.log(values);
     }
     const onSubmit = handleSubmit((values) => {
-      values.db = route.name == "adminProductEdit" ? dbData.value : undefined; // for edit product
       values.products = products.value;
       values.search = undefined;
-      return axiosAsyncCallReturnData(
-        route.name == "adminProductEdit" ? "PUT" : "POST",
-        "stock_adjustment",
-        {
-          data: values,
-        }
-      ).then(function (data) {
+      var method = "POST";
+      if (route.name == "adminProductAdjustmentEdit") {
+        values.id = dbData.value.id;
+        method = "PUT";
+      }
+      console.log(values);
+      return axiosAsyncCallReturnData(method, "stock_adjustment", {
+        data: values,
+      }).then(function (data) {
         if (data.success == true) {
           console.log("Adjustment added !");
         } else if (data.success == false) {
@@ -391,6 +382,7 @@ export default {
       this.autocompleteList = [];
       this.search = null;
       this.searchBox.focus();
+      this.emitter.emit("playSound", { file: "add" });
     }
     function changeQuantity(id, quantity) {
       let index = this.products.findIndex((item) => item.id === id);
@@ -399,9 +391,11 @@ export default {
       } else {
         this.products[index].quantity = 1;
       }
+      this.emitter.emit("playSound", { file: "add" });
     }
     function quantityButton(product, operator) {
       let index = this.products.findIndex((item) => item.id === product.id);
+      this.products[index].quantity = Number(this.products[index].quantity);
       if (operator == "+") {
         this.products[index].quantity =
           this.products[index].quantity + 1 == 0
@@ -413,6 +407,7 @@ export default {
             ? -1
             : this.products[index].quantity - 1;
       }
+      this.emitter.emit("playSound", { file: "add" });
       this.searchBox.focus();
     }
     function confirmDeleteShow(id) {
@@ -618,7 +613,6 @@ export default {
       isSubmitting,
       resetForm,
       resetCustom,
-      errorNote,
       axiosAsyncStoreReturnBool,
       axiosAsyncCallReturnData,
       changeQuantity,
@@ -682,20 +676,17 @@ export default {
               // no product found
               self.autocompleteList = [];
               self.search = null;
-              //alert("No product found for your search query " + query + " !");
-              window.ALERT_DEFAULT_MODAL.show();
-              //self.$parent.$data.propTitle = "gfhgf";
-              self.emitter.emit("alertbox", {
+              self.emitter.emit("showAlert", {
                 title: "Product Not Found !",
                 body:
                   "No product found for your search query <b>" +
                   query +
                   "</b> !",
-                  type:"danger"
+                type: "danger",
               });
             }
           } else {
-            console.log(data);
+            //console.log(data);
           }
         });
       } else {

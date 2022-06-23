@@ -70,7 +70,7 @@
               <tr v-for="(product, index) in propAdjustInfo" :key="product.id">
                 <th scope="row">{{ index + 1 }}</th>
                 <td>{{ product.code + " | " + product.name }}</td>
-                 <td>{{ product.note }}</td>
+                <td>{{ product.note }}</td>
                 <td
                   v-bind:class="[
                     product.quantity > 0 ? 'text-success' : 'text-danger',
@@ -103,7 +103,7 @@
           <button
             type="button"
             class="btn btn-warning"
-            v-on:click="edit(propAdjustRow.id)"
+            v-on:click="edit(propAdjustRow.id, propAdjustInfo)"
             :disabled="!propAdjustInfo"
           >
             <i class="fa-solid fa-pen-to-square"></i>Edit
@@ -130,10 +130,16 @@ export default {
   },
   computed: {},
   methods: {
-    edit(id) {
+    edit(id, products) {
       window.PROD_ADJ_DETAILS_MODAL.hide();
-      this.$router
-        .push({ path: "/admin/adjustment/edit/" + id })
+      var self = this;
+      let data = self.propAdjustRow;
+      data.products = products;
+      self.$router
+        .push({
+          name: "adminProductAdjustmentEdit",
+          params: { id: id, data: JSON.stringify(data) },
+        })
         .catch(() => {});
     },
     print() {

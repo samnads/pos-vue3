@@ -55,7 +55,6 @@
           <th scope="col">Note</th>
           <th scope="col">File</th>
           <th scope="col">Updated at</th>
-          <th scope="col"><i class="fa-solid fa-bars"></i></th>
         </tr>
       </thead>
       <tbody>
@@ -80,8 +79,12 @@ export default {
     var adjustRow = ref({});
     var adjustInfo = ref({});
     // notify
-    const { notifyDefault, notifyApiResponse, notifyCatchResponse, axiosAsyncCallReturnData } =
-      admin();
+    const {
+      notifyDefault,
+      notifyApiResponse,
+      notifyCatchResponse,
+      axiosAsyncCallReturnData,
+    } = admin();
     return {
       notifyDefault,
       notifyApiResponse,
@@ -160,7 +163,7 @@ export default {
         order: [[1, "desc"]],
         ajax: {
           method: "GET",
-          url: "http://localhost/CyberLikes-POS/admin/ajax/stock_adjustment",
+          url: "http://localhost/pos-vue3/server/admin/ajax/stock_adjustment",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {
@@ -231,9 +234,6 @@ export default {
           },
           {
             data: "updated_at",
-          },
-          {
-            data: null,
           },
         ],
         columnDefs: [
@@ -307,15 +307,6 @@ export default {
           {
             targets: [9],
             visible: false,
-          },
-          {
-            targets: -1,
-            orderable: false,
-            searchable: false,
-            width: "2%",
-            className: "text-center",
-            defaultContent:
-              "<div class='btn-group dropleft'><button type='button' class='btn btn-secondary dropdown-toggle btn-sm' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> Action</button><div class='dropdown-menu'> <a class='dropdown-item' id='edit' href='#'><i class='fa fa-edit fa-fw' aria-hidden='true'></i>Edit</a><div class='dropdown-divider'></div><a class='dropdown-item' id='delete' href='#'><i class='fa fa-trash fa-fw' aria-hidden='true'></i>Delete</a> </div></div>",
           },
         ],
         buttons: [
@@ -416,9 +407,18 @@ export default {
       $("#datatable tbody").on("click", "#edit", function () {
         // edit from action menu
         self.row = self.table.row($(this).parents("tr")).data();
+        console.log(self.row)
         self.$router
-          .push({ path: "/admin/product/edit/" + self.row.id })
+          .push({
+            name: "adminProductAdjustmentEdit",
+            params: { id: self.row.id, data: JSON.stringify(self.row) },
+          })
           .catch(() => {});
+      });
+      $("#datatable tbody").on("click", "#delete", function () {
+        // delete from action menu
+        self.row = self.table.row($(this).parents("tr")).data();
+        alert("delete");
       });
       self.table.on("select deselect", function () {
         self.rows = self.table.rows(".selected").data().toArray();

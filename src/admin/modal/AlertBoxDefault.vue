@@ -36,11 +36,14 @@ export default {
     const body = ref("");
     const type = ref("");
     const emitter = inject("emitter"); // Inject `emitter`
-    emitter.on("alertbox", (data) => {
+    emitter.on("showAlert", (data) => {
       // *Listen* for event
       title.value = data.title;
       body.value = data.body;
-      type.value= data.type ? "bg-" + data.type : "bg-warning";
+      type.value= data.type ? "bg-" + data.type : "bg-danger"; // change bg-danger for default color in alert box//
+      emitter.emit("playSound", { file: "danger" });
+      //
+      window.ALERT_DEFAULT_MODAL.show();
     });
     return {
       title,

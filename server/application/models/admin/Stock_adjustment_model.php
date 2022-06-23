@@ -7,10 +7,17 @@ class Stock_adjustment_model extends CI_Model
 		// Call the Model constructor
 		parent::__construct();
 	}
-	function create($data)
+	function create($data, $id)
 	{
 		$data['date'] = date('Y-m-d H:i:s');
 		$query = $this->db->insert(TABLE_STOCK_ADJUSTMENT, $data);
+		return $query;
+	}
+	function update($data, $id)
+	{
+		$data['date'] = date('Y-m-d H:i:s');
+		$this->db->where('id', $id);
+		$query = $this->db->update(TABLE_STOCK_ADJUSTMENT, $data);
 		return $query;
 	}
 	function totalRows()
@@ -25,6 +32,7 @@ class Stock_adjustment_model extends CI_Model
 		$search = trim($search);
 		$this->db->select('
 		sa.id		as id,
+		w.id		as warehouse,
 		w.name		as warehouse_name,
 		CONCAT(u.first_name," ",u.last_name)	as added_by,
 		sa.date		as date,
@@ -92,7 +100,7 @@ class Stock_adjustment_model extends CI_Model
 		p.name	as name,
 		p.code	as code,
 		sap.note as note,
-		sap.quantity	as quantity');
+		cast(sap.quantity AS decimal(10,2)) AS quantity');
 
 		$this->db->from(TABLE_STOCK_ADJUSTMENT_PRODUCT . '			sap');
 		$this->db->join(TABLE_STOCK_ADJUSTMENT . '			sa',	'sa.id=sap.stock_adjustment',	'left');
