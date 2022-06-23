@@ -7,7 +7,7 @@ class Stock_adjustment_model extends CI_Model
 		// Call the Model constructor
 		parent::__construct();
 	}
-	function create($data, $id)
+	function create($data)
 	{
 		$data['date'] = date('Y-m-d H:i:s');
 		$query = $this->db->insert(TABLE_STOCK_ADJUSTMENT, $data);
@@ -35,7 +35,7 @@ class Stock_adjustment_model extends CI_Model
 		w.id		as warehouse,
 		w.name		as warehouse_name,
 		CONCAT(u.first_name," ",u.last_name)	as added_by,
-		sa.date		as date,
+		DATE_FORMAT(sa.date,"%Y-%m-%dT%H:%i")	as date,
 		sa.reference_no	as reference_no,
 		sa.note	as note,
 		COUNT(DISTINCT sap.product)	as	total_products,

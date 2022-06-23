@@ -296,6 +296,8 @@ export default {
       formValues = {
         warehouse: dbData.value.warehouse,
         date: dbData.value.date,
+        ref_no: dbData.value.reference_no,
+        note: dbData.value.note,
       };
       products.value = dbData.value.products;
     } else if (route.name == "adminProductAdjustmentNew") {
@@ -342,14 +344,13 @@ export default {
       console.log(values);
     }
     const onSubmit = handleSubmit((values) => {
-      values.products = products.value;
       values.search = undefined;
+      values.products = products.value;
       var method = "POST";
       if (route.name == "adminProductAdjustmentEdit") {
         values.id = dbData.value.id;
         method = "PUT";
       }
-      console.log(values);
       return axiosAsyncCallReturnData(method, "stock_adjustment", {
         data: values,
       }).then(function (data) {

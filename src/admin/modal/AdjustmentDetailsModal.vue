@@ -135,6 +135,7 @@ export default {
       var self = this;
       let data = self.propAdjustRow;
       data.products = products;
+      console.log(data)
       self.$router
         .push({
           name: "adminProductAdjustmentEdit",
