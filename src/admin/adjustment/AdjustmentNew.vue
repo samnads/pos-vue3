@@ -66,6 +66,7 @@
                 ></span>
                 <input
                   type="datetime-local"
+                  step="1"
                   name="date"
                   v-model="date"
                   class="form-control"
@@ -346,6 +347,7 @@ export default {
     const onSubmit = handleSubmit((values) => {
       values.search = undefined;
       values.products = products.value;
+      console.log(values.date)
       var method = "POST";
       if (route.name == "adminProductAdjustmentEdit") {
         values.id = dbData.value.id;

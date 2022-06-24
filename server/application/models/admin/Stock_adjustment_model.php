@@ -9,15 +9,20 @@ class Stock_adjustment_model extends CI_Model
 	}
 	function create($data)
 	{
-		$data['date'] = date('Y-m-d H:i:s');
 		$query = $this->db->insert(TABLE_STOCK_ADJUSTMENT, $data);
 		return $query;
 	}
 	function update($data, $id)
 	{
-		$data['date'] = date('Y-m-d H:i:s');
 		$this->db->where('id', $id);
 		$query = $this->db->update(TABLE_STOCK_ADJUSTMENT, $data);
+		return $query;
+	}
+	function update_updated_at($id)
+	{
+		$this->db->where('id', $id);
+		$this->db->set('updated_at', 'NOW()', FALSE);
+		$query = $this->db->update(TABLE_STOCK_ADJUSTMENT);
 		return $query;
 	}
 	function totalRows()
@@ -35,7 +40,8 @@ class Stock_adjustment_model extends CI_Model
 		w.id		as warehouse,
 		w.name		as warehouse_name,
 		CONCAT(u.first_name," ",u.last_name)	as added_by,
-		DATE_FORMAT(sa.date,"%Y-%m-%dT%H:%i")	as date,
+		sa.date as date,
+		sa.time as time,
 		sa.reference_no	as reference_no,
 		sa.note	as note,
 		COUNT(DISTINCT sap.product)	as	total_products,

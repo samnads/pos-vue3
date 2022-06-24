@@ -10,66 +10,7 @@ class Stock_adjustment extends CI_Controller
         $_POST = raw_input_to_post();
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET': // read
-                switch ($action = $this->input->get('action')) {
-                    case 'getInfo':
-                        $query = $this->Stock_adjustment_model->getInfo($this->input->get('id'));
-                        $data['data'] = $query->result_array();
-                        $data['success'] = true;
-                        echo json_encode($data);
-                        break;
-                    case 'all':
-                        $query["offset"] = 0;
-                        $query["limit"] = 500;
-                        $query["order_by"] = 'id';
-                        $query["order"] = 'asc';
-                        $query["search"] = NULL;
-                        $query = $this->Product_model->listProducts($query["search"], $query["offset"], $query["limit"], $query["order_by"], $query["order"]);
-                        $data['data'] = $query->result();
-                        $data["filtered"] = $query->num_rows();
-                        $data["records"] = $this->Product_model->totalRows();
-                        die(json_encode($data));
-                        break;
-                    case 'suggest':
-                        switch ($type = $this->input->get('type')) {
-                            case 'getall': // ui auto complete
-                                $query["offset"] = 0;
-                                $query["limit"] = 10;
-                                $query["order_by"] = 'label';
-                                $query["order"] = 'asc';
-                                $query["search"] = $this->input->post('search');
-                                $query = $this->Product_model->suggestProdsForBarcode($query["search"], $query["offset"], $query["limit"], $query["order_by"], $query["order"]);
-                                $error = $this->db->error();
-                                if ($error['code'] == 0) {
-                                    echo json_encode(array('success' => true, 'type' => 'success', 'data' => $query->result()));
-                                } else {
-                                    echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
-                                }
-                                break;
-                            case 'get':
-                                $id = $this->input->post('search');
-                                $query = $this->Product_model->suggestProdForBarcode($id);
-                                $data = array('success' => true, 'type' => 'success', 'data' => $query->row());
-                                echo json_encode($data);
-                                break;
-                            case 'auto':
-                                $query["offset"] = 0;
-                                $query["limit"] = NULL;
-                                $query["order_by"] = 'label';
-                                $query["order"] = 'asc';
-                                $query["search"] = $this->input->post('search');
-                                $query = $this->Product_model->addProdsForBarcode($query["search"], $query["offset"], $query["limit"], $query["order_by"], $query["order"]);
-                                $error = $this->db->error();
-                                if ($error['code'] == 0) {
-                                    echo json_encode(array('success' => true, 'type' => 'success', 'data' => $query->result()));
-                                } else {
-                                    echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
-                                }
-                                break;
-                            default:
-                                echo json_encode(array('success' => false, 'type' => 'warning', 'message' => 'Suggest Action Not Exist !'));
-                                break;
-                        }
-                        break;
+                switch ($this->input->get('action')) {
                     case 'datatable':
                         $data = array();
                         $limit = $this->input->get('length') <= 0 ? NULL : $this->input->get('length'); // limit
@@ -87,44 +28,11 @@ class Stock_adjustment extends CI_Controller
                         //$data[ 'error' ] = '';
                         echo json_encode($data);
                         break;
-                    case 'validate':
-                        $_GET = json_decode($this->input->get('data'), true);
-                        $field = $this->input->get('field');
-                        $value = $this->input->get('value');
-                        $data = array();
-                        $data[$field] = $value;
-                        $this->form_validation->set_data($data);
-                        switch ($field) {
-                            case 'code':
-                                $this->form_validation->set_rules(
-                                    'code',
-                                    'Code',
-                                    'required|min_length[3]|max_length[200]|is_unique[' . TABLE_PRODUCT . '.code]|xss_clean|trim'
-                                );
-                                break;
-                            case 'name':
-                                $this->form_validation->set_rules(
-                                    'name',
-                                    'Name',
-                                    'required|min_length[3]|max_length[200]|is_unique[' . TABLE_PRODUCT . '.name]|xss_clean|trim'
-                                );
-                                break;
-                            case 'slug':
-                                $this->form_validation->set_rules(
-                                    'slug',
-                                    'Slug',
-                                    'required|min_length[3]|max_length[200]|is_unique[' . TABLE_PRODUCT . '.slug]|xss_clean|trim'
-                                );
-                                break;
-                            default:
-                                echo json_encode(array('success' => false, 'type' => 'warning', 'message' => 'Unknown Field Name !'));
-                                break;
-                        }
-                        if ($this->form_validation->run() == FALSE) {
-                            echo json_encode(array('success' => false, 'error' => $this->form_validation->error_array()[$field]));
-                        } else {
-                            echo json_encode(array('success' => true, 'message' => 'Perfect !'));
-                        }
+                    case 'getInfo':
+                        $query = $this->Stock_adjustment_model->getInfo($this->input->get('id'));
+                        $data['data'] = $query->result_array();
+                        $data['success'] = true;
+                        echo json_encode($data);
                         break;
                     default:
                         $error = array('success' => false, 'type' => 'danger', 'error' => 'Unknown Action !');
@@ -174,6 +82,7 @@ class Stock_adjustment extends CI_Controller
                     // for table fields
                     $data_stock_adjustment['warehouse']     = $data['warehouse'];
                     $data_stock_adjustment['date']          = $data['date'];
+                    $data_stock_adjustment['time']          = $data['date'];
                     $data_stock_adjustment['added_by']      = $this->session->id;
                     $data_stock_adjustment['reference_no']  = $data['ref_no'];
                     $data_stock_adjustment['note']          = $data['note'];
@@ -230,6 +139,7 @@ class Stock_adjustment extends CI_Controller
                 $data = array(
                     'warehouse' => $this->input->post('warehouse') ?: NULL,
                     'date' => $this->input->post('date') ?: NULL,
+                    'time' => $this->input->post('time') ?: NULL,
                     'ref_no' => $this->input->post('ref_no') ?: NULL,
                     'note' => $this->input->post('note') ?: NULL,
                 );
@@ -266,6 +176,7 @@ class Stock_adjustment extends CI_Controller
                     // for table fields
                     $data_stock_adjustment['warehouse']     = $data['warehouse'];
                     $data_stock_adjustment['date']          = $data['date'];
+                    $data_stock_adjustment['time']          = $data['date'];
                     $data_stock_adjustment['added_by']      = $this->session->id;
                     $data_stock_adjustment['reference_no']  = $data['ref_no'];
                     $data_stock_adjustment['note']          = $data['note'];
@@ -287,17 +198,24 @@ class Stock_adjustment extends CI_Controller
                     } else {
                         /******************** START DB */
                         $this->db->trans_begin();
+                        $changed_db1 = false;
+                        $changed_db2 = false;
                         $this->Stock_adjustment_model->update($data_stock_adjustment, $this->input->post('id')); // update stock adjustment
-                        if ($this->db->affected_rows() == 1) { // success - update stock adjustment
+                        $error = $this->db->error();
+                        if ($this->db->affected_rows() == 1 || $error['code'] == 0) { // success or no change - update stock adjustment
+                            if ($this->db->affected_rows() == 1) { // data changed
+                                $changed_db1 = true;
+                            }
                             $stock_adjustment_id = $this->input->post('id');
                             // get all prods with same adj id
                             $db_rows = $this->Stock_adjustment_product_model->get_products_where(array('stock_adjustment' => $stock_adjustment_id)); // get all prods with same adj id
                             /****** DELETE FROM DB OR UPDATE FIRST (existing on both) ***/
-                            foreach ($db_rows as $key => $db_row) {
+                            foreach ((array)$db_rows as $key => $db_row) {
                                 if (array_search($db_row['product'], array_column($products, 'id')) !== FALSE) { // found on both - update
                                     $form_key = array_search($db_row['product'], array_column($products, 'id'));
                                     $this->Stock_adjustment_product_model->update($data_stock_adjustment_product[$form_key], $db_row['id']); // update existing
                                     if ($this->db->affected_rows() == 1) { // data changed on db - success
+                                        $changed_db2 = true;
                                     } else { // error or not changed anything
                                         $error = $this->db->error();
                                         if ($error['code'] == 0) { // not changed anything
@@ -310,6 +228,7 @@ class Stock_adjustment extends CI_Controller
                                 } else { // not on form, but on db - delete from db
                                     $this->Stock_adjustment_product_model->delete($db_row['id']);
                                     if ($this->db->affected_rows() == 1) { // data changed on db - success
+                                        $changed_db2 = true;
                                     } else { // error or not changed anything
                                         $error = $this->db->error();
                                         $this->db->trans_rollback();
@@ -320,11 +239,12 @@ class Stock_adjustment extends CI_Controller
                             /****** ADD TO DB (existing on form only) ***/
                             foreach ($products as $key => $product) {
                                 $data_stock_adjustment_product[$key]['stock_adjustment'] = $stock_adjustment_id;
-                                if (array_search($product['id'], array_column($db_rows, 'product')) !== FALSE) { // found on both - update
+                                if (array_search($product['id'], array_column((array)$db_rows, 'product')) !== FALSE) { // found on both - update
                                     // don't do anthing, already done for existing
                                 } else { // not on db, but on form - add to db
                                     $this->Stock_adjustment_product_model->create($data_stock_adjustment_product[$key]); // add stock adjustment product
                                     if ($this->db->affected_rows() == 1) { // data added to db - success
+                                        $changed_db2 = true;
                                     } else { // error
                                         $error = $this->db->error();
                                         $this->db->trans_rollback();
@@ -332,13 +252,26 @@ class Stock_adjustment extends CI_Controller
                                     }
                                 }
                             }
+                            if ($changed_db1 == false && $changed_db2 == true) { // because db1 will not update updated time if db1 have no value update, but in db2
+                                $this->Stock_adjustment_model->update_updated_at($stock_adjustment_id); // update stock adjustment updated at time
+                                if ($this->db->affected_rows() == 1) { // time updated
+                                    $changed_db1 = true;
+                                } else { // error
+                                    $error = $this->db->error();
+                                    $this->db->trans_rollback();
+                                    die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                                }
+                            }
                             $this->db->trans_commit();
-                            $alert['added'] = array('success' => true, 'type' => 'success', 'id' => $stock_adjustment_id, 'timeout' => '5000', 'message' => 'Successfully updated stock adjustment !', 'location' => "admin/adjustment/list");
+                            if ($changed_db1 == true || $changed_db2 == true) {
+                                $alert['added'] = array('success' => true, 'type' => 'success', 'id' => $stock_adjustment_id, 'timeout' => '5000', 'message' => 'Successfully updated stock adjustment !', 'location' => "admin/adjustment/list");
+                            } else {
+                                $alert['added'] = array('success' => true, 'type' => 'notice', 'id' => $stock_adjustment_id, 'timeout' => '5000', 'message' => 'No data changed for stock adjustment !', 'location' => "admin/adjustment/list");
+                            }
                             echo json_encode($alert['added']);
                         } else { // failed
-                            $error = $this->db->error();
                             $this->db->trans_rollback();
-                            echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
+                            echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error 1 , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
                         }
                     }
                 }

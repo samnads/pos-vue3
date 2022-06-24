@@ -258,6 +258,9 @@ export default {
             targets: [2],
             visible: true,
             searchable: true,
+            render: function (data, type, row, meta) {
+              return data+'&nbsp;&nbsp;<span class="text-muted">'+row['time']+'<span>';
+            },
           },
           {
             targets: [3],

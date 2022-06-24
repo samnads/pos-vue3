@@ -135,6 +135,7 @@ export default {
       var self = this;
       let data = self.propAdjustRow;
       data.products = products;
+      data.date =data.date+"T"+data.time; // for the form datetime field
       console.log(data)
       self.$router
         .push({
