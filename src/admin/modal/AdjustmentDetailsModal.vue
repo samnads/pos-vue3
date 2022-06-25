@@ -65,7 +65,7 @@
 
             <tbody>
               <tr v-if="!propAdjustInfo">
-                <td colspan="4"><LoadingSpinnerDiv /></td>
+                <td colspan="5"><LoadingSpinnerDiv /></td>
               </tr>
               <tr v-for="(product, index) in propAdjustInfo" :key="product.id">
                 <th scope="row">{{ index + 1 }}</th>
@@ -87,7 +87,7 @@
           <button
             type="button"
             class="btn btn-danger me-auto"
-            v-on:click="deleteModal()"
+            v-on:click="deleteConfirmModal()"
             :disabled="!propAdjustInfo"
           >
             <i class="fa-solid fa-trash"></i>DELETE
@@ -136,7 +136,6 @@ export default {
       let data = self.propAdjustRow;
       data.products = products;
       data.date =data.date+"T"+data.time; // for the form datetime field
-      console.log(data)
       self.$router
         .push({
           name: "adminProductAdjustmentEdit",
@@ -146,6 +145,10 @@ export default {
     },
     print() {
       window.print();
+    },
+    deleteConfirmModal() {
+      window.PROD_ADJ_DETAILS_MODAL.hide();
+      alert("delete")
     },
   },
   mounted() {},

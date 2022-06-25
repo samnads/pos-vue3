@@ -258,7 +258,7 @@
 }
 </style>
 <script>
-import DeleteConfirmDefault from "../modal/DeleteConfirmDefault.vue";
+import DeleteConfirmDefault from "./DeleteConfirmDefault.vue";
 import { Modal } from "bootstrap";
 import { useStore } from "vuex";
 import { ref, computed } from "vue";

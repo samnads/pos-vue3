@@ -48,7 +48,7 @@
                   >
                 </li>
                 <li>
-                  <router-link class="dropdown-item" to="/admin/adjustment"
+                  <router-link class="dropdown-item" to="/admin/adjustment/list"
                     >Adjustments</router-link
                   >
                 </li>
