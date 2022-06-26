@@ -1,6 +1,7 @@
 <template>
   <vue-progress-bar></vue-progress-bar>
   <AlertBoxDefault />
+  <DeleteConfirmModalDefault />
   <PlaySound />
   <div class="header">
     <nav
@@ -344,11 +345,13 @@ import "datatables.net-select-bs5/js/select.bootstrap5";
 //
 import { Modal } from "bootstrap";
 import AlertBoxDefault from "./modal/AlertBoxDefault.vue";
+import DeleteConfirmModalDefault from "./modal/DeleteConfirmModalDefault.vue";
 import PlaySound from "../admin/PlaySound.vue";
 import { ref } from "vue";
 export default {
   components: {
     AlertBoxDefault,
+    DeleteConfirmModalDefault,
     PlaySound
   },
   setup() {
@@ -369,8 +372,13 @@ export default {
   mounted() {
     //  [App.vue specific] When App.vue is finish loading finish the progress bar
     this.$Progress.finish();
-    //
+    // alert box default
     window.ALERT_DEFAULT_MODAL = new Modal($("#alertDefModal"), {
+      backdrop: true,
+      show: true,
+    });
+    // delete confirm modal default
+     window.DELETE_CONFIRM_DEFAULT_MODAL = new Modal($("#deleteConfirmModal"), {
       backdrop: true,
       show: true,
     });

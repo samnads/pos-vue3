@@ -268,7 +268,6 @@ import admin from "@/mixins/admin.js";
 import { useRouter, useRoute } from "vue-router";
 import { inject } from "vue";
 export default {
-  emits: ["sending-start", "sending-complete"],
   components: {
     DeleteConfirmDefault,
   },
@@ -347,7 +346,7 @@ export default {
     const onSubmit = handleSubmit((values) => {
       values.search = undefined;
       values.products = products.value;
-      console.log(values.date)
+      console.log(values.date);
       var method = "POST";
       if (route.name == "adminProductAdjustmentEdit") {
         values.id = dbData.value.id;
@@ -385,7 +384,7 @@ export default {
       this.autocompleteList = [];
       this.search = null;
       this.searchBox.focus();
-      this.emitter.emit("playSound", { file: "add" });
+      this.emitter.emit("playSound", { file: "add.mp3" });
     }
     function changeQuantity(id, quantity) {
       let index = this.products.findIndex((item) => item.id === id);
@@ -394,7 +393,7 @@ export default {
       } else {
         this.products[index].quantity = 1;
       }
-      this.emitter.emit("playSound", { file: "add" });
+      this.emitter.emit("playSound", { file: "add.mp3" });
     }
     function quantityButton(product, operator) {
       let index = this.products.findIndex((item) => item.id === product.id);
@@ -410,17 +409,36 @@ export default {
             ? -1
             : this.products[index].quantity - 1;
       }
-      this.emitter.emit("playSound", { file: "add" });
+      this.emitter.emit("playSound", { file: "add.mp3" });
       this.searchBox.focus();
     }
     function confirmDeleteShow(id) {
-      this.deleteModalProducts = this.products;
+      /*this.deleteModalProducts = this.products;
       this.deleteModalId = id;
       this.deleteModalTitle = "Confirm delete product from list ?";
       let index = this.products.findIndex((item) => item.id === id);
       this.deleteModalBody = this.products[index].name;
+      window.DELETE_CONFIRM_DEFAULT_MODAL.show();*/
+      let index = this.products.findIndex((item) => item.id === id);
+      var self = this;
+      self.emitter.emit("deleteConfirmModal", {
+        title: null,
+        body: "Confirm delete product from list ?" + self.products[index].name,
+        data: {id:id},
+        action: "confirmDeleteProduct",
+        type: "danger",
+      });
       window.DELETE_CONFIRM_DEFAULT_MODAL.show();
     }
+    emitter.on("confirmDeleteProduct", (datas) => {
+      let data = datas.data
+      // delete selected adjustment stuff here
+      let index = products.value.findIndex((item) => item.id === data.id);
+      products.value.splice(index, 1);
+      deletingProduct = true;
+      window.DELETE_CONFIRM_DEFAULT_MODAL.hide();
+      deletingProduct = false;
+    });
     var autocompleteList = ref([]);
     /*autocompleteList = [
       {
@@ -686,10 +704,11 @@ export default {
                   query +
                   "</b> !",
                 type: "danger",
+                play: "danger.mp3",
               });
             }
           } else {
-            //console.log(data);
+            self.search = null;
           }
         });
       } else {

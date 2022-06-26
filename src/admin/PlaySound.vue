@@ -8,7 +8,7 @@ export default {
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
     emitter.on("playSound", (data) => {
-      var audio = new Audio(require("@/assets/sounds/" + data.file + ".mp3"));
+      var audio = new Audio(require("@/assets/sounds/" + data.file));
       audio.play();
     });
     return {};

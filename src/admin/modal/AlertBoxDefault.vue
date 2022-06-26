@@ -41,7 +41,7 @@ export default {
       title.value = data.title;
       body.value = data.body;
       type.value= data.type ? "bg-" + data.type : "bg-danger"; // change bg-danger for default color in alert box//
-      emitter.emit("playSound", { file: "danger" });
+      emitter.emit("playSound", { file: data.play });
       //
       window.ALERT_DEFAULT_MODAL.show();
     });

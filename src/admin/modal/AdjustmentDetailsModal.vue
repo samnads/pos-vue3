@@ -117,6 +117,7 @@
 </style>
 <script>
 import LoadingSpinnerDiv from "./LoadingSpinnerDiv.vue";
+import { inject } from "vue";
 export default {
   components: {
     LoadingSpinnerDiv,
@@ -125,17 +126,22 @@ export default {
     propAdjustRow: Object,
     propAdjustInfo: Object,
   },
+  setup() {
+    const emitter = inject("emitter"); // Inject `emitter`
+    return {
+      emitter,
+    };
+  },
   data: function () {
     return {};
   },
-  computed: {},
   methods: {
     edit(id, products) {
       window.PROD_ADJ_DETAILS_MODAL.hide();
       var self = this;
       let data = self.propAdjustRow;
       data.products = products;
-      data.date =data.date+"T"+data.time; // for the form datetime field
+      data.date = data.date + "T" + data.time; // for the form datetime field
       self.$router
         .push({
           name: "adminProductAdjustmentEdit",
@@ -148,7 +154,14 @@ export default {
     },
     deleteConfirmModal() {
       window.PROD_ADJ_DETAILS_MODAL.hide();
-      alert("delete")
+      var self = this;
+      self.emitter.emit("deleteConfirmModal", {
+        title: null,
+        body: "Delete adjustment with id 0001 ?",
+        data: null,
+        action: "confirmDeleteAdjustment",
+        type: "danger",
+      });
     },
   },
   mounted() {},

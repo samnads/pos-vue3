@@ -70,6 +70,7 @@ import { ref } from "vue";
 import admin from "@/mixins/admin.js";
 import AdjustmentDetailsModal from "../modal/AdjustmentDetailsModal.vue";
 import { Modal } from "bootstrap";
+import { inject } from "vue";
 export default {
   components: {
     AdjustmentDetailsModal,
@@ -78,6 +79,10 @@ export default {
   setup() {
     var adjustRow = ref({});
     var adjustInfo = ref({});
+    const emitter = inject("emitter"); // Inject `emitter`
+    emitter.on("confirmDeleteAdjustment", (data) => { // delete selected adjustment stuff here
+      alert("do delete"+data);
+    });
     // notify
     const {
       notifyDefault,
@@ -259,7 +264,12 @@ export default {
             visible: true,
             searchable: true,
             render: function (data, type, row, meta) {
-              return data+'&nbsp;&nbsp;<span class="text-muted">'+row['time']+'<span>';
+              return (
+                data +
+                '&nbsp;&nbsp;<span class="text-muted">' +
+                row["time"] +
+                "<span>"
+              );
             },
           },
           {
@@ -410,7 +420,7 @@ export default {
       $("#datatable tbody").on("click", "#edit", function () {
         // edit from action menu
         self.row = self.table.row($(this).parents("tr")).data();
-        console.log(self.row)
+        console.log(self.row);
         self.$router
           .push({
             name: "adminProductAdjustmentEdit",
