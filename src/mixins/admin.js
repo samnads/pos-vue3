@@ -3,7 +3,7 @@ import { useStore } from "vuex";
 import axios from "axios";
 import router from "@/router";
 import { getCurrentInstance } from "vue";
-const endpoint = "http://localhost/pos-vue3/server/admin/ajax/";
+const endpoint = process.env.VUE_APP_API_ROOT +"admin/ajax/";
 const timeout = 8000;
 export default function () {
     var notType = 'warning'

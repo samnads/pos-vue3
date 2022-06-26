@@ -225,7 +225,7 @@ export default {
         order: [[2, "desc"]],
         ajax: {
           method: "GET",
-          url: "http://localhost/pos-vue3/server/admin/ajax/product",
+          url: process.env.VUE_APP_API_ROOT+"admin/ajax/product",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {
@@ -324,7 +324,7 @@ export default {
             render: function (data, type, full, meta) {
               return (
                 '<img src="' +
-                (data || "http://localhost/CyberLikes-POS/gd/50/50") +
+                (data || process.env.VUE_APP_API_ROOT+"gd/50/50") +
                 '" class="rounded thumbnail" width="20px"/>'
               );
             },

@@ -168,7 +168,7 @@ export default {
         order: [[1, "desc"]],
         ajax: {
           method: "GET",
-          url: "http://localhost/pos-vue3/server/admin/ajax/stock_adjustment",
+          url: process.env.VUE_APP_API_ROOT+"admin/ajax/stock_adjustment",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {

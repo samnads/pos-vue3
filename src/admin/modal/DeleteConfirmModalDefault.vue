@@ -44,7 +44,7 @@ export default {
     const emitter = inject("emitter"); // Inject `emitter`
     emitter.on("deleteConfirmModal", (datas) => {
       // *Listen* for event
-      data.value = datas;
+      data.value = datas.data;
       title.value = datas.title;
       body.value = datas.body;
       type.value = datas.type ? "bg-" + datas.type : "bg-danger"; // change bg-danger for default color in alert box//
@@ -56,7 +56,7 @@ export default {
     });
     function confirmDelete() {
       window.DELETE_CONFIRM_DEFAULT_MODAL.hide();
-      emitter.emit(action.value, {data:data.value}); // DELETE ACTION EMITTER
+      emitter.emit(action.value, data.value); // DELETE ACTION EMITTER
     }
     return {
       title,

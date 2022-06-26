@@ -1,12 +1,4 @@
 <template>
-  <DeleteConfirmDefault
-    :propId="deleteModalId"
-    :propProducts="deleteModalProducts"
-    :propTitle="deleteModalTitle"
-    :propBody="deleteModalBody"
-    :propConfirmDelete="confirmDelete"
-    :propDeleting="deletingProduct"
-  />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
@@ -200,7 +192,7 @@
                 <td
                   class="text-danger"
                   role="button"
-                  @click="confirmDeleteShow(product.id)"
+                  @click="confirmDeleteShow(product)"
                 >
                   <i class="fa-solid fa-trash-can"></i>
                 </td>
@@ -258,8 +250,6 @@
 }
 </style>
 <script>
-import DeleteConfirmDefault from "./DeleteConfirmDefault.vue";
-import { Modal } from "bootstrap";
 import { useStore } from "vuex";
 import { ref, computed } from "vue";
 import { useForm, useField, useIsFormDirty } from "vee-validate";
@@ -268,9 +258,7 @@ import admin from "@/mixins/admin.js";
 import { useRouter, useRoute } from "vue-router";
 import { inject } from "vue";
 export default {
-  components: {
-    DeleteConfirmDefault,
-  },
+  components: {},
   setup() {
     const router = useRouter();
     const store = useStore();
@@ -281,7 +269,6 @@ export default {
     var deleteModalId = ref();
     var deleteModalTitle = ref("");
     var deleteModalBody = ref("");
-    var deletingProduct = ref(false);
     const emitter = inject("emitter"); // Inject `emitter`
     const { axiosAsyncStoreReturnBool, axiosAsyncCallReturnData } = admin();
     let warehouses = computed(function () {
@@ -412,32 +399,22 @@ export default {
       this.emitter.emit("playSound", { file: "add.mp3" });
       this.searchBox.focus();
     }
-    function confirmDeleteShow(id) {
-      /*this.deleteModalProducts = this.products;
-      this.deleteModalId = id;
-      this.deleteModalTitle = "Confirm delete product from list ?";
-      let index = this.products.findIndex((item) => item.id === id);
-      this.deleteModalBody = this.products[index].name;
-      window.DELETE_CONFIRM_DEFAULT_MODAL.show();*/
-      let index = this.products.findIndex((item) => item.id === id);
-      var self = this;
-      self.emitter.emit("deleteConfirmModal", {
+    function confirmDeleteShow(data) {
+      emitter.emit("deleteConfirmModal", {
         title: null,
-        body: "Confirm delete product from list ?" + self.products[index].name,
-        data: {id:id},
+        body: "Confirm delete <b>" + data.name + "</b> from list ?",
+        data: data,
         action: "confirmDeleteProduct",
         type: "danger",
       });
       window.DELETE_CONFIRM_DEFAULT_MODAL.show();
     }
-    emitter.on("confirmDeleteProduct", (datas) => {
-      let data = datas.data
+    emitter.on("confirmDeleteProduct", (data) => {
+      console.log(data)
       // delete selected adjustment stuff here
       let index = products.value.findIndex((item) => item.id === data.id);
       products.value.splice(index, 1);
-      deletingProduct = true;
-      window.DELETE_CONFIRM_DEFAULT_MODAL.hide();
-      deletingProduct = false;
+      emitter.emit("playSound", { file: "add.mp3" });
     });
     var autocompleteList = ref([]);
     /*autocompleteList = [
@@ -644,7 +621,6 @@ export default {
       deleteModalProducts,
       deleteModalTitle,
       deleteModalBody,
-      deletingProduct,
       emitter,
     };
   },
@@ -652,14 +628,6 @@ export default {
     return {};
   },
   methods: {
-    confirmDelete(id) {
-      var self = this;
-      let index = self.products.findIndex((item) => item.id === id);
-      self.products.splice(index, 1);
-      self.deletingProduct = true;
-      window.DELETE_CONFIRM_DEFAULT_MODAL.hide();
-      self.deletingProduct = false;
-    },
   },
   watch: {
     search(query) {
@@ -708,7 +676,7 @@ export default {
               });
             }
           } else {
-            self.search = null;
+           // network error or cancelled duplicate call
           }
         });
       } else {
@@ -724,10 +692,6 @@ export default {
         action: "dropdown",
       }); // get ware houses
     }
-    window.DELETE_CONFIRM_DEFAULT_MODAL = new Modal($("#deleteDefModal"), {
-      backdrop: true,
-      show: true,
-    });
   },
 };
 </script>
