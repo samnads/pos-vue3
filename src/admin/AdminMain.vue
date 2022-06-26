@@ -314,7 +314,7 @@ form .row {
   border-left-color: #bcbebf;
 }
 .modal-header {
-  background-color: #00416a !important;
+  background-color: #00416a;
   color: #dee2e6;
 }
 /***************************************************************  input field custom */

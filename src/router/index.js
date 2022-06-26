@@ -19,7 +19,7 @@ import PageNotFound from '../admin/PageNotFound.vue'
 const routes = [
   {
     path: '/',
-    redirect: '/admin/adjustment/list'
+    redirect: '/admin'
   },
   {
     path: '/home',
