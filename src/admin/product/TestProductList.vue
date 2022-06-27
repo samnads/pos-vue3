@@ -40,7 +40,7 @@
     </div>
   </div>
   <div class="wrap_content" id="wrap_content">
-    <table class="table table-bordered table-striped w-auto" id="datatable" v-once>>
+    <table class="table table-bordered table-striped w-auto" id="datatable" v-once>
       <thead>
         <tr>
           <th scope="col">
@@ -335,12 +335,21 @@ export default {
             searchable: false,
           },
           {
+            targets: [3],
+          },
+          {
+            targets: [4],
+          },
+          {
             targets: [5],
             render: function (data, type, row, meta) {
               return data == null
                 ? '<i class="text-muted small">-</i>'
                 : data;
             },
+          },
+          {
+            targets: [6],
           },
           {
             targets: [7],
@@ -383,7 +392,7 @@ export default {
             },
           },
           {
-            targets: -1,
+            targets: 12,
             orderable: false,
             className: "text-center",
             searchable: false,

@@ -35,7 +35,7 @@
     </div>
   </div>
   <div class="wrap_content" id="wrap_content">
-    <table class="table table-bordered table-striped w-auto" id="datatable">
+    <table class="table table-bordered table-striped w-auto" id="datatable" v-once>
       <thead>
         <tr>
           <th scope="col">
@@ -58,7 +58,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in products" :key="item.id"></tr>
+        <!--<tr v-for="item in products" :key="item.id"></tr>-->
       </tbody>
     </table>
   </div>

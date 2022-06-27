@@ -9,6 +9,7 @@ import AdminDashboard from '../admin/AdminDashboard.vue'
 import AdminProductMain from '../admin/product/ProductMain.vue'
 import AdminProductList from '../admin/product/ProductList.vue'
 import AdminProductNew from '../admin/product/ProductNew.vue'
+import AdminProductListTest from '../admin/product/TestProductList.vue'
 // Product Adjustment Based Pages
 import AdjustmentMain from '../admin/adjustment/AdjustmentMain.vue'
 import AdjustmentList from '../admin/adjustment/AdjustmentList.vue'
@@ -76,6 +77,11 @@ const routes = [
             component: AdminProductNew,
           },
         ],
+      },
+      {
+        path: 'product/test',
+        name: 'adminProductTest',
+        component: AdminProductListTest,
       },
       {
         path: 'adjustment',

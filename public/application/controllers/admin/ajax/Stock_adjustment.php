@@ -266,7 +266,7 @@ class Stock_adjustment extends CI_Controller
                             if ($changed_db1 == true || $changed_db2 == true) {
                                 $alert['added'] = array('success' => true, 'type' => 'success', 'id' => $stock_adjustment_id, 'timeout' => '5000', 'message' => 'Successfully updated stock adjustment !', 'location' => "admin/adjustment/list");
                             } else {
-                                $alert['added'] = array('success' => true, 'type' => 'notice', 'id' => $stock_adjustment_id, 'timeout' => '5000', 'message' => 'No data changed for stock adjustment !', 'location' => "admin/adjustment/list");
+                                $alert['added'] = array('success' => true, 'type' => 'notice', 'id' => $stock_adjustment_id, 'timeout' => '5000', 'message' => 'No data changed for stock adjustment !');
                             }
                             echo json_encode($alert['added']);
                         } else { // failed

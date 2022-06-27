@@ -44,6 +44,11 @@
                   >
                 </li>
                 <li>
+                  <router-link class="dropdown-item" to="/admin/product/test"
+                    >List Test</router-link
+                  >
+                </li>
+                <li>
                   <router-link class="dropdown-item" to="/admin/product/new"
                     >Add New</router-link
                   >

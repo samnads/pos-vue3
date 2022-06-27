@@ -618,7 +618,7 @@ class Product extends CI_Controller
                         $this->session->set_flashdata('alert', $alert);
                         echo json_encode($alert['added']);
                     } else if ($error['code'] == 0) {
-                        echo json_encode(array('success' => true, 'type' => 'primary', 'id' => (int)$this->input->post('db')['id'], 'timeout' => '5000', 'message' => 'No data changed for product <strong><i>' . $data['name'] . '</strong></i> !'));
+                        echo json_encode(array('success' => true, 'type' => 'notice', 'id' => (int)$this->input->post('db')['id'], 'timeout' => '5000', 'message' => 'No data changed for product <strong><i>' . $data['name'] . '</strong></i> !'));
                     } else {
                         echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
                     }
