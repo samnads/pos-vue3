@@ -666,7 +666,7 @@ export default {
               self.autocompleteList = [];
               self.search = null;
               self.emitter.emit("showAlert", {
-                title: "Product Not Found !",
+                title: "No search result found !",
                 body:
                   "No product found for your search query <b>" +
                   query +

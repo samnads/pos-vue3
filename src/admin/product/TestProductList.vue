@@ -1,19 +1,14 @@
 <template>
-  <AdminProductDetailsModal
-    :propProductRow="productRow"
-    :propProductInfo="productInfo"
-    :propConfirmDeleteModal="confirmDeleteModal"
-  />
-  <AdminProductDeleteConfirmModal
-    :propProductData="delete_modal_row"
-    :propConfirmDeleteProduct="confirmDeleteProduct"
-    :propDeleting="delete_modal_delete"
+  <AdjustmentDetailsModal
+    :propAdjustRow="adjustRow"
+    :propAdjustInfo="adjustInfo"
   />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
         <h5 class="title">
-          <i class="fa-solid fa-cart-shopping"></i><span>Products</span>
+          <i class="fa-solid fa-cart-shopping"></i
+          ><span>Stock Adjustments</span>
         </h5>
       </div>
       <div class="p-2 bd-highlight">
@@ -40,7 +35,11 @@
     </div>
   </div>
   <div class="wrap_content" id="wrap_content">
-    <table class="table table-bordered table-striped w-auto" id="datatable" v-once>
+    <table
+      class="table table-bordered table-striped w-auto"
+      id="datatable"
+      v-once
+    >
       <thead>
         <tr>
           <th scope="col">
@@ -51,18 +50,15 @@
               id="checkall"
             />
           </th>
-          <th scope="col"><i class="fa-solid fa-image"></i></th>
-          <th scope="col">ID</th>
-          <th scope="col">Code</th>
-          <th scope="col">Name</th>
-          <th scope="col">Brand</th>
-          <th scope="col">Category</th>
-          <th scope="col">MRP</th>
-          <th scope="col">Stock</th>
-          <th scope="col">Unit</th>
-          <th scope="col">Cost</th>
-          <th scope="col">Price</th>
-          <th scope="col"><i class="fa-solid fa-bars"></i></th>
+          <th scope="col" class="d-none">ID</th>
+          <th scope="col">Date</th>
+          <th scope="col">Reference No.</th>
+          <th scope="col">Warehouse</th>
+          <th scope="col">Products Adjusted</th>
+          <th scope="col">Added by</th>
+          <th scope="col">Note</th>
+          <th scope="col">File</th>
+          <th scope="col">Updated at</th>
         </tr>
       </thead>
       <tbody>
@@ -75,125 +71,77 @@
 </style>
 <script>
 import { ref } from "vue";
-import AdminProductDetailsModal from "../modal/ProductDetailsModal.vue";
-import AdminProductDeleteConfirmModal from "../modal/ProductDeleteConfirmModal.vue";
-import { Modal } from "bootstrap";
 import admin from "@/mixins/admin.js";
+import AdjustmentDetailsModal from "../modal/AdjustmentDetailsModal.vue";
+import { Modal } from "bootstrap";
+import { inject } from "vue";
 export default {
   components: {
-    AdminProductDetailsModal,
-    AdminProductDeleteConfirmModal,
+    AdjustmentDetailsModal,
   },
   /* eslint-disable */
   setup() {
-    var productRow = ref({});
-    var productInfo = ref({});
-    var delete_modal_row = ref({});
-    var delete_modal_delete = ref(false);
+    var adjustRow = ref({});
+    var adjustInfo = ref({});
+    const emitter = inject("emitter"); // Inject `emitter`
+    emitter.on("confirmDeleteAdjustment", (data) => {
+      // delete selected adjustment stuff here
+      alert("do delete" + data);
+    });
     // notify
     const {
-      axiosAsyncCallReturnData,
       notifyDefault,
       notifyApiResponse,
       notifyCatchResponse,
+      axiosAsyncCallReturnData,
     } = admin();
     return {
-      productRow,
-      productInfo,
-      delete_modal_row,
-      delete_modal_delete,
-      axiosAsyncCallReturnData,
       notifyDefault,
       notifyApiResponse,
       notifyCatchResponse,
+      axiosAsyncCallReturnData,
+      adjustRow,
+      adjustInfo,
     };
   },
   methods: {
-    getProductInfo() {
-      this.productInfo = undefined; // reset previous data
+    getAdjustInfo() {
+      this.adjustInfo = undefined; // reset previous data
       var self = this;
       if (self.controller) {
         self.controller.abort();
       }
       self.controller = new AbortController();
-      window.PROD_DETAILS_MODAL.show();
+      window.PROD_ADJ_DETAILS_MODAL.show();
       self
         .axiosAsyncCallReturnData(
           "get",
-          "product",
+          "stock_adjustment",
           {
             action: "getInfo",
-            id: self.productRow.id,
+            id: self.adjustRow.id,
           },
           self.controller,
-          {
-            showSuccessNotification: false,
-            showCatchNotification: false,
-            showProgress: true,
-          }
+          { showCatchNotification: false, showProgress: true }
         )
         .then(function (data) {
           if (data.success == true) {
             // ok
-            self.productInfo = data.data || {}; // {} - because sometimes the product is already deleted so gets a null response data
+            self.adjustInfo = data.data;
           } else {
             if (data.success == false) {
               // not ok
-              window.PROD_DETAILS_MODAL.hide();
+              window.PROD_ADJ_DETAILS_MODAL.hide();
             } else {
               // other error
-              if (data.message != "canceled") {
-                window.PROD_DETAILS_MODAL.hide();
+              if (data.message == "canceled") {
+                //
+              } else {
+                window.PROD_ADJ_DETAILS_MODAL.hide();
                 self.notifyCatchResponse({ title: data.message });
               }
             }
           }
-        });
-    },
-    confirmDeleteModal(row) {
-      this.delete_modal_row = row;
-      window.PROD_DELETE_MODAL.show();
-    },
-    confirmDeleteProduct(row) {
-      var self = this;
-      self.delete_modal_delete = true;
-      if (self.controller_delete) {
-        self.controller_delete.abort();
-      }
-      self.controller_delete = new AbortController();
-      self
-        .axiosAsyncCallReturnData(
-          "delete",
-          "product",
-          {
-            data: row,
-            action: "delete",
-            bulk: row.length ? true : false,
-          },
-          self.controller_delete,
-          {
-            showSuccessNotification: true,
-            showCatchNotification: true,
-            showProgress: true,
-          }
-        )
-        .then(function (data) {
-          if (data.success == true) {
-            // success
-            window.PROD_DELETE_MODAL.hide();
-            self.table.ajax.reload();
-          } else {
-            if (data.success == false) {
-              // not ok
-              window.PROD_DELETE_MODAL.hide();
-            } else {
-              // other error
-              if (data.message != "canceled") {
-                window.PROD_DELETE_MODAL.hide();
-              }
-            }
-          }
-          self.delete_modal_delete = false;
         });
     },
   },
@@ -211,7 +159,7 @@ export default {
         searchDelay: 750,
         processing: true,
         serverSide: true,
-        dom: "Brtip",
+        dom: "lBtipr",
         deferRender: true,
         select: {
           style: "multi",
@@ -222,10 +170,10 @@ export default {
           fixedColumnsLeft: 1,
           fixedColumnsRight: 1,
         },
-        order: [[2, "desc"]],
+        order: [[1, "desc"]],
         ajax: {
           method: "GET",
-          url: process.env.VUE_APP_API_ROOT+"admin/ajax/product",
+          url: process.env.VUE_APP_API_ROOT + "admin/ajax/stock_adjustment",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {
@@ -243,7 +191,7 @@ export default {
               self.notifyCatchResponse(response);
               self.$router
                 .push({ path: "/" + response.location })
-                .catch(() => {});
+                .catch((e) => {});
             } else {
               self.$Progress.finish();
               return response.data;
@@ -254,11 +202,11 @@ export default {
           processing:
             '<div class="spinner-grow" style="width: 3rem; height: 3rem;" role="status"> <span class="visually-hidden">Loading...</span></div>',
           emptyTable: "No data available in table",
-          zeroRecords: "No matching products found",
-          info: "Showing _START_ to _END_ of _TOTAL_ Products",
-          infoEmpty: "No product info found",
-          emptyTable: "No products found",
-          infoFiltered: "(filtered from _MAX_ Products)",
+          zeroRecords: "No matching adjustments found",
+          info: "Showing _START_ to _END_ of _TOTAL_ adjustments",
+          infoEmpty: "No adjustment info found",
+          emptyTable: "No adjustments found",
+          infoFiltered: "(filtered from _MAX_ adjustments)",
           paginate: {
             first: "First",
             last: "Last",
@@ -271,40 +219,31 @@ export default {
             data: null,
           },
           {
-            data: "thumbnail",
-          },
-          {
             data: "id",
           },
           {
-            data: "code",
+            data: "date",
           },
           {
-            data: "name",
+            data: "reference_no",
           },
           {
-            data: "brand_name",
+            data: "warehouse_name",
           },
           {
-            data: "category_name",
+            data: "total_products",
           },
           {
-            data: "mrp",
+            data: "added_by",
           },
           {
-            data: "quantity",
-          },
-          {
-            data: "unit_code",
-          },
-          {
-            data: "cost",
-          },
-          {
-            data: "price",
+            data: "note",
           },
           {
             data: null,
+          },
+          {
+            data: "updated_at",
           },
         ],
         columnDefs: [
@@ -318,112 +257,102 @@ export default {
           },
           {
             targets: [1],
-            orderable: false,
+            className: "d-none",
             searchable: false,
-            className: "text-center",
-            render: function (data, type, full, meta) {
+          },
+          {
+            targets: [2],
+            visible: true,
+            searchable: true,
+            render: function (data, type, row, meta) {
               return (
-                '<img src="' +
-                (data || process.env.VUE_APP_API_ROOT+"gd/50/50") +
-                '" class="rounded thumbnail" width="20px"/>'
+                data +
+                '&nbsp;&nbsp;<span class="text-muted">' +
+                row["time"] +
+                "<span>"
               );
             },
           },
           {
-            targets: [2],
-            visible: false,
-            searchable: false,
-          },
-          {
             targets: [3],
-          },
-          {
-            targets: [4],
-          },
-          {
-            targets: [5],
             render: function (data, type, row, meta) {
               return data == null
-                ? '<i class="text-muted small">-</i>'
+                ? '<i class="text-muted small">NIL</i>'
                 : data;
             },
           },
           {
+            targets: [4]
+          },
+          {
+            targets: [5],
+            className: "text-center"
+          },
+          {
             targets: [6],
+            render: function (data, type, row, meta) {
+              return data == null
+                ? '<i class="text-muted small">NIL</i>'
+                : data;
+            },
           },
           {
             targets: [7],
             render: function (data, type, row, meta) {
               return data == null
-                ? '<i class="text-muted small">-</i>'
-                : parseFloat(data).toFixed(2);
+                ? '<i class="text-muted small">NIL</i>'
+                : data;
             },
           },
           {
             targets: [8],
             className: "text-center",
-            render: function (data, type, row, meta) {
-              return data == 0
-                ? '<i class="text-secondary small">' +
-                    parseFloat(data).toFixed(2) +
-                    "</i>"
-                : parseFloat(data).toFixed(2);
-            },
+            defaultContent: '<i class="fas fa-paperclip"></i>',
+            orderable: false,
+            searchable: false,
+            width: "2%",
           },
           {
             targets: [9],
-            className: "text-center",
-            render: function (data, type, row, meta) {
-              return '<span class="text-secondary small" title="'+row.unit_name+'">' +data+ "</span>";
-            },
-          },
-          {
-            targets: [10],
-            render: function (data, type, row, meta) {
-              return data == null
-                ? '<i class="text-muted small">-</i>'
-                : parseFloat(data).toFixed(2);
-            },
-          },
-          {
-            targets: [11],
-            render: function (data, type, row, meta) {
-              return parseFloat(data).toFixed(2);
-            },
-          },
-          {
-            targets: 12,
-            orderable: false,
-            className: "text-center",
-            searchable: false,
-            width: "2%",
-            defaultContent:
-              '<div class="dropdown dropstart">  <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">    Action  </button>  <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">    <li id="details"><button class="dropdown-item" type="button"><i class="fa-solid fa-circle-info"></i>Details</button></li>    <li id="edit"><button class="dropdown-item" type="button"><i class="fa-solid fa-pen-to-square"></i>Edit</button></li>    <li id="copy"><button class="dropdown-item" type="button"><i class="fa-solid fa-copy"></i>Duplicate</button></li>  <li id="delete"><button class="dropdown-item text-danger" type="button"><i class="fa-solid fa-trash"></i>Delete</button></li>  </ul></div>',
+            visible: false,
           },
         ],
         buttons: [
           {
-            extend: "copy",
-            text: '<i class="fas fa-copy"></i>',
+            extend: "print",
+            text: '<i class="fa-solid fa-print"></i>',
             className: "btn-light",
             exportOptions: {
               columns: [2, 3, 4, 5, 6, 7],
             },
             attr: {
-              "data-toggle": "tooltip",
-              title: "Download CSV",
+              "data-bs-toggle": "tooltip",
+              title: "Print",
             },
           },
-           {
+          {
+            extend: "pdfHtml5",
+            text: '<i class="fas fa-download"></i>',
+            className: "btn-light",
+            exportOptions: {
+              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+            },
+            attr: {
+              "data-toggle": "tooltip",
+              title: "Download PDF",
+            },
+          },
+
+          {
             extend: "excel",
             text: '<i class="fas fa-file-excel"></i>',
             className: "btn-light",
             exportOptions: {
-              columns: [2, 3, 4, 5, 6, 7],
+              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
             },
             attr: {
               "data-toggle": "tooltip",
-              title: "Download CSV",
+              title: "Download Excel",
             },
           },
           {
@@ -431,13 +360,14 @@ export default {
             text: '<i class="fas fa-file-csv"></i>',
             className: "btn-light",
             exportOptions: {
-              columns: [2, 3, 4, 5, 6, 7],
+              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
             },
             attr: {
               "data-toggle": "tooltip",
               title: "Download CSV",
             },
           },
+
           {
             text: '<i class="fa fa-sync-alt"></i>',
             className: "btn-light",
@@ -474,22 +404,24 @@ export default {
             },
           },
           {
-            extend: "print",
-            text: '<i class="fa-solid fa-print"></i>',
+            extend: "copy",
+            text: '<i class="fas fa-copy"></i>',
             className: "btn-light",
             exportOptions: {
-              columns: [2, 3, 4, 5, 6, 7],
+              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
             },
             attr: {
-              "data-bs-toggle": "tooltip",
-              title: "Print",
+              "data-toggle": "tooltip",
+              title: "Copy to clipboard",
             },
           },
           {
             text: '<i class="fa-solid fa-plus"></i>',
             className: "btn-light",
             action: function () {
-              self.$router.push({ name: "adminProductNew" }).catch((e) => {});
+              self.$router
+                .push({ name: "adminProductAdjustmentNew" })
+                .catch((e) => {});
             },
             attr: {
               "data-bs-toggle": "tooltip",
@@ -508,7 +440,7 @@ export default {
         },
         drawCallback: function (settings) {
           let rows = self.table.rows(".selected").data().toArray();
-          self.table.button(2).enable(rows.length >= 1);
+          self.table.button(5).enable(rows.length >= 1);
           $("#checkall").prop("indeterminate", false);
           $("#checkall").prop("checked", false);
         },
@@ -517,40 +449,29 @@ export default {
         "click",
         "td:not(:first-child):not(:last-child),#details",
         function () {
-          // show single product info
-          self.productRow = self.table.row($(this).parents("tr")).data();
-          self.getProductInfo();
+          self.adjustRow = self.table.row($(this).parents("tr")).data(); // row data
+          self.getAdjustInfo();
         }
       );
       $("#datatable tbody").on("click", "#edit", function () {
         // edit from action menu
         self.row = self.table.row($(this).parents("tr")).data();
-        console.log(self.row)
+        console.log(self.row);
         self.$router
           .push({
-            name: "adminProductEdit",
-            params: { id: self.row.id, data: JSON.stringify(self.row) },
-          })
-          .catch(() => {});
-      });
-      $("#datatable tbody").on("click", "#copy", function () {
-        // copy from action menu
-        self.row = self.table.row($(this).parents("tr")).data();
-        self.$router
-          .push({
-            name: "adminProductCopy",
+            name: "adminProductAdjustmentEdit",
             params: { id: self.row.id, data: JSON.stringify(self.row) },
           })
           .catch(() => {});
       });
       $("#datatable tbody").on("click", "#delete", function () {
-        // delete from row action
-        self.delete_modal_row = self.table.row($(this).parents("tr")).data();
-        window.PROD_DELETE_MODAL.show();
+        // delete from action menu
+        self.row = self.table.row($(this).parents("tr")).data();
+        alert("delete");
       });
       self.table.on("select deselect", function () {
         self.rows = self.table.rows(".selected").data().toArray();
-        self.table.button(2).enable(self.rows.length >= 1);
+        self.table.button(5).enable(self.rows.length >= 1);
         if (self.rows.length == 0) {
           $("#checkall").prop("indeterminate", false);
           $("#checkall").prop("checked", false);
@@ -584,12 +505,7 @@ export default {
           self.table.search("").draw();
         });
     });
-    /******************** */
-    window.PROD_DETAILS_MODAL = new Modal($("#detailsModal"), {
-      backdrop: true,
-      show: true,
-    });
-    window.PROD_DELETE_MODAL = new Modal($("#deleteModal"), {
+    window.PROD_ADJ_DETAILS_MODAL = new Modal($("#prodAdjDetailsModal"), {
       backdrop: true,
       show: true,
     });
@@ -597,9 +513,6 @@ export default {
   data: function () {
     return {
       products: [],
-      product: {
-        details: {},
-      },
     };
   },
 };

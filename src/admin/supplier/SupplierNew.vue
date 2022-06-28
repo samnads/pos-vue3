@@ -1,8 +1,5 @@
 <template>
-  <AdjustmentDetailsModal
-    :propAdjustRow="adjustRow"
-    :propAdjustInfo="adjustInfo"
-  />
+
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
@@ -72,12 +69,12 @@
 <script>
 import { ref } from "vue";
 import admin from "@/mixins/admin.js";
-import AdjustmentDetailsModal from "../modal/AdjustmentDetailsModal.vue";
+
 import { Modal } from "bootstrap";
 import { inject } from "vue";
 export default {
   components: {
-    AdjustmentDetailsModal,
+
   },
   /* eslint-disable */
   setup() {

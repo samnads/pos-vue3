@@ -1,14 +1,9 @@
 <template>
-  <AdjustmentDetailsModal
-    :propAdjustRow="adjustRow"
-    :propAdjustInfo="adjustInfo"
-  />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
         <h5 class="title">
-          <i class="fa-solid fa-cart-shopping"></i
-          ><span>Stock Adjustments</span>
+          <i class="fa-solid fa-truck"></i><span>Suppliers</span>
         </h5>
       </div>
       <div class="p-2 bd-highlight">
@@ -51,14 +46,13 @@
             />
           </th>
           <th scope="col" class="d-none">ID</th>
-          <th scope="col">Date</th>
-          <th scope="col">Reference No.</th>
-          <th scope="col">Warehouse</th>
-          <th scope="col">Products Adjusted</th>
-          <th scope="col">Added by</th>
-          <th scope="col">Note</th>
-          <th scope="col">File</th>
-          <th scope="col">Updated at</th>
+          <th scope="col">Code</th>
+          <th scope="col">Name</th>
+          <th scope="col">Place</th>
+          <th scope="col">Phone</th>
+          <th scope="col">Email</th>
+          <th scope="col">City</th>
+          <th scope="col"><i class="fa-solid fa-bars"></i></th>
         </tr>
       </thead>
       <tbody>
@@ -70,23 +64,17 @@
 <style>
 </style>
 <script>
-import { ref } from "vue";
+/* eslint-disable */
 import admin from "@/mixins/admin.js";
-import AdjustmentDetailsModal from "../modal/AdjustmentDetailsModal.vue";
-import { Modal } from "bootstrap";
 import { inject } from "vue";
 export default {
-  components: {
-    AdjustmentDetailsModal,
-  },
+  components: {},
   /* eslint-disable */
   setup() {
-    var adjustRow = ref({});
-    var adjustInfo = ref({});
     const emitter = inject("emitter"); // Inject `emitter`
-    emitter.on("confirmDeleteAdjustment", (data) => {
-      // delete selected adjustment stuff here
-      alert("do delete" + data);
+    emitter.on("confirmDeleteSupplier", (data) => {
+      // delete selected supplier stuff here
+      alert("do delete supplier " + data.name);
     });
     // notify
     const {
@@ -100,50 +88,11 @@ export default {
       notifyApiResponse,
       notifyCatchResponse,
       axiosAsyncCallReturnData,
-      adjustRow,
-      adjustInfo,
+      emitter
     };
   },
   methods: {
-    getAdjustInfo() {
-      this.adjustInfo = undefined; // reset previous data
-      var self = this;
-      if (self.controller) {
-        self.controller.abort();
-      }
-      self.controller = new AbortController();
-      window.PROD_ADJ_DETAILS_MODAL.show();
-      self
-        .axiosAsyncCallReturnData(
-          "get",
-          "stock_adjustment",
-          {
-            action: "getInfo",
-            id: self.adjustRow.id,
-          },
-          self.controller,
-          { showCatchNotification: false, showProgress: true }
-        )
-        .then(function (data) {
-          if (data.success == true) {
-            // ok
-            self.adjustInfo = data.data;
-          } else {
-            if (data.success == false) {
-              // not ok
-              window.PROD_ADJ_DETAILS_MODAL.hide();
-            } else {
-              // other error
-              if (data.message == "canceled") {
-                //
-              } else {
-                window.PROD_ADJ_DETAILS_MODAL.hide();
-                self.notifyCatchResponse({ title: data.message });
-              }
-            }
-          }
-        });
-    },
+    getAdjustInfo() {},
   },
   created() {},
   mounted() {
@@ -173,7 +122,7 @@ export default {
         order: [[1, "desc"]],
         ajax: {
           method: "GET",
-          url: process.env.VUE_APP_API_ROOT + "admin/ajax/stock_adjustment",
+          url: process.env.VUE_APP_API_ROOT + "admin/ajax/supplier",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {
@@ -222,28 +171,25 @@ export default {
             data: "id",
           },
           {
-            data: "date",
+            data: "code",
           },
           {
-            data: "reference_no",
+            data: "name",
           },
           {
-            data: "warehouse_name",
+            data: "place",
           },
           {
-            data: "total_products",
+            data: "phone",
           },
           {
-            data: "added_by",
+            data: "email",
           },
           {
-            data: "note",
+            data: "city",
           },
           {
             data: null,
-          },
-          {
-            data: "updated_at",
           },
         ],
         columnDefs: [
@@ -264,29 +210,15 @@ export default {
             targets: [2],
             visible: true,
             searchable: true,
-            render: function (data, type, row, meta) {
-              return (
-                data +
-                '&nbsp;&nbsp;<span class="text-muted">' +
-                row["time"] +
-                "<span>"
-              );
-            },
           },
           {
             targets: [3],
-            render: function (data, type, row, meta) {
-              return data == null
-                ? '<i class="text-muted small">NIL</i>'
-                : data;
-            },
           },
           {
-            targets: [4]
+            targets: [4],
           },
           {
             targets: [5],
-            className: "text-center"
           },
           {
             targets: [6],
@@ -307,14 +239,40 @@ export default {
           {
             targets: [8],
             className: "text-center",
-            defaultContent: '<i class="fas fa-paperclip"></i>',
             orderable: false,
             searchable: false,
-            width: "2%",
-          },
-          {
-            targets: [9],
-            visible: false,
+            width: "1%",
+            defaultContent:
+              "<div class='btn-group dropleft'><button type='button' class='btn btn-secondary dropdown-toggle btn-sm' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> Action</button><div class='dropdown-menu'><a id='info' class='dropdown-item' href='#'><i class='fa fa-info fa-fw' aria-hidden='true'></i>Details</a> <a class='dropdown-item' id='edit' href='#'><i class='fa fa-edit fa-fw' aria-hidden='true'></i>Edit</a><div class='dropdown-divider'></div><a class='dropdown-item' id='delete' href='#'><i class='fa fa-trash fa-fw' aria-hidden='true'></i>Delete</a> </div></div>",
+            render: function (data, type, row, meta) {
+              let infoBtn =
+                '<button type="button" id="info" class="btn btn-success" data-toggle="tooltip" data-placement="left" title="Info"><i class="fas fa-info-circle"></i></button>';
+              let editBtn =
+                '<button type="button" id="edit" class="btn btn-' +
+                (row["editable"] !== 0 ? "primary" : "secondary") +
+                '"' +
+                (row["editable"] !== 0
+                  ? 'data-toggle="tooltip" data-placement="left" title="Edit"'
+                  : "") +
+                (row["editable"] === 0 ? "disabled" : "") +
+                '><i class="fas fa-pencil-alt"></i></button> ';
+              let delBtn =
+                '<button type="button" id="delete" class="btn btn-' +
+                (row["deletable"] !== 0 ? "danger" : "secondary") +
+                '"' +
+                (row["deletable"] !== 0
+                  ? 'data-toggle="tooltip" data-placement="left" title="Delete"'
+                  : "") +
+                (row["deletable"] === 0 ? "disabled" : "") +
+                '><i class="fas fa-trash"></i></button>';
+              return (
+                '<div class="btn-group btn-group-sm" role="group">' +
+                editBtn +
+                infoBtn +
+                delBtn +
+                "</div>"
+              );
+            },
           },
         ],
         buttons: [
@@ -419,9 +377,7 @@ export default {
             text: '<i class="fa-solid fa-plus"></i>',
             className: "btn-light",
             action: function () {
-              self.$router
-                .push({ name: "adminProductAdjustmentNew" })
-                .catch((e) => {});
+              window.SUPPLIER_NEW_MODAL.show();
             },
             attr: {
               "data-bs-toggle": "tooltip",
@@ -456,18 +412,23 @@ export default {
       $("#datatable tbody").on("click", "#edit", function () {
         // edit from action menu
         self.row = self.table.row($(this).parents("tr")).data();
-        console.log(self.row);
-        self.$router
-          .push({
-            name: "adminProductAdjustmentEdit",
-            params: { id: self.row.id, data: JSON.stringify(self.row) },
-          })
-          .catch(() => {});
+        window.SUPPLIER_NEW_MODAL.show();
+      });
+      $("#datatable tbody").on("click", "#info", function () {
+        // info from action menu
+        self.row = self.table.row($(this).parents("tr")).data();
+        window.SUPPLIER_INFO_MODAL.show();
       });
       $("#datatable tbody").on("click", "#delete", function () {
         // delete from action menu
-        self.row = self.table.row($(this).parents("tr")).data();
-        alert("delete");
+        let row = self.table.row($(this).parents("tr")).data();
+        self.emitter.emit("deleteConfirmModal", {
+          title: null,
+          body: 'Delete supplier with name <b>'+row.name+'</b> ('+row.place+')?',
+          data: row,
+          action: "confirmDeleteSupplier",
+          type: "danger",
+        });
       });
       self.table.on("select deselect", function () {
         self.rows = self.table.rows(".selected").data().toArray();
@@ -504,10 +465,6 @@ export default {
           // search clear button clicked
           self.table.search("").draw();
         });
-    });
-    window.PROD_ADJ_DETAILS_MODAL = new Modal($("#prodAdjDetailsModal"), {
-      backdrop: true,
-      show: true,
     });
   },
   data: function () {

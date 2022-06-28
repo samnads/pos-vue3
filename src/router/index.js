@@ -14,6 +14,10 @@ import AdminProductListTest from '../admin/product/TestProductList.vue'
 import AdjustmentMain from '../admin/adjustment/AdjustmentMain.vue'
 import AdjustmentList from '../admin/adjustment/AdjustmentList.vue'
 import AdjustmentNew from '../admin/adjustment/AdjustmentNew.vue'
+// Supplier based pages
+import AdminSupplierMain from '../admin/supplier/SupplierMain.vue'
+import AdminSupplierList from '../admin/supplier/SupplierList.vue'
+import AdminSupplierNew from '../admin/supplier/SupplierNew.vue'
 // error pages
 import PageNotFound from '../admin/PageNotFound.vue'
 
@@ -103,6 +107,29 @@ const routes = [
             path: 'edit/:id',
             name: 'adminProductAdjustmentEdit',
             component: AdjustmentNew,
+          },
+        ],
+      },
+      {
+        path: 'supplier',
+        name: 'adminSupplierMain',
+        component: AdminSupplierMain,
+        redirect: '/admin/supplier/list',
+        children: [
+          {
+            path: 'list',
+            name: 'adminSupplierList',
+            component: AdminSupplierList,
+          },
+          {
+            path: 'new',
+            name: 'adminSupplierNew',
+            component: AdminSupplierNew,
+          },
+          {
+            path: 'edit/:id',
+            name: 'adminSupplierEdit',
+            component: AdminSupplierNew,
           },
         ],
       },

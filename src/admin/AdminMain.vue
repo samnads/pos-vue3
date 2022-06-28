@@ -245,7 +245,7 @@ a {
 }
 .btn > svg:not(.solo) {
   /* solo is a custom class to fix icon only button */
-  padding-right: 10px;
+  /*padding-right: 10px;*/
 }
 /* from control styles */
 label {
@@ -347,6 +347,10 @@ import "datatables.net-buttons/js/buttons.print";
 import "datatables.net-buttons/js/buttons.html5";
 import "datatables.net-select-bs5/css/select.bootstrap5.css";
 import "datatables.net-select-bs5/js/select.bootstrap5";
+// for pdf download from datatable
+import pdfMake from "datatables.net-buttons/js/pdfmake.min";
+import pdfFonts from "datatables.net-buttons/js/vfs_fonts.js";
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 // because datatable not showing excel button
 import jsZip from 'jszip';
 window.JSZip = jsZip;

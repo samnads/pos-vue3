@@ -56,7 +56,7 @@
             />
           </th>
           <th scope="col"><i class="fa-solid fa-image"></i></th>
-          <th scope="col">ID</th>
+          <th scope="col" class="d-none">ID</th>
           <th scope="col">Code</th>
           <th scope="col">Name</th>
           <th scope="col">Brand</th>
@@ -335,7 +335,7 @@ export default {
           },
           {
             targets: [2],
-            visible: false,
+            className: "d-none",
             searchable: false,
           },
           {
@@ -401,24 +401,37 @@ export default {
           },
         ],
         buttons: [
-           {
-            extend: "copy",
-            text: '<i class="fas fa-copy"></i>',
+          {
+            extend: "print",
+            text: '<i class="fa-solid fa-print"></i>',
+            className: "btn-light",
+            exportOptions: {
+              columns: [2, 3, 4, 5, 6, 7],
+            },
+            attr: {
+              "data-bs-toggle": "tooltip",
+              title: "Print",
+            },
+          },
+          {
+            extend: "pdfHtml5",
+            text: '<i class="fas fa-download"></i>',
             className: "btn-light",
             exportOptions: {
               columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
             },
             attr: {
               "data-toggle": "tooltip",
-              title: "Copy to clipboard",
+              title: "Download PDF",
             },
           },
+
           {
             extend: "excel",
             text: '<i class="fas fa-file-excel"></i>',
             className: "btn-light",
             exportOptions: {
-               columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
             },
             attr: {
               "data-toggle": "tooltip",
@@ -430,25 +443,14 @@ export default {
             text: '<i class="fas fa-file-csv"></i>',
             className: "btn-light",
             exportOptions: {
-               columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
             },
             attr: {
               "data-toggle": "tooltip",
               title: "Download CSV",
             },
           },
-          {
-            extend: "pdfHtml5",
-            text: '<i class="fas fa-file-pdf"></i>',
-            className: "btn-light",
-            exportOptions: {
-               columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-            },
-            attr: {
-              "data-toggle": "tooltip",
-              title: "Download PDF",
-            },
-          },
+
           {
             text: '<i class="fa fa-sync-alt"></i>',
             className: "btn-light",
@@ -485,15 +487,15 @@ export default {
             },
           },
           {
-            extend: "print",
-            text: '<i class="fa-solid fa-print"></i>',
+            extend: "copy",
+            text: '<i class="fas fa-copy"></i>',
             className: "btn-light",
             exportOptions: {
-              columns: [2, 3, 4, 5, 6, 7],
+              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
             },
             attr: {
-              "data-bs-toggle": "tooltip",
-              title: "Print",
+              "data-toggle": "tooltip",
+              title: "Copy to clipboard",
             },
           },
           {
@@ -519,7 +521,7 @@ export default {
         },
         drawCallback: function (settings) {
           let rows = self.table.rows(".selected").data().toArray();
-          self.table.button(4).enable(rows.length >= 1);
+          self.table.button(5).enable(rows.length >= 1);
           $("#checkall").prop("indeterminate", false);
           $("#checkall").prop("checked", false);
         },
@@ -561,7 +563,7 @@ export default {
       });
       self.table.on("select deselect", function () {
         self.rows = self.table.rows(".selected").data().toArray();
-        self.table.button(4).enable(self.rows.length >= 1);
+        self.table.button(5).enable(self.rows.length >= 1);
         if (self.rows.length == 0) {
           $("#checkall").prop("indeterminate", false);
           $("#checkall").prop("checked", false);
