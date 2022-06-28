@@ -40,7 +40,11 @@
     </div>
   </div>
   <div class="wrap_content" id="wrap_content">
-    <table class="table table-bordered table-striped w-auto" id="datatable" v-once>>
+    <table
+      class="table table-bordered table-striped w-auto"
+      id="datatable"
+      v-once
+    >
       <thead>
         <tr>
           <th scope="col">
@@ -225,7 +229,7 @@ export default {
         order: [[2, "desc"]],
         ajax: {
           method: "GET",
-          url: process.env.VUE_APP_API_ROOT+"admin/ajax/product",
+          url: process.env.VUE_APP_API_ROOT + "admin/ajax/product",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {
@@ -324,7 +328,7 @@ export default {
             render: function (data, type, full, meta) {
               return (
                 '<img src="' +
-                (data || process.env.VUE_APP_API_ROOT+"gd/50/50") +
+                (data || process.env.VUE_APP_API_ROOT + "gd/50/50") +
                 '" class="rounded thumbnail" width="20px"/>'
               );
             },
@@ -337,9 +341,7 @@ export default {
           {
             targets: [5],
             render: function (data, type, row, meta) {
-              return data == null
-                ? '<i class="text-muted small">-</i>'
-                : data;
+              return data == null ? '<i class="text-muted small">-</i>' : data;
             },
           },
           {
@@ -365,7 +367,13 @@ export default {
             targets: [9],
             className: "text-center",
             render: function (data, type, row, meta) {
-              return '<span class="text-secondary small" title="'+row.unit_name+'">' +data+ "</span>";
+              return (
+                '<span class="text-secondary small" title="' +
+                row.unit_name +
+                '">' +
+                data +
+                "</span>"
+              );
             },
           },
           {
@@ -393,16 +401,52 @@ export default {
           },
         ],
         buttons: [
+           {
+            extend: "copy",
+            text: '<i class="fas fa-copy"></i>',
+            className: "btn-light",
+            exportOptions: {
+              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+            },
+            attr: {
+              "data-toggle": "tooltip",
+              title: "Copy to clipboard",
+            },
+          },
+          {
+            extend: "excel",
+            text: '<i class="fas fa-file-excel"></i>',
+            className: "btn-light",
+            exportOptions: {
+               columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+            },
+            attr: {
+              "data-toggle": "tooltip",
+              title: "Download Excel",
+            },
+          },
           {
             extend: "csv",
             text: '<i class="fas fa-file-csv"></i>',
             className: "btn-light",
             exportOptions: {
-              columns: [2, 3, 4, 5, 6, 7],
+               columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
             },
             attr: {
               "data-toggle": "tooltip",
               title: "Download CSV",
+            },
+          },
+          {
+            extend: "pdfHtml5",
+            text: '<i class="fas fa-file-pdf"></i>',
+            className: "btn-light",
+            exportOptions: {
+               columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+            },
+            attr: {
+              "data-toggle": "tooltip",
+              title: "Download PDF",
             },
           },
           {
@@ -475,7 +519,7 @@ export default {
         },
         drawCallback: function (settings) {
           let rows = self.table.rows(".selected").data().toArray();
-          self.table.button(2).enable(rows.length >= 1);
+          self.table.button(4).enable(rows.length >= 1);
           $("#checkall").prop("indeterminate", false);
           $("#checkall").prop("checked", false);
         },
@@ -492,7 +536,7 @@ export default {
       $("#datatable tbody").on("click", "#edit", function () {
         // edit from action menu
         self.row = self.table.row($(this).parents("tr")).data();
-        console.log(self.row)
+        console.log(self.row);
         self.$router
           .push({
             name: "adminProductEdit",
@@ -517,7 +561,7 @@ export default {
       });
       self.table.on("select deselect", function () {
         self.rows = self.table.rows(".selected").data().toArray();
-        self.table.button(2).enable(self.rows.length >= 1);
+        self.table.button(4).enable(self.rows.length >= 1);
         if (self.rows.length == 0) {
           $("#checkall").prop("indeterminate", false);
           $("#checkall").prop("checked", false);

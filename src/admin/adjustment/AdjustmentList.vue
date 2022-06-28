@@ -324,11 +324,35 @@ export default {
         ],
         buttons: [
           {
+            extend: "copy",
+            text: '<i class="fas fa-copy"></i>',
+            className: "btn-light",
+            exportOptions: {
+              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+            },
+            attr: {
+              "data-toggle": "tooltip",
+              title: "Copy to clipboard",
+            },
+          },
+          {
+            extend: "excel",
+            text: '<i class="fas fa-file-excel"></i>',
+            className: "btn-light",
+            exportOptions: {
+               columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+            },
+            attr: {
+              "data-toggle": "tooltip",
+              title: "Download Excel",
+            },
+          },
+          {
             extend: "csv",
             text: '<i class="fas fa-file-csv"></i>',
             className: "btn-light",
             exportOptions: {
-              columns: [2, 3, 4, 5, 6, 7],
+               columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
             },
             attr: {
               "data-toggle": "tooltip",
@@ -404,7 +428,7 @@ export default {
         },
         drawCallback: function (settings) {
           let rows = self.table.rows(".selected").data().toArray();
-          self.table.button(2).enable(rows.length >= 1);
+          self.table.button(4).enable(rows.length >= 1);
           $("#checkall").prop("indeterminate", false);
           $("#checkall").prop("checked", false);
         },
@@ -435,7 +459,7 @@ export default {
       });
       self.table.on("select deselect", function () {
         self.rows = self.table.rows(".selected").data().toArray();
-        self.table.button(2).enable(self.rows.length >= 1);
+        self.table.button(4).enable(self.rows.length >= 1);
         if (self.rows.length == 0) {
           $("#checkall").prop("indeterminate", false);
           $("#checkall").prop("checked", false);

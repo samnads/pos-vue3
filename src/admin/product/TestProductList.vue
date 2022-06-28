@@ -211,7 +211,7 @@ export default {
         searchDelay: 750,
         processing: true,
         serverSide: true,
-        dom: "lBtipr",
+        dom: "Brtip",
         deferRender: true,
         select: {
           style: "multi",
@@ -402,6 +402,30 @@ export default {
           },
         ],
         buttons: [
+          {
+            extend: "copy",
+            text: '<i class="fas fa-copy"></i>',
+            className: "btn-light",
+            exportOptions: {
+              columns: [2, 3, 4, 5, 6, 7],
+            },
+            attr: {
+              "data-toggle": "tooltip",
+              title: "Download CSV",
+            },
+          },
+           {
+            extend: "excel",
+            text: '<i class="fas fa-file-excel"></i>',
+            className: "btn-light",
+            exportOptions: {
+              columns: [2, 3, 4, 5, 6, 7],
+            },
+            attr: {
+              "data-toggle": "tooltip",
+              title: "Download CSV",
+            },
+          },
           {
             extend: "csv",
             text: '<i class="fas fa-file-csv"></i>',

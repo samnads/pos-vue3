@@ -341,12 +341,15 @@ import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
 import "datatables.net-buttons-bs5/js/buttons.bootstrap5";
 import "datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css";
 import "datatables.net-buttons/js/buttons.colVis";
-import "datatables.net-buttons/js/buttons.flash";
-import "datatables.net-buttons/js/buttons.html5";
-import "datatables.net-buttons/js/buttons.print";
 import "datatables.net-buttons/js/dataTables.buttons";
+import "datatables.net-buttons/js/buttons.flash";
+import "datatables.net-buttons/js/buttons.print";
+import "datatables.net-buttons/js/buttons.html5";
 import "datatables.net-select-bs5/css/select.bootstrap5.css";
 import "datatables.net-select-bs5/js/select.bootstrap5";
+// because datatable not showing excel button
+import jsZip from 'jszip';
+window.JSZip = jsZip;
 //
 import { Modal } from "bootstrap";
 import AlertBoxDefault from "./modal/AlertBoxDefault.vue";
