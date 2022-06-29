@@ -1202,7 +1202,7 @@
             v-if="isDirty && !isSubmitting"
             @click="resetCustom"
           >
-            <i class="fa-solid fa-rotate-left solo"></i>
+            <i class="fa-solid fa-rotate-left"></i>
           </button>
         </div>
       </div>

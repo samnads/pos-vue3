@@ -2,13 +2,16 @@
   <div class="modal" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-md modal-dialog-centered">
       <div class="modal-content">
-        <div class="modal-header" :class="type">
+        <div
+          class="modal-header"
+          :class="params.type ? 'bg-' + params.type : 'bg-danger'"
+        >
           <h5 class="modal-title">
-            {{ title || "Confirm Delete ?" }}
+            {{ params.title || "Confirm Delete ?" }}
           </h5>
         </div>
         <div class="modal-body">
-          <span v-html="body"></span>
+          <span v-html="params.body"></span>
         </div>
         <div class="modal-footer">
           <button
@@ -36,33 +39,27 @@ import { inject } from "vue";
 export default {
   props: {},
   setup() {
-    const title = ref("");
-    const body = ref("");
-    const type = ref("");
-    const action = ref("");
-    const data = ref("");
+    const data = ref({}); // may be some db data
+    const params = ref({}); // extra params
     const emitter = inject("emitter"); // Inject `emitter`
-    emitter.on("deleteConfirmModal", (datas) => {
+    emitter.on("deleteConfirmModal", (DATA) => {
       // *Listen* for event
-      data.value = datas.data;
-      title.value = datas.title;
-      body.value = datas.body;
-      type.value = datas.type ? "bg-" + datas.type : "bg-danger"; // change bg-danger for default color in alert box//
+      data.value = DATA.data;
+      delete DATA.data;
+      params.value = DATA;
       emitter.emit("playSound", { file: "warning.mp3" }); // PLAY SOUND
-      // get action
-      action.value = datas.action;
       // show modal
       window.DELETE_CONFIRM_DEFAULT_MODAL.show();
     });
     function confirmDelete() {
-      window.DELETE_CONFIRM_DEFAULT_MODAL.hide();
-      emitter.emit(action.value, data.value); // DELETE ACTION EMITTER
+      if (params.value.hide) {
+        window.DELETE_CONFIRM_DEFAULT_MODAL.hide();
+      }
+      emitter.emit(params.value.action, data.value); // DELETE ACTION EMITTER
     }
     return {
-      title,
-      body,
-      type,
       confirmDelete,
+      params,
     };
   },
 };

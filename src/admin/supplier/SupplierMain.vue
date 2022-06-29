@@ -10,6 +10,7 @@
 <style>
 </style>
 <script>
+import { inject } from "vue";
 import { Modal } from "bootstrap";
 //
 import SupplierList from "../supplier/SupplierList.vue";
@@ -25,6 +26,12 @@ export default {
     SupplierEdit,
     SupplierNewModal,
     SupplierInfoModal,
+  },
+  setup() {
+    const emitter = inject("emitter"); // Inject `emitter`
+    return {
+      emitter,
+    };
   },
   mounted() {
     window.SUPPLIER_NEW_MODAL = new Modal($("#supplierNewModal"), {

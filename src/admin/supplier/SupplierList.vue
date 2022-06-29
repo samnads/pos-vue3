@@ -65,6 +65,7 @@
 </style>
 <script>
 /* eslint-disable */
+import { ref } from "vue";
 import admin from "@/mixins/admin.js";
 import { inject } from "vue";
 export default {
@@ -72,10 +73,7 @@ export default {
   /* eslint-disable */
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
-    emitter.on("confirmDeleteSupplier", (data) => {
-      // delete selected supplier stuff here
-      alert("do delete supplier " + data.name);
-    });
+    const controller_delete = ref({});
     // notify
     const {
       notifyDefault,
@@ -88,13 +86,13 @@ export default {
       notifyApiResponse,
       notifyCatchResponse,
       axiosAsyncCallReturnData,
-      emitter
+      emitter,
+      controller_delete,
     };
   },
   methods: {
     getAdjustInfo() {},
   },
-  created() {},
   mounted() {
     var self = this;
     $(function () {
@@ -151,11 +149,11 @@ export default {
           processing:
             '<div class="spinner-grow" style="width: 3rem; height: 3rem;" role="status"> <span class="visually-hidden">Loading...</span></div>',
           emptyTable: "No data available in table",
-          zeroRecords: "No matching adjustments found",
-          info: "Showing _START_ to _END_ of _TOTAL_ adjustments",
-          infoEmpty: "No adjustment info found",
-          emptyTable: "No adjustments found",
-          infoFiltered: "(filtered from _MAX_ adjustments)",
+          zeroRecords: "No matching supplier found",
+          info: "Showing _START_ to _END_ of _TOTAL_ suppliers",
+          infoEmpty: "No supplier info found",
+          emptyTable: "No supplier found",
+          infoFiltered: "(filtered from _MAX_ suppliers)",
           paginate: {
             first: "First",
             last: "Last",
@@ -293,7 +291,7 @@ export default {
             text: '<i class="fas fa-download"></i>',
             className: "btn-light",
             exportOptions: {
-              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+              columns: [2, 3, 4, 5, 6, 7],
             },
             attr: {
               "data-toggle": "tooltip",
@@ -306,7 +304,7 @@ export default {
             text: '<i class="fas fa-file-excel"></i>',
             className: "btn-light",
             exportOptions: {
-              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+              columns: [2, 3, 4, 5, 6, 7],
             },
             attr: {
               "data-toggle": "tooltip",
@@ -318,7 +316,7 @@ export default {
             text: '<i class="fas fa-file-csv"></i>',
             className: "btn-light",
             exportOptions: {
-              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+              columns: [2, 3, 4, 5, 6, 7],
             },
             attr: {
               "data-toggle": "tooltip",
@@ -346,11 +344,16 @@ export default {
             className: "btn-light",
             enabled: false,
             action: function () {
-              self.delete_modal_row = self.table
-                .rows(".selected")
-                .data()
-                .toArray();
-              window.PROD_DELETE_MODAL.show();
+              let rows = self.table.rows(".selected").data().toArray();
+              self.emitter.emit("deleteConfirmModal", {
+                title: null,
+                body:
+                  'Delete selected supplier'+(rows.length > 1 ? 's ' : '')+(rows.length > 1 ? '('+rows.length +')' : ' <b>'+rows[0].name+'</b> ('+rows[0].name+')')+' ?',
+                data: self.table.rows(".selected").data().toArray(),
+                action: "confirmDeleteSupplier",
+                hide: true,
+                type: "danger",
+              });
             },
             attr: {
               title: "Delete",
@@ -424,9 +427,15 @@ export default {
         let row = self.table.row($(this).parents("tr")).data();
         self.emitter.emit("deleteConfirmModal", {
           title: null,
-          body: 'Delete supplier with name <b>'+row.name+'</b> ('+row.place+')?',
+          body:
+            "Delete supplier with name <b>" +
+            row.name +
+            "</b> (" +
+            row.place +
+            ")?",
           data: row,
           action: "confirmDeleteSupplier",
+          hide: true,
           type: "danger",
         });
       });
@@ -466,10 +475,47 @@ export default {
           self.table.search("").draw();
         });
     });
+    self.emitter.on("confirmDeleteSupplier", (data) => {
+      // delete selected supplier stuff here
+      if (self.controller_delete.value) {
+        self.controller_delete.value.abort();
+      }
+      self.controller_delete.value = new AbortController();
+      self
+        .axiosAsyncCallReturnData(
+          "delete",
+          "supplier",
+          {
+            data: data,
+            action: "delete",
+            bulk: data.length ? true : false,
+          },
+          self.controller_delete.value,
+          {
+            showSuccessNotification: true,
+            showCatchNotification: true,
+            showProgress: true,
+          }
+        )
+        .then(function (data) {
+          if (data.success == true) {
+            // success
+            self.table.ajax.reload();
+          } else {
+            if (data.success == false) {
+              // not ok
+            } else {
+              // other error
+              if (data.message != "canceled") {
+                //
+              }
+            }
+          }
+        });
+    });
   },
   data: function () {
     return {
-      products: [],
     };
   },
 };

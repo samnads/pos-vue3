@@ -243,9 +243,10 @@ a {
 .page-item.active .page-link {
   color: #fff !important;
 }
-.btn > svg:not(.solo) {
-  /* solo is a custom class to fix icon only button */
-  /*padding-right: 10px;*/
+/* for all modal footer buttons */
+.modal-footer .btn:not(.icon)  svg{
+  /* icon is for icon only button */
+  padding-right: 5px;
 }
 /* from control styles */
 label {

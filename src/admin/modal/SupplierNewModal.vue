@@ -131,7 +131,7 @@
             </button>
             <button
               type="button"
-              class="btn btn-secondary"
+              class="btn btn-secondary icon"
               @click="resetForm"
               :disabled="isSubmitting || !isDirty"
             >

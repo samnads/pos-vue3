@@ -162,7 +162,7 @@
                       class="btn btn-warning input-group-text"
                       @click="quantityButton(product, '-')"
                     >
-                      <i class="fa-solid fa-minus solo"></i>
+                      <i class="fa-solid fa-minus"></i>
                     </button>
                     <input
                       @change="changeQuantity(product.id, product.quantity)"
@@ -175,7 +175,7 @@
                       class="btn btn-info input-group-text"
                       @click="quantityButton(product, '+')"
                     >
-                      <i class="fa-solid fa-plus solo"></i>
+                      <i class="fa-solid fa-plus"></i>
                     </button>
                   </div>
                 </td>
@@ -229,7 +229,7 @@
             v-if="isDirty && !isSubmitting"
             @click="resetCustom"
           >
-            <i class="fa-solid fa-rotate-left solo"></i>
+            <i class="fa-solid fa-rotate-left"></i>
           </button>
         </div>
       </div>
@@ -404,6 +404,7 @@ export default {
         title: null,
         body: "Confirm delete <b>" + data.name + "</b> from list ?",
         data: data,
+        hide:true,
         action: "confirmDeleteProduct",
         type: "danger",
       });
