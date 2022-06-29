@@ -349,8 +349,8 @@ import "datatables.net-buttons/js/buttons.html5";
 import "datatables.net-select-bs5/css/select.bootstrap5.css";
 import "datatables.net-select-bs5/js/select.bootstrap5";
 // for pdf download from datatable
-import pdfMake from "datatables.net-buttons/js/pdfmake.min";
-import pdfFonts from "datatables.net-buttons/js/vfs_fonts.js";
+import pdfMake from "pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 // because datatable not showing excel button
 import jsZip from 'jszip';

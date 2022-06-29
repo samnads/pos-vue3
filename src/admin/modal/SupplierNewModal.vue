@@ -3,13 +3,17 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <form @submit="onSubmit" class="needs-validation">
-          <div class="modal-header">
-            <h5 class="modal-title">New Supplier</h5>
+          <div
+            class="modal-header"
+            :class="DATA.type ? 'bg-' + DATA.type : 'bg-primary'"
+          >
+            <h5 class="modal-title">{{ DATA.title }}</h5>
             <button
               type="button"
               class="btn-close"
               data-bs-dismiss="modal"
               aria-label="Close"
+              @click="close"
             ></button>
           </div>
           <div class="modal-body">
@@ -19,18 +23,34 @@
                 <input
                   type="text"
                   name="name"
+                  v-model="name"
                   class="form-control"
+                  v-bind:class="[
+                    errorName
+                      ? 'is-invalid'
+                      : !errorName && name
+                      ? 'is-valid'
+                      : '',
+                  ]"
                 />
-                <div class="invalid-feedback">{{  }}</div>
+                <div class="invalid-feedback">{{ errorName }}</div>
               </div>
               <div class="col">
                 <label class="form-label">Place<i>*</i></label>
                 <input
                   type="text"
                   name="place"
+                  v-model="place"
                   class="form-control"
+                  v-bind:class="[
+                    errorPlace
+                      ? 'is-invalid'
+                      : !errorPlace && place
+                      ? 'is-valid'
+                      : '',
+                  ]"
                 />
-                <div class="invalid-feedback">{{  }}</div>
+                <div class="invalid-feedback">{{ errorPlace }}</div>
               </div>
             </div>
             <div class="row">
@@ -39,78 +59,142 @@
                 <input
                   type="text"
                   name="phone"
+                  v-model="phone"
                   class="form-control"
+                  v-bind:class="[
+                    errorPhone
+                      ? 'is-invalid'
+                      : !errorPhone && phone
+                      ? 'is-valid'
+                      : '',
+                  ]"
                 />
-                <div class="invalid-feedback">{{  }}</div>
+                <div class="invalid-feedback">{{ errorPhone }}</div>
               </div>
               <div class="col">
                 <label class="form-label">City</label>
                 <input
                   type="text"
                   name="city"
+                  v-model="city"
                   class="form-control"
+                  v-bind:class="[
+                    errorCity
+                      ? 'is-invalid'
+                      : !errorCity && city
+                      ? 'is-valid'
+                      : '',
+                  ]"
                 />
-                <div class="invalid-feedback">{{  }}</div>
+                <div class="invalid-feedback">{{ errorCity }}</div>
               </div>
               <div class="col">
                 <label class="form-label">PIN Code</label>
                 <input
                   type="text"
                   name="pin"
+                  v-model="pin"
                   class="form-control"
+                  v-bind:class="[
+                    errorPin
+                      ? 'is-invalid'
+                      : !errorPin && pin
+                      ? 'is-valid'
+                      : '',
+                  ]"
                 />
-                <div class="invalid-feedback">{{  }}</div>
+                <div class="invalid-feedback">{{ errorPin }}</div>
               </div>
             </div>
             <div class="row">
               <div class="col">
                 <label class="form-label">Email</label>
                 <input
-                  type="text"
+                  type="email"
                   name="email"
+                  v-model="email"
                   class="form-control"
+                  v-bind:class="[
+                    errorEmail
+                      ? 'is-invalid'
+                      : !errorEmail && email
+                      ? 'is-valid'
+                      : '',
+                  ]"
                 />
-                <div class="invalid-feedback">{{  }}</div>
+                <div class="invalid-feedback">{{ errorEmail }}</div>
               </div>
               <div class="col">
                 <label class="form-label">GST No.</label>
                 <input
                   type="text"
                   name="gst"
+                  v-model="gst"
                   class="form-control"
+                  v-bind:class="[
+                    errorGst
+                      ? 'is-invalid'
+                      : !errorGst && gst
+                      ? 'is-valid'
+                      : '',
+                  ]"
                 />
-                <div class="invalid-feedback">{{  }}</div>
+                <div class="invalid-feedback">{{ errorGst }}</div>
               </div>
               <div class="col">
                 <label class="form-label">Tax No.</label>
                 <input
                   type="text"
                   name="tax"
+                  v-model="tax"
                   class="form-control"
+                  v-bind:class="[
+                    errorTax
+                      ? 'is-invalid'
+                      : !errorTax && tax
+                      ? 'is-valid'
+                      : '',
+                  ]"
                 />
-                <div class="invalid-feedback">{{  }}</div>
+                <div class="invalid-feedback">{{ errorTax }}</div>
               </div>
             </div>
             <div class="row">
               <div class="col">
-                <label for="" class="form-label">Address</label>
+                <label class="form-label">Address</label>
                 <textarea
                   rows="3"
                   type="text"
                   name="address"
+                  v-model="address"
                   class="form-control"
+                  v-bind:class="[
+                    errorAddress
+                      ? 'is-invalid'
+                      : !errorAddress && address
+                      ? 'is-valid'
+                      : '',
+                  ]"
                 ></textarea>
-                <div class="invalid-feedback">{{  }}</div>
+                <div class="invalid-feedback">{{ errorAddress }}</div>
               </div>
               <div class="col">
-                <label for="" class="form-label">Description</label>
+                <label class="form-label">Description</label>
                 <textarea
                   rows="3"
                   type="text"
                   name="description"
+                  v-model="description"
                   class="form-control"
+                  v-bind:class="[
+                    errorDescription
+                      ? 'is-invalid'
+                      : !errorDescription && description
+                      ? 'is-valid'
+                      : '',
+                  ]"
                 ></textarea>
-                <div class="invalid-feedback">{{  }}</div>
+                <div class="invalid-feedback">{{ errorDescription }}</div>
               </div>
             </div>
           </div>
@@ -132,7 +216,7 @@
             <button
               type="button"
               class="btn btn-secondary icon"
-              @click="resetForm"
+              @click="customReset"
               :disabled="isSubmitting || !isDirty"
             >
               <i class="fa-solid fa-rotate-left"></i>
@@ -166,15 +250,19 @@ import {
   useIsFormDirty,
   useIsFormValid,
 } from "vee-validate";
+import { inject } from "vue";
 import * as yup from "yup";
-import { ref, toRef, computed } from "vue";
+import { ref, computed } from "vue";
 import admin from "@/mixins/admin.js";
 export default {
   props: {
     propUpdateTaxRates: Function,
   },
   setup(props) {
-    // data retrieve
+    const emitter = inject("emitter"); // Inject `emitter`
+    const DATA = ref({});
+    const phoneRegExp =
+      /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
     const {
       notifyDefault,
       notifyFormError,
@@ -183,9 +271,7 @@ export default {
       axiosAsyncCallReturnData,
     } = admin();
     /************************************************************************* */
-    const formValues = {
-      type: "P",
-    };
+    const formValues = ref({});
     /************************************************************************* */
     const schema = computed(() => {
       return yup.object({
@@ -195,25 +281,94 @@ export default {
           .min(3)
           .max(100)
           .nullable(true)
-          .transform((_, val) => (val.length > 0 ? val : undefined))
+          .transform((_, val) =>
+            val != null && val.length > 0 ? val : undefined
+          )
           .label("Name"),
-        code: yup
+        place: yup
           .string()
           .required()
-          .min(2)
+          .min(3)
+          .max(100)
           .nullable(true)
-          .transform((_, val) => (val.length > 0 ? val : undefined))
-          .label("Code"),
-        rate: yup
-          .number()
+          .transform((_, val) =>
+            val != null && val.length > 0 ? val : undefined
+          )
+          .label("Place"),
+        phone: yup
+          .string()
           .required()
+          .matches(phoneRegExp, "Phone Number is not valid")
+          .min(3)
+          .max(100)
           .nullable(true)
-          .transform((_, val) => (val === Number(val) ? val : undefined))
-          .label("Tax Rate"),
+          .transform((_, val) =>
+            val != null && val.length > 0 ? val : undefined
+          )
+          .label("Phone Number"),
+        city: yup
+          .string()
+          .min(3)
+          .max(100)
+          .nullable(true)
+          .transform((_, val) =>
+            val != null && val.length > 0 ? val : undefined
+          )
+          .label("City"),
+        pin: yup
+          .string()
+          .min(3)
+          .max(100)
+          .nullable(true)
+          .transform((_, val) =>
+            val != null && val.length > 0 ? val : undefined
+          )
+          .label("PIN"),
+        email: yup
+          .string()
+          .email()
+          .min(5)
+          .max(100)
+          .nullable(true)
+          .transform((_, val) =>
+            val != null && val.length > 0 ? val : undefined
+          )
+          .label("Email"),
+        gst: yup
+          .string()
+          .min(3)
+          .max(100)
+          .nullable(true)
+          .transform((_, val) =>
+            val != null && val.length > 0 ? val : undefined
+          )
+          .label("GST No."),
+        tax: yup
+          .string()
+          .min(3)
+          .max(100)
+          .nullable(true)
+          .transform((_, val) =>
+            val != null && val.length > 0 ? val : undefined
+          )
+          .label("TAX No."),
+        address: yup
+          .string()
+          .min(3)
+          .max(100)
+          .nullable(true)
+          .transform((_, val) =>
+            val != null && val.length > 0 ? val : undefined
+          )
+          .label("Address"),
         description: yup
           .string()
+          .min(3)
+          .max(100)
           .nullable(true)
-          .transform((_, val) => (val.length > 0 ? val : undefined))
+          .transform((_, val) =>
+            val != null && val.length > 0 ? val : undefined
+          )
           .label("Description"),
       });
     });
@@ -228,63 +383,124 @@ export default {
       validationSchema: schema,
       initialValues: formValues,
     });
-    /************************************************************************* */
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
+    /************************************************************************* */
+    emitter.on("newSupplierModal", (data) => {
+      resetForm();
+      DATA.value = data;
+      if (DATA.value.data) {
+        let fields = DATA.value.data;
+        //formValues.value = fields;
+        setFieldValue("name", fields.name);
+        setFieldValue("place", fields.place);
+        setFieldValue("phone", fields.phone);
+        setFieldValue("city", fields.city);
+        setFieldValue("pin", fields.pin);
+        setFieldValue("email", fields.email);
+        setFieldValue("gst", fields.gst);
+        setFieldValue("tax", fields.tax);
+        setFieldValue("address", fields.address);
+        setFieldValue("description", fields.description);
+      } else {
+        formValues.value = {};
+      }
+      window.SUPPLIER_NEW_MODAL.show();
+    });
     /************************************************************************* */
     function onInvalidSubmit({ values, errors, results }) {
       console.log(errors);
     }
     const onSubmit = handleSubmit((values, { resetForm }) => {
-      return axiosAsyncCallReturnData("post", "tax", {
+      values.db = DATA.value.data;
+      let method = DATA.value.data ? "put" : "post";
+      return axiosAsyncCallReturnData(method, "supplier", {
         data: values,
-      })
-        .then(function (data) {
-          if (data.success == true) {
-            props.propUpdateTaxRates(data.id);
-            resetForm();
-            window.PROD_NEW_TAXRATE_MODAL.hide();
-          } else {
-            if (data.errors) {
-              for (var key in data.errors) {
-                setFieldError(key, data.errors[key]);
-              }
+      }).then(function (data) {
+        if (data.success == true) {
+          // added
+          resetForm();
+          window.window.SUPPLIER_NEW_MODAL.hide();
+          if (DATA.value.emit) {
+            emitter.emit(DATA.value.emit, {});
+          }
+        } else {
+          // not added
+          if (data.errors) {
+            for (var key in data.errors) {
+              setFieldError(key, data.errors[key]);
             }
           }
-        });
+        }
+      });
     }, onInvalidSubmit);
     /************************************************************************* */
     function close() {
       resetForm();
-      window.PROD_NEW_TAXRATE_MODAL.hide();
+    }
+    function customReset() {
+      if (DATA.value.data) {
+        // edit form
+        let fields = DATA.value.data;
+        formValues.value = fields;
+        /* setFieldValue("name", fields.name);
+        setFieldValue("place", fields.place);
+        setFieldValue("phone", fields.phone);
+        setFieldValue("city", fields.city);
+        setFieldValue("pin", fields.pin);
+        setFieldValue("email", fields.email);
+        setFieldValue("gst", fields.gst);
+        setFieldValue("tax", fields.tax);
+        setFieldValue("address", fields.address);
+        setFieldValue("description", fields.description);*/
+      } else {
+        // new
+        resetForm();
+      }
     }
     /************************************************************************* */
     const { value: name, errorMessage: errorName } = useField("name");
-    const { value: code, errorMessage: errorCode } = useField("code");
-    const { value: rate, errorMessage: errorRate } = useField("rate");
-    const { value: type, errorMessage: errorType } = useField("type");
+    const { value: place, errorMessage: errorPlace } = useField("place");
+    const { value: phone, errorMessage: errorPhone } = useField("phone");
+    const { value: city, errorMessage: errorCity } = useField("city");
+    const { value: pin, errorMessage: errorPin } = useField("pin");
+    const { value: email, errorMessage: errorEmail } = useField("email");
+    const { value: gst, errorMessage: errorGst } = useField("gst");
+    const { value: tax, errorMessage: errorTax } = useField("tax");
+    const { value: address, errorMessage: errorAddress } = useField("address");
     const { value: description, errorMessage: errorDescription } =
       useField("description");
     /*************************************** */
     return {
-      /******* fields   */
+      /******* form fields   */
       name,
       errorName,
-      code,
-      errorCode,
-      rate,
-      errorRate,
+      place,
+      errorPlace,
+      phone,
+      errorPhone,
+      city,
+      errorCity,
+      pin,
+      errorPin,
+      email,
+      errorEmail,
+      gst,
+      errorGst,
+      tax,
+      errorTax,
+      address,
+      errorAddress,
       description,
       errorDescription,
-      type,
-      errorType,
       /*************** */
       isDirty,
       isValid,
       onSubmit,
       isSubmitting,
-      resetForm,
+      customReset,
       close,
+      DATA,
     };
   },
   data() {

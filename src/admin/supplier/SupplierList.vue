@@ -348,7 +348,12 @@ export default {
               self.emitter.emit("deleteConfirmModal", {
                 title: null,
                 body:
-                  'Delete selected supplier'+(rows.length > 1 ? 's ' : '')+(rows.length > 1 ? '('+rows.length +')' : ' <b>'+rows[0].name+'</b> ('+rows[0].name+')')+' ?',
+                  "Delete selected supplier" +
+                  (rows.length > 1 ? "s " : "") +
+                  (rows.length > 1
+                    ? "(" + rows.length + ")"
+                    : " <b>" + rows[0].name + "</b> (" + rows[0].name + ")") +
+                  " ?",
                 data: self.table.rows(".selected").data().toArray(),
                 action: "confirmDeleteSupplier",
                 hide: true,
@@ -380,7 +385,11 @@ export default {
             text: '<i class="fa-solid fa-plus"></i>',
             className: "btn-light",
             action: function () {
-              window.SUPPLIER_NEW_MODAL.show();
+              self.emitter.emit("newSupplierModal", {
+                title: "New Supplier",
+                type: "success",
+                emit: "refreshDataTable",
+              });
             },
             attr: {
               "data-bs-toggle": "tooltip",
@@ -414,8 +423,12 @@ export default {
       );
       $("#datatable tbody").on("click", "#edit", function () {
         // edit from action menu
-        self.row = self.table.row($(this).parents("tr")).data();
-        window.SUPPLIER_NEW_MODAL.show();
+        let row = self.table.row($(this).parents("tr")).data();
+        self.emitter.emit("newSupplierModal", {
+          title: "Edit Supplier - " + row.name,
+          data: row,
+          type: "primary",
+        });
       });
       $("#datatable tbody").on("click", "#info", function () {
         // info from action menu
@@ -513,10 +526,12 @@ export default {
           }
         });
     });
+    self.emitter.on("refreshDataTable", (data) => {
+      self.table.ajax.reload();
+    });
   },
   data: function () {
-    return {
-    };
+    return {};
   },
 };
 </script>

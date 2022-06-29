@@ -4,7 +4,7 @@
       <div class="modal-content">
         <form @submit="onSubmit" class="needs-validation">
           <div class="modal-header">
-            <h5 class="modal-title">New Supplier</h5>
+            <h5 class="modal-title">Supplier Information</h5>
             <button
               type="button"
               class="btn-close"

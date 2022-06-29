@@ -148,12 +148,12 @@ class Supplier extends CI_Controller
 					'name'			=> $this->input->post('name'),
 					'place'			=> $this->input->post('place'),
 					'address'		=> $this->input->post('address') == NULL ? NULL : $this->input->post('address'),
-					'pin_code'		=> $this->input->post('pin_code') == NULL ? NULL : $this->input->post('pin_code'),
+					'pin_code'		=> $this->input->post('pin') == NULL ? NULL : $this->input->post('pin'),
 					'city'			=> $this->input->post('city') == NULL ? NULL : $this->input->post('city'),
 					'phone'			=> $this->input->post('phone'),
 					'email'			=> $this->input->post('email') == NULL ? NULL : $this->input->post('email'),
-					'gst_no'		=> $this->input->post('gst_no') == NULL ? NULL : $this->input->post('gst_no'),
-					'tax_no'		=> $this->input->post('tax_no') == NULL ? NULL : $this->input->post('tax_no'),
+					'gst_no'		=> $this->input->post('gst') == NULL ? NULL : $this->input->post('gst'),
+					'tax_no'		=> $this->input->post('tax') == NULL ? NULL : $this->input->post('tax'),
 					'description'	=> $this->input->post('description') == NULL ? NULL : $this->input->post('description')
 				);
 				$id = $this->input->post('db')['id'];
