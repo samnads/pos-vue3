@@ -40,12 +40,17 @@ class Customer_model extends CI_Model
 		$all ? $this->db->select('*') : ($columns == null ? $this->db->select('
 		c.id as id,
         c.name as name,
+		c.code as code,
         c.place as place,
         c.email as email,
         c.phone as phone,
 		c.address as address,
+		c.description as description,
+		c.city as city,
+		c.pin_code as pin_code,
 		c.editable as editable,
 		c.deletable as deletable,
+		c.deleted_at as deleted_at,
         c.updated_at as updated_at,
         
 		cg.id as group,
@@ -68,22 +73,26 @@ class Customer_model extends CI_Model
 
 		return $query->result();
 	}
-	function getCustomer($id, $columns)
+	function getCustomer($where, $columns = null)
 	{
-
 		$columns ? $this->db->select($columns) : $this->db->select('
 		c.id as id,
-		c.name as name,
-		c.place as place,
-		c.email as email,
-		c.phone as phone,
+        c.name as name,
+        c.place as place,
+        c.email as email,
+        c.phone as phone,
 		c.address as address,
-        c.editable as editable,
-		c.deletable as deletable');
+		c.description as description,
+		c.city as city,
+		c.pin_code as pin_code,
+		c.editable as editable,
+		c.deletable as deletable,
+		c.deleted_at as deleted_at,
+        c.updated_at as updated_at');
 
 		$this->db->from(TABLE_CUSTOMER . ' c');
 
-		$this->db->where(array('c.id' => $id));
+		$this->db->where($where);
 
 		$query = $this->db->get();
 		return  $query->row_array();
@@ -127,6 +136,16 @@ class Customer_model extends CI_Model
 	{
 		$this->db->where_in('id', $ids);
 		$query = $this->db->delete(TABLE_CUSTOMER);
+		return $query;
+	}
+	function update_customer($data, $where)
+	{
+		$query = $this->db->update(TABLE_CUSTOMER, $data, $where);
+		return $query;
+	}
+	function insert_customer($data)
+	{
+		$query = $this->db->insert(TABLE_CUSTOMER, $data);
 		return $query;
 	}
 }

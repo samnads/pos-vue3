@@ -46,6 +46,7 @@
             />
           </th>
           <th scope="col" class="d-none">ID</th>
+          <th scope="col">Code</th>
           <th scope="col">Name</th>
           <th scope="col">Group</th>
           <th scope="col">Place</th>
@@ -169,6 +170,9 @@ export default {
             data: "id",
           },
           {
+            data: "code",
+          },
+          {
             data: "name",
           },
           {
@@ -207,14 +211,15 @@ export default {
           {
             targets: [2],
             visible: true,
+            searchable: true
+          },
+          {
+            targets: [3],
+            visible: true,
             searchable: true,
             render: function (data, type, row, meta) {
               return "<b>" + data + "</b>";
             },
-          },
-          {
-            targets: [3],
-            searchable: true,
           },
           {
             targets: [4],
@@ -223,18 +228,14 @@ export default {
           {
             targets: [5],
             searchable: true,
+          },
+          {
+            targets: [6],
+            searchable: true,
             render: function (data, type, row, meta) {
               return data == null
                 ? '<i class="text-muted small">NIL</i>'
                 : data;
-            },
-          },
-          {
-            targets: [6],
-            render: function (data, type, row, meta) {
-              return data == null
-                ? '<i class="text-muted small">NIL</i>'
-                : "<i>" + data + "</i>";
             },
           },
           {
@@ -242,11 +243,19 @@ export default {
             render: function (data, type, row, meta) {
               return data == null
                 ? '<i class="text-muted small">NIL</i>'
-                : data;
+                : "<i>" + data + "</i>";
             },
           },
           {
             targets: [8],
+            render: function (data, type, row, meta) {
+              return data == null
+                ? '<i class="text-muted small">NIL</i>'
+                : data;
+            },
+          },
+          {
+            targets: [9],
             className: "text-center",
             orderable: false,
             searchable: false,

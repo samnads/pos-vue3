@@ -12,7 +12,7 @@
               <span v-else><i class="fa-solid fa-plus"></i></span
               >{{ DATA.title }}
               <span class="badge bg-light text-dark" v-if="DATA.data">{{
-                DATA.data.id
+                DATA.data.code
               }}</span>
             </h5>
             <button
@@ -26,7 +26,7 @@
           <div class="modal-body">
             <div class="row">
               <div class="col">
-                <label class="form-label">Customer Name<i>*</i></label>
+                <label class="form-label">Name<i>*</i></label>
                 <input
                   type="text"
                   name="name"
@@ -129,7 +129,7 @@
             </div>
             <div class="row">
               <div class="col">
-                <label class="form-label">Phone<i>*</i></label>
+                <label class="form-label">Phone</label>
                 <input
                   type="text"
                   name="phone"
@@ -302,7 +302,6 @@ export default {
           .label("Place"),
         phone: yup
           .string()
-          .required()
           .matches(phoneRegExp, "Phone Number is not valid")
           .min(3)
           .max(100)
@@ -416,7 +415,7 @@ export default {
       }
       return axiosAsyncCallReturnData(
         method,
-        "supplier",
+        "customer",
         {
           data: values,
         },
@@ -430,7 +429,7 @@ export default {
         if (data.success == true) {
           // added
           resetForm();
-          window.window.SUPPLIER_NEW_MODAL.hide();
+          window.window.CUSTOMER_NEW_MODAL.hide();
           if (DATA.value.emit) {
             emitter.emit(DATA.value.emit, {}); // do something (emit)
           }
@@ -529,7 +528,7 @@ export default {
     if (!this.customerGroups) {
       // if not found on store
       this.axiosAsyncStoreReturnBool("storeCustomerGroups", "customer_group", {
-        action: "customer_groups",
+        action: "getall",
       });
       // get customer groups
     }

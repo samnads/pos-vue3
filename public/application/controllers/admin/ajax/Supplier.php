@@ -69,7 +69,6 @@ class Supplier extends CI_Controller
 				);
 				//$data['rate'] = 'error';
 				$this->form_validation->set_data($data);
-				$rule_rate = 'callback_same_name_rate_check[' . $data['name'] . ']';
 				$config = array(
 					array(
 						'field' => 'name',
@@ -132,7 +131,6 @@ class Supplier extends CI_Controller
 					echo json_encode(array('success' => false, 'errors' => $this->form_validation->error_array()));
 				} else {
 					//$data['manual_error'] = 'error';
-					$auto_id = $this->Supplier_model->get_AUTO_INCREMENT();
 					$this->db->insert(TABLE_SUPPLIER, $data);
 					if ($this->db->affected_rows() == 1) {
 						echo json_encode(array('success' => true, 'type' => 'success', 'id' => $this->db->insert_id(), 'message' => 'Successfully added new supplier <strong><em>' . $data['name'] . '</em></strong> !', 'timeout' => 5000));

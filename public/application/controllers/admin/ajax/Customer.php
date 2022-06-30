@@ -65,9 +65,12 @@ class Customer extends CI_Controller
 					'code'			=> sprintf("CUST%04s", $auto_id),
 					'group'			=> $this->input->post('group'),
 					'place'			=> $this->input->post('place'),
-					'email'			=> $this->input->post('email') ? $this->input->post('email') : null,
-					'phone'			=> $this->input->post('phone') ? $this->input->post('phone') : null,
-					'address'	=> $this->input->post('address') ? $this->input->post('address') : null,
+					'city'			=> $this->input->post('city') ?: null,
+					'pin_code'		=> $this->input->post('pin') ?: null,
+					'email'			=> $this->input->post('email') ?: null,
+					'phone'			=> $this->input->post('phone') ?: null,
+					'address'		=> $this->input->post('address') ?: null,
+					'description'	=> $this->input->post('description') ?: null,
 				);
 				//$data['name'] = '';
 				$this->form_validation->set_data($data);
@@ -101,6 +104,16 @@ class Customer extends CI_Controller
 						'rules' => 'valid_email|' . $rule_email . '|xss_clean|trim'
 					),
 					array(
+						'field' => 'city',
+						'label' => 'City',
+						'rules' => 'max_length[200]|xss_clean|trim'
+					),
+					array(
+						'field' => 'pin_code',
+						'label' => 'PIN Code',
+						'rules' => 'max_length[15]|xss_clean|trim'
+					),
+					array(
 						'field' => 'phone',
 						'label' => 'Phone',
 						'rules' => 'min_length[5]|max_length[40]|' . $rule_phone . '|xss_clean|trim'
@@ -110,13 +123,18 @@ class Customer extends CI_Controller
 						'label' => 'Address',
 						'rules' => 'max_length[200]|xss_clean|trim'
 					),
+					array(
+						'field' => 'description',
+						'label' => 'Description',
+						'rules' => 'max_length[250]|xss_clean|trim'
+					)
 				);
 				//$data['error'] = '0';
 				$this->form_validation->set_rules($config);
 				if ($this->form_validation->run() == FALSE) {
 					echo json_encode(array('success' => false, 'errors' => $this->form_validation->error_array()));
 				} else {
-					$this->db->insert(TABLE_CUSTOMER, $data);
+					$this->Customer_model->insert_customer($data);
 					if ($this->db->affected_rows() == 1) {
 						echo json_encode(array('success' => true, 'type' => 'success', 'data' => array('id' => $this->db->insert_id(), 'name' => $data['name'], 'place' => $data['place']), 'message' => 'Successfully added new customer <strong><em>' . $data['name'] . '</em></strong> !'));
 					} else {
@@ -131,9 +149,12 @@ class Customer extends CI_Controller
 					'name'			=> $this->input->post('name'),
 					'group'			=> $this->input->post('group'),
 					'place'			=> $this->input->post('place'),
-					'email'			=> $this->input->post('email') ? $this->input->post('email') : null,
-					'phone'			=> $this->input->post('phone') ? $this->input->post('phone') : null,
-					'address'	=> $this->input->post('address') ? $this->input->post('address') : null,
+					'city'			=> $this->input->post('city') ?: null,
+					'pin_code'		=> $this->input->post('pin') ?: null,
+					'email'			=> $this->input->post('email') ?: null,
+					'phone'			=> $this->input->post('phone') ?: null,
+					'address'		=> $this->input->post('address') ?: null,
+					'description'	=> $this->input->post('description') ?: null,
 				);
 				//$data['name'] = '';
 				$this->form_validation->set_data($data);
@@ -157,9 +178,14 @@ class Customer extends CI_Controller
 						'rules' => 'required|min_length[3]|max_length[200]|xss_clean|trim'
 					),
 					array(
-						'field' => 'email',
-						'label' => 'Email',
-						'rules' => 'valid_email|' . $rule_email . '|xss_clean|trim'
+						'field' => 'city',
+						'label' => 'City',
+						'rules' => 'max_length[200]|xss_clean|trim'
+					),
+					array(
+						'field' => 'pin_code',
+						'label' => 'PIN Code',
+						'rules' => 'max_length[15]|xss_clean|trim'
 					),
 					array(
 						'field' => 'phone',
@@ -167,24 +193,43 @@ class Customer extends CI_Controller
 						'rules' => 'min_length[5]|max_length[40]|' . $rule_phone . '|xss_clean|trim'
 					),
 					array(
+						'field' => 'email',
+						'label' => 'Email',
+						'rules' => 'valid_email|' . $rule_email . '|xss_clean|trim'
+					),
+					array(
 						'field' => 'address',
 						'label' => 'Address',
 						'rules' => 'max_length[200]|xss_clean|trim'
 					),
+					array(
+						'field' => 'description',
+						'label' => 'Description',
+						'rules' => 'max_length[250]|xss_clean|trim'
+					)
 				);
 				//$data['error'] = '0';
 				$this->form_validation->set_rules($config);
 				if ($this->form_validation->run() == FALSE) {
 					echo json_encode(array('success' => false, 'errors' => $this->form_validation->error_array()));
 				} else {
-					$this->db->update(TABLE_CUSTOMER, $data, array('id' => $this->input->post('db')['id']));
-					if ($this->db->affected_rows() == 1) {
-						echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully updated customer <strong><em>' .  $this->input->post('db')['name'] . '</em></strong> !'));
-					} else if ($this->db->affected_rows() == 0) {
-						echo json_encode(array('success' => true, 'type' => 'info', 'id' => $this->input->post('db')['id'], 'message' => 'No data changed for customer <strong><em>' . $this->input->post('db')['name'] . '</em></strong> !', 'timeout' => 5000));
+					$customer = $this->Customer_model->getCustomer(array('id' => $this->input->post('db')['id']));
+					if ($customer['id']) {
+						if ($customer['editable'] !== 0 && $customer['deleted_at'] == 0) {
+							$this->Customer_model->update_customer($data, array('id' => $this->input->post('db')['id'], 'deleted_at' => NULL, 'editable' => NULL));
+							if ($this->db->affected_rows() == 1) {
+								echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully updated customer <strong><em>' .  $customer['name'] . '</em></strong> !'));
+							} else if ($this->db->affected_rows() == 0) {
+								echo json_encode(array('success' => false, 'type' => 'info', 'id' => $customer['id'], 'message' => 'No data changed for customer <strong><em>' . $customer['name'] . '</em></strong> !', 'timeout' => 5000));
+							} else {
+								$error = $this->db->error();
+								echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
+							}
+						} else {
+							echo json_encode(array('success' => false, 'type' => 'danger', 'message' => 'Customer <i>' . $customer['name'] . "</i> is protected you can't edit it."));
+						}
 					} else {
-						$error = $this->db->error();
-						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
+						echo json_encode(array('success' => false, 'type' => 'danger', 'message' => "Customer doesn't exist !"));
 					}
 				}
 				break;
@@ -192,7 +237,7 @@ class Customer extends CI_Controller
 				if (isset($this->input->post('data')['id'])) { // single delete
 					$_POST = $this->input->post('data');
 					$id = (int)$this->input->post('id');
-					$customer = $this->Customer_model->getCustomer($id, null);
+					$customer = $this->Customer_model->getCustomer(array('id' => $id));
 					if ($customer['id']) {
 						if ($customer['deletable'] !== 0) {
 							$this->Customer_model->delete_where(array('id' => $id));
