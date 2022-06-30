@@ -159,7 +159,7 @@ export default {
         title: null,
         body: "Delete adjustment with id 0001 ?",
         data: null,
-        action: "confirmDeleteAdjustment",
+        emit: "confirmDeleteAdjustment",
         type: "danger",
       });
     },

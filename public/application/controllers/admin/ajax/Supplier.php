@@ -220,9 +220,9 @@ class Supplier extends CI_Controller
 					//$data['manual_error'] = 'error';
 					$this->db->update(TABLE_SUPPLIER, $data, array('id' => $this->input->post('db')['id']));
 					if ($this->db->affected_rows() == 1) {
-						echo json_encode(array('success' => true, 'type' => 'success', 'id' => $this->input->post('db')['id'], 'message' => 'Successfully updated supplier <strong><em>' . $this->input->post('db')['name'] . '</em></strong> !', 'timeout' => 5000));
+						echo json_encode(array('success' => true, 'type' => 'success', 'id' => $this->input->post('db')['id'], 'message' => 'Successfully updated supplier <strong><em>' . $this->input->post('db')['code'] . '</em></strong> !', 'timeout' => 5000));
 					} else if ($this->db->affected_rows() == 0) {
-						echo json_encode(array('success' => true, 'type' => 'info', 'id' => $this->input->post('db')['id'], 'message' => 'No data changed for supplier <strong><em>' . $this->input->post('name') . '</em></strong> !', 'timeout' => 5000));
+						echo json_encode(array('success' => false, 'type' => 'info', 'id' => $this->input->post('db')['id'], 'message' => 'No data changed for supplier <strong><em> ' . $this->input->post('db')['code'] . '</em></strong> !', 'timeout' => 5000));
 					} else {
 						$error = $this->db->error();
 						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));

@@ -7,7 +7,11 @@
             class="modal-header"
             :class="DATA.type ? 'bg-' + DATA.type : 'bg-primary'"
           >
-            <h5 class="modal-title">{{ DATA.title }}</h5>
+            <h5 class="modal-title">
+              <span v-if="DATA.data"><i class="fa-solid fa-pencil"></i></span>
+              <span v-else><i class="fa-solid fa-plus"></i></span
+              >{{ DATA.title }}
+            </h5>
             <button
               type="button"
               class="btn-close"
@@ -210,6 +214,7 @@
               class="btn btn-outline-danger me-auto"
               data-bs-dismiss="modal"
               @click="close"
+              :disabled="isSubmitting"
             >
               <i class="fa-solid fa-stop"></i>Cancel
             </button>
@@ -234,7 +239,7 @@
                 aria-hidden="true"
                 v-if="isSubmitting"
               ></span>
-              Save
+              {{ isSubmitting ? "Saving..." : "Save" }}
             </button>
           </div>
         </form>
@@ -243,13 +248,13 @@
   </div>
 </template>
 <script>
-/* eslint-disable */
 import {
   useForm,
   useField,
   useIsFormDirty,
   useIsFormValid,
 } from "vee-validate";
+import { Modal } from "bootstrap";
 import { inject } from "vue";
 import * as yup from "yup";
 import { ref, computed } from "vue";
@@ -258,18 +263,12 @@ export default {
   props: {
     propUpdateTaxRates: Function,
   },
-  setup(props) {
+  setup() {
     const emitter = inject("emitter"); // Inject `emitter`
     const DATA = ref({});
     const phoneRegExp =
       /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
-    const {
-      notifyDefault,
-      notifyFormError,
-      notifyApiResponse,
-      notifyCatchResponse,
-      axiosAsyncCallReturnData,
-    } = admin();
+    const { axiosAsyncCallReturnData } = admin();
     /************************************************************************* */
     const formValues = ref({});
     /************************************************************************* */
@@ -385,21 +384,22 @@ export default {
     });
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
-    /************************************************************************* */
+    const editController = ref(null);
+    const newController = ref(null);
+    /************************************************************************* NEW or EDIT Supplier */
     emitter.on("newSupplierModal", (data) => {
       resetForm();
       DATA.value = data;
       if (DATA.value.data) {
         let fields = DATA.value.data;
-        //formValues.value = fields;
         setFieldValue("name", fields.name);
         setFieldValue("place", fields.place);
         setFieldValue("phone", fields.phone);
         setFieldValue("city", fields.city);
-        setFieldValue("pin", fields.pin);
+        setFieldValue("pin", fields.pin_code);
         setFieldValue("email", fields.email);
-        setFieldValue("gst", fields.gst);
-        setFieldValue("tax", fields.tax);
+        setFieldValue("gst", fields.gst_no);
+        setFieldValue("tax", fields.tax_no);
         setFieldValue("address", fields.address);
         setFieldValue("description", fields.description);
       } else {
@@ -408,28 +408,56 @@ export default {
       window.SUPPLIER_NEW_MODAL.show();
     });
     /************************************************************************* */
-    function onInvalidSubmit({ values, errors, results }) {
-      console.log(errors);
-    }
+    // eslint-disable-next-line
+    function onInvalidSubmit({ values, errors, results }) {}
     const onSubmit = handleSubmit((values, { resetForm }) => {
       values.db = DATA.value.data;
       let method = DATA.value.data ? "put" : "post";
-      return axiosAsyncCallReturnData(method, "supplier", {
-        data: values,
-      }).then(function (data) {
+      let controller;
+      if (method == "post") {
+        // new
+        if (newController.value) {
+          newController.value.abort();
+        }
+        controller = newController.value = new AbortController();
+      } else {
+        // edit
+        if (editController.value) {
+          editController.value.abort();
+        }
+        controller = editController.value = new AbortController();
+      }
+      return axiosAsyncCallReturnData(
+        method,
+        "supplier",
+        {
+          data: values,
+        },
+        controller,
+        {
+          showSuccessNotification: true,
+          showCatchNotification: true,
+          showProgress: true,
+        }
+      ).then(function (data) {
         if (data.success == true) {
           // added
           resetForm();
           window.window.SUPPLIER_NEW_MODAL.hide();
           if (DATA.value.emit) {
-            emitter.emit(DATA.value.emit, {});
+            emitter.emit(DATA.value.emit, {}); // do something (emit)
           }
         } else {
           // not added
           if (data.errors) {
+            // validation errors
             for (var key in data.errors) {
               setFieldError(key, data.errors[key]);
             }
+          } else if (data.message == "canceled") {
+            // duplicate aborted
+          } else {
+            // may be network error
           }
         }
       });
@@ -442,17 +470,16 @@ export default {
       if (DATA.value.data) {
         // edit form
         let fields = DATA.value.data;
-        formValues.value = fields;
-        /* setFieldValue("name", fields.name);
+        setFieldValue("name", fields.name);
         setFieldValue("place", fields.place);
         setFieldValue("phone", fields.phone);
         setFieldValue("city", fields.city);
-        setFieldValue("pin", fields.pin);
+        setFieldValue("pin", fields.pin_code);
         setFieldValue("email", fields.email);
-        setFieldValue("gst", fields.gst);
-        setFieldValue("tax", fields.tax);
+        setFieldValue("gst", fields.gst_no);
+        setFieldValue("tax", fields.tax_no);
         setFieldValue("address", fields.address);
-        setFieldValue("description", fields.description);*/
+        setFieldValue("description", fields.description);
       } else {
         // new
         resetForm();
@@ -508,6 +535,11 @@ export default {
   },
   methods: {},
   created() {},
-  mounted() {},
+  mounted() {
+    window.SUPPLIER_NEW_MODAL = new Modal($("#supplierNewModal"), {
+      backdrop: true,
+      show: true,
+    });
+  },
 };
 </script>

@@ -248,6 +248,10 @@ a {
   /* icon is for icon only button */
   padding-right: 5px;
 }
+.modal-title svg{
+  /* icon is for icon only button */
+  padding-right: 15px;
+}
 /* from control styles */
 label {
   font-weight: bold;
@@ -320,7 +324,7 @@ form .row {
   border-left-color: #bcbebf;
 }
 .modal-header {
-  background-color: #00416a;
+  background-color: #000000;
   color: #dee2e6;
 }
 /***************************************************************  input field custom */

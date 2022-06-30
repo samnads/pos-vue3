@@ -7,6 +7,7 @@
           :class="params.type ? 'bg-' + params.type : 'bg-danger'"
         >
           <h5 class="modal-title">
+            <span><i class="fa-solid fa-trash"></i></span>
             {{ params.title || "Confirm Delete ?" }}
           </h5>
         </div>
@@ -19,14 +20,14 @@
             class="btn btn-danger me-auto"
             v-on:click="confirmDelete()"
           >
-            <i class="fa-solid fa-trash"></i>YES
+            <i class="fa-solid fa-check"></i>YES
           </button>
           <button
             type="button"
             class="btn btn-secondary"
             data-bs-dismiss="modal"
           >
-            <i class="fa-solid fa-stop"></i>NO
+            <i class="fa-solid fa-xmark"></i>NO
           </button>
         </div>
       </div>
@@ -55,7 +56,7 @@ export default {
       if (params.value.hide) {
         window.DELETE_CONFIRM_DEFAULT_MODAL.hide();
       }
-      emitter.emit(params.value.action, data.value); // DELETE ACTION EMITTER
+      emitter.emit(params.value.emit, data.value); // DELETE ACTION EMITTER
     }
     return {
       confirmDelete,

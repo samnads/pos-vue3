@@ -4,7 +4,7 @@
       <div class="modal-content">
         <form @submit="onSubmit" class="needs-validation">
           <div class="modal-header">
-            <h5 class="modal-title">Supplier Information</h5>
+            <h5 class="modal-title"><span><i class="fa-solid fa-circle-info"></i></span> Information</h5>
             <button
               type="button"
               class="btn-close"
@@ -65,8 +65,9 @@ import {
   useIsFormDirty,
   useIsFormValid,
 } from "vee-validate";
+import { Modal } from "bootstrap";
 import * as yup from "yup";
-import { ref, toRef, computed } from "vue";
+import {computed } from "vue";
 import admin from "@/mixins/admin.js";
 export default {
   props: {
@@ -190,6 +191,11 @@ export default {
   },
   methods: {},
   created() {},
-  mounted() {},
+  mounted() {
+    window.SUPPLIER_INFO_MODAL = new Modal($("#supplierInfoModal"), {
+      backdrop: true,
+      show: true,
+    });
+  },
 };
 </script>

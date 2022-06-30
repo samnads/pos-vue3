@@ -323,7 +323,6 @@ export default {
               title: "Download CSV",
             },
           },
-
           {
             text: '<i class="fa fa-sync-alt"></i>',
             className: "btn-light",
@@ -355,7 +354,7 @@ export default {
                     : " <b>" + rows[0].name + "</b> (" + rows[0].name + ")") +
                   " ?",
                 data: self.table.rows(".selected").data().toArray(),
-                action: "confirmDeleteSupplier",
+                emit: "confirmDeleteSupplier",
                 hide: true,
                 type: "danger",
               });
@@ -418,7 +417,7 @@ export default {
         "td:not(:first-child):not(:last-child),#details",
         function () {
           self.adjustRow = self.table.row($(this).parents("tr")).data(); // row data
-          self.getAdjustInfo();
+          window.SUPPLIER_INFO_MODAL.show();
         }
       );
       $("#datatable tbody").on("click", "#edit", function () {
@@ -427,6 +426,7 @@ export default {
         self.emitter.emit("newSupplierModal", {
           title: "Edit Supplier - " + row.name,
           data: row,
+          emit: "refreshDataTable",
           type: "primary",
         });
       });
@@ -447,7 +447,7 @@ export default {
             row.place +
             ")?",
           data: row,
-          action: "confirmDeleteSupplier",
+          emit: "confirmDeleteSupplier",
           hide: true,
           type: "danger",
         });

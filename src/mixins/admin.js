@@ -3,7 +3,8 @@ import { useStore } from "vuex";
 import axios from "axios";
 import router from "@/router";
 import { getCurrentInstance } from "vue";
-const endpoint = process.env.VUE_APP_API_ROOT +"admin/ajax/";
+const endpoint = process.env.VUE_APP_API_ROOT + "admin/ajax/";
+const env = process.env.VUE_APP_ENV;
 const timeout = 8000;
 export default function () {
     var notType = 'warning'
@@ -41,10 +42,11 @@ export default function () {
                         console.log(e);
                     });
                 } else if (resData.errors) { // may be form errors
-                    notifyFormError({
-                        message: "Server Validation Errors Found !",
+                    env == "development" ? notifyFormError({
+                        title: "Form Validation Error (server) !",
+                        message: "This error is for debugging only !",
                         type: "warning",
-                    });
+                    }) : undefined;
                 }
                 else {
                     notifyApiResponse(resData);
@@ -214,8 +216,8 @@ export default function () {
             console.log(e);
         });
     }
-    function x_percentage_of_y(x,y) {
-        return (x/100)*y;
+    function x_percentage_of_y(x, y) {
+        return (x / 100) * y;
     }
     return {
         adminTest,

@@ -405,7 +405,7 @@ export default {
         body: "Confirm delete <b>" + data.name + "</b> from list ?",
         data: data,
         hide:true,
-        action: "confirmDeleteProduct",
+        emit: "confirmDeleteProduct",
         type: "danger",
       });
       window.DELETE_CONFIRM_DEFAULT_MODAL.show();
