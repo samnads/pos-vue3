@@ -26,8 +26,11 @@ class Supplier_model extends CI_Model
         s.description as description,
         s.editable as editable,
         s.deletable as deletable,
+        s.deleted_at as deleted_at,
         s.updated_at as updated_at') : $this->db->select($columns));
 
+        $this->db->where(array('s.deleted_at' => NULL)); // select only not deleted rows
+        $this->db->group_start();
         $this->db->or_like('s.name', $search);
         $this->db->or_like('s.code', $search);
         $this->db->or_like('s.place', $search);
@@ -38,6 +41,7 @@ class Supplier_model extends CI_Model
         $this->db->or_like('s.phone', $search);
         $this->db->or_like('s.gst_no', $search);
         $this->db->or_like('s.tax_no', $search);
+        $this->db->group_end();
 
         $this->db->order_by($order_by, $order);
 
@@ -86,6 +90,7 @@ class Supplier_model extends CI_Model
         s.description as description,
         s.editable as editable,
         s.deletable as deletable,
+        s.deleted_at as deleted_at,
         s.updated_at as updated_at');
 
         $this->db->from(TABLE_SUPPLIER . ' s');
@@ -111,10 +116,17 @@ class Supplier_model extends CI_Model
         $cnt = $query->row_array();
         return $cnt['AUTO_INCREMENT'];
     }
-    function delete_where($where)
+    function update($id, $data)
     {
-        $this->db->where($where);
-        $query = $this->db->delete(TABLE_SUPPLIER);
+        $this->db->where(array('id' => $id, 'editable' => NULL, 'deleted_at' => NULL));
+        $query = $this->db->update(TABLE_SUPPLIER, $data);
+        return $query;
+    }
+    function set_deleted_at($id)
+    {
+        $this->db->where(array('id' => $id, 'deletable' => NULL, 'deleted_at' => NULL));
+        $this->db->set('deleted_at', 'NOW()', FALSE); // deleted rows have a timestamp
+        $query = $this->db->update(TABLE_SUPPLIER);
         return $query;
     }
     function delete_wherein_id($ids)

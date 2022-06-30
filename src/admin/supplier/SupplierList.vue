@@ -411,6 +411,11 @@ export default {
           $("#checkall").prop("indeterminate", false);
           $("#checkall").prop("checked", false);
         },
+        createdRow: function (row, data, dataIndex) {
+          if (data['deleted_at']) {
+            $(row).addClass("bg-warning");
+          }
+        },
       });
       $("#datatable tbody").on(
         "click",

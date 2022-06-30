@@ -218,14 +218,23 @@ class Supplier extends CI_Controller
 					echo json_encode(array('success' => false, 'errors' => $this->form_validation->error_array()));
 				} else {
 					//$data['manual_error'] = 'error';
-					$this->db->update(TABLE_SUPPLIER, $data, array('id' => $this->input->post('db')['id']));
-					if ($this->db->affected_rows() == 1) {
-						echo json_encode(array('success' => true, 'type' => 'success', 'id' => $this->input->post('db')['id'], 'message' => 'Successfully updated supplier <strong><em>' . $this->input->post('db')['code'] . '</em></strong> !', 'timeout' => 5000));
-					} else if ($this->db->affected_rows() == 0) {
-						echo json_encode(array('success' => false, 'type' => 'info', 'id' => $this->input->post('db')['id'], 'message' => 'No data changed for supplier <strong><em> ' . $this->input->post('db')['code'] . '</em></strong> !', 'timeout' => 5000));
+					$supplier = $this->Supplier_model->getSupplier($id, null);
+					if ($supplier['id']) {
+						if ($supplier['editable'] !== 0 && $supplier['deleted_at'] == 0) {
+							$this->Supplier_model->update($id, $data);
+							if ($this->db->affected_rows() == 1) {
+								echo json_encode(array('success' => true, 'type' => 'success', 'id' => $this->input->post('db')['id'], 'message' => 'Successfully updated supplier <strong><em>' . $this->input->post('db')['code'] . '</em></strong> !', 'timeout' => 5000));
+							} else if ($this->db->affected_rows() == 0) {
+								echo json_encode(array('success' => false, 'type' => 'info', 'id' => $this->input->post('db')['id'], 'message' => 'No data changed for supplier <strong><em> ' . $this->input->post('db')['code'] . '</em></strong> !', 'timeout' => 5000));
+							} else {
+								$error = $this->db->error();
+								echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));
+							}
+						} else {
+							echo json_encode(array('success' => false, 'type' => 'danger', 'message' => 'Supplier <i>' . $supplier['name'] . "</i> is protected you can't edit it."));
+						}
 					} else {
-						$error = $this->db->error();
-						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));
+						echo json_encode(array('success' => false, 'type' => 'danger', 'message' => "Supplier doesn't exist !"));
 					}
 				}
 				break;
@@ -236,7 +245,7 @@ class Supplier extends CI_Controller
 					$supplier = $this->Supplier_model->getSupplier($id, null);
 					if ($supplier['id']) {
 						if ($supplier['deletable'] !== 0) {
-							$this->Supplier_model->delete_where(array('id' => $id));
+							$this->Supplier_model->set_deleted_at($id);
 							$error = $this->db->error();
 							if ($error['code'] == 1451) {
 								echo json_encode(array('success' => false, 'type' => 'danger', 'id' => $id, 'timeout' => 5000, 'message' => 'Delete all data associated with the supplier <strong><em>' . $supplier['name'] . '</em></strong> then try again !'));

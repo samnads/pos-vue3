@@ -17,7 +17,6 @@ import AdjustmentNew from '../admin/adjustment/AdjustmentNew.vue'
 // Supplier based pages
 import AdminSupplierMain from '../admin/supplier/SupplierMain.vue'
 import AdminSupplierList from '../admin/supplier/SupplierList.vue'
-import AdminSupplierNew from '../admin/supplier/SupplierNew.vue'
 // error pages
 import PageNotFound from '../admin/PageNotFound.vue'
 
@@ -120,17 +119,7 @@ const routes = [
             path: 'list',
             name: 'adminSupplierList',
             component: AdminSupplierList,
-          },
-          {
-            path: 'new',
-            name: 'adminSupplierNew',
-            component: AdminSupplierNew,
-          },
-          {
-            path: 'edit/:id',
-            name: 'adminSupplierEdit',
-            component: AdminSupplierNew,
-          },
+          }
         ],
       },
       {
