@@ -54,8 +54,15 @@ class Customer extends CI_Controller
 				break;
 			case 'POST': // create
 				$_POST = $this->input->post('data');
+				$auto_id = $this->Customer_model->get_AUTO_INCREMENT();
+				if (!$auto_id) {
+					$error = $this->db->error();
+					echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured (AUTO_INCREMENT) !")));
+					die();
+				}
 				$data = array(
 					'name'			=> $this->input->post('name'),
+					'code'			=> sprintf("CUST%04s", $auto_id),
 					'group'			=> $this->input->post('group'),
 					'place'			=> $this->input->post('place'),
 					'email'			=> $this->input->post('email') ? $this->input->post('email') : null,
@@ -72,6 +79,11 @@ class Customer extends CI_Controller
 						'field' => 'name',
 						'label' => 'Name',
 						'rules' => 'required|min_length[3]|max_length[200]|' . $rule_name . '|xss_clean|trim'
+					),
+					array(
+						'field' => 'code',
+						'label' => 'Code',
+						'rules' => 'required|max_length[20]|is_unique[' . TABLE_CUSTOMER . '.code]|xss_clean|trim'
 					),
 					array(
 						'field' => 'group',

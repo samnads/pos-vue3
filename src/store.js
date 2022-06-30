@@ -4,6 +4,7 @@ export default createStore({
         products: [],
         cart: [],
         productTypes: undefined,
+        CUSTOMER_GROUPS: undefined,
         symbologies: undefined,
         categories: undefined,
         units: undefined,
@@ -35,6 +36,9 @@ export default createStore({
         },
         storeWareHouses(state, item) {
             state.WARE_HOUSES = item;
+        },
+        storeCustomerGroups(state, item) {
+            state.CUSTOMER_GROUPS = item;
         }
     }
 });

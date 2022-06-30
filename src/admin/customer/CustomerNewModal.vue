@@ -1,5 +1,5 @@
 <template>
-  <div class="modal" id="supplierNewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal" id="customerNewModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <form @submit="onSubmit" class="needs-validation">
@@ -10,7 +10,10 @@
             <h5 class="modal-title">
               <span v-if="DATA.data"><i class="fa-solid fa-pencil"></i></span>
               <span v-else><i class="fa-solid fa-plus"></i></span
-              >{{ DATA.title }} <span class="badge bg-light text-dark" v-if="DATA.data">{{DATA.data.code}}</span>
+              >{{ DATA.title }}
+              <span class="badge bg-light text-dark" v-if="DATA.data">{{
+                DATA.data.id
+              }}</span>
             </h5>
             <button
               type="button"
@@ -23,7 +26,7 @@
           <div class="modal-body">
             <div class="row">
               <div class="col">
-                <label class="form-label">Supplier Name<i>*</i></label>
+                <label class="form-label">Customer Name<i>*</i></label>
                 <input
                   type="text"
                   name="name"
@@ -38,6 +41,37 @@
                   ]"
                 />
                 <div class="invalid-feedback">{{ errorName }}</div>
+              </div>
+              <div class="col">
+                <label class="form-label">Group<i>*</i></label>
+                <select
+                  class="form-select"
+                  name="group"
+                  :disabled="!customerGroups"
+                  v-model="group"
+                  v-bind:class="[
+                    errorGroup
+                      ? 'is-invalid'
+                      : errorGroup && group
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                >
+                  <option
+                    selected
+                    :value="formValues.group"
+                    v-if="!customerGroups"
+                  >
+                    Loading...
+                  </option>
+                  <option selected :value="null" v-if="customerGroups">
+                    -- Select Customer Group --
+                  </option>
+                  <option v-for="g in customerGroups" :key="g.id" :value="g.id">
+                    {{ g.name }}
+                  </option>
+                </select>
+                <div class="invalid-feedback">{{ errorGroup }}</div>
               </div>
               <div class="col">
                 <label class="form-label">Place<i>*</i></label>
@@ -58,23 +92,6 @@
               </div>
             </div>
             <div class="row">
-              <div class="col">
-                <label class="form-label">Phone<i>*</i></label>
-                <input
-                  type="text"
-                  name="phone"
-                  v-model="phone"
-                  class="form-control"
-                  v-bind:class="[
-                    errorPhone
-                      ? 'is-invalid'
-                      : !errorPhone && phone
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                />
-                <div class="invalid-feedback">{{ errorPhone }}</div>
-              </div>
               <div class="col">
                 <label class="form-label">City</label>
                 <input
@@ -112,6 +129,23 @@
             </div>
             <div class="row">
               <div class="col">
+                <label class="form-label">Phone<i>*</i></label>
+                <input
+                  type="text"
+                  name="phone"
+                  v-model="phone"
+                  class="form-control"
+                  v-bind:class="[
+                    errorPhone
+                      ? 'is-invalid'
+                      : !errorPhone && phone
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                />
+                <div class="invalid-feedback">{{ errorPhone }}</div>
+              </div>
+              <div class="col">
                 <label class="form-label">Email</label>
                 <input
                   type="email"
@@ -127,40 +161,6 @@
                   ]"
                 />
                 <div class="invalid-feedback">{{ errorEmail }}</div>
-              </div>
-              <div class="col">
-                <label class="form-label">GST No.</label>
-                <input
-                  type="text"
-                  name="gst"
-                  v-model="gst"
-                  class="form-control"
-                  v-bind:class="[
-                    errorGst
-                      ? 'is-invalid'
-                      : !errorGst && gst
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                />
-                <div class="invalid-feedback">{{ errorGst }}</div>
-              </div>
-              <div class="col">
-                <label class="form-label">Tax No.</label>
-                <input
-                  type="text"
-                  name="tax"
-                  v-model="tax"
-                  class="form-control"
-                  v-bind:class="[
-                    errorTax
-                      ? 'is-invalid'
-                      : !errorTax && tax
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                />
-                <div class="invalid-feedback">{{ errorTax }}</div>
               </div>
             </div>
             <div class="row">
@@ -259,16 +259,21 @@ import { inject } from "vue";
 import * as yup from "yup";
 import { ref, computed } from "vue";
 import admin from "@/mixins/admin.js";
+import { useStore } from "vuex";
 export default {
   props: {
     propUpdateTaxRates: Function,
   },
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
+    const store = useStore();
+    let customerGroups = computed(function () {
+      return store.state.CUSTOMER_GROUPS;
+    });
     const DATA = ref({});
     const phoneRegExp =
       /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
-    const { axiosAsyncCallReturnData } = admin();
+    const { axiosAsyncCallReturnData, axiosAsyncStoreReturnBool } = admin();
     /************************************************************************* */
     const formValues = ref({});
     /************************************************************************* */
@@ -284,6 +289,7 @@ export default {
             val != null && val.length > 0 ? val : undefined
           )
           .label("Name"),
+        group: yup.number().required().min(1).nullable(true).label("Group"),
         place: yup
           .string()
           .required()
@@ -333,24 +339,6 @@ export default {
             val != null && val.length > 0 ? val : undefined
           )
           .label("Email"),
-        gst: yup
-          .string()
-          .min(3)
-          .max(100)
-          .nullable(true)
-          .transform((_, val) =>
-            val != null && val.length > 0 ? val : undefined
-          )
-          .label("GST No."),
-        tax: yup
-          .string()
-          .min(3)
-          .max(100)
-          .nullable(true)
-          .transform((_, val) =>
-            val != null && val.length > 0 ? val : undefined
-          )
-          .label("TAX No."),
         address: yup
           .string()
           .min(3)
@@ -387,25 +375,24 @@ export default {
     const editController = ref(null);
     const newController = ref(null);
     /************************************************************************* NEW or EDIT Supplier */
-    emitter.on("newSupplierModal", (data) => {
+    emitter.on("newCustomerModal", (data) => {
       resetForm();
       DATA.value = data;
       if (DATA.value.data) {
         let fields = DATA.value.data;
         setFieldValue("name", fields.name);
+        setFieldValue("group", fields.group);
         setFieldValue("place", fields.place);
         setFieldValue("phone", fields.phone);
         setFieldValue("city", fields.city);
         setFieldValue("pin", fields.pin_code);
         setFieldValue("email", fields.email);
-        setFieldValue("gst", fields.gst_no);
-        setFieldValue("tax", fields.tax_no);
         setFieldValue("address", fields.address);
         setFieldValue("description", fields.description);
       } else {
-        formValues.value = {};
+        setFieldValue("group", null);
       }
-      window.SUPPLIER_NEW_MODAL.show();
+      window.CUSTOMER_NEW_MODAL.show();
     });
     /************************************************************************* */
     // eslint-disable-next-line
@@ -471,13 +458,12 @@ export default {
         // edit form
         let fields = DATA.value.data;
         setFieldValue("name", fields.name);
+        setFieldValue("group", fields.group);
         setFieldValue("place", fields.place);
         setFieldValue("phone", fields.phone);
         setFieldValue("city", fields.city);
         setFieldValue("pin", fields.pin_code);
         setFieldValue("email", fields.email);
-        setFieldValue("gst", fields.gst_no);
-        setFieldValue("tax", fields.tax_no);
         setFieldValue("address", fields.address);
         setFieldValue("description", fields.description);
       } else {
@@ -487,13 +473,12 @@ export default {
     }
     /************************************************************************* */
     const { value: name, errorMessage: errorName } = useField("name");
+    const { value: group, errorMessage: errorGroup } = useField("group");
     const { value: place, errorMessage: errorPlace } = useField("place");
     const { value: phone, errorMessage: errorPhone } = useField("phone");
     const { value: city, errorMessage: errorCity } = useField("city");
     const { value: pin, errorMessage: errorPin } = useField("pin");
     const { value: email, errorMessage: errorEmail } = useField("email");
-    const { value: gst, errorMessage: errorGst } = useField("gst");
-    const { value: tax, errorMessage: errorTax } = useField("tax");
     const { value: address, errorMessage: errorAddress } = useField("address");
     const { value: description, errorMessage: errorDescription } =
       useField("description");
@@ -502,6 +487,8 @@ export default {
       /******* form fields   */
       name,
       errorName,
+      group,
+      errorGroup,
       place,
       errorPlace,
       phone,
@@ -512,15 +499,14 @@ export default {
       errorPin,
       email,
       errorEmail,
-      gst,
-      errorGst,
-      tax,
-      errorTax,
       address,
       errorAddress,
       description,
       errorDescription,
       /*************** */
+      axiosAsyncStoreReturnBool,
+      customerGroups,
+      formValues,
       isDirty,
       isValid,
       onSubmit,
@@ -536,10 +522,17 @@ export default {
   methods: {},
   created() {},
   mounted() {
-    window.SUPPLIER_NEW_MODAL = new Modal($("#supplierNewModal"), {
+    window.CUSTOMER_NEW_MODAL = new Modal($("#customerNewModal"), {
       backdrop: true,
       show: true,
     });
+    if (!this.customerGroups) {
+      // if not found on store
+      this.axiosAsyncStoreReturnBool("storeCustomerGroups", "customer_group", {
+        action: "customer_groups",
+      });
+      // get customer groups
+    }
   },
 };
 </script>

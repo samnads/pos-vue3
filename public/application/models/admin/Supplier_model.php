@@ -57,6 +57,8 @@ class Supplier_model extends CI_Model
 
         $this->db->from(TABLE_SUPPLIER . ' s');
 
+        $this->db->where(array('s.deleted_at' => NULL)); // select only not deleted rows
+        $this->db->group_start();
         $this->db->or_like('s.name', $search);
         $this->db->or_like('s.code', $search);
         $this->db->or_like('s.place', $search);
@@ -67,6 +69,7 @@ class Supplier_model extends CI_Model
         $this->db->or_like('s.phone', $search);
         $this->db->or_like('s.gst_no', $search);
         $this->db->or_like('s.tax_no', $search);
+        $this->db->group_end();
 
         $query = $this->db->get();
         $query    = $query->row();
@@ -103,7 +106,9 @@ class Supplier_model extends CI_Model
     function recordsTotal()
     {
         $this->db->select('count(id)');
-        $query = $this->db->get(TABLE_SUPPLIER);
+        $this->db->from(TABLE_SUPPLIER . ' s');
+        $this->db->where(array('s.deleted_at' => NULL)); // select only not deleted rows
+        $query = $this->db->get();
         $cnt = $query->row_array();
         return $cnt['count(id)'];
     }

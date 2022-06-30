@@ -17,6 +17,9 @@ import AdjustmentNew from '../admin/adjustment/AdjustmentNew.vue'
 // Supplier based pages
 import AdminSupplierMain from '../admin/supplier/SupplierMain.vue'
 import AdminSupplierList from '../admin/supplier/SupplierList.vue'
+// Customer based pages
+import AdminCustomerMain from '../admin/customer/CustomerMain.vue'
+import AdminCustomerist from '../admin/customer/CustomerList.vue'
 // error pages
 import PageNotFound from '../admin/PageNotFound.vue'
 
@@ -119,6 +122,19 @@ const routes = [
             path: 'list',
             name: 'adminSupplierList',
             component: AdminSupplierList,
+          }
+        ],
+      },
+      {
+        path: 'customer',
+        name: 'adminCustomerMain',
+        component: AdminCustomerMain,
+        redirect: '/admin/customer/list',
+        children: [
+          {
+            path: 'list',
+            name: 'adminCustomerList',
+            component: AdminCustomerist,
           }
         ],
       },

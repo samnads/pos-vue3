@@ -3,7 +3,7 @@
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
         <h5 class="title">
-          <i class="fa-solid fa-truck"></i><span>Suppliers</span>
+          <i class="fa-solid fa-person"></i><span>Customers</span>
         </h5>
       </div>
       <div class="p-2 bd-highlight">
@@ -46,12 +46,12 @@
             />
           </th>
           <th scope="col" class="d-none">ID</th>
-          <th scope="col">Code</th>
           <th scope="col">Name</th>
+          <th scope="col">Group</th>
           <th scope="col">Place</th>
-          <th scope="col">Phone</th>
           <th scope="col">Email</th>
-          <th scope="col">City</th>
+          <th scope="col">Phone</th>
+          <th scope="col">Address</th>
           <th scope="col"><i class="fa-solid fa-bars"></i></th>
         </tr>
       </thead>
@@ -120,7 +120,7 @@ export default {
         order: [[1, "desc"]],
         ajax: {
           method: "GET",
-          url: process.env.VUE_APP_API_ROOT + "admin/ajax/supplier",
+          url: process.env.VUE_APP_API_ROOT + "admin/ajax/customer",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {
@@ -169,22 +169,22 @@ export default {
             data: "id",
           },
           {
-            data: "code",
+            data: "name",
           },
           {
-            data: "name",
+            data: "group_name",
           },
           {
             data: "place",
           },
           {
-            data: "phone",
-          },
-          {
             data: "email",
           },
           {
-            data: "city",
+            data: "phone",
+          },
+          {
+            data: "address",
           },
           {
             data: null,
@@ -208,22 +208,33 @@ export default {
             targets: [2],
             visible: true,
             searchable: true,
+            render: function (data, type, row, meta) {
+              return "<b>" + data + "</b>";
+            },
           },
           {
             targets: [3],
+            searchable: true,
           },
           {
             targets: [4],
+            searchable: true,
           },
           {
             targets: [5],
+            searchable: true,
+            render: function (data, type, row, meta) {
+              return data == null
+                ? '<i class="text-muted small">NIL</i>'
+                : data;
+            },
           },
           {
             targets: [6],
             render: function (data, type, row, meta) {
               return data == null
                 ? '<i class="text-muted small">NIL</i>'
-                : data;
+                : "<i>" + data + "</i>";
             },
           },
           {
@@ -240,8 +251,7 @@ export default {
             orderable: false,
             searchable: false,
             width: "1%",
-            defaultContent:
-              "",
+            defaultContent: "",
             render: function (data, type, row, meta) {
               let infoBtn =
                 '<button type="button" id="info" class="btn btn-success" data-toggle="tooltip" data-placement="left" title="Info"><i class="fas fa-info-circle"></i></button>';
@@ -354,7 +364,7 @@ export default {
                     : " <b>" + rows[0].name + "</b> (" + rows[0].name + ")") +
                   " ?",
                 data: self.table.rows(".selected").data().toArray(),
-                emit: "confirmDeleteSupplier",
+                emit: "confirmDeleteCustomer",
                 hide: true,
                 type: "danger",
               });
@@ -384,8 +394,8 @@ export default {
             text: '<i class="fa-solid fa-plus"></i>',
             className: "btn-light",
             action: function () {
-              self.emitter.emit("newSupplierModal", {
-                title: "New Supplier",
+              self.emitter.emit("newCustomerModal", {
+                title: "New Customer",
                 type: "success",
                 emit: "refreshDataTable",
               });
@@ -412,7 +422,7 @@ export default {
           $("#checkall").prop("checked", false);
         },
         createdRow: function (row, data, dataIndex) {
-          if (data['deleted_at']) {
+          if (data["deleted_at"]) {
             $(row).addClass("bg-warning");
           }
         },
@@ -428,8 +438,8 @@ export default {
       $("#datatable tbody").on("click", "#edit", function () {
         // edit from action menu
         let row = self.table.row($(this).parents("tr")).data();
-        self.emitter.emit("newSupplierModal", {
-          title: "Edit Supplier",
+        self.emitter.emit("newCustomerModal", {
+          title: "Edit Customer",
           data: row,
           emit: "refreshDataTable",
           type: "primary",
@@ -438,7 +448,7 @@ export default {
       $("#datatable tbody").on("click", "#info", function () {
         // info from action menu
         self.row = self.table.row($(this).parents("tr")).data();
-        window.SUPPLIER_INFO_MODAL.show();
+        window.CUSTOMER_INFO_MODAL.show();
       });
       $("#datatable tbody").on("click", "#delete", function () {
         // delete from action menu
@@ -446,13 +456,9 @@ export default {
         self.emitter.emit("deleteConfirmModal", {
           title: null,
           body:
-            "Delete supplier with name <b>" +
-            row.name +
-            "</b> (" +
-            row.place +
-            ")?",
+            "Delete customer with name <b>" + row.name + "</b> | " + row.place+" ?",
           data: row,
-          emit: "confirmDeleteSupplier",
+          emit: "confirmDeleteCustomer",
           hide: true,
           type: "danger",
         });
@@ -493,7 +499,7 @@ export default {
           self.table.search("").draw();
         });
     });
-    self.emitter.on("confirmDeleteSupplier", (data) => {
+    self.emitter.on("confirmDeleteCustomer", (data) => {
       // delete selected supplier stuff here
       if (self.controller_delete.value) {
         self.controller_delete.value.abort();
@@ -502,7 +508,7 @@ export default {
       self
         .axiosAsyncCallReturnData(
           "delete",
-          "supplier",
+          "customer",
           {
             data: data,
             action: "delete",

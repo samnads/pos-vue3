@@ -408,7 +408,7 @@ export default {
             text: '<i class="fas fa-copy"></i>',
             className: "btn-light",
             exportOptions: {
-              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+              columns: [2, 3, 4, 5, 6, 7],
             },
             attr: {
               "data-toggle": "tooltip",
