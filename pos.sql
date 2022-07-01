@@ -143,12 +143,16 @@ INSERT INTO `currency` (`id`, `code`, `name`, `symbol`, `rate`, `added_at`, `upd
 DROP TABLE IF EXISTS `customer`;
 CREATE TABLE `customer` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(20) NOT NULL,
   `group` int(11) NOT NULL,
   `name` varchar(150) NOT NULL,
   `place` varchar(255) NOT NULL,
   `email` varchar(255) DEFAULT NULL,
   `phone` varchar(50) DEFAULT NULL,
   `address` varchar(255) DEFAULT NULL,
+  `pin_code` varchar(12) DEFAULT NULL,
+  `city` varchar(100) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
   `editable` tinyint(1) DEFAULT NULL,
   `deletable` tinyint(1) DEFAULT NULL,
   `status` enum('ACTIVE','INACTIVE','PENDING') NOT NULL,
@@ -162,11 +166,16 @@ CREATE TABLE `customer` (
   CONSTRAINT `customer_ibfk_1` FOREIGN KEY (`group`) REFERENCES `customer_group` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `customer` (`id`, `group`, `name`, `place`, `email`, `phone`, `address`, `editable`, `deletable`, `status`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	3,	'Walk-In Customer',	'USA',	'example@ex.com',	'+91-123',	'Kerala',	0,	0,	'ACTIVE',	'2021-04-29 06:39:48',	'2021-08-18 19:22:02',	NULL),
-(18,	2,	'rty',	'ryrty',	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2021-05-07 18:55:51',	'2021-08-18 19:08:18',	NULL),
-(19,	3,	'retrrtrt',	'ert',	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2021-05-07 19:02:54',	'2021-05-07 19:52:40',	NULL),
-(26,	2,	'ewrwer',	'werer',	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2021-05-07 19:52:35',	NULL,	NULL);
+INSERT INTO `customer` (`id`, `code`, `group`, `name`, `place`, `email`, `phone`, `address`, `pin_code`, `city`, `description`, `editable`, `deletable`, `status`, `added_at`, `updated_at`, `deleted_at`) VALUES
+(41,	'CUST0041',	1,	'uyuytu',	'yuytuyuyt',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-30 16:11:34',	'2022-07-01 04:51:48',	'2022-07-01 04:51:48'),
+(42,	'CUST0042',	3,	'yuyuyu',	'yuyuyu',	NULL,	NULL,	'898',	NULL,	NULL,	'888',	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:26:31',	'2022-07-01 04:51:52',	'2022-07-01 04:51:52'),
+(44,	'CUST0044',	2,	'aaa',	'tytyt',	'dfdf@fg.ghgh',	'565656',	'jhkuhoi',	'65656',	'6565',	'uiiouioiuo',	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:38:41',	'2022-07-01 04:45:02',	'2022-07-01 04:45:02'),
+(45,	'CUST0045',	2,	'tyutu6767',	'6767',	NULL,	NULL,	'jkjk',	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:51:58',	'2022-07-01 05:27:08',	NULL),
+(46,	'CUST0046',	1,	'676767',	'676767',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:52:02',	NULL,	NULL),
+(47,	'CUST0047',	2,	'aaa',	'aaa',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:52:08',	NULL,	NULL),
+(48,	'CUST0048',	4,	'aaaa',	'aaa',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	0,	NULL,	'ACTIVE',	'2022-07-01 04:52:16',	'2022-07-01 05:26:37',	'2022-07-01 05:26:37'),
+(49,	'CUST0049',	2,	'gfgfg',	'yyt',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:52:21',	NULL,	NULL),
+(50,	'CUST0050',	2,	'rtdtg',	'ggfg',	NULL,	NULL,	NULL,	NULL,	NULL,	'klklkl',	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:52:27',	'2022-07-01 05:26:59',	NULL);
 
 DROP TABLE IF EXISTS `customer_group`;
 CREATE TABLE `customer_group` (
@@ -224,6 +233,7 @@ INSERT INTO `module` (`id`, `name`) VALUES
 (3,	'brand'),
 (2,	'category'),
 (7,	'customer'),
+(16,	'customer_group'),
 (14,	'label'),
 (11,	'pos'),
 (1,	'product'),
@@ -341,10 +351,11 @@ INSERT INTO `product` (`id`, `type`, `code`, `symbology`, `name`, `slug`, `thumb
 (161,	1,	'63886634',	1,	'78768',	'6787688',	NULL,	NULL,	1,	NULL,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-04-11 16:55:30',	NULL,	NULL),
 (165,	1,	'27144759',	1,	'dffsfsf',	'dffsfsf',	NULL,	NULL,	1,	NULL,	NULL,	1,	NULL,	NULL,	'1',	NULL,	NULL,	50.0000,	3.0000,	NULL,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	0,	NULL,	NULL,	NULL,	0,	0,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-04-12 17:31:44',	NULL,	NULL),
 (173,	1,	'48386886',	1,	'AAA',	'aaa',	NULL,	NULL,	1,	NULL,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	NULL,	75.0000,	0.0000,	'2022-06-23',	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-04-14 17:00:06',	'2022-06-23 16:00:49',	NULL),
-(174,	1,	'33267747',	1,	'etertet',	'etertet',	NULL,	NULL,	1,	NULL,	NULL,	1,	NULL,	NULL,	'1',	NULL,	NULL,	50.0000,	33.0000,	NULL,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	'Serial No.',	'Serial No.',	NULL,	NULL,	NULL,	NULL,	'2022-04-14 17:00:29',	NULL,	NULL),
-(176,	1,	'23556049',	1,	'Dell Monotor',	'dell-monotor',	NULL,	NULL,	4,	NULL,	NULL,	1,	NULL,	NULL,	'1',	NULL,	NULL,	NULL,	35000.0000,	NULL,	NULL,	NULL,	'E',	1,	0.0000,	'1',	10,	1,	NULL,	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-04-18 13:03:23',	'2022-04-26 20:57:17',	NULL),
-(180,	1,	'54805482',	1,	'Name 1',	'name-1',	NULL,	NULL,	1,	NULL,	1,	1,	NULL,	NULL,	'1',	NULL,	500.0000,	NULL,	50.0000,	NULL,	NULL,	NULL,	'I',	1,	0.0000,	'1',	20,	1,	NULL,	NULL,	NULL,	1,	1,	1,	'Serial No.',	'Color',	NULL,	NULL,	NULL,	'6',	'2022-04-26 16:14:34',	'2022-04-30 13:00:39',	NULL),
-(186,	1,	'96213555',	2,	'have data field 1 - 2',	'have-data-field-1---2',	NULL,	NULL,	2,	NULL,	1,	1,	70,	77,	'1',	100.0000,	500.0000,	NULL,	150.0000,	10.0000,	'2022-05-30',	'2022-06-06',	'I',	NULL,	0.0000,	'1',	12,	1,	NULL,	NULL,	NULL,	1,	1,	1,	'Serial No.',	'IMEI No.',	'IMEI No. 2 :',	'b',	'c',	'4454',	'2022-04-28 16:42:25',	'2022-06-15 09:09:50',	NULL);
+(174,	1,	'33267747',	1,	'etertet',	'etertet',	NULL,	NULL,	1,	NULL,	NULL,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	NULL,	50.0000,	0.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	'Serial No.',	'Serial No.',	NULL,	NULL,	NULL,	NULL,	'2022-04-14 17:00:29',	'2022-06-28 13:58:01',	NULL),
+(176,	1,	'23556049',	1,	'Dell Monotor',	'dell-monotor',	NULL,	NULL,	4,	NULL,	NULL,	1,	NULL,	NULL,	'1',	400.0000,	NULL,	NULL,	400.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	10,	1,	NULL,	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-04-18 13:03:23',	'2022-06-28 13:58:12',	NULL),
+(180,	1,	'54805482',	1,	'Name 1',	'name-1',	NULL,	NULL,	1,	NULL,	1,	1,	NULL,	NULL,	'1',	10.0000,	500.0000,	NULL,	10.0000,	0.0000,	NULL,	NULL,	'I',	1,	0.0000,	'1',	20,	1,	NULL,	NULL,	NULL,	1,	1,	1,	'Serial No.',	'Color',	NULL,	NULL,	NULL,	'6',	'2022-04-26 16:14:34',	'2022-06-26 21:15:53',	NULL),
+(186,	1,	'96213555',	2,	'have data field 1 - 2',	'have-data-field-1---2',	NULL,	NULL,	2,	NULL,	1,	39,	NULL,	NULL,	'1',	100.0000,	500.0000,	NULL,	150.0000,	10.0000,	'2022-05-30',	'2022-06-06',	'I',	NULL,	0.0000,	'1',	12,	1,	NULL,	NULL,	NULL,	1,	1,	1,	'IMEI No.',	'IMEI No.',	'IMEI No. 2 :',	'b',	'c',	'4454',	'2022-04-28 16:42:25',	'2022-06-28 17:45:04',	NULL),
+(187,	1,	'24366313',	1,	'yuiyui',	'yuiyui',	NULL,	NULL,	1,	NULL,	NULL,	1,	NULL,	NULL,	'1',	10.0000,	NULL,	NULL,	15.0000,	0.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	1,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-06-27 20:42:52',	'2022-06-28 18:20:03',	NULL);
 
 DROP TABLE IF EXISTS `product_gallery`;
 CREATE TABLE `product_gallery` (
@@ -513,6 +524,7 @@ INSERT INTO `role_permission` (`role_id`, `readonly`, `comment`, `module_id`, `p
 (1,	1,	'MANUAL (stock adj list new)',	15,	1,	1,	'2021-10-29 17:45:44',	NULL,	NULL),
 (1,	1,	'MANUAL (stock adj list)',	15,	2,	1,	'2021-10-20 20:11:57',	'2021-10-24 18:51:37',	NULL),
 (1,	1,	'MANUAL (stock adj list edit)',	15,	3,	1,	'2022-06-23 07:14:24',	'2022-06-23 07:14:24',	NULL),
+(1,	1,	'MANUAL list customer groups (admin default)',	16,	2,	1,	'2022-06-30 12:33:11',	'2022-06-30 14:53:29',	NULL),
 (19,	NULL,	NULL,	4,	1,	1,	'2021-09-28 18:09:05',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `status`;
@@ -602,9 +614,12 @@ INSERT INTO `stock_adjustment` (`id`, `warehouse`, `added_by`, `date`, `time`, `
 (163,	20,	1,	'2022-06-24',	'00:00:00',	'gh',	NULL,	'2022-06-23 11:44:11',	'2022-06-24 06:01:36',	NULL),
 (165,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-24 05:54:01',	'2022-06-24 06:32:18',	NULL),
 (166,	25,	1,	'2022-06-24',	'19:05:06',	NULL,	NULL,	'2022-06-24 06:25:49',	'2022-06-24 07:06:08',	NULL),
-(167,	20,	1,	'2022-06-24',	'12:40:07',	'ref',	'not',	'2022-06-24 07:07:33',	NULL,	NULL),
-(168,	20,	1,	'2022-06-10',	'12:00:50',	'4',	NULL,	'2022-06-24 07:08:00',	'2022-06-24 10:36:03',	NULL),
-(169,	20,	1,	'2022-06-24',	'16:06:17',	'ref 231',	'Not 79',	'2022-06-24 10:36:39',	'2022-06-24 10:54:06',	NULL);
+(167,	20,	1,	'2022-06-24',	'12:40:07',	'ref',	'not',	'2022-06-24 07:07:33',	'2022-06-26 16:26:09',	NULL),
+(168,	20,	1,	'2022-06-10',	'12:00:50',	NULL,	NULL,	'2022-06-24 07:08:00',	'2022-06-27 07:44:10',	NULL),
+(169,	20,	1,	'2022-06-24',	'16:06:17',	'ref 231',	'Not 79',	'2022-06-24 10:36:39',	'2022-06-28 07:41:50',	NULL),
+(170,	22,	1,	'2022-06-26',	'19:58:12',	NULL,	NULL,	'2022-06-26 14:28:15',	'2022-06-26 16:03:09',	NULL),
+(171,	20,	1,	'2022-06-28',	'13:12:18',	'ee',	NULL,	'2022-06-28 07:42:21',	'2022-06-28 12:20:26',	NULL),
+(172,	20,	1,	'2022-06-09',	'17:53:51',	NULL,	NULL,	'2022-06-28 12:23:54',	'2022-06-29 05:31:53',	NULL);
 
 DROP TABLE IF EXISTS `stock_adjustment_product`;
 CREATE TABLE `stock_adjustment_product` (
@@ -701,14 +716,21 @@ INSERT INTO `stock_adjustment_product` (`id`, `stock_adjustment`, `product`, `no
 (283,	165,	173,	NULL,	3.0000),
 (284,	166,	165,	NULL,	1.0000),
 (285,	167,	180,	NULL,	1.0000),
-(286,	167,	10,	NULL,	1.0000),
 (287,	167,	186,	NULL,	1.0000),
 (288,	167,	5,	NULL,	1.0000),
 (289,	167,	173,	NULL,	1.0000),
 (291,	168,	5,	NULL,	1.0000),
-(293,	169,	186,	NULL,	7.0000),
-(294,	169,	5,	NULL,	3.0000),
-(295,	169,	173,	NULL,	4.0000);
+(293,	169,	186,	NULL,	8.0000),
+(294,	169,	5,	NULL,	5.0000),
+(295,	169,	173,	NULL,	4.0000),
+(296,	169,	6,	NULL,	3.0000),
+(297,	170,	186,	NULL,	1.0000),
+(298,	170,	5,	NULL,	2.0000),
+(299,	170,	173,	NULL,	2.0000),
+(301,	171,	5,	'fdfdf',	4.0000),
+(302,	172,	5,	NULL,	1.0000),
+(303,	172,	180,	NULL,	4.0000),
+(304,	172,	186,	NULL,	1.0000);
 
 DROP TABLE IF EXISTS `sub_category`;
 CREATE TABLE `sub_category` (
@@ -786,8 +808,8 @@ CREATE TABLE `supplier` (
   `gst_no` varchar(150) DEFAULT NULL,
   `tax_no` varchar(150) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
-  `editable` tinyint(1) DEFAULT NULL,
-  `deletable` tinyint(1) DEFAULT NULL,
+  `editable` tinyint(1) DEFAULT NULL COMMENT 'set 0 for protect edit, otherwise use NULL',
+  `deletable` tinyint(1) DEFAULT NULL COMMENT 'set 0 for protect delete, otherwise use NULL',
   `status` enum('ACTIVE','INACTIVE','PENDING') NOT NULL,
   `added_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
@@ -799,9 +821,23 @@ CREATE TABLE `supplier` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `supplier` (`id`, `code`, `name`, `place`, `address`, `pin_code`, `city`, `phone`, `email`, `gst_no`, `tax_no`, `description`, `editable`, `deletable`, `status`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(34,	'SUPP0034',	'rgrtre',	'tert',	NULL,	NULL,	NULL,	'54545',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2021-08-19 20:50:45',	'2021-09-30 19:16:05',	NULL),
-(35,	'SUPP0035',	'werwr',	'ewrtewtrwet',	NULL,	NULL,	NULL,	'5335',	NULL,	NULL,	NULL,	NULL,	NULL,	0,	'ACTIVE',	'2021-08-19 20:50:53',	'2021-09-30 19:16:05',	NULL),
-(36,	'SUPP0036',	'sdtgdfgdfg',	'fgdfg',	NULL,	NULL,	NULL,	'56456456',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2021-09-29 20:56:36',	'2021-09-30 19:16:05',	NULL);
+(83,	'SUPP0083',	'fgdfg',	'fdgdg',	NULL,	NULL,	NULL,	'45546',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 12:25:23',	NULL,	NULL),
+(86,	'SUPP0086',	'ytyty',	'rtty',	NULL,	NULL,	NULL,	'6545445',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:25:10',	NULL,	NULL),
+(87,	'SUPP0087',	'rt5rt56546',	'565656544',	NULL,	NULL,	NULL,	'65654656',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:25:18',	NULL,	NULL),
+(88,	'SUPP0088',	'tryt',	'rwrr5',	NULL,	NULL,	NULL,	'53535355',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:30:51',	NULL,	NULL),
+(89,	'SUPP0089',	'eeeeeeeeee',	'rrrrrrrrrrr',	NULL,	NULL,	NULL,	'6664564564',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:31:29',	NULL,	NULL),
+(90,	'SUPP0090',	'tyryrty',	'rty6575',	NULL,	NULL,	NULL,	'5764465656',	NULL,	NULL,	NULL,	'987',	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:33:00',	'2022-06-30 09:09:27',	NULL),
+(91,	'SUPP0091',	'ryrtyrty',	'tyrytry',	NULL,	NULL,	NULL,	'564335466',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:34:00',	NULL,	NULL),
+(92,	'SUPP0092',	'utyu6',	'7576',	NULL,	NULL,	NULL,	'4368455447',	NULL,	NULL,	NULL,	'uiouo9',	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:34:12',	'2022-06-30 09:05:17',	NULL),
+(93,	'SUPP0093',	'fggfg',	'gfdsser',	NULL,	NULL,	NULL,	'0000000000000',	NULL,	NULL,	NULL,	'o88',	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:34:25',	'2022-06-30 08:02:04',	'2022-06-30 08:02:04'),
+(94,	'SUPP0094',	'tyutyu',	'yuytuytu',	NULL,	NULL,	NULL,	'565655757',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:35:16',	'2022-06-30 07:17:17',	'2022-06-30 07:17:17'),
+(95,	'SUPP0095',	'uytutyu',	'tutyutyutu',	NULL,	NULL,	NULL,	'123456',	NULL,	'\'\'\'',	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:35:31',	'2022-06-30 07:17:29',	'2022-06-30 07:17:29'),
+(100,	'SUPP0100',	'`6r7yrtyty',	'ttyty',	NULL,	NULL,	NULL,	'56464656',	NULL,	NULL,	NULL,	'jtt',	NULL,	NULL,	'ACTIVE',	'2022-06-30 04:08:35',	'2022-06-30 07:11:06',	'2022-06-30 07:11:06'),
+(102,	'SUPP0102',	'ghfhgfh g',	'tteerr',	'aaa',	123,	'tgft',	'77575547',	'ff@ds.fg',	'eee',	'jjj',	'dddydo',	0,	0,	'ACTIVE',	'2022-06-30 05:45:45',	'2022-06-30 07:12:30',	NULL),
+(103,	'SUPP0103',	'aaa',	'bbb',	NULL,	NULL,	NULL,	'111111',	NULL,	NULL,	NULL,	'dfdt',	NULL,	NULL,	'ACTIVE',	'2022-06-30 05:55:00',	'2022-06-30 07:06:03',	'2022-06-30 07:06:03'),
+(104,	'SUPP0104',	'aaa',	'bbb',	NULL,	NULL,	NULL,	'1111111',	NULL,	NULL,	NULL,	'aaa',	NULL,	NULL,	'ACTIVE',	'2022-06-30 06:01:54',	'2022-06-30 07:05:32',	'2022-06-30 07:05:32'),
+(105,	'SUPP0105',	'hjguj',	'gujyuyu',	NULL,	NULL,	NULL,	'56565656',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-30 06:40:53',	'2022-06-30 07:01:06',	'2022-06-30 07:01:06'),
+(106,	'SUPP0106',	'0909808',	'789789879',	NULL,	NULL,	NULL,	'654656565',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-30 08:03:33',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `symbology`;
 CREATE TABLE `symbology` (
@@ -970,7 +1006,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `place`, `address`, `status`, `deletable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	1,	'admin',	'$2y$10$3l0yQjMc7F2mlA8yCu.1l.ccKM68f9gLICEUCnId1bdCcO5gZh.si',	'Admin',	'Last',	NULL,	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	'N',	'Trivandrum',	'CyberLikes Pvt. Ltd.',	'ACTIVE',	0,	'::1',	'2022-06-24 10:45:29',	'2022-06-05 06:34:50',	'2021-04-20 19:22:52',	'2022-06-24 10:45:29',	NULL),
+(1,	1,	'admin',	'$2y$10$3l0yQjMc7F2mlA8yCu.1l.ccKM68f9gLICEUCnId1bdCcO5gZh.si',	'Admin',	'Last',	NULL,	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	'N',	'Trivandrum',	'CyberLikes Pvt. Ltd.',	'ACTIVE',	0,	'::1',	'2022-07-01 04:23:50',	'2022-06-05 06:34:50',	'2021-04-20 19:22:52',	'2022-07-01 04:23:50',	NULL),
 (13,	2,	'rythse',	'$2y$10$A2Avf.FbCFpsUttbnIO9uOO0HS3nzZZnASe9yhLmDyZSbeM8Bxg4y',	'retety',	'tyty',	NULL,	'1992-10-30',	'ere@dfg.ddf',	'57567567',	NULL,	'O',	NULL,	NULL,	'INACTIVE',	1,	NULL,	NULL,	NULL,	'2021-05-01 17:33:45',	NULL,	NULL),
 (24,	1,	'rtretrt',	'$2y$10$6Ycp.jwd.QJUZ.mjxTuTd.nnXLQRnfOSaLSymS3LdQNQf580ZAkQe',	'ertert',	NULL,	NULL,	NULL,	'ryr@et.rtrt',	'465464564456',	NULL,	'O',	NULL,	NULL,	'INACTIVE',	1,	NULL,	NULL,	NULL,	'2021-05-01 20:24:41',	'2021-08-18 18:08:09',	NULL),
 (26,	1,	'fff',	'$2y$10$s2laXQmwAt4K8431Y/nubue1Z8OL3mELtHevdcXIFECmRHX7OPXN6',	'asdasd',	NULL,	NULL,	NULL,	'sf@dgdg.fgfdg',	'5454545',	NULL,	'M',	NULL,	NULL,	'ACTIVE',	1,	NULL,	NULL,	NULL,	'2021-05-07 20:05:30',	'2021-07-29 20:53:27',	NULL),
@@ -1023,4 +1059,4 @@ INSERT INTO `warehouse` (`id`, `name`, `code`, `phone`, `email`, `address`, `lon
 (23,	'erer',	'erwer',	'45',	'fddf@wdwd.cv',	'erwer',	NULL,	NULL,	'ererererrer',	'2021-04-22 18:00:23',	'2021-04-23 19:31:27',	NULL),
 (25,	'tret',	'rtert',	'4545',	'fgfdg@er.t',	'ryty',	NULL,	NULL,	NULL,	'2021-04-23 19:31:52',	NULL,	NULL);
 
--- 2022-06-24 10:54:33
+-- 2022-07-01 05:27:44

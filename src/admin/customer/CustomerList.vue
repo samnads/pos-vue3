@@ -432,7 +432,7 @@ export default {
         },
         createdRow: function (row, data, dataIndex) {
           if (data["deleted_at"]) {
-            $(row).addClass("bg-warning");
+            $(row).addClass("bg-danger");
           }
         },
       });

@@ -26,18 +26,20 @@ class Customer_model extends CI_Model
 		$query = $this->db->get();
 		return $query;
 	}
-	function recordsTotal()
+	function datatable_recordsTotal()
 	{
 		$this->db->select('count(id)');
-		$query = $this->db->get(TABLE_CUSTOMER);
+		$this->db->from(TABLE_CUSTOMER . ' c');
+		$this->db->where(array('c.deleted_at' => NULL)); // select only not deleted rows
+		$query = $this->db->get();
 		$cnt = $query->row_array();
 		return $cnt['count(id)'];
 	}
-	function get_all_customer($all = false, $columns = null, $search, $offset, $limit, $order_by, $order)
+	function datatable_data($search, $offset, $limit, $order_by, $order, $columns = null)
 	{
 		$search = trim($search);
 
-		$all ? $this->db->select('*') : ($columns == null ? $this->db->select('
+		$columns == null ? $this->db->select('
 		c.id as id,
         c.name as name,
 		c.code as code,
@@ -55,16 +57,19 @@ class Customer_model extends CI_Model
         
 		cg.id as group,
 		cg.name as group_name,
-		cg.percentage as group_percentage') : $this->db->select($columns));
+		cg.percentage as group_percentage') : $this->db->select($columns);
 
 		$this->db->join(TABLE_CUSTOMER_GROUP . ' cg', 'cg.id=c.group', 'left');
 
+		$this->db->where(array('c.deleted_at' => NULL)); // select only not deleted rows
+		$this->db->group_start();
 		$this->db->or_like('c.name', $search);
 		$this->db->or_like('c.place', $search);
 		$this->db->or_like('c.address', $search);
 		$this->db->or_like('c.email', $search);
 		$this->db->or_like('c.phone', $search);
 		$this->db->or_like('cg.name', $search);
+		$this->db->group_end();
 
 		$this->db->order_by($order_by, $order);
 		$this->db->order_by('c.id', 'DESC');
@@ -97,7 +102,7 @@ class Customer_model extends CI_Model
 		$query = $this->db->get();
 		return  $query->row_array();
 	}
-	function get_all_customer_recordsFiltered($search)
+	function datatable_recordsFiltered($search)
 	{
 		$search = trim($search);
 
@@ -106,12 +111,15 @@ class Customer_model extends CI_Model
 		$this->db->from(TABLE_CUSTOMER . ' c');
 		$this->db->join(TABLE_CUSTOMER_GROUP . ' cg', 'cg.id=c.group', 'left');
 
+		$this->db->where(array('c.deleted_at' => NULL)); // select only not deleted rows
+		$this->db->group_start();
 		$this->db->or_like('c.name', $search);
 		$this->db->or_like('c.place', $search);
 		$this->db->or_like('c.address', $search);
 		$this->db->or_like('c.email', $search);
 		$this->db->or_like('c.phone', $search);
 		$this->db->or_like('cg.name', $search);
+		$this->db->group_end();
 
 		$query = $this->db->get();
 		$query    = $query->row();
@@ -126,16 +134,15 @@ class Customer_model extends CI_Model
 		$cnt = $query->row_array();
 		return $cnt['AUTO_INCREMENT'];
 	}
-	function delete_where($where)
-	{
-		$this->db->where($where);
-		$query = $this->db->delete(TABLE_CUSTOMER);
-		return $query;
-	}
 	function delete_wherein_id($ids)
 	{
 		$this->db->where_in('id', $ids);
 		$query = $this->db->delete(TABLE_CUSTOMER);
+		return $query;
+	}
+	function insert_customer($data)
+	{
+		$query = $this->db->insert(TABLE_CUSTOMER, $data);
 		return $query;
 	}
 	function update_customer($data, $where)
@@ -143,9 +150,11 @@ class Customer_model extends CI_Model
 		$query = $this->db->update(TABLE_CUSTOMER, $data, $where);
 		return $query;
 	}
-	function insert_customer($data)
+	function set_deleted_at($id)
 	{
-		$query = $this->db->insert(TABLE_CUSTOMER, $data);
+		$this->db->where(array('id' => $id, 'deletable' => NULL, 'deleted_at' => NULL));
+		$this->db->set('deleted_at', 'NOW()', FALSE); // deleted rows have a timestamp
+		$query = $this->db->update(TABLE_CUSTOMER);
 		return $query;
 	}
 }

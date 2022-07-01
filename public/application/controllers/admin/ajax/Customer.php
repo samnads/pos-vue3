@@ -9,7 +9,7 @@ class Customer extends CI_Controller
 		$_POST = raw_input_to_post();
 		switch ($_SERVER['REQUEST_METHOD']) {
 			case 'GET': // read
-				switch ($action = $this->input->get('action')) {
+				switch ($this->input->get('action')) {
 					case 'suggest': // read
 						$type = $this->input->get('type');
 						switch ($type) {
@@ -39,10 +39,11 @@ class Customer extends CI_Controller
 						$order = $this->input->get('order')[0]['dir']; // order asc or desc
 						$search = $this->input->get('search')['value']; // search query
 						$offset = $this->input->get('start'); // start position
-						$data['data'] = $this->Customer_model->get_all_customer(false, null, $search, $offset, $limit, $order_by, $order);
+						$columns = null;
+						$data['data'] = $this->Customer_model->datatable_data($search, $offset, $limit, $order_by, $order, $columns);
 						$data["draw"] = $this->input->get('draw'); // unique
-						$data["recordsTotal"] = $this->Customer_model->recordsTotal();
-						$data["recordsFiltered"] = $this->Customer_model->get_all_customer_recordsFiltered($search);
+						$data["recordsTotal"] = $this->Customer_model->datatable_recordsTotal();
+						$data["recordsFiltered"] = $this->Customer_model->datatable_recordsFiltered($search);
 						$data['success'] = true;
 						//$data[ 'error' ] = '';
 						echo json_encode($data);
@@ -240,7 +241,7 @@ class Customer extends CI_Controller
 					$customer = $this->Customer_model->getCustomer(array('id' => $id));
 					if ($customer['id']) {
 						if ($customer['deletable'] !== 0) {
-							$this->Customer_model->delete_where(array('id' => $id));
+							$this->Customer_model->set_deleted_at($id);
 							$error = $this->db->error();
 							if ($error['code'] == 1451) {
 								echo json_encode(array('success' => false, 'type' => 'danger', 'id' => $id, 'timeout' => 5000, 'message' => 'Delete all data associated with the customer <strong><em>' . $customer['name'] . '</em></strong> then try again !'));
