@@ -240,8 +240,7 @@ export default {
             orderable: false,
             searchable: false,
             width: "1%",
-            defaultContent:
-              "",
+            defaultContent: "",
             render: function (data, type, row, meta) {
               let infoBtn =
                 '<button type="button" id="info" class="btn btn-success" data-toggle="tooltip" data-placement="left" title="Info"><i class="fas fa-info-circle"></i></button>';
@@ -387,7 +386,7 @@ export default {
               self.emitter.emit("newSupplierModal", {
                 title: "New Supplier",
                 type: "success",
-                emit: "refreshDataTable",
+                emit: "refreshSupplierDataTable",
               });
             },
             attr: {
@@ -412,7 +411,7 @@ export default {
           $("#checkall").prop("checked", false);
         },
         createdRow: function (row, data, dataIndex) {
-          if (data['deleted_at']) {
+          if (data["deleted_at"]) {
             $(row).addClass("bg-danger");
           }
         },
@@ -431,7 +430,7 @@ export default {
         self.emitter.emit("newSupplierModal", {
           title: "Edit Supplier",
           data: row,
-          emit: "refreshDataTable",
+          emit: "refreshSupplierDataTable",
           type: "primary",
         });
       });
@@ -531,9 +530,16 @@ export default {
           }
         });
     });
-    self.emitter.on("refreshDataTable", (data) => {
+    self.emitter.on("refreshSupplierDataTable", (data) => {
       self.table.ajax.reload();
     });
+  },
+  beforeUnmount() {
+    var self = this;
+    self.emitter.off("confirmDeleteSupplier");
+    self.emitter.off("refreshSupplierDataTable");
+    // turn off for duplicate calling
+    // because its called multiple times when page loaded multiple times
   },
   data: function () {
     return {};

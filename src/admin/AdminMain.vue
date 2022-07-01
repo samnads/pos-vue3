@@ -125,6 +125,11 @@
               </ul>
             </li>
             <li>
+              <router-link class="nav-link" to="/admin/user/list"
+                >Users</router-link
+              >
+            </li>
+            <li>
               <router-link class="nav-link" to="/admin/login"
                 >Login</router-link
               >

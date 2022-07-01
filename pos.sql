@@ -167,15 +167,14 @@ CREATE TABLE `customer` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `customer` (`id`, `code`, `group`, `name`, `place`, `email`, `phone`, `address`, `pin_code`, `city`, `description`, `editable`, `deletable`, `status`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(41,	'CUST0041',	1,	'uyuytu',	'yuytuyuyt',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-30 16:11:34',	'2022-07-01 04:51:48',	'2022-07-01 04:51:48'),
-(42,	'CUST0042',	3,	'yuyuyu',	'yuyuyu',	NULL,	NULL,	'898',	NULL,	NULL,	'888',	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:26:31',	'2022-07-01 04:51:52',	'2022-07-01 04:51:52'),
-(44,	'CUST0044',	2,	'aaa',	'tytyt',	'dfdf@fg.ghgh',	'565656',	'jhkuhoi',	'65656',	'6565',	'uiiouioiuo',	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:38:41',	'2022-07-01 04:45:02',	'2022-07-01 04:45:02'),
-(45,	'CUST0045',	2,	'tyutu6767',	'6767',	NULL,	NULL,	'jkjk',	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:51:58',	'2022-07-01 05:27:08',	NULL),
-(46,	'CUST0046',	1,	'676767',	'676767',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:52:02',	NULL,	NULL),
-(47,	'CUST0047',	2,	'aaa',	'aaa',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:52:08',	NULL,	NULL),
-(48,	'CUST0048',	4,	'aaaa',	'aaa',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	0,	NULL,	'ACTIVE',	'2022-07-01 04:52:16',	'2022-07-01 05:26:37',	'2022-07-01 05:26:37'),
-(49,	'CUST0049',	2,	'gfgfg',	'yyt',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:52:21',	NULL,	NULL),
-(50,	'CUST0050',	2,	'rtdtg',	'ggfg',	NULL,	NULL,	NULL,	NULL,	NULL,	'klklkl',	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:52:27',	'2022-07-01 05:26:59',	NULL);
+(41,	'CUST0041',	1,	'uyuytu',	'yuytuyuyt',	NULL,	NULL,	NULL,	NULL,	NULL,	'oipio',	NULL,	NULL,	'ACTIVE',	'2022-06-30 16:11:34',	'2022-07-01 14:26:40',	NULL),
+(42,	'CUST0042',	3,	'yuyuyu',	'yuyuyu',	NULL,	NULL,	'898',	NULL,	NULL,	'88890',	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:26:31',	'2022-07-01 14:26:40',	NULL),
+(44,	'CUST0044',	2,	'aaa',	'tytyt',	'dfdf@fg.ghgh',	'565656',	'jhkuhoi',	'65656',	'6565',	'uiiouioiuo',	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:38:41',	'2022-07-01 14:26:40',	NULL),
+(45,	'CUST0045',	2,	'tyutu6767',	'6767',	NULL,	NULL,	'jkjk',	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:51:58',	'2022-07-01 14:26:53',	'2022-07-01 14:26:53'),
+(48,	'CUST0048',	4,	'aaaa',	'aaa',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	0,	0,	'ACTIVE',	'2022-07-01 04:52:16',	'2022-07-01 14:26:40',	NULL),
+(50,	'CUST0050',	2,	'rtdtg',	'ggfg',	NULL,	NULL,	NULL,	NULL,	NULL,	'klklkl',	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:52:27',	'2022-07-01 14:26:40',	NULL),
+(51,	'CUST0051',	1,	'kjjhkjk',	'uiuii',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-07-01 05:38:54',	'2022-07-01 14:26:40',	NULL),
+(52,	'CUST0052',	1,	'tyutyu',	'yutyutyu',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	0,	'ACTIVE',	'2022-07-01 06:50:43',	'2022-07-01 14:26:40',	NULL);
 
 DROP TABLE IF EXISTS `customer_group`;
 CREATE TABLE `customer_group` (
@@ -821,23 +820,23 @@ CREATE TABLE `supplier` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `supplier` (`id`, `code`, `name`, `place`, `address`, `pin_code`, `city`, `phone`, `email`, `gst_no`, `tax_no`, `description`, `editable`, `deletable`, `status`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(83,	'SUPP0083',	'fgdfg',	'fdgdg',	NULL,	NULL,	NULL,	'45546',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 12:25:23',	NULL,	NULL),
-(86,	'SUPP0086',	'ytyty',	'rtty',	NULL,	NULL,	NULL,	'6545445',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:25:10',	NULL,	NULL),
-(87,	'SUPP0087',	'rt5rt56546',	'565656544',	NULL,	NULL,	NULL,	'65654656',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:25:18',	NULL,	NULL),
-(88,	'SUPP0088',	'tryt',	'rwrr5',	NULL,	NULL,	NULL,	'53535355',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:30:51',	NULL,	NULL),
-(89,	'SUPP0089',	'eeeeeeeeee',	'rrrrrrrrrrr',	NULL,	NULL,	NULL,	'6664564564',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:31:29',	NULL,	NULL),
-(90,	'SUPP0090',	'tyryrty',	'rty6575',	NULL,	NULL,	NULL,	'5764465656',	NULL,	NULL,	NULL,	'987',	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:33:00',	'2022-06-30 09:09:27',	NULL),
-(91,	'SUPP0091',	'ryrtyrty',	'tyrytry',	NULL,	NULL,	NULL,	'564335466',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:34:00',	NULL,	NULL),
-(92,	'SUPP0092',	'utyu6',	'7576',	NULL,	NULL,	NULL,	'4368455447',	NULL,	NULL,	NULL,	'uiouo9',	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:34:12',	'2022-06-30 09:05:17',	NULL),
-(93,	'SUPP0093',	'fggfg',	'gfdsser',	NULL,	NULL,	NULL,	'0000000000000',	NULL,	NULL,	NULL,	'o88',	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:34:25',	'2022-06-30 08:02:04',	'2022-06-30 08:02:04'),
-(94,	'SUPP0094',	'tyutyu',	'yuytuytu',	NULL,	NULL,	NULL,	'565655757',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:35:16',	'2022-06-30 07:17:17',	'2022-06-30 07:17:17'),
-(95,	'SUPP0095',	'uytutyu',	'tutyutyutu',	NULL,	NULL,	NULL,	'123456',	NULL,	'\'\'\'',	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:35:31',	'2022-06-30 07:17:29',	'2022-06-30 07:17:29'),
-(100,	'SUPP0100',	'`6r7yrtyty',	'ttyty',	NULL,	NULL,	NULL,	'56464656',	NULL,	NULL,	NULL,	'jtt',	NULL,	NULL,	'ACTIVE',	'2022-06-30 04:08:35',	'2022-06-30 07:11:06',	'2022-06-30 07:11:06'),
-(102,	'SUPP0102',	'ghfhgfh g',	'tteerr',	'aaa',	123,	'tgft',	'77575547',	'ff@ds.fg',	'eee',	'jjj',	'dddydo',	0,	0,	'ACTIVE',	'2022-06-30 05:45:45',	'2022-06-30 07:12:30',	NULL),
-(103,	'SUPP0103',	'aaa',	'bbb',	NULL,	NULL,	NULL,	'111111',	NULL,	NULL,	NULL,	'dfdt',	NULL,	NULL,	'ACTIVE',	'2022-06-30 05:55:00',	'2022-06-30 07:06:03',	'2022-06-30 07:06:03'),
-(104,	'SUPP0104',	'aaa',	'bbb',	NULL,	NULL,	NULL,	'1111111',	NULL,	NULL,	NULL,	'aaa',	NULL,	NULL,	'ACTIVE',	'2022-06-30 06:01:54',	'2022-06-30 07:05:32',	'2022-06-30 07:05:32'),
-(105,	'SUPP0105',	'hjguj',	'gujyuyu',	NULL,	NULL,	NULL,	'56565656',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-30 06:40:53',	'2022-06-30 07:01:06',	'2022-06-30 07:01:06'),
-(106,	'SUPP0106',	'0909808',	'789789879',	NULL,	NULL,	NULL,	'654656565',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-30 08:03:33',	NULL,	NULL);
+(83,	'SUPP0083',	'fgdfg',	'fdgdg',	NULL,	NULL,	NULL,	'45546',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 12:25:23',	'2022-07-01 14:14:35',	NULL),
+(86,	'SUPP0086',	'ytyty',	'rtty',	NULL,	NULL,	NULL,	'6545445',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:25:10',	'2022-07-01 14:14:35',	NULL),
+(87,	'SUPP0087',	'rt5rt56546',	'565656544',	NULL,	NULL,	NULL,	'65654656',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:25:18',	'2022-07-01 14:14:35',	NULL),
+(88,	'SUPP0088',	'tryt',	'rwrr5',	NULL,	NULL,	NULL,	'53535355',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:30:51',	'2022-07-01 14:14:35',	NULL),
+(89,	'SUPP0089',	'eeeeeeeeee',	'rrrrrrrrrrr',	NULL,	NULL,	NULL,	'6664564564',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:31:29',	'2022-07-01 14:14:35',	NULL),
+(90,	'SUPP0090',	'tyryrty',	'rty6575',	NULL,	NULL,	NULL,	'5764465656',	NULL,	NULL,	NULL,	'987',	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:33:00',	'2022-07-01 14:14:35',	NULL),
+(91,	'SUPP0091',	'ryrtyrty',	'tyrytry',	NULL,	NULL,	NULL,	'564335466',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:34:00',	'2022-07-01 14:14:35',	NULL),
+(92,	'SUPP0092',	'utyu6',	'7576',	NULL,	NULL,	NULL,	'4368455447',	NULL,	NULL,	NULL,	'uiouo9',	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:34:12',	'2022-07-01 14:19:54',	'2022-07-01 14:19:54'),
+(93,	'SUPP0093',	'fggfg',	'gfdsser',	NULL,	NULL,	NULL,	'0000000000000',	NULL,	NULL,	NULL,	'o88',	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:34:25',	'2022-07-01 14:19:30',	'2022-07-01 14:19:30'),
+(94,	'SUPP0094',	'tyutyu',	'yuytuytu',	NULL,	NULL,	NULL,	'565655757',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:35:16',	'2022-07-01 14:18:00',	'2022-07-01 14:18:00'),
+(95,	'SUPP0095',	'uytutyu',	'tutyutyutu',	NULL,	NULL,	NULL,	'123456',	NULL,	'\'\'\'',	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:35:31',	'2022-07-01 14:16:33',	'2022-07-01 14:16:33'),
+(100,	'SUPP0100',	'`6r7yrtyty',	'ttyty',	NULL,	NULL,	NULL,	'56464656',	NULL,	NULL,	NULL,	'jtt',	NULL,	NULL,	'ACTIVE',	'2022-06-30 04:08:35',	'2022-07-01 14:15:48',	'2022-07-01 14:15:48'),
+(102,	'SUPP0102',	'ghfhgfh g',	'tteerr',	'aaa',	123,	'tgft',	'77575547',	'ff@ds.fg',	'eee',	'jjj',	'dddydo',	0,	0,	'ACTIVE',	'2022-06-30 05:45:45',	'2022-07-01 14:14:35',	NULL),
+(103,	'SUPP0103',	'aaa',	'bbb',	NULL,	NULL,	NULL,	'111111',	NULL,	NULL,	NULL,	'dfdt',	NULL,	NULL,	'ACTIVE',	'2022-06-30 05:55:00',	'2022-07-01 14:14:59',	'2022-07-01 14:14:59'),
+(104,	'SUPP0104',	'aaa',	'bbb',	NULL,	NULL,	NULL,	'1111111',	NULL,	NULL,	NULL,	'aaa',	NULL,	NULL,	'ACTIVE',	'2022-06-30 06:01:54',	'2022-07-01 14:14:35',	NULL),
+(105,	'SUPP0105',	'hjguj',	'gujyuyu',	NULL,	NULL,	NULL,	'56565656',	NULL,	NULL,	NULL,	'lll',	NULL,	NULL,	'ACTIVE',	'2022-06-30 06:40:53',	'2022-07-01 14:21:34',	NULL),
+(106,	'SUPP0106',	'0909808',	'789789879',	NULL,	NULL,	NULL,	'654656565',	NULL,	NULL,	NULL,	'iouioiuoio',	NULL,	NULL,	'ACTIVE',	'2022-06-30 08:03:33',	'2022-07-01 14:22:02',	NULL);
 
 DROP TABLE IF EXISTS `symbology`;
 CREATE TABLE `symbology` (
@@ -993,7 +992,7 @@ CREATE TABLE `user` (
   `place` varchar(255) DEFAULT NULL,
   `address` text DEFAULT NULL,
   `status` enum('ACTIVE','INACTIVE','PENDING') NOT NULL DEFAULT 'PENDING',
-  `deletable` tinyint(1) NOT NULL DEFAULT 1,
+  `deletable` tinyint(1) DEFAULT 1 COMMENT 'set 0 for protect delete, otherwise use NULL',
   `client_ip` varchar(22) DEFAULT NULL,
   `login_at` timestamp NULL DEFAULT NULL,
   `logout_at` timestamp NULL DEFAULT NULL,
@@ -1006,11 +1005,10 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `place`, `address`, `status`, `deletable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	1,	'admin',	'$2y$10$3l0yQjMc7F2mlA8yCu.1l.ccKM68f9gLICEUCnId1bdCcO5gZh.si',	'Admin',	'Last',	NULL,	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	'N',	'Trivandrum',	'CyberLikes Pvt. Ltd.',	'ACTIVE',	0,	'::1',	'2022-07-01 04:23:50',	'2022-06-05 06:34:50',	'2021-04-20 19:22:52',	'2022-07-01 04:23:50',	NULL),
-(13,	2,	'rythse',	'$2y$10$A2Avf.FbCFpsUttbnIO9uOO0HS3nzZZnASe9yhLmDyZSbeM8Bxg4y',	'retety',	'tyty',	NULL,	'1992-10-30',	'ere@dfg.ddf',	'57567567',	NULL,	'O',	NULL,	NULL,	'INACTIVE',	1,	NULL,	NULL,	NULL,	'2021-05-01 17:33:45',	NULL,	NULL),
-(24,	1,	'rtretrt',	'$2y$10$6Ycp.jwd.QJUZ.mjxTuTd.nnXLQRnfOSaLSymS3LdQNQf580ZAkQe',	'ertert',	NULL,	NULL,	NULL,	'ryr@et.rtrt',	'465464564456',	NULL,	'O',	NULL,	NULL,	'INACTIVE',	1,	NULL,	NULL,	NULL,	'2021-05-01 20:24:41',	'2021-08-18 18:08:09',	NULL),
-(26,	1,	'fff',	'$2y$10$s2laXQmwAt4K8431Y/nubue1Z8OL3mELtHevdcXIFECmRHX7OPXN6',	'asdasd',	NULL,	NULL,	NULL,	'sf@dgdg.fgfdg',	'5454545',	NULL,	'M',	NULL,	NULL,	'ACTIVE',	1,	NULL,	NULL,	NULL,	'2021-05-07 20:05:30',	'2021-07-29 20:53:27',	NULL),
-(27,	1,	'tytyt',	'$2y$10$dMv5wEcpSOj92qOBYfhwLOQM9ZVqG6wf1Chkco2AP1ExTrHtz656y',	'eeryyrty',	NULL,	NULL,	NULL,	'tyrty@st.tt',	'6565656',	NULL,	'M',	NULL,	NULL,	'PENDING',	1,	NULL,	NULL,	NULL,	'2021-05-08 10:06:52',	NULL,	NULL);
+(1,	1,	'admin',	'$2y$10$3l0yQjMc7F2mlA8yCu.1l.ccKM68f9gLICEUCnId1bdCcO5gZh.si',	'Admin',	'Last',	NULL,	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	'N',	'Trivandrum',	'CyberLikes Pvt. Ltd.',	'ACTIVE',	0,	'::1',	'2022-07-01 12:37:04',	'2022-06-05 06:34:50',	'2021-04-20 19:22:52',	'2022-07-01 15:47:57',	NULL),
+(13,	2,	'rythse',	'$2y$10$A2Avf.FbCFpsUttbnIO9uOO0HS3nzZZnASe9yhLmDyZSbeM8Bxg4y',	'retety',	'tyty',	NULL,	'1992-10-30',	'ere@dfg.ddf',	'57567567',	NULL,	'O',	'TVM',	NULL,	'INACTIVE',	NULL,	NULL,	NULL,	NULL,	'2021-05-01 17:33:45',	'2022-07-01 15:47:57',	NULL),
+(24,	1,	'rtretrt',	'$2y$10$6Ycp.jwd.QJUZ.mjxTuTd.nnXLQRnfOSaLSymS3LdQNQf580ZAkQe',	'ertert',	NULL,	NULL,	NULL,	'ryr@et.rtrt',	'465464564456',	NULL,	'O',	NULL,	NULL,	'INACTIVE',	NULL,	NULL,	NULL,	NULL,	'2021-05-01 20:24:41',	'2022-07-01 15:47:57',	NULL),
+(26,	1,	'fff',	'$2y$10$s2laXQmwAt4K8431Y/nubue1Z8OL3mELtHevdcXIFECmRHX7OPXN6',	'asdasd',	NULL,	NULL,	NULL,	'sf@dgdg.fgfdg',	'5454545',	NULL,	'M',	NULL,	NULL,	'ACTIVE',	NULL,	NULL,	NULL,	NULL,	'2021-05-07 20:05:30',	'2022-07-01 15:47:57',	NULL);
 
 DROP TABLE IF EXISTS `variant`;
 CREATE TABLE `variant` (
@@ -1059,4 +1057,4 @@ INSERT INTO `warehouse` (`id`, `name`, `code`, `phone`, `email`, `address`, `lon
 (23,	'erer',	'erwer',	'45',	'fddf@wdwd.cv',	'erwer',	NULL,	NULL,	'ererererrer',	'2021-04-22 18:00:23',	'2021-04-23 19:31:27',	NULL),
 (25,	'tret',	'rtert',	'4545',	'fgfdg@er.t',	'ryty',	NULL,	NULL,	NULL,	'2021-04-23 19:31:52',	NULL,	NULL);
 
--- 2022-07-01 05:27:44
+-- 2022-07-01 15:50:41

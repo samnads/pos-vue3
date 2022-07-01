@@ -514,6 +514,7 @@ export default {
       customReset,
       close,
       DATA,
+      emitter
     };
   },
   data() {
@@ -533,6 +534,12 @@ export default {
       });
       // get customer groups
     }
+  },
+  beforeUnmount() {
+    var self = this;
+    self.emitter.off("newCustomerModal");
+    // turn off for duplicate calling
+    // because its called multiple times when page loaded multiple times
   },
 };
 </script>

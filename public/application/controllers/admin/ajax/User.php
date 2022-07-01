@@ -9,7 +9,7 @@ class User extends CI_Controller
 		$_POST = raw_input_to_post();
 		switch ($_SERVER['REQUEST_METHOD']) {
 			case 'GET': // read
-				switch ($action = $this->input->get('action')) {
+				switch ($this->input->get('action')) {
 					case 'datatable':
 						$data = array();
 						$limit = $this->input->get('length') <= 0 ? NULL : $this->input->get('length'); // limit
@@ -17,10 +17,10 @@ class User extends CI_Controller
 						$order = $this->input->get('order')[0]['dir']; // order asc or desc
 						$search = $this->input->get('search')['value']; // search query
 						$offset = $this->input->get('start'); // start position
-						$data['data'] = $this->User_model->get_all_users(null, $search, $offset, $limit, $order_by, $order);
+						$data['data'] = $this->User_model->datatable_data(null, $search, $offset, $limit, $order_by, $order);
 						$data["draw"] = $this->input->get('draw'); // unique
-						$data["recordsTotal"] = $this->User_model->recordsTotal();
-						$data["recordsFiltered"] = $this->User_model->get_all_users_recordsFiltered($search);
+						$data["recordsTotal"] = $this->User_model->datatable_recordsTotal();
+						$data["recordsFiltered"] = $this->User_model->datatable_recordsFiltered($search);
 						$data['success'] = true;
 						//$data[ 'error' ] = '';
 						echo json_encode($data);
@@ -285,19 +285,25 @@ class User extends CI_Controller
 			case 'DELETE': // delete
 				$_POST = $this->input->post('data');
 				$id = $this->input->post('id');
-				$this->User_model->delete_where(array('id' => $id, 'deletable' => 1));
-				$error = $this->db->error();
-				if ($error['code'] == 1451) {
-					echo json_encode(array('success' => false, 'type' => 'danger', 'id' => $id, 'error' => 'Delete all data associated with the user <strong><i>' . $this->input->post('first_name') . '</i></strong> then try again !'));
-				} else if ($error['code'] == 0 && $this->db->affected_rows() == 1) {
-					echo json_encode(array('success' => true, 'type' => 'success', 'id' => $id, 'message' => 'Successfully deleted user <strong><em>' . $this->input->post('first_name') . '</em></strong> !'));
+				$user = $this->User_model->getUser(array('u.id' => $id));
+				if ($user['id']) {
+					if ($user['deletable'] !== 0) {
+						$this->User_model->set_deleted_at($id);
+						$error = $this->db->error();
+						if ($this->db->affected_rows() == 1) {
+							echo json_encode(array('success' => true, 'type' => 'success', 'id' => $id, 'message' => 'Successfully deleted user <strong><em>' . $user['first_name'] . '</em></strong> !'));
+						} else {
+							echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));
+						}
+					} else {
+						echo json_encode(array('success' => false, 'type' => 'danger', 'message' => 'User <i>' . $user['first_name'] . "</i> is protected you can't delete it."));
+					}
 				} else {
-					echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));
+					echo json_encode(array('success' => false, 'type' => 'danger', 'message' => "Specified user doesn't exist !"));
 				}
 				break;
 			default:
-				$error = array('success' => false, 'type' => 'danger', 'error' => 'Unknown Request Method Found !');
-				echo json_encode($error);
+				echo json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Unknown Request Method Found !'));
 		}
 	}
 	public function update_same_username_check($value, $id)

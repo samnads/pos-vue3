@@ -3,7 +3,7 @@
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
         <h5 class="title">
-          <i class="fa-solid fa-person"></i><span>Customers</span>
+          <i class="fa-solid fa-user"></i><span>Users</span>
         </h5>
       </div>
       <div class="p-2 bd-highlight">
@@ -46,13 +46,13 @@
             />
           </th>
           <th scope="col" class="d-none">ID</th>
-          <th scope="col">Code</th>
+          <th scope="col">User Name</th>
+          <th scope="col">Role</th>
           <th scope="col">Name</th>
-          <th scope="col">Group</th>
-          <th scope="col">Place</th>
           <th scope="col">Email</th>
           <th scope="col">Phone</th>
-          <th scope="col">Address</th>
+          <th scope="col">Place</th>
+          <th scope="col">Status</th>
           <th scope="col"><i class="fa-solid fa-bars"></i></th>
         </tr>
       </thead>
@@ -118,10 +118,10 @@ export default {
           fixedColumnsLeft: 1,
           fixedColumnsRight: 1,
         },
-        order: [[1, "desc"]],
+        order: [[1, "asc"]],
         ajax: {
           method: "GET",
-          url: process.env.VUE_APP_API_ROOT + "admin/ajax/customer",
+          url: process.env.VUE_APP_API_ROOT + "admin/ajax/user",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {
@@ -170,16 +170,13 @@ export default {
             data: "id",
           },
           {
-            data: "code",
+            data: "username",
           },
           {
-            data: "name",
+            data: "role_name",
           },
           {
-            data: "group_name",
-          },
-          {
-            data: "place",
+            data: "first_name",
           },
           {
             data: "email",
@@ -188,7 +185,10 @@ export default {
             data: "phone",
           },
           {
-            data: "address",
+            data: "place",
+          },
+          {
+            data: "status",
           },
           {
             data: null,
@@ -212,34 +212,42 @@ export default {
             targets: [2],
             visible: true,
             searchable: true,
+            className: "align-middle",
+            render: function (data, type, row, meta) {
+              if (row["id"] == 1) {
+                return (
+                  data +
+                  '<span class="float-end text-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Current User"><i class="fas fa-check-circle"></i></span>'
+                );
+              }
+              return data;
+            },
           },
           {
             targets: [3],
             visible: true,
             searchable: true,
-            render: function (data, type, row, meta) {
-              return "<b>" + data + "</b>";
-            },
+            className: "align-middle",
           },
           {
             targets: [4],
             searchable: true,
+            className: "align-middle",
+            render: function (data, type, row, meta) {
+              return "<b>" + row["first_name"] + " " + (row["last_name"]
+                ? row["last_name"]
+                : "") + "</b>";
+            },
           },
           {
             targets: [5],
             searchable: true,
+            className: "align-middle",
           },
           {
             targets: [6],
             searchable: true,
-            render: function (data, type, row, meta) {
-              return data == null
-                ? '<i class="text-muted small">NIL</i>'
-                : data;
-            },
-          },
-          {
-            targets: [7],
+            className: "align-middle",
             render: function (data, type, row, meta) {
               return data == null
                 ? '<i class="text-muted small">NIL</i>'
@@ -247,7 +255,9 @@ export default {
             },
           },
           {
-            targets: [8],
+            targets: [7],
+            searchable: true,
+            className: "align-middle",
             render: function (data, type, row, meta) {
               return data == null
                 ? '<i class="text-muted small">NIL</i>'
@@ -255,12 +265,26 @@ export default {
             },
           },
           {
+            targets: [8],
+            width: "1%",
+            className: "align-middle",
+            render: function (data, type, row, meta) {
+              if (data == "ACTIVE") {
+                return '<span class="badge bg-success w-100">Active</span>';
+              } else if (data == "INACTIVE") {
+                return '<span class="badge bg-danger w-100">Inactive</span>';
+              } else if (data == "PENDING") {
+                return '<span class="badge bg-warning text-dark w-100">Pending</span>';
+              }
+              return '<span class="badge bg-dark w-100">Unknown</span>';
+            },
+          },
+          {
             targets: [9],
-            className: "text-center",
+            className: "text-center align-middle",
             orderable: false,
             searchable: false,
             width: "1%",
-            defaultContent: "",
             render: function (data, type, row, meta) {
               let infoBtn =
                 '<button type="button" id="info" class="btn btn-success" data-toggle="tooltip" data-placement="left" title="Info"><i class="fas fa-info-circle"></i></button>';
@@ -366,14 +390,14 @@ export default {
               self.emitter.emit("deleteConfirmModal", {
                 title: null,
                 body:
-                  "Delete selected supplier" +
+                  "Delete selected user" +
                   (rows.length > 1 ? "s " : "") +
                   (rows.length > 1
                     ? "(" + rows.length + ")"
                     : " <b>" + rows[0].name + "</b> (" + rows[0].name + ")") +
                   " ?",
                 data: self.table.rows(".selected").data().toArray(),
-                emit: "confirmDeleteCustomer",
+                emit: "confirmDeleteUser",
                 hide: true,
                 type: "danger",
               });
@@ -403,10 +427,10 @@ export default {
             text: '<i class="fa-solid fa-plus"></i>',
             className: "btn-light",
             action: function () {
-              self.emitter.emit("newCustomerModal", {
-                title: "New Customer",
+              self.emitter.emit("newUserModal", {
+                title: "New User",
                 type: "success",
-                emit: "refreshCustomerDataTable",
+                emit: "refreshDataTable",
               });
             },
             attr: {
@@ -441,23 +465,23 @@ export default {
         "td:not(:first-child):not(:last-child),#details",
         function () {
           //let row = self.table.row($(this).parents("tr")).data(); // row data
-          window.CUSTOMER_INFO_MODAL.show();
+          window.USER_INFO_MODAL.show();
         }
       );
       $("#datatable tbody").on("click", "#edit", function () {
         // edit from action menu
         let row = self.table.row($(this).parents("tr")).data();
-        self.emitter.emit("newCustomerModal", {
-          title: "Edit Customer",
+        self.emitter.emit("newUserModal", {
+          title: "Edit User",
           data: row,
-          emit: "refreshCustomerDataTable",
+          emit: "refreshDataTable",
           type: "primary",
         });
       });
       $("#datatable tbody").on("click", "#info", function () {
         // info from action menu
         //let row = self.table.row($(this).parents("tr")).data();
-        window.CUSTOMER_INFO_MODAL.show();
+        window.USER_INFO_MODAL.show();
       });
       $("#datatable tbody").on("click", "#delete", function () {
         // delete from action menu
@@ -465,13 +489,13 @@ export default {
         self.emitter.emit("deleteConfirmModal", {
           title: null,
           body:
-            "Delete customer with name <b>" +
-            row.name +
-            "</b> | " +
-            row.place +
+            "Delete user with name <b>" +
+            row.first_name +
+            "</b>" +
+            (row.place ? " | " + row.place : "") +
             " ?",
           data: row,
-          emit: "confirmDeleteCustomer",
+          emit: "confirmDeleteUser",
           hide: true,
           type: "danger",
         });
@@ -512,7 +536,7 @@ export default {
           self.table.search("").draw();
         });
     });
-    self.emitter.on("confirmDeleteCustomer", (data) => {
+    self.emitter.on("confirmDeleteUser", (data) => {
       // delete selected supplier stuff here
       if (self.controller_delete.value) {
         self.controller_delete.value.abort();
@@ -521,7 +545,7 @@ export default {
       self
         .axiosAsyncCallReturnData(
           "delete",
-          "customer",
+          "user",
           {
             data: data,
           },
@@ -548,14 +572,14 @@ export default {
           }
         });
     });
-    self.emitter.on("refreshCustomerDataTable", (data) => {
+    self.emitter.on("refreshUserDataTable", (data) => {
       self.table.ajax.reload();
     });
   },
   beforeUnmount() {
     var self = this;
-    self.emitter.off("confirmDeleteCustomer");
-    self.emitter.off("refreshCustomerDataTable");
+    self.emitter.off("confirmDeleteUser");
+    self.emitter.off("refreshUserDataTable");
     // turn off for duplicate calling
     // because its called multiple times when page loaded multiple times
   },

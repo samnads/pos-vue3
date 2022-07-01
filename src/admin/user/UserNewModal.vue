@@ -1,5 +1,5 @@
 <template>
-  <div class="modal" id="supplierNewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal" id="userNewModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <form @submit="onSubmit" class="needs-validation">
@@ -10,7 +10,10 @@
             <h5 class="modal-title">
               <span v-if="DATA.data"><i class="fa-solid fa-pencil"></i></span>
               <span v-else><i class="fa-solid fa-plus"></i></span
-              >{{ DATA.title }} <span class="badge bg-light text-dark" v-if="DATA.data">{{DATA.data.code}}</span>
+              >{{ DATA.title }}
+              <span class="badge bg-light text-dark" v-if="DATA.data">{{
+                DATA.data.code
+              }}</span>
             </h5>
             <button
               type="button"
@@ -23,41 +26,197 @@
           <div class="modal-body">
             <div class="row">
               <div class="col">
-                <label class="form-label">Supplier Name<i>*</i></label>
+                <label class="form-label">First Name<i>*</i></label>
                 <input
                   type="text"
-                  name="name"
-                  v-model="name"
+                  name="first_name"
+                  v-model="first_name"
                   class="form-control"
                   v-bind:class="[
-                    errorName
+                    errorFirstName
                       ? 'is-invalid'
-                      : !errorName && name
+                      : !errorFirstName && first_name
                       ? 'is-valid'
                       : '',
                   ]"
                 />
-                <div class="invalid-feedback">{{ errorName }}</div>
+                <div class="invalid-feedback">{{ errorFirstName }}</div>
               </div>
               <div class="col">
-                <label class="form-label">Place<i>*</i></label>
+                <label class="form-label">Last Name</label>
                 <input
                   type="text"
-                  name="place"
-                  v-model="place"
+                  name="last_name"
+                  v-model="last_name"
                   class="form-control"
                   v-bind:class="[
-                    errorPlace
+                    errorLastName
                       ? 'is-invalid'
-                      : !errorPlace && place
+                      : !errorLastName && last_name
                       ? 'is-valid'
                       : '',
                   ]"
                 />
-                <div class="invalid-feedback">{{ errorPlace }}</div>
+                <div class="invalid-feedback">{{ errorLastName }}</div>
+              </div>
+              <div class="col">
+                <label class="form-label">Gender<i>*</i></label>
+                <select
+                  class="form-select"
+                  name="gender"
+                  v-model="gender"
+                  v-bind:class="[
+                    errorGender
+                      ? 'is-invalid'
+                      : errorGender && gender
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                >
+                  <option selected :value="null">-- Select Gender --</option>
+                  <option value="M">Male</option>
+                  <option value="F">Female</option>
+                  <option value="O">Other</option>
+                  <option value="N">Not specify</option>
+                </select>
+                <div class="invalid-feedback">{{ errorGender }}</div>
+              </div>
+              <div class="col">
+                <label class="form-label">Date of Birth<i>*</i></label>
+                <input
+                  type="text"
+                  name="dob"
+                  v-model="dob"
+                  class="form-control"
+                  v-bind:class="[
+                    errorDob
+                      ? 'is-invalid'
+                      : !errorDob && dob
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                />
+                <div class="invalid-feedback">{{ errorDob }}</div>
               </div>
             </div>
             <div class="row">
+              <div class="col">
+                <label class="form-label">Username<i>*</i></label>
+                <input
+                  type="text"
+                  name="username"
+                  v-model="username"
+                  class="form-control"
+                  v-bind:class="[
+                    errorUsername
+                      ? 'is-invalid'
+                      : !errorUsername && username
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                />
+                <div class="invalid-feedback">{{ errorUsername }}</div>
+              </div>
+              <div class="col">
+                <label class="form-label">Role<i>*</i></label>
+                <select
+                  class="form-select"
+                  name="role"
+                  v-model="role"
+                  v-bind:class="[
+                    errorRole
+                      ? 'is-invalid'
+                      : errorRole && role
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                >
+                  <option selected :value="null">-- Select Gender --</option>
+                  <option value="M">Male</option>
+                  <option value="F">Female</option>
+                  <option value="O">Other</option>
+                  <option value="N">Not specify</option>
+                </select>
+                <div class="invalid-feedback">{{ errorRole }}</div>
+              </div>
+              <div class="col">
+                <label class="form-label">Status<i>*</i></label>
+                <select
+                  class="form-select"
+                  name="status"
+                  v-model="status"
+                  v-bind:class="[
+                    errorStatus
+                      ? 'is-invalid'
+                      : errorStatus && status
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                >
+                  <option selected :value="null">-- Select Gender --</option>
+                  <option value="M">Male</option>
+                  <option value="F">Female</option>
+                  <option value="O">Other</option>
+                  <option value="N">Not specify</option>
+                </select>
+                <div class="invalid-feedback">{{ errorStatus }}</div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <label class="form-label">Password<i>*</i></label>
+                <input
+                  type="password"
+                  name="password"
+                  autocomplete="new-password"
+                  v-model="password"
+                  class="form-control"
+                  v-bind:class="[
+                    errorPassword
+                      ? 'is-invalid'
+                      : !errorPassword && password
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                />
+                <div class="invalid-feedback">{{ errorPassword }}</div>
+              </div>
+              <div class="col">
+                <label class="form-label">Confirm Password<i>*</i></label>
+                <input
+                  type="password"
+                  name="confirm_password"
+                  v-model="confirm_password"
+                  class="form-control"
+                  v-bind:class="[
+                    errorCpassword
+                      ? 'is-invalid'
+                      : !errorCpassword && confirm_password
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                />
+                <div class="invalid-feedback">{{ errorCpassword }}</div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <label class="form-label">Email<i>*</i></label>
+                <input
+                  type="email"
+                  name="email"
+                  v-model="email"
+                  class="form-control"
+                  v-bind:class="[
+                    errorEmail
+                      ? 'is-invalid'
+                      : !errorEmail && email
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                />
+                <div class="invalid-feedback">{{ errorEmail }}</div>
+              </div>
               <div class="col">
                 <label class="form-label">Phone<i>*</i></label>
                 <input
@@ -74,6 +233,25 @@
                   ]"
                 />
                 <div class="invalid-feedback">{{ errorPhone }}</div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <label class="form-label">Country</label>
+                <input
+                  type="text"
+                  name="country"
+                  v-model="country"
+                  class="form-control"
+                  v-bind:class="[
+                    errorCountry
+                      ? 'is-invalid'
+                      : !errorCountry && country
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                />
+                <div class="invalid-feedback">{{ errorCountry }}</div>
               </div>
               <div class="col">
                 <label class="form-label">City</label>
@@ -93,6 +271,24 @@
                 <div class="invalid-feedback">{{ errorCity }}</div>
               </div>
               <div class="col">
+                <label class="form-label">Place</label>
+                <input
+                  type="text"
+                  name="place"
+                  v-model="place"
+                  class="form-control"
+                  v-bind:class="[
+                    errorPlace
+                      ? 'is-invalid'
+                      : !errorPlace && place
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                />
+                <div class="invalid-feedback">{{ errorPlace }}</div>
+              </div>
+
+              <div class="col">
                 <label class="form-label">PIN Code</label>
                 <input
                   type="text"
@@ -108,59 +304,6 @@
                   ]"
                 />
                 <div class="invalid-feedback">{{ errorPin }}</div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <label class="form-label">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  v-model="email"
-                  class="form-control"
-                  v-bind:class="[
-                    errorEmail
-                      ? 'is-invalid'
-                      : !errorEmail && email
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                />
-                <div class="invalid-feedback">{{ errorEmail }}</div>
-              </div>
-              <div class="col">
-                <label class="form-label">GST No.</label>
-                <input
-                  type="text"
-                  name="gst"
-                  v-model="gst"
-                  class="form-control"
-                  v-bind:class="[
-                    errorGst
-                      ? 'is-invalid'
-                      : !errorGst && gst
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                />
-                <div class="invalid-feedback">{{ errorGst }}</div>
-              </div>
-              <div class="col">
-                <label class="form-label">Tax No.</label>
-                <input
-                  type="text"
-                  name="tax"
-                  v-model="tax"
-                  class="form-control"
-                  v-bind:class="[
-                    errorTax
-                      ? 'is-invalid'
-                      : !errorTax && tax
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                />
-                <div class="invalid-feedback">{{ errorTax }}</div>
               </div>
             </div>
             <div class="row">
@@ -259,22 +402,27 @@ import { inject } from "vue";
 import * as yup from "yup";
 import { ref, computed } from "vue";
 import admin from "@/mixins/admin.js";
+import { useStore } from "vuex";
 export default {
   props: {
     propUpdateTaxRates: Function,
   },
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
+    const store = useStore();
+    let customerGroups = computed(function () {
+      return store.state.CUSTOMER_GROUPS;
+    });
     const DATA = ref({});
     const phoneRegExp =
       /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
-    const { axiosAsyncCallReturnData } = admin();
+    const { axiosAsyncCallReturnData, axiosAsyncStoreReturnBool } = admin();
     /************************************************************************* */
     const formValues = ref({});
     /************************************************************************* */
     const schema = computed(() => {
       return yup.object({
-        name: yup
+        first_name: yup
           .string()
           .required()
           .min(3)
@@ -283,8 +431,18 @@ export default {
           .transform((_, val) =>
             val != null && val.length > 0 ? val : undefined
           )
-          .label("Name"),
-        place: yup
+          .label("First Name"),
+        last_name: yup
+          .string()
+          .min(3)
+          .max(100)
+          .nullable(true)
+          .transform((_, val) =>
+            val != null && val.length > 0 ? val : undefined
+          )
+          .label("Last Name"),
+        gender: yup.number().required().min(1).nullable(true).label("Gender"),
+        username: yup
           .string()
           .required()
           .min(3)
@@ -293,7 +451,40 @@ export default {
           .transform((_, val) =>
             val != null && val.length > 0 ? val : undefined
           )
-          .label("Place"),
+          .label("User Name"),
+        role: yup.number().required().min(1).nullable(true).label("Role"),
+        status: yup.number().required().min(1).nullable(true).label("Status"),
+        password: yup
+          .string()
+          .required()
+          .min(8)
+          .max(50)
+          .nullable(true)
+          .transform((_, val) =>
+            val != null && val.length > 0 ? val : undefined
+          )
+          .label("Password"),
+        cpassword: yup
+          .string()
+          .required()
+          .min(8)
+          .max(50)
+          .nullable(true)
+          .transform((_, val) =>
+            val != null && val.length > 0 ? val : undefined
+          )
+          .label("Confirm Password"),
+        email: yup
+          .string()
+          .email()
+          .required()
+          .min(5)
+          .max(100)
+          .nullable(true)
+          .transform((_, val) =>
+            val != null && val.length > 0 ? val : undefined
+          )
+          .label("Email"),
         phone: yup
           .string()
           .required()
@@ -305,6 +496,15 @@ export default {
             val != null && val.length > 0 ? val : undefined
           )
           .label("Phone Number"),
+        country: yup
+          .string()
+          .min(3)
+          .max(100)
+          .nullable(true)
+          .transform((_, val) =>
+            val != null && val.length > 0 ? val : undefined
+          )
+          .label("Country"),
         city: yup
           .string()
           .min(3)
@@ -314,6 +514,15 @@ export default {
             val != null && val.length > 0 ? val : undefined
           )
           .label("City"),
+        place: yup
+          .string()
+          .min(3)
+          .max(100)
+          .nullable(true)
+          .transform((_, val) =>
+            val != null && val.length > 0 ? val : undefined
+          )
+          .label("Place"),
         pin: yup
           .string()
           .min(3)
@@ -322,35 +531,7 @@ export default {
           .transform((_, val) =>
             val != null && val.length > 0 ? val : undefined
           )
-          .label("PIN"),
-        email: yup
-          .string()
-          .email()
-          .min(5)
-          .max(100)
-          .nullable(true)
-          .transform((_, val) =>
-            val != null && val.length > 0 ? val : undefined
-          )
-          .label("Email"),
-        gst: yup
-          .string()
-          .min(3)
-          .max(100)
-          .nullable(true)
-          .transform((_, val) =>
-            val != null && val.length > 0 ? val : undefined
-          )
-          .label("GST No."),
-        tax: yup
-          .string()
-          .min(3)
-          .max(100)
-          .nullable(true)
-          .transform((_, val) =>
-            val != null && val.length > 0 ? val : undefined
-          )
-          .label("TAX No."),
+          .label("PIN Code"),
         address: yup
           .string()
           .min(3)
@@ -387,25 +568,24 @@ export default {
     const editController = ref(null);
     const newController = ref(null);
     /************************************************************************* NEW or EDIT Supplier */
-    emitter.on("newSupplierModal", (data) => {
+    emitter.on("newUserModal", (data) => {
       resetForm();
       DATA.value = data;
       if (DATA.value.data) {
         let fields = DATA.value.data;
         setFieldValue("name", fields.name);
+        setFieldValue("group", fields.group);
         setFieldValue("place", fields.place);
         setFieldValue("phone", fields.phone);
         setFieldValue("city", fields.city);
         setFieldValue("pin", fields.pin_code);
         setFieldValue("email", fields.email);
-        setFieldValue("gst", fields.gst_no);
-        setFieldValue("tax", fields.tax_no);
         setFieldValue("address", fields.address);
         setFieldValue("description", fields.description);
       } else {
-        formValues.value = {};
+        setFieldValue("group", null); // can use a default value
       }
-      window.SUPPLIER_NEW_MODAL.show();
+      window.USER_NEW_MODAL.show();
     });
     /************************************************************************* */
     // eslint-disable-next-line
@@ -429,7 +609,7 @@ export default {
       }
       return axiosAsyncCallReturnData(
         method,
-        "supplier",
+        "user",
         {
           data: values,
         },
@@ -443,7 +623,7 @@ export default {
         if (data.success == true) {
           // added
           resetForm();
-          window.window.SUPPLIER_NEW_MODAL.hide();
+          window.window.CUSTOMER_NEW_MODAL.hide();
           if (DATA.value.emit) {
             emitter.emit(DATA.value.emit, {}); // do something (emit)
           }
@@ -471,56 +651,82 @@ export default {
         // edit form
         let fields = DATA.value.data;
         setFieldValue("name", fields.name);
+        setFieldValue("group", fields.group);
         setFieldValue("place", fields.place);
         setFieldValue("phone", fields.phone);
         setFieldValue("city", fields.city);
         setFieldValue("pin", fields.pin_code);
         setFieldValue("email", fields.email);
-        setFieldValue("gst", fields.gst_no);
-        setFieldValue("tax", fields.tax_no);
         setFieldValue("address", fields.address);
         setFieldValue("description", fields.description);
       } else {
         // new
         resetForm();
+        setFieldValue("group", null); // can use a default value
       }
     }
     /************************************************************************* */
-    const { value: name, errorMessage: errorName } = useField("name");
-    const { value: place, errorMessage: errorPlace } = useField("place");
-    const { value: phone, errorMessage: errorPhone } = useField("phone");
-    const { value: city, errorMessage: errorCity } = useField("city");
-    const { value: pin, errorMessage: errorPin } = useField("pin");
+    const { value: first_name, errorMessage: errorFirstName } =
+      useField("first_name");
+    const { value: last_name, errorMessage: errorLastName } =
+      useField("last_name");
+    const { value: gender, errorMessage: errorGender } = useField("gender");
+    const { value: username, errorMessage: errorUsername } =
+      useField("username");
+    const { value: role, errorMessage: errorRole } = useField("role");
+    const { value: status, errorMessage: errorStatus } = useField("status");
+    const { value: password, errorMessage: errorPassword } =
+      useField("password");
+    const { value: cpassword, errorMessage: errorCpassword } =
+      useField("password");
     const { value: email, errorMessage: errorEmail } = useField("email");
-    const { value: gst, errorMessage: errorGst } = useField("gst");
-    const { value: tax, errorMessage: errorTax } = useField("tax");
+    const { value: phone, errorMessage: errorPhone } = useField("phone");
+    const { value: country, errorMessage: errorCountry } = useField("country");
+    const { value: city, errorMessage: errorCity } = useField("city");
+    const { value: place, errorMessage: errorPlace } = useField("place");
+    const { value: pin, errorMessage: errorPin } = useField("pin");
     const { value: address, errorMessage: errorAddress } = useField("address");
     const { value: description, errorMessage: errorDescription } =
       useField("description");
     /*************************************** */
     return {
       /******* form fields   */
-      name,
-      errorName,
-      place,
-      errorPlace,
-      phone,
-      errorPhone,
-      city,
-      errorCity,
-      pin,
-      errorPin,
+      first_name,
+      errorFirstName,
+      last_name,
+      errorLastName,
+      gender,
+      errorGender,
+      username,
+      errorUsername,
+      role,
+      errorRole,
+      status,
+      errorStatus,
+      password,
+      errorPassword,
+      cpassword,
+      errorCpassword,
       email,
       errorEmail,
-      gst,
-      errorGst,
-      tax,
-      errorTax,
+      phone,
+      errorPhone,
+      country,
+      errorCountry,
+      city,
+      errorCity,
+      place,
+      errorPlace,
+      pin,
+      errorPin,
       address,
       errorAddress,
       description,
       errorDescription,
       /*************** */
+      axiosAsyncStoreReturnBool,
+      customerGroups,
+      formValues,
       isDirty,
       isValid,
       onSubmit,
@@ -528,21 +734,29 @@ export default {
       customReset,
       close,
       DATA,
-      emitter
+      emitter,
     };
   },
   data() {
     return {};
   },
   mounted() {
-    window.SUPPLIER_NEW_MODAL = new Modal($("#supplierNewModal"), {
+    window.USER_NEW_MODAL = new Modal($("#userNewModal"), {
       backdrop: true,
       show: true,
     });
+    if (!this.customerGroups) {
+      // if not found on store
+      this.axiosAsyncStoreReturnBool("storeCustomerGroups", "customer_group", {
+        action: "getall",
+      });
+      // get customer groups
+    }
+    //window.USER_NEW_MODAL.show();
   },
   beforeUnmount() {
     var self = this;
-    self.emitter.off("newSupplierModal");
+    self.emitter.off("newUserModal");
     // turn off for duplicate calling
     // because its called multiple times when page loaded multiple times
   },

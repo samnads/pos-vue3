@@ -1,10 +1,10 @@
 <template>
-  <div class="modal" id="supplierInfoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal" id="userInfoModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <form @submit="onSubmit" class="needs-validation">
           <div class="modal-header">
-            <h5 class="modal-title"><span><i class="fa-solid fa-circle-info"></i></span>Supplier Information</h5>
+            <h5 class="modal-title"><span><i class="fa-solid fa-circle-info"></i></span>User Information</h5>
             <button
               type="button"
               class="btn-close"
@@ -192,7 +192,7 @@ export default {
   methods: {},
   created() {},
   mounted() {
-    window.SUPPLIER_INFO_MODAL = new Modal($("#supplierInfoModal"), {
+    window.USER_INFO_MODAL = new Modal($("#userInfoModal"), {
       backdrop: true,
       show: true,
     });
