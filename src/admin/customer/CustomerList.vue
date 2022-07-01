@@ -211,7 +211,7 @@ export default {
           {
             targets: [2],
             visible: true,
-            searchable: true
+            searchable: true,
           },
           {
             targets: [3],
@@ -440,8 +440,8 @@ export default {
         "click",
         "td:not(:first-child):not(:last-child),#details",
         function () {
-          self.adjustRow = self.table.row($(this).parents("tr")).data(); // row data
-          window.SUPPLIER_INFO_MODAL.show();
+          //let row = self.table.row($(this).parents("tr")).data(); // row data
+          window.CUSTOMER_INFO_MODAL.show();
         }
       );
       $("#datatable tbody").on("click", "#edit", function () {
@@ -456,7 +456,7 @@ export default {
       });
       $("#datatable tbody").on("click", "#info", function () {
         // info from action menu
-        self.row = self.table.row($(this).parents("tr")).data();
+        //let row = self.table.row($(this).parents("tr")).data();
         window.CUSTOMER_INFO_MODAL.show();
       });
       $("#datatable tbody").on("click", "#delete", function () {
@@ -465,7 +465,11 @@ export default {
         self.emitter.emit("deleteConfirmModal", {
           title: null,
           body:
-            "Delete customer with name <b>" + row.name + "</b> | " + row.place+" ?",
+            "Delete customer with name <b>" +
+            row.name +
+            "</b> | " +
+            row.place +
+            " ?",
           data: row,
           emit: "confirmDeleteCustomer",
           hide: true,
@@ -520,8 +524,6 @@ export default {
           "customer",
           {
             data: data,
-            action: "delete",
-            bulk: data.length ? true : false,
           },
           self.controller_delete.value,
           {

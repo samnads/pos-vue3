@@ -389,7 +389,7 @@ export default {
         setFieldValue("address", fields.address);
         setFieldValue("description", fields.description);
       } else {
-        setFieldValue("group", null);
+        setFieldValue("group", null); // can use a default value
       }
       window.CUSTOMER_NEW_MODAL.show();
     });
@@ -468,6 +468,7 @@ export default {
       } else {
         // new
         resetForm();
+        setFieldValue("group", null); // can use a default value
       }
     }
     /************************************************************************* */

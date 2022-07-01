@@ -32,7 +32,7 @@ class Customer extends CI_Controller
 								break;
 						}
 						break;
-					case 'datatable':
+					case 'datatable': // for customers datatble in admin panel
 						$data = array();
 						$limit = $this->input->get('length') <= 0 ? NULL : $this->input->get('length'); // limit
 						$order_by = $this->input->get('columns')[$this->input->get('order')[0]['column']]['data']; // order by column
@@ -49,8 +49,7 @@ class Customer extends CI_Controller
 						echo json_encode($data);
 						break;
 					default:
-						$error = array('success' => false, 'type' => 'danger', 'error' => 'Unknown Action !');
-						echo json_encode($error);
+						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Unknown GET Action !'));
 				}
 				break;
 			case 'POST': // create
@@ -262,11 +261,12 @@ class Customer extends CI_Controller
 					foreach ($this->input->post('data') as $key => $value) {
 						array_push($ids, $value['id']);
 					}
-					$this->Customer_model->delete_wherein_id($ids);
+					$this->Customer_model->set_deleted_at_multi($ids);
 					$error = $this->db->error();
-					if ($error['code'] == 1451) {
+					/*if ($error['code'] == 1451) {
 						echo json_encode(array('success' => false, 'type' => 'danger', 'ids' => $ids, 'error' => 'Delete all data associated with the customers then try again !'));
-					} else if ($error['code'] == 0) {
+					}*/
+					if ($error['code'] == 0) {
 						echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Customer(s) successfully deleted !'));
 					} else {
 						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));
@@ -275,8 +275,7 @@ class Customer extends CI_Controller
 				}
 				break;
 			default:
-				$error = array('success' => false, 'type' => 'danger', 'error' => 'Unknown Request Method !');
-				echo json_encode($error);
+				echo json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Unknown Request Method !'));
 		}
 	}
 	public function same_name_place_check($name, $place)
