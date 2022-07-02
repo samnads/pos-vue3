@@ -188,7 +188,7 @@ export default {
             data: "place",
           },
           {
-            data: "status",
+            data: "status_name",
           },
           {
             data: null,
@@ -214,7 +214,7 @@ export default {
             searchable: true,
             className: "align-middle",
             render: function (data, type, row, meta) {
-              if (row["id"] == 1) {
+              if (row["id"] == row["self_id"]) {
                 return (
                   data +
                   '<span class="float-end text-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Current User"><i class="fas fa-check-circle"></i></span>'
@@ -234,9 +234,13 @@ export default {
             searchable: true,
             className: "align-middle",
             render: function (data, type, row, meta) {
-              return "<b>" + row["first_name"] + " " + (row["last_name"]
-                ? row["last_name"]
-                : "") + "</b>";
+              return (
+                "<b>" +
+                row["first_name"] +
+                " " +
+                (row["last_name"] ? row["last_name"] : "") +
+                "</b>"
+              );
             },
           },
           {
@@ -267,16 +271,15 @@ export default {
           {
             targets: [8],
             width: "1%",
-            className: "align-middle",
+            className: "align-middle text-capitalize",
             render: function (data, type, row, meta) {
-              if (data == "ACTIVE") {
-                return '<span class="badge bg-success w-100">Active</span>';
-              } else if (data == "INACTIVE") {
-                return '<span class="badge bg-danger w-100">Inactive</span>';
-              } else if (data == "PENDING") {
-                return '<span class="badge bg-warning text-dark w-100">Pending</span>';
-              }
-              return '<span class="badge bg-dark w-100">Unknown</span>';
+              return (
+                '<span class="badge ' +
+                row["css_class"] +
+                ' w-100">' +
+                data +
+                "</span>"
+              );
             },
           },
           {
@@ -430,7 +433,7 @@ export default {
               self.emitter.emit("newUserModal", {
                 title: "New User",
                 type: "success",
-                emit: "refreshDataTable",
+                emit: "refreshUserDataTable",
               });
             },
             attr: {
@@ -474,7 +477,7 @@ export default {
         self.emitter.emit("newUserModal", {
           title: "Edit User",
           data: row,
-          emit: "refreshDataTable",
+          emit: "refreshUserDataTable",
           type: "primary",
         });
       });

@@ -194,6 +194,21 @@ INSERT INTO `customer_group` (`id`, `name`, `percentage`, `added_at`, `updated_a
 (3,	'Distributor',	65.0000,	'2021-04-02 06:34:04',	NULL,	NULL),
 (4,	'Friends',	10.0000,	'2021-04-02 16:50:30',	'2021-04-02 16:50:34',	NULL);
 
+DROP TABLE IF EXISTS `gender`;
+CREATE TABLE `gender` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(15) NOT NULL,
+  `code` varchar(2) NOT NULL,
+  `description` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `gender` (`id`, `name`, `code`, `description`) VALUES
+(1,	'Male',	'M',	NULL),
+(2,	'Female',	'F',	NULL),
+(3,	'Not specify',	'NS',	NULL);
+
 DROP TABLE IF EXISTS `label_size`;
 CREATE TABLE `label_size` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -231,6 +246,7 @@ CREATE TABLE `module` (
 INSERT INTO `module` (`id`, `name`) VALUES
 (3,	'brand'),
 (2,	'category'),
+(17,	'common'),
 (7,	'customer'),
 (16,	'customer_group'),
 (14,	'label'),
@@ -524,29 +540,38 @@ INSERT INTO `role_permission` (`role_id`, `readonly`, `comment`, `module_id`, `p
 (1,	1,	'MANUAL (stock adj list)',	15,	2,	1,	'2021-10-20 20:11:57',	'2021-10-24 18:51:37',	NULL),
 (1,	1,	'MANUAL (stock adj list edit)',	15,	3,	1,	'2022-06-23 07:14:24',	'2022-06-23 07:14:24',	NULL),
 (1,	1,	'MANUAL list customer groups (admin default)',	16,	2,	1,	'2022-06-30 12:33:11',	'2022-06-30 14:53:29',	NULL),
+(1,	1,	'MANUAL genders (admin default)',	17,	2,	1,	'2022-07-02 13:02:09',	NULL,	NULL),
 (19,	NULL,	NULL,	4,	1,	1,	'2021-09-28 18:09:05',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `status`;
 CREATE TABLE `status` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
+  `css_class` varchar(20) DEFAULT NULL,
+  `css_color` varchar(20) DEFAULT NULL,
+  `online_status` tinyint(1) DEFAULT NULL,
+  `payment_status` tinyint(1) DEFAULT NULL,
+  `order_status` tinyint(1) DEFAULT NULL,
+  `role_status` tinyint(1) DEFAULT NULL,
+  `user_status` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `status` (`id`, `name`) VALUES
-(1,	'online'),
-(2,	'offline'),
-(3,	'active'),
-(4,	'inactive'),
-(5,	'pending'),
-(6,	'paid'),
-(7,	'unpaid'),
-(8,	'ordered'),
-(9,	'packed'),
-(10,	'shipped'),
-(11,	'returned'),
-(12,	'partially paid'),
-(13,	'expired');
+INSERT INTO `status` (`id`, `name`, `css_class`, `css_color`, `online_status`, `payment_status`, `order_status`, `role_status`, `user_status`) VALUES
+(1,	'online',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL),
+(2,	'offline',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL),
+(3,	'active',	'bg-success',	NULL,	NULL,	NULL,	NULL,	1,	1),
+(4,	'inactive',	'bg-danger',	NULL,	NULL,	NULL,	NULL,	1,	1),
+(5,	'pending',	'bg-warning text-dark',	NULL,	NULL,	NULL,	NULL,	1,	1),
+(6,	'paid',	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL),
+(7,	'unpaid',	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL),
+(8,	'ordered',	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL),
+(9,	'packed',	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL),
+(10,	'shipped',	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL),
+(11,	'returned',	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL),
+(12,	'partially paid',	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL),
+(13,	'expired',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(14,	'away',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `stock_adjustment`;
 CREATE TABLE `stock_adjustment` (
@@ -984,15 +1009,20 @@ CREATE TABLE `user` (
   `first_name` varchar(70) NOT NULL,
   `last_name` varchar(70) DEFAULT NULL,
   `company_name` varchar(200) DEFAULT NULL,
-  `date_of_birth` date DEFAULT NULL,
+  `date_of_birth` date NOT NULL,
   `email` varchar(320) NOT NULL,
   `phone` varchar(50) NOT NULL,
   `avatar` varchar(255) DEFAULT NULL,
-  `gender` enum('M','F','O','N') NOT NULL DEFAULT 'N',
+  `gender` int(11) NOT NULL,
+  `country` varchar(100) DEFAULT NULL,
+  `city` varchar(100) DEFAULT NULL,
   `place` varchar(255) DEFAULT NULL,
+  `pin_code` varchar(100) DEFAULT NULL,
   `address` text DEFAULT NULL,
-  `status` enum('ACTIVE','INACTIVE','PENDING') NOT NULL DEFAULT 'PENDING',
+  `description` text DEFAULT NULL,
+  `status` int(11) NOT NULL,
   `deletable` tinyint(1) DEFAULT 1 COMMENT 'set 0 for protect delete, otherwise use NULL',
+  `editable` tinyint(1) DEFAULT NULL COMMENT 'set 0 for protect delete, otherwise use NULL',
   `client_ip` varchar(22) DEFAULT NULL,
   `login_at` timestamp NULL DEFAULT NULL,
   `logout_at` timestamp NULL DEFAULT NULL,
@@ -1001,14 +1031,18 @@ CREATE TABLE `user` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `role_id` (`role`),
-  CONSTRAINT `user_ibfk_1` FOREIGN KEY (`role`) REFERENCES `role` (`id`)
+  KEY `gender` (`gender`),
+  KEY `status` (`status`),
+  CONSTRAINT `user_ibfk_1` FOREIGN KEY (`role`) REFERENCES `role` (`id`),
+  CONSTRAINT `user_ibfk_2` FOREIGN KEY (`gender`) REFERENCES `gender` (`id`),
+  CONSTRAINT `user_ibfk_3` FOREIGN KEY (`status`) REFERENCES `status` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `user` (`id`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `place`, `address`, `status`, `deletable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	1,	'admin',	'$2y$10$3l0yQjMc7F2mlA8yCu.1l.ccKM68f9gLICEUCnId1bdCcO5gZh.si',	'Admin',	'Last',	NULL,	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	'N',	'Trivandrum',	'CyberLikes Pvt. Ltd.',	'ACTIVE',	0,	'::1',	'2022-07-01 12:37:04',	'2022-06-05 06:34:50',	'2021-04-20 19:22:52',	'2022-07-01 15:47:57',	NULL),
-(13,	2,	'rythse',	'$2y$10$A2Avf.FbCFpsUttbnIO9uOO0HS3nzZZnASe9yhLmDyZSbeM8Bxg4y',	'retety',	'tyty',	NULL,	'1992-10-30',	'ere@dfg.ddf',	'57567567',	NULL,	'O',	'TVM',	NULL,	'INACTIVE',	NULL,	NULL,	NULL,	NULL,	'2021-05-01 17:33:45',	'2022-07-01 15:47:57',	NULL),
-(24,	1,	'rtretrt',	'$2y$10$6Ycp.jwd.QJUZ.mjxTuTd.nnXLQRnfOSaLSymS3LdQNQf580ZAkQe',	'ertert',	NULL,	NULL,	NULL,	'ryr@et.rtrt',	'465464564456',	NULL,	'O',	NULL,	NULL,	'INACTIVE',	NULL,	NULL,	NULL,	NULL,	'2021-05-01 20:24:41',	'2022-07-01 15:47:57',	NULL),
-(26,	1,	'fff',	'$2y$10$s2laXQmwAt4K8431Y/nubue1Z8OL3mELtHevdcXIFECmRHX7OPXN6',	'asdasd',	NULL,	NULL,	NULL,	'sf@dgdg.fgfdg',	'5454545',	NULL,	'M',	NULL,	NULL,	'ACTIVE',	NULL,	NULL,	NULL,	NULL,	'2021-05-07 20:05:30',	'2022-07-01 15:47:57',	NULL);
+INSERT INTO `user` (`id`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
+(1,	1,	'admin',	'$2y$10$3l0yQjMc7F2mlA8yCu.1l.ccKM68f9gLICEUCnId1bdCcO5gZh.si',	'Samnad',	'S',	'test comp',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	NULL,	'::1',	'2022-07-02 07:05:29',	'2022-06-05 06:34:50',	'2021-04-20 19:22:52',	'2022-07-02 11:07:07',	NULL),
+(13,	2,	'rythse',	'$2y$10$A2Avf.FbCFpsUttbnIO9uOO0HS3nzZZnASe9yhLmDyZSbeM8Bxg4y',	'retety',	'tyty',	NULL,	'1992-10-30',	'ere@dfg.ddf',	'57567567',	NULL,	1,	NULL,	NULL,	'TVM',	NULL,	NULL,	NULL,	4,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-05-01 17:33:45',	'2022-07-02 08:48:42',	NULL),
+(24,	1,	'rtretrt',	'$2y$10$6Ycp.jwd.QJUZ.mjxTuTd.nnXLQRnfOSaLSymS3LdQNQf580ZAkQe',	'ertert',	NULL,	NULL,	'0000-00-00',	'ryr@et.rtrt',	'465464564456',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-05-01 20:24:41',	'2022-07-02 08:48:42',	NULL),
+(26,	1,	'fff',	'$2y$10$s2laXQmwAt4K8431Y/nubue1Z8OL3mELtHevdcXIFECmRHX7OPXN6',	'asdasd',	NULL,	NULL,	'0000-00-00',	'sf@dgdg.fgfdg',	'5454545',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-05-07 20:05:30',	'2022-07-02 08:48:42',	NULL);
 
 DROP TABLE IF EXISTS `variant`;
 CREATE TABLE `variant` (
@@ -1057,4 +1091,4 @@ INSERT INTO `warehouse` (`id`, `name`, `code`, `phone`, `email`, `address`, `lon
 (23,	'erer',	'erwer',	'45',	'fddf@wdwd.cv',	'erwer',	NULL,	NULL,	'ererererrer',	'2021-04-22 18:00:23',	'2021-04-23 19:31:27',	NULL),
 (25,	'tret',	'rtert',	'4545',	'fgfdg@er.t',	'ryty',	NULL,	NULL,	NULL,	'2021-04-23 19:31:52',	NULL,	NULL);
 
--- 2022-07-01 15:50:41
+-- 2022-07-02 13:44:31

@@ -11,6 +11,9 @@ export default createStore({
         units_bulk: undefined,
         TAXES: undefined,
         WARE_HOUSES: undefined,
+        COMMON_GENDERS: undefined,
+        COMMON_ROLES: undefined,
+        COMMON_ROLE_STATUSES: undefined
     },
     mutations: {
         storeProductTypes(state, item) {
@@ -39,6 +42,15 @@ export default createStore({
         },
         storeCustomerGroups(state, item) {
             state.CUSTOMER_GROUPS = item;
+        },
+        storeCommonGenders(state, item) {
+            state.COMMON_GENDERS = item;
+        },
+        storeCommonRoles(state, item) {
+            state.COMMON_ROLES = item;
+        },
+        storeCommonRoleStatuses(state, item) {
+            state.COMMON_ROLE_STATUSES = item;
         }
     }
 });

@@ -12,7 +12,7 @@
               <span v-else><i class="fa-solid fa-plus"></i></span
               >{{ DATA.title }}
               <span class="badge bg-light text-dark" v-if="DATA.data">{{
-                DATA.data.code
+                DATA.data.username
               }}</span>
             </h5>
             <button
@@ -64,6 +64,7 @@
                 <select
                   class="form-select"
                   name="gender"
+                  :disabled="!storedGenders"
                   v-model="gender"
                   v-bind:class="[
                     errorGender
@@ -73,18 +74,26 @@
                       : '',
                   ]"
                 >
-                  <option selected :value="null">-- Select Gender --</option>
-                  <option value="M">Male</option>
-                  <option value="F">Female</option>
-                  <option value="O">Other</option>
-                  <option value="N">Not specify</option>
+                  <option
+                    selected
+                    :value="formValues.gender"
+                    v-if="!storedGenders"
+                  >
+                    Loading...
+                  </option>
+                  <option selected :value="null" v-if="storedGenders">
+                    -- Select Gender --
+                  </option>
+                  <option v-for="g in storedGenders" :key="g.id" :value="g.id">
+                    {{ g.name }}
+                  </option>
                 </select>
                 <div class="invalid-feedback">{{ errorGender }}</div>
               </div>
               <div class="col">
                 <label class="form-label">Date of Birth<i>*</i></label>
                 <input
-                  type="text"
+                  type="date"
                   name="dob"
                   v-model="dob"
                   class="form-control"
@@ -106,6 +115,7 @@
                   type="text"
                   name="username"
                   v-model="username"
+                  autocomplete="fgfg"
                   class="form-control"
                   v-bind:class="[
                     errorUsername
@@ -122,6 +132,7 @@
                 <select
                   class="form-select"
                   name="role"
+                  :disabled="!storedRoles"
                   v-model="role"
                   v-bind:class="[
                     errorRole
@@ -131,19 +142,24 @@
                       : '',
                   ]"
                 >
-                  <option selected :value="null">-- Select Gender --</option>
-                  <option value="M">Male</option>
-                  <option value="F">Female</option>
-                  <option value="O">Other</option>
-                  <option value="N">Not specify</option>
+                  <option selected :value="formValues.role" v-if="!storedRoles">
+                    Loading...
+                  </option>
+                  <option selected :value="null" v-if="storedRoles">
+                    -- Select Role --
+                  </option>
+                  <option v-for="r in storedRoles" :key="r.id" :value="r.id">
+                    {{ r.name }}
+                  </option>
                 </select>
                 <div class="invalid-feedback">{{ errorRole }}</div>
               </div>
               <div class="col">
                 <label class="form-label">Status<i>*</i></label>
                 <select
-                  class="form-select"
+                  class="form-select text-capitalize"
                   name="status"
+                  :disabled="!storedRoleStatuses"
                   v-model="status"
                   v-bind:class="[
                     errorStatus
@@ -153,11 +169,23 @@
                       : '',
                   ]"
                 >
-                  <option selected :value="null">-- Select Gender --</option>
-                  <option value="M">Male</option>
-                  <option value="F">Female</option>
-                  <option value="O">Other</option>
-                  <option value="N">Not specify</option>
+                  <option
+                    selected
+                    :value="formValues.status"
+                    v-if="!storedRoleStatuses"
+                  >
+                    Loading...
+                  </option>
+                  <option selected :value="null" v-if="storedRoleStatuses">
+                    -- Select Status --
+                  </option>
+                  <option
+                    v-for="s in storedRoleStatuses"
+                    :key="s.id"
+                    :value="s.id"
+                  >
+                    {{ s.name }}
+                  </option>
                 </select>
                 <div class="invalid-feedback">{{ errorStatus }}</div>
               </div>
@@ -185,18 +213,19 @@
                 <label class="form-label">Confirm Password<i>*</i></label>
                 <input
                   type="password"
-                  name="confirm_password"
-                  v-model="confirm_password"
+                  name="r_password"
+                  autocomplete="ghfghfgh"
+                  v-model="r_password"
                   class="form-control"
                   v-bind:class="[
-                    errorCpassword
+                    errorRpassword
                       ? 'is-invalid'
-                      : !errorCpassword && confirm_password
+                      : !errorRpassword && r_password
                       ? 'is-valid'
                       : '',
                   ]"
                 />
-                <div class="invalid-feedback">{{ errorCpassword }}</div>
+                <div class="invalid-feedback">{{ errorRpassword }}</div>
               </div>
             </div>
             <div class="row">
@@ -233,6 +262,23 @@
                   ]"
                 />
                 <div class="invalid-feedback">{{ errorPhone }}</div>
+              </div>
+              <div class="col">
+                <label class="form-label">Company Name</label>
+                <input
+                  type="text"
+                  name="company_name"
+                  v-model="company_name"
+                  class="form-control"
+                  v-bind:class="[
+                    errorCompanyname
+                      ? 'is-invalid'
+                      : !errorCompanyname && company_name
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                />
+                <div class="invalid-feedback">{{ errorCompanyname }}</div>
               </div>
             </div>
             <div class="row">
@@ -404,14 +450,17 @@ import { ref, computed } from "vue";
 import admin from "@/mixins/admin.js";
 import { useStore } from "vuex";
 export default {
-  props: {
-    propUpdateTaxRates: Function,
-  },
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
     const store = useStore();
-    let customerGroups = computed(function () {
-      return store.state.CUSTOMER_GROUPS;
+    let storedGenders = computed(function () {
+      return store.state.COMMON_GENDERS;
+    });
+    let storedRoles = computed(function () {
+      return store.state.COMMON_ROLES;
+    });
+    let storedRoleStatuses = computed(function () {
+      return store.state.COMMON_ROLE_STATUSES;
     });
     const DATA = ref({});
     const phoneRegExp =
@@ -425,23 +474,16 @@ export default {
         first_name: yup
           .string()
           .required()
-          .min(3)
-          .max(100)
+          .max(50)
           .nullable(true)
-          .transform((_, val) =>
-            val != null && val.length > 0 ? val : undefined
-          )
           .label("First Name"),
-        last_name: yup
-          .string()
-          .min(3)
-          .max(100)
+        last_name: yup.string().max(50).nullable(true).label("Last Name"),
+        gender: yup.number().required().nullable(true).label("Gender"),
+        dob: yup
+          .date()
           .nullable(true)
-          .transform((_, val) =>
-            val != null && val.length > 0 ? val : undefined
-          )
-          .label("Last Name"),
-        gender: yup.number().required().min(1).nullable(true).label("Gender"),
+          .transform((curr, orig) => (orig === "" ? null : curr))
+          .label("DOB"),
         username: yup
           .string()
           .required()
@@ -456,7 +498,7 @@ export default {
         status: yup.number().required().min(1).nullable(true).label("Status"),
         password: yup
           .string()
-          .required()
+
           .min(8)
           .max(50)
           .nullable(true)
@@ -464,9 +506,9 @@ export default {
             val != null && val.length > 0 ? val : undefined
           )
           .label("Password"),
-        cpassword: yup
+        r_password: yup
           .string()
-          .required()
+
           .min(8)
           .max(50)
           .nullable(true)
@@ -496,6 +538,15 @@ export default {
             val != null && val.length > 0 ? val : undefined
           )
           .label("Phone Number"),
+        company_name: yup
+          .string()
+          .min(3)
+          .max(100)
+          .nullable(true)
+          .transform((_, val) =>
+            val != null && val.length > 0 ? val : undefined
+          )
+          .label("Company Name"),
         country: yup
           .string()
           .min(3)
@@ -573,17 +624,26 @@ export default {
       DATA.value = data;
       if (DATA.value.data) {
         let fields = DATA.value.data;
-        setFieldValue("name", fields.name);
-        setFieldValue("group", fields.group);
-        setFieldValue("place", fields.place);
+        setFieldValue("first_name", fields.first_name);
+        setFieldValue("last_name", fields.last_name);
+        setFieldValue("gender", fields.gender);
+        setFieldValue("dob", fields.date_of_birth);
+        setFieldValue("username", fields.username);
+        setFieldValue("role", fields.role);
+        setFieldValue("status", fields.status);
         setFieldValue("phone", fields.phone);
+        setFieldValue("company_name", fields.company_name);
+        setFieldValue("country", fields.country);
         setFieldValue("city", fields.city);
+        setFieldValue("place", fields.place);
         setFieldValue("pin", fields.pin_code);
         setFieldValue("email", fields.email);
         setFieldValue("address", fields.address);
         setFieldValue("description", fields.description);
       } else {
-        setFieldValue("group", null); // can use a default value
+        setFieldValue("gender", null); // can use a default value
+        setFieldValue("role", null); // can use a default value
+        setFieldValue("status", null); // can use a default value
       }
       window.USER_NEW_MODAL.show();
     });
@@ -623,7 +683,7 @@ export default {
         if (data.success == true) {
           // added
           resetForm();
-          window.window.CUSTOMER_NEW_MODAL.hide();
+          window.window.USER_NEW_MODAL.hide();
           if (DATA.value.emit) {
             emitter.emit(DATA.value.emit, {}); // do something (emit)
           }
@@ -650,19 +710,30 @@ export default {
       if (DATA.value.data) {
         // edit form
         let fields = DATA.value.data;
-        setFieldValue("name", fields.name);
-        setFieldValue("group", fields.group);
-        setFieldValue("place", fields.place);
+        setFieldValue("first_name", fields.first_name);
+        setFieldValue("last_name", fields.last_name);
+        setFieldValue("gender", fields.gender);
+        setFieldValue("dob", fields.date_of_birth);
+        setFieldValue("username", fields.username);
+        setFieldValue("role", fields.role);
+        setFieldValue("status", fields.status);
         setFieldValue("phone", fields.phone);
+        setFieldValue("company_name", fields.company_name);
+        setFieldValue("country", fields.country);
         setFieldValue("city", fields.city);
+        setFieldValue("place", fields.place);
         setFieldValue("pin", fields.pin_code);
         setFieldValue("email", fields.email);
         setFieldValue("address", fields.address);
         setFieldValue("description", fields.description);
+        setFieldValue("password", fields.password);
+        setFieldValue("r_password", fields.r_password);
       } else {
         // new
         resetForm();
-        setFieldValue("group", null); // can use a default value
+        setFieldValue("gender", null); // can use a default value
+        setFieldValue("role", null); // can use a default value
+        setFieldValue("status", null); // can use a default value
       }
     }
     /************************************************************************* */
@@ -671,16 +742,19 @@ export default {
     const { value: last_name, errorMessage: errorLastName } =
       useField("last_name");
     const { value: gender, errorMessage: errorGender } = useField("gender");
+    const { value: dob, errorMessage: errorDob } = useField("dob");
     const { value: username, errorMessage: errorUsername } =
       useField("username");
     const { value: role, errorMessage: errorRole } = useField("role");
     const { value: status, errorMessage: errorStatus } = useField("status");
     const { value: password, errorMessage: errorPassword } =
       useField("password");
-    const { value: cpassword, errorMessage: errorCpassword } =
-      useField("password");
+    const { value: r_password, errorMessage: errorRpassword } =
+      useField("r_password");
     const { value: email, errorMessage: errorEmail } = useField("email");
     const { value: phone, errorMessage: errorPhone } = useField("phone");
+    const { value: company_name, errorMessage: errorCompanyname } =
+      useField("company_name");
     const { value: country, errorMessage: errorCountry } = useField("country");
     const { value: city, errorMessage: errorCity } = useField("city");
     const { value: place, errorMessage: errorPlace } = useField("place");
@@ -697,6 +771,8 @@ export default {
       errorLastName,
       gender,
       errorGender,
+      dob,
+      errorDob,
       username,
       errorUsername,
       role,
@@ -705,11 +781,13 @@ export default {
       errorStatus,
       password,
       errorPassword,
-      cpassword,
-      errorCpassword,
+      r_password,
+      errorRpassword,
       email,
       errorEmail,
       phone,
+      company_name,
+      errorCompanyname,
       errorPhone,
       country,
       errorCountry,
@@ -725,7 +803,9 @@ export default {
       errorDescription,
       /*************** */
       axiosAsyncStoreReturnBool,
-      customerGroups,
+      storedGenders,
+      storedRoles,
+      storedRoleStatuses,
       formValues,
       isDirty,
       isValid,
@@ -745,12 +825,24 @@ export default {
       backdrop: true,
       show: true,
     });
-    if (!this.customerGroups) {
+    if (!this.storedGenders) {
       // if not found on store
-      this.axiosAsyncStoreReturnBool("storeCustomerGroups", "customer_group", {
-        action: "getall",
+      this.axiosAsyncStoreReturnBool("storeCommonGenders", "common", {
+        action: "gender",
       });
-      // get customer groups
+    }
+    if (!this.storedRoles) {
+      // if not found on store
+      this.axiosAsyncStoreReturnBool("storeCommonRoles", "common", {
+        action: "role",
+      });
+    }
+    if (!this.storedRoleStatuses) {
+      // if not found on store
+      this.axiosAsyncStoreReturnBool("storeCommonRoleStatuses", "common", {
+        action: "status",
+        type: "user_status",
+      });
     }
     //window.USER_NEW_MODAL.show();
   },

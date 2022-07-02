@@ -261,9 +261,6 @@ import { ref, computed } from "vue";
 import admin from "@/mixins/admin.js";
 import { useStore } from "vuex";
 export default {
-  props: {
-    propUpdateTaxRates: Function,
-  },
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
     const store = useStore();

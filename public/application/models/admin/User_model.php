@@ -52,19 +52,32 @@ class User_model extends CI_Model
         u.phone as phone,
         u.avatar as avatar,
         u.gender as gender,
+        u.date_of_birth as date_of_birth,
+        u.country as country,
+        u.city as city,
         u.place as place,
         u.address as address,
+        u.pin_code as pin_code,
         u.status as status,
         u.deletable as deletable,
+        u.description as description,
         u.updated_at as updated_at,
         u.deleted_at as deleted_at,
+
+        s.id as status,
+        s.name as status_name,
+        s.css_class as css_class,
         
 		r.id as role,
 		r.name as role_name,
-		r.limit as role_limit');
+		r.limit as role_limit,
+
+        
+        '.$this->session->id.' as self_id');
 
         $this->db->from(TABLE_USER . ' u');
         $this->db->join(TABLE_ROLE . ' r', 'r.id=u.role', 'left');
+        $this->db->join(TABLE_STATUS . ' s', 's.id=u.status', 'left');
 
         $this->db->where(array('u.deleted_at' => NULL)); // select only not deleted rows
         $this->db->group_start();
@@ -76,7 +89,7 @@ class User_model extends CI_Model
         $this->db->or_like('u.phone', $search);
         $this->db->or_like('u.place', $search);
         $this->db->or_like('u.address', $search);
-        $this->db->or_like('u.status', $search);
+        $this->db->or_like('s.name', $search);
         $this->db->group_end();
 
         $this->db->order_by($order_by, $order);

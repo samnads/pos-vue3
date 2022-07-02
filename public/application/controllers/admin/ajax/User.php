@@ -33,21 +33,26 @@ class User extends CI_Controller
 			case 'POST': // create
 				$_POST = $_POST['data'];
 				$data = array(
-					'role'			=> $this->input->post('role'),
-					'username'		=> $this->input->post('username'),
 					'first_name'	=> $this->input->post('first_name'),
-					'date_of_birth'	=> $this->input->post('date_of_birth') ? date('Y-m-d', strtotime(str_replace('/', '-', $this->input->post('date_of_birth')))) : NULL,
-					'email'			=> $this->input->post('email'),
-					'phone'			=> $this->input->post('phone'),
+					'gender'		=> $this->input->post('gender'),
+					'date_of_birth'	=> $this->input->post('dob'),
+					'username'		=> $this->input->post('username'),
+					'role'			=> $this->input->post('role'),
+					'status'		=> $this->input->post('status'),
 					'password'		=> $this->input->post('password'),
 					'r_password'	=> $this->input->post('r_password'),
-					'gender'		=> $this->input->post('gender'),
-					'status'		=> $this->input->post('status'),
+					'email'			=> $this->input->post('email'),
+					'phone'			=> $this->input->post('phone'),
 					'last_name'		=> $this->input->post('last_name') ?: NULL,
 					'place'			=> $this->input->post('place') ?: NULL,
-					'address'		=> $this->input->post('address') ?: NULL,
 					'company_name'	=> $this->input->post('company_name') ?: NULL,
-					'avatar'		=> $this->input->post('avatar') ?: NULL
+					'avatar'		=> $this->input->post('avatar') ?: NULL,
+					'country'		=> $this->input->post('country') ?: NULL,
+					'city'			=> $this->input->post('city') ?: NULL,
+					'place'			=> $this->input->post('place') ?: NULL,
+					'pin_code'		=> $this->input->post('pin') ?: NULL,
+					'address'		=> $this->input->post('address') ?: NULL,
+					'description'	=> $this->input->post('description') ?: NULL
 				);
 				//$data['role'] = '5';
 				$this->form_validation->set_data($data);
@@ -58,34 +63,9 @@ class User extends CI_Controller
 				$rule_avatar = 'is_unique[' . TABLE_USER . '.avatar]';
 				$config = array(
 					array(
-						'field' => 'password',
-						'label' => 'Password',
-						'rules' => 'required|min_length[8]|' . $rule_password . '|xss_clean|trim'
-					),
-					array(
-						'field' => 'r_password',
-						'label' => 'Repeat Password',
-						'rules' => 'required|xss_clean|trim'
-					),
-					array(
-						'field' => 'role',
-						'label' => 'Role',
-						'rules' => 'required|xss_clean|trim'
-					),
-					array(
-						'field' => 'gender',
-						'label' => 'Gender',
-						'rules' => 'required|xss_clean|trim'
-					),
-					array(
-						'field' => 'username',
-						'label' => 'Username',
-						'rules' => 'required|min_length[3]|max_length[200]|' . $rule_username . '|xss_clean|trim'
-					),
-					array(
 						'field' => 'first_name',
 						'label' => 'First Name',
-						'rules' => 'required|min_length[3]|max_length[200]|xss_clean|trim'
+						'rules' => 'required|max_length[200]|xss_clean|trim'
 					),
 					array(
 						'field' => 'last_name',
@@ -93,14 +73,29 @@ class User extends CI_Controller
 						'rules' => 'max_length[200]|xss_clean|trim'
 					),
 					array(
-						'field' => 'company_name',
-						'label' => 'Company Name',
-						'rules' => 'max_length[200]|xss_clean|trim'
+						'field' => 'gender',
+						'label' => 'Gender',
+						'rules' => 'required|xss_clean|trim'
 					),
 					array(
 						'field' => 'date_of_birth',
 						'label' => 'Date of Birth',
-						'rules' => 'max_length[200]|xss_clean|trim'
+						'rules' => 'trim|xss_clean'
+					),
+					array(
+						'field' => 'username',
+						'label' => 'Username',
+						'rules' => 'required|min_length[3]|max_length[200]|' . $rule_username . '|xss_clean|trim'
+					),
+					array(
+						'field' => 'role',
+						'label' => 'Role',
+						'rules' => 'required|xss_clean|trim'
+					),
+					array(
+						'field' => 'status',
+						'label' => 'Status',
+						'rules' => 'required|xss_clean|trim'
 					),
 					array(
 						'field' => 'email',
@@ -113,14 +108,29 @@ class User extends CI_Controller
 						'rules' => 'required|min_length[5]|max_length[40]|' . $rule_phone . '|xss_clean|trim'
 					),
 					array(
-						'field' => 'avatar',
-						'label' => 'Avatar',
-						'rules' => 'max_length[200]|' . $rule_avatar . '|xss_clean|trim'
+						'field' => 'company_name',
+						'label' => 'Company Name',
+						'rules' => 'max_length[200]|xss_clean|trim'
+					),
+					array(
+						'field' => 'country',
+						'label' => 'Country',
+						'rules' => 'min_length[3]|max_length[50]|xss_clean|trim'
+					),
+					array(
+						'field' => 'city',
+						'label' => 'City',
+						'rules' => 'min_length[3]|max_length[50]|xss_clean|trim'
 					),
 					array(
 						'field' => 'place',
 						'label' => 'Place',
-						'rules' => 'min_length[3]|max_length[200]|xss_clean|trim'
+						'rules' => 'min_length[3]|max_length[50]|xss_clean|trim'
+					),
+					array(
+						'field' => 'pin_code',
+						'label' => 'Pin Code',
+						'rules' => 'min_length[3]|max_length[15]|xss_clean|trim'
 					),
 					array(
 						'field' => 'address',
@@ -128,10 +138,25 @@ class User extends CI_Controller
 						'rules' => 'max_length[200]|xss_clean|trim'
 					),
 					array(
-						'field' => 'status',
-						'label' => 'Status',
-						'rules' => 'required|max_length[50]|xss_clean|trim'
-					)
+						'field' => 'description',
+						'label' => 'Description',
+						'rules' => 'max_length[200]|xss_clean|trim'
+					),
+					array(
+						'field' => 'avatar',
+						'label' => 'Avatar',
+						'rules' => 'max_length[200]|' . $rule_avatar . '|xss_clean|trim'
+					),
+					array(
+						'field' => 'password',
+						'label' => 'Password',
+						'rules' => 'required|min_length[8]|' . $rule_password . '|xss_clean|trim'
+					),
+					array(
+						'field' => 'r_password',
+						'label' => 'Repeat Password',
+						'rules' => 'required|xss_clean|trim'
+					),
 				);
 				//$data['error'] = '0';
 				$this->form_validation->set_rules($config);
@@ -154,21 +179,26 @@ class User extends CI_Controller
 			case 'PUT': // update
 				$_POST = $_POST['data'];
 				$data = array(
-					'role'			=> $this->input->post('role'),
-					'username'		=> $this->input->post('username'),
 					'first_name'	=> $this->input->post('first_name'),
-					'date_of_birth'	=> $this->input->post('date_of_birth') ? date('Y-m-d', strtotime(str_replace('/', '-', $this->input->post('date_of_birth')))) : NULL,
-					'email'			=> $this->input->post('email'),
-					'phone'			=> $this->input->post('phone'),
+					'gender'		=> $this->input->post('gender'),
+					'date_of_birth'	=> $this->input->post('dob'),
+					'username'		=> $this->input->post('username'),
+					'role'			=> $this->input->post('role'),
+					'status'		=> $this->input->post('status'),
 					'password'		=> $this->input->post('password'),
 					'r_password'	=> $this->input->post('r_password'),
-					'gender'		=> $this->input->post('gender'),
-					'status'		=> $this->input->post('status'),
+					'email'			=> $this->input->post('email'),
+					'phone'			=> $this->input->post('phone'),
 					'last_name'		=> $this->input->post('last_name') ?: NULL,
 					'place'			=> $this->input->post('place') ?: NULL,
-					'address'		=> $this->input->post('address') ?: NULL,
 					'company_name'	=> $this->input->post('company_name') ?: NULL,
-					'avatar'		=> $this->input->post('avatar') ?: NULL
+					'avatar'		=> $this->input->post('avatar') ?: NULL,
+					'country'		=> $this->input->post('country') ?: NULL,
+					'city'			=> $this->input->post('city') ?: NULL,
+					'place'			=> $this->input->post('place') ?: NULL,
+					'pin_code'		=> $this->input->post('pin') ?: NULL,
+					'address'		=> $this->input->post('address') ?: NULL,
+					'description'	=> $this->input->post('description') ?: NULL
 				);
 				//$data['name'] = '';
 				$this->form_validation->set_data($data);
@@ -178,24 +208,9 @@ class User extends CI_Controller
 				$rule_avatar = $this->input->post('avatar') == null ? '' : 'callback_update_same_avatar_check[' . $this->input->post('db')['id'] . ']';
 				$config = array(
 					array(
-						'field' => 'role',
-						'label' => 'Role',
-						'rules' => 'required|xss_clean|trim'
-					),
-					array(
-						'field' => 'gender',
-						'label' => 'Gender',
-						'rules' => 'required|xss_clean|trim'
-					),
-					array(
-						'field' => 'username',
-						'label' => 'Username',
-						'rules' => 'required|min_length[3]|max_length[200]|' . $rule_username . '|xss_clean|trim'
-					),
-					array(
 						'field' => 'first_name',
 						'label' => 'First Name',
-						'rules' => 'required|min_length[3]|max_length[200]|xss_clean|trim'
+						'rules' => 'required|max_length[200]|xss_clean|trim'
 					),
 					array(
 						'field' => 'last_name',
@@ -203,14 +218,29 @@ class User extends CI_Controller
 						'rules' => 'max_length[200]|xss_clean|trim'
 					),
 					array(
-						'field' => 'company_name',
-						'label' => 'Company Name',
-						'rules' => 'max_length[200]|xss_clean|trim'
+						'field' => 'gender',
+						'label' => 'Gender',
+						'rules' => 'required|xss_clean|trim'
 					),
 					array(
 						'field' => 'date_of_birth',
 						'label' => 'Date of Birth',
-						'rules' => 'max_length[200]|xss_clean|trim'
+						'rules' => 'trim|xss_clean'
+					),
+					array(
+						'field' => 'username',
+						'label' => 'Username',
+						'rules' => 'required|min_length[3]|max_length[200]|' . $rule_username . '|xss_clean|trim'
+					),
+					array(
+						'field' => 'role',
+						'label' => 'Role',
+						'rules' => 'required|xss_clean|trim'
+					),
+					array(
+						'field' => 'status',
+						'label' => 'Status',
+						'rules' => 'required|xss_clean|trim'
 					),
 					array(
 						'field' => 'email',
@@ -223,14 +253,29 @@ class User extends CI_Controller
 						'rules' => 'required|min_length[5]|max_length[40]|' . $rule_phone . '|xss_clean|trim'
 					),
 					array(
-						'field' => 'avatar',
-						'label' => 'Avatar',
-						'rules' => 'max_length[200]|' . $rule_avatar . '|xss_clean|trim'
+						'field' => 'company_name',
+						'label' => 'Company Name',
+						'rules' => 'max_length[200]|xss_clean|trim'
+					),
+					array(
+						'field' => 'country',
+						'label' => 'Country',
+						'rules' => 'min_length[3]|max_length[50]|xss_clean|trim'
+					),
+					array(
+						'field' => 'city',
+						'label' => 'City',
+						'rules' => 'min_length[3]|max_length[50]|xss_clean|trim'
 					),
 					array(
 						'field' => 'place',
 						'label' => 'Place',
-						'rules' => 'min_length[3]|max_length[200]|xss_clean|trim'
+						'rules' => 'min_length[3]|max_length[50]|xss_clean|trim'
+					),
+					array(
+						'field' => 'pin_code',
+						'label' => 'Pin Code',
+						'rules' => 'min_length[3]|max_length[15]|xss_clean|trim'
 					),
 					array(
 						'field' => 'address',
@@ -238,9 +283,14 @@ class User extends CI_Controller
 						'rules' => 'max_length[200]|xss_clean|trim'
 					),
 					array(
-						'field' => 'status',
-						'label' => 'Status',
-						'rules' => 'required|max_length[50]|xss_clean|trim'
+						'field' => 'description',
+						'label' => 'Description',
+						'rules' => 'max_length[200]|xss_clean|trim'
+					),
+					array(
+						'field' => 'avatar',
+						'label' => 'Avatar',
+						'rules' => 'max_length[200]|' . $rule_avatar . '|xss_clean|trim'
 					)
 				);
 				if ($data['password'] || $data['r_password']) { // change password trigger
@@ -252,7 +302,7 @@ class User extends CI_Controller
 					);
 					$config[] = array(
 						'field' => 'r_password',
-						'label' => 'Repeat Password',
+						'label' => 'Confirm Password',
 						'rules' => 'required|xss_clean|trim'
 					);
 				}
@@ -273,7 +323,7 @@ class User extends CI_Controller
 						$this->session->set_flashdata('alert', $alert);
 						echo json_encode($alert['updated']);
 					} else if ($this->db->affected_rows() == 0) {
-						$alert['updated'] = array('success' => true, 'type' => 'info', 'id' => $this->input->post('db')['id'], 'message' => 'No data changed for user <strong><em>' . $this->input->post('db')['first_name'] . '</em></strong> !', 'location' => "admin/user");
+						$alert['updated'] = array('success' => false, 'type' => 'info', 'id' => $this->input->post('db')['id'], 'message' => 'No data changed for user <strong><em>' . $this->input->post('db')['first_name'] . '</em></strong> !', 'location' => "admin/user");
 						$this->session->set_flashdata('alert', $alert);
 						echo json_encode($alert['updated']);
 					} else {
