@@ -26,8 +26,7 @@ class User extends CI_Controller
 						echo json_encode($data);
 						break;
 					default:
-						$error = array('success' => false, 'type' => 'danger', 'error' => 'Unknown Action !');
-						echo json_encode($error);
+						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Unknown Action !'));
 				}
 				break;
 			case 'POST': // create
@@ -165,7 +164,7 @@ class User extends CI_Controller
 				} else {
 					$data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
 					unset($data['r_password']);
-					$this->db->insert(TABLE_USER, $data);
+					$this->User_model->insert_user($data);
 					if ($this->db->affected_rows() == 1) {
 						$alert['added'] = array('success' => true, 'type' => 'success', 'id' => $this->db->insert_id(), 'message' => 'Successfully added user <strong><em>' .  $data['first_name'] . ' ' . $data['last_name'] . '</em></strong> !', 'location' => "admin/user");
 						$this->session->set_flashdata('alert', $alert);
@@ -178,6 +177,7 @@ class User extends CI_Controller
 				break;
 			case 'PUT': // update
 				$_POST = $_POST['data'];
+				$id = $this->input->post('db')['id'];
 				$data = array(
 					'first_name'	=> $this->input->post('first_name'),
 					'gender'		=> $this->input->post('gender'),
@@ -317,18 +317,19 @@ class User extends CI_Controller
 						unset($data['password']);
 					}
 					unset($data['r_password']);
-					$this->db->update(TABLE_USER, $data, array('id' => $this->input->post('db')['id']));
-					if ($this->db->affected_rows() == 1) {
-						$alert['updated'] = array('success' => true, 'type' => 'success', 'id' => $this->input->post('db')['id'], 'message' => 'Successfully updated user <strong><em>' .  $this->input->post('db')['first_name'] . '</em></strong> !', 'location' => "admin/user");
-						$this->session->set_flashdata('alert', $alert);
-						echo json_encode($alert['updated']);
-					} else if ($this->db->affected_rows() == 0) {
-						$alert['updated'] = array('success' => false, 'type' => 'info', 'id' => $this->input->post('db')['id'], 'message' => 'No data changed for user <strong><em>' . $this->input->post('db')['first_name'] . '</em></strong> !', 'location' => "admin/user");
-						$this->session->set_flashdata('alert', $alert);
-						echo json_encode($alert['updated']);
-					} else {
+					$user = $this->User_model->getUser(array('u.id' => $id));
+					if ($user['editable'] === NULL) { // edit allowed
+						$this->User_model->update_user($data, array('id' => $id));
 						$error = $this->db->error();
-						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
+						if ($this->db->affected_rows() == 1) {
+							echo json_encode(array('success' => true, 'type' => 'success', 'id' => $id, 'message' => 'Successfully updated user <strong><em>' . $user['first_name'] . '</em></strong> !'));
+						} else if ($this->db->affected_rows() == 0) {
+							echo json_encode(array('success' => true, 'type' => 'info', 'id' => $id, 'message' => $this->lang->line('no_data_changed_after_query')));
+						} else {
+							echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));
+						}
+					} else {
+						echo json_encode(array('success' => false, 'type' => 'danger', 'message' => 'User <i>' . $user['first_name'] . "</i> is protected you can't edit it."));
 					}
 				}
 				break;
@@ -337,7 +338,7 @@ class User extends CI_Controller
 				$id = $this->input->post('id');
 				$user = $this->User_model->getUser(array('u.id' => $id));
 				if ($user['id']) {
-					if ($user['deletable'] !== 0) {
+					if ($user['deletable'] === NULL) { // delete allowed
 						$this->User_model->set_deleted_at($id);
 						$error = $this->db->error();
 						if ($this->db->affected_rows() == 1) {
@@ -349,7 +350,7 @@ class User extends CI_Controller
 						echo json_encode(array('success' => false, 'type' => 'danger', 'message' => 'User <i>' . $user['first_name'] . "</i> is protected you can't delete it."));
 					}
 				} else {
-					echo json_encode(array('success' => false, 'type' => 'danger', 'message' => "Specified user doesn't exist !"));
+					echo json_encode(array('success' => false, 'type' => 'danger', 'message' => $this->lang->line('query_no_row_found')));
 				}
 				break;
 			default:

@@ -204,7 +204,7 @@ class Category extends CI_Controller
 					if ($this->db->affected_rows() == 1) {
 						echo json_encode(array('success' => true, 'type' => 'success', 'id' => $this->input->post('db')['id'], 'message' => 'Successfully updated ' . (isset($this->input->post('db')['category']) ? 'subcategory' : 'category') . ' <strong><em>' . $data['name'] . '</em></strong> !'));
 					} else if ($this->db->affected_rows() == 0) {
-						echo json_encode(array('success' => true, 'type' => 'warning', 'id' => $this->input->post('db')['id'], 'message' => 'No data changed for ' . (isset($this->input->post('db')['category']) ? 'subcategory' : 'category') . ' <strong><em>' . $data['name'] . '</em></strong> !'));
+						echo json_encode(array('success' => true, 'type' => 'warning', 'id' => $this->input->post('db')['id'], 'message' => $this->lang->line('no_data_changed_after_query')));
 					} else {
 						$error = $this->db->error();
 						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "An unexpected database error occurred !")));

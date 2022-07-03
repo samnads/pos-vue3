@@ -192,7 +192,9 @@
             </div>
             <div class="row">
               <div class="col">
-                <label class="form-label">Password<i>*</i></label>
+                <label class="form-label"
+                  ><span v-if="DATA.data">New </span>Password<i v-if="!DATA.data">*</i></label
+                >
                 <input
                   type="password"
                   name="password"
@@ -210,7 +212,9 @@
                 <div class="invalid-feedback">{{ errorPassword }}</div>
               </div>
               <div class="col">
-                <label class="form-label">Confirm Password<i>*</i></label>
+                <label class="form-label"
+                  >Confirm <span v-if="DATA.data">New </span>Password<i v-if="!DATA.data">*</i></label
+                >
                 <input
                   type="password"
                   name="r_password"
@@ -498,20 +502,56 @@ export default {
         status: yup.number().required().min(1).nullable(true).label("Status"),
         password: yup
           .string()
-
+          .matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$","Password must contain at least one uppercase, one lowercase, one number and one special character.")
           .min(8)
           .max(50)
           .nullable(true)
           .transform((_, val) =>
             val != null && val.length > 0 ? val : undefined
           )
+          .test(
+            "required-test1",
+            "Password is a required field", // error message
+            function test() {
+              if (DATA.value.data) {
+                // edit
+                return true;
+              } else if (!DATA.value.data && password.value) {
+                //new
+                return true;
+              }
+              return false;
+            }
+          )
           .label("Password"),
         r_password: yup
           .string()
-
+          .oneOf(
+            [yup.ref("password"), null],
+            "Confirm Password must match with Password"
+          )
           .min(8)
           .max(50)
           .nullable(true)
+          .test(
+            "required-test2",
+            "Confirm Password is a required field", // error message
+            function test() {
+              if (DATA.value.data) {
+                // edit
+                if (password.value == r_password.value) {
+                  return true;
+                }
+                return false;
+              } else {
+                //new
+                if (r_password.value) {
+                  return true;
+                }
+                return false;
+              }
+            }
+          )
           .transform((_, val) =>
             val != null && val.length > 0 ? val : undefined
           )

@@ -139,7 +139,7 @@ class Tax extends CI_Controller
 					if ($this->db->affected_rows() == 1) {
 						echo json_encode(array('success' => true, 'type' => 'success', 'id' => $this->input->post('db')['id'], 'message' => 'Successfully updated tax <strong><em>' . $this->input->post('db')['name'] . '</em></strong> !', 'timeout' => 5000));
 					} else if ($this->db->affected_rows() == 0) {
-						echo json_encode(array('success' => true, 'type' => 'info', 'id' => $this->input->post('db')['id'], 'message' => 'No data changed for tax <strong><em>' . $this->input->post('name') . '</em></strong> !', 'timeout' => 5000));
+						echo json_encode(array('success' => true, 'type' => 'info', 'id' => $this->input->post('db')['id'], 'message' => $this->lang->line('no_data_changed_after_query'), 'timeout' => 5000));
 					} else {
 						$error = $this->db->error();
 						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));

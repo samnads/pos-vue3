@@ -59,6 +59,7 @@ class User_model extends CI_Model
         u.address as address,
         u.pin_code as pin_code,
         u.status as status,
+        u.editable as editable,
         u.deletable as deletable,
         u.description as description,
         u.updated_at as updated_at,
@@ -171,6 +172,7 @@ class User_model extends CI_Model
         u.status as status,
         u.added_at as added_at,
         u.updated_at as updated_at,
+        u.editable as editable,
         u.deletable as deletable,
 
 		r.id as role,
@@ -196,6 +198,16 @@ class User_model extends CI_Model
         $this->db->where(array('id' => $id, 'deletable' => NULL, 'deleted_at' => NULL));
         $this->db->set('deleted_at', 'NOW()', FALSE); // deleted rows have a timestamp
         $query = $this->db->update(TABLE_USER);
+        return $query;
+    }
+    function insert_user($data)
+    {
+        $query = $this->db->insert(TABLE_USER, $data);
+        return $query;
+    }
+    function update_user($data, $where)
+    {
+        $query = $this->db->update(TABLE_USER, $data, $where);
         return $query;
     }
 }

@@ -105,7 +105,7 @@ class Brand extends CI_Controller
 					if ($this->db->affected_rows() == 1) {
 						echo json_encode(array('success' => true, 'type' => 'success', 'id' => $id, 'message' => 'Successfully updated brand <strong><em>' . $this->input->post('db')['name'] . '</em></strong> !'));
 					} else if ($this->db->affected_rows() == 0) {
-						echo json_encode(array('success' => true, 'type' => 'info', 'id' => $id, 'message' => 'No data changed for brand <strong><em>' . $this->input->post('name') . '</em></strong> !', 'timeout' => 5000));
+						echo json_encode(array('success' => true, 'type' => 'info', 'id' => $id, 'message' => $this->lang->line('no_data_changed_after_query'), 'timeout' => 5000));
 					} else {
 						$error = $this->db->error();
 						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));

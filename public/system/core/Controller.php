@@ -85,7 +85,7 @@ class CI_Controller {
 		$this->load =& load_class('Loader', 'core');
 		$this->load->initialize();
 		log_message('info', 'Controller Class Initialized');
-        $this->db->conn_id->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE,true);
+		$this->db->conn_id->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, true);
 	}
 
 	// --------------------------------------------------------------------

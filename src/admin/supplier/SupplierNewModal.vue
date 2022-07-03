@@ -10,7 +10,7 @@
             <h5 class="modal-title">
               <span v-if="DATA.data"><i class="fa-solid fa-pencil"></i></span>
               <span v-else><i class="fa-solid fa-plus"></i></span
-              >{{ DATA.title }} <span class="badge bg-light text-dark" v-if="DATA.data">{{DATA.data.code}}</span>
+              >{{ DATA.title }}<span class="badge bg-light text-dark" v-if="DATA.data">{{DATA.data.code}}</span>
             </h5>
             <button
               type="button"
