@@ -144,6 +144,11 @@ class Role_model extends CI_Model
         }
         return $result;
     }
+    function insert_role($data)
+    {
+        $query = $this->db->insert(TABLE_ROLE, $data);
+        return $query;
+    }
     function deleteById($id)
     {
         $this->db->where(array("id" => $id, "deletable" => '1'));

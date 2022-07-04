@@ -8,6 +8,7 @@ class Role extends CI_Controller
 		header('Content-Type: application/json; charset=utf-8');
 		$this->load->model('admin/Module_model');
 		$this->load->model('admin/Permission_model');
+		$this->load->model('admin/Role_model');
 		$_POST = raw_input_to_post();
 		$table = TABLE_ROLE;
 		switch ($_SERVER['REQUEST_METHOD']) {
@@ -39,15 +40,12 @@ class Role extends CI_Controller
 				}
 				break;
 			case 'POST': // create
-				$role_name = isset($this->input->post('data')['name']) ? $this->input->post('data')['name'] : null;
-				$role_limit = isset($this->input->post('data')['limit']) ? $this->input->post('data')['limit'] : null;
-				$role_desc = isset($this->input->post('data')['description']) ? $this->input->post('data')['description'] : null;
 				$_POST = $this->input->post('data');
 				$rights = $this->input->post('rights');
 				$data = array(
-					'name'			=> $role_name,
-					'limit'			=> $role_limit,
-					'description'			=> $role_desc
+					'name'			=> $this->input->post('name'),
+					'limit'			=> $this->input->post('limit'),
+					'description'	=> $this->input->post('description')
 				);
 				$this->form_validation->set_data($data);
 				$config = array(
@@ -71,7 +69,7 @@ class Role extends CI_Controller
 				if ($this->form_validation->run() == FALSE) {
 					echo json_encode(array('success' => false, 'errors' => $this->form_validation->error_array()));
 				} else {
-					$this->db->insert(TABLE_ROLE, $data);
+					$this->Role_model->insert_role($data);
 					if ($this->db->affected_rows() == 1) {
 						// role added
 						$role_id = $this->db->insert_id();
@@ -88,25 +86,25 @@ class Role extends CI_Controller
 							$permissions[$permission['name']] = $permission['id']; // permissions
 						}
 						// save role permissions
-						foreach ($rights as $module => $permissions2) {
-							foreach ($permissions2 as $permission => $allow) {
-								if (filter_var(
-									$allow,
-									FILTER_VALIDATE_BOOLEAN
-								)) { // ALLOW
-									$update_row = array(
-										'role_id' => $role_id,
-										'module_id' => $modules[$module],
-										'permission_id' => $permissions[$permission],
-										'allow' => 1
-									);
-									$this->db->insert(TABLE_ROLE_PERMISSION, $update_row);
+						if (is_array($rights) || is_object($rights)) {
+							foreach ($rights as $module => $permissions2) {
+								foreach ($permissions2 as $permission => $allow) {
+									if (filter_var(
+										$allow,
+										FILTER_VALIDATE_BOOLEAN
+									)) { // ALLOW
+										$update_row = array(
+											'role_id' => $role_id,
+											'module_id' => $modules[$module],
+											'permission_id' => $permissions[$permission],
+											'allow' => 1
+										);
+										$this->db->insert(TABLE_ROLE_PERMISSION, $update_row);
+									}
 								}
 							}
 						}
-						$alert['success'] = array('success' => true, 'type' => 'success', 'id' => $role_id, 'message' => 'Successfully added new role <strong><em>' . $data['name'] . '</em></strong> !', 'timeout' => 5000);
-						$this->session->set_flashdata('alert', $alert);
-						echo json_encode(array('success' => true, 'location' => "admin/role"));
+						echo json_encode(array('success' => true, 'type' => 'success', 'id' => $role_id, 'message' => 'Successfully added new role <strong><em>' . $data['name'] . '</em></strong> !', 'timeout' => 5000));
 					} else {
 						$error = $this->db->error();
 						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));

@@ -29,35 +29,35 @@
                 <label class="form-label">Role Name<i>*</i></label>
                 <input
                   type="text"
-                  name="role_name"
-                  v-model="role_name"
+                  name="name"
+                  v-model="name"
                   class="form-control"
                   v-bind:class="[
-                    errorRoleName
+                    errorName
                       ? 'is-invalid'
-                      : !errorRoleName && role_name
+                      : !errorName && name
                       ? 'is-valid'
                       : '',
                   ]"
                 />
-                <div class="invalid-feedback">{{ errorRoleName }}</div>
+                <div class="invalid-feedback">{{ errorName }}</div>
               </div>
               <div class="col">
                 <label class="form-label">Maximum Allowed Users<i>*</i></label>
                 <input
-                  type="text"
-                  name="max_users"
-                  v-model="max_users"
+                  type="number"
+                  name="limit"
+                  v-model="limit"
                   class="form-control"
                   v-bind:class="[
-                    errorMaxUsers
+                    errorLimit
                       ? 'is-invalid'
-                      : !errorMaxUsers && max_users
+                      : !errorLimit && limit
                       ? 'is-valid'
                       : '',
                   ]"
                 />
-                <div class="invalid-feedback">{{ errorMaxUsers }}</div>
+                <div class="invalid-feedback">{{ errorLimit }}</div>
               </div>
               <div class="col">
                 <label class="form-label">Description<i>*</i></label>
@@ -80,7 +80,7 @@
             </div>
             <div class="row">
               <div class="col">
-                <table class="table table-bordered">
+                <table class="table table-bordered" :class="DATA.data ? 'border-primary' : 'border-success'">
                   <thead>
                     <tr>
                       <th scope="col">Module</th>
@@ -170,7 +170,7 @@ export default {
     /************************************************************************* */
     const schema = computed(() => {
       return yup.object({
-        role_name: yup
+        name: yup
           .string()
           .required()
           .max(50)
@@ -179,7 +179,7 @@ export default {
             val != null && val.length > 0 ? val : undefined
           )
           .label("Role Name"),
-        max_users: yup
+        limit: yup
           .number()
           .required()
           .min(1)
@@ -219,8 +219,8 @@ export default {
       DATA.value = data;
       if (DATA.value.data) {
         let fields = DATA.value.data;
-        setFieldValue("role_name", fields.name);
-        setFieldValue("max_users", fields.limit);
+        setFieldValue("name", fields.name);
+        setFieldValue("limit", fields.limit);
         setFieldValue("description", fields.description);
       } else {
         //
@@ -249,7 +249,7 @@ export default {
       }
       return axiosAsyncCallReturnData(
         method,
-        "user",
+        "role",
         {
           data: values,
         },
@@ -290,8 +290,8 @@ export default {
       if (DATA.value.data) {
         // edit form
         let fields = DATA.value.data;
-        setFieldValue("role_name", fields.name);
-        setFieldValue("max_users", fields.limit);
+        setFieldValue("name", fields.name);
+        setFieldValue("limit", fields.limit);
         setFieldValue("description", fields.description);
       } else {
         // new
@@ -299,19 +299,19 @@ export default {
       }
     }
     /************************************************************************* */
-    const { value: role_name, errorMessage: errorRoleName } =
-      useField("role_name");
-    const { value: max_users, errorMessage: errorMaxUsers } =
-      useField("max_users");
+    const { value: name, errorMessage: errorName } =
+      useField("name");
+    const { value: limit, errorMessage: errorLimit } =
+      useField("limit");
     const { value: description, errorMessage: errorDescription } =
       useField("description");
     /*************************************** */
     return {
       /******* form fields   */
-      role_name,
-      errorRoleName,
-      max_users,
-      errorMaxUsers,
+      name,
+      errorName,
+      limit,
+      errorLimit,
       description,
       errorDescription,
       /*************** */
@@ -335,7 +335,7 @@ export default {
       backdrop: true,
       show: true,
     });
-    window.ROLE_NEW_MODAL.show();
+    //window.ROLE_NEW_MODAL.show();
   },
   beforeUnmount() {
     var self = this;
