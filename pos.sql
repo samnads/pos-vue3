@@ -470,7 +470,8 @@ INSERT INTO `role` (`id`, `name`, `description`, `editable`, `updatable_rights`,
 (1,	'Administrator',	'All permissions allowed.',	0,	0,	0,	1,	'2021-04-21 00:19:28',	'2021-08-18 01:33:12',	NULL),
 (2,	'Seller',	'Sales permissions.',	1,	1,	1,	2,	'2021-04-21 00:21:17',	'2021-08-18 01:30:12',	NULL),
 (3,	'Purchaser',	'Purchase permissions.',	1,	1,	1,	1,	'2021-04-21 00:21:35',	'2021-08-18 01:30:26',	NULL),
-(19,	'test',	'test',	1,	1,	1,	3,	'2021-08-15 23:49:29',	'2021-08-18 01:30:49',	NULL);
+(19,	'test',	'test',	1,	1,	1,	3,	'2021-08-15 23:49:29',	'2022-07-04 22:24:04',	'2022-07-04 16:54:04'),
+(20,	'fgfdg',	'fghfghgfh',	1,	1,	1,	6546,	'2022-07-04 22:31:28',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `role_permission`;
 CREATE TABLE `role_permission` (
@@ -528,10 +529,10 @@ INSERT INTO `role_permission` (`role_id`, `readonly`, `comment`, `module_id`, `p
 (1,	NULL,	NULL,	9,	2,	1,	'2021-09-29 18:24:05',	NULL,	NULL),
 (1,	NULL,	NULL,	9,	3,	1,	'2021-09-29 18:24:05',	NULL,	NULL),
 (1,	NULL,	NULL,	9,	4,	1,	'2021-09-29 18:24:05',	NULL,	NULL),
-(1,	NULL,	NULL,	10,	1,	1,	'2021-09-29 18:24:05',	NULL,	NULL),
-(1,	NULL,	NULL,	10,	2,	1,	'2021-09-29 18:24:05',	NULL,	NULL),
-(1,	NULL,	NULL,	10,	3,	1,	'2021-09-29 18:24:05',	NULL,	NULL),
-(1,	NULL,	NULL,	10,	4,	1,	'2021-09-29 18:24:05',	NULL,	NULL),
+(1,	1,	'MANUAL - admin role POST',	10,	1,	1,	'2021-09-29 18:24:05',	'2022-07-04 16:49:39',	NULL),
+(1,	1,	'MANUAL - admin role GET',	10,	2,	1,	'2021-09-29 18:24:05',	'2022-07-04 16:49:39',	NULL),
+(1,	1,	'MANUAL - admin role PUT',	10,	3,	1,	'2021-09-29 18:24:05',	'2022-07-04 16:49:39',	NULL),
+(1,	1,	'MANUAL - admin role DELETE',	10,	4,	1,	'2021-09-29 18:24:05',	'2022-07-04 16:49:39',	NULL),
 (1,	1,	'MANUAL (pos list product)',	11,	2,	1,	'2021-09-29 18:30:33',	NULL,	NULL),
 (1,	1,	'MANUAL (list product types)',	12,	2,	1,	'2021-09-23 17:49:34',	'2021-10-18 19:55:23',	NULL),
 (1,	1,	'MANUAL (list barcode symbs)',	13,	2,	1,	'2021-09-23 18:02:55',	'2021-09-29 17:50:05',	NULL),
@@ -571,7 +572,8 @@ INSERT INTO `status` (`id`, `name`, `css_class`, `css_color`, `online_status`, `
 (11,	'returned',	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL),
 (12,	'partially paid',	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL),
 (13,	'expired',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(14,	'away',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL);
+(14,	'away',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL),
+(15,	'blocked',	'bg-danger',	NULL,	NULL,	NULL,	NULL,	NULL,	1);
 
 DROP TABLE IF EXISTS `stock_adjustment`;
 CREATE TABLE `stock_adjustment` (
@@ -1003,6 +1005,7 @@ INSERT INTO `unit_bulk` (`id`, `unit`, `value`, `code`, `name`, `description`, `
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(20) NOT NULL,
   `role` int(11) NOT NULL,
   `username` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
@@ -1021,8 +1024,8 @@ CREATE TABLE `user` (
   `address` text DEFAULT NULL,
   `description` text DEFAULT NULL,
   `status` int(11) NOT NULL,
-  `deletable` tinyint(1) DEFAULT 1 COMMENT 'set 0 for protect delete, otherwise use NULL',
-  `editable` tinyint(1) DEFAULT NULL COMMENT 'set 0 for protect delete, otherwise use NULL',
+  `deletable` tinyint(1) DEFAULT NULL COMMENT 'keep NULL for allow delete',
+  `editable` tinyint(1) DEFAULT NULL COMMENT 'keep NULL for allow edit',
   `client_ip` varchar(22) DEFAULT NULL,
   `login_at` timestamp NULL DEFAULT NULL,
   `logout_at` timestamp NULL DEFAULT NULL,
@@ -1030,6 +1033,7 @@ CREATE TABLE `user` (
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `code` (`code`),
   KEY `role_id` (`role`),
   KEY `gender` (`gender`),
   KEY `status` (`status`),
@@ -1038,11 +1042,13 @@ CREATE TABLE `user` (
   CONSTRAINT `user_ibfk_3` FOREIGN KEY (`status`) REFERENCES `status` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `user` (`id`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	1,	'admin',	'$2y$10$3l0yQjMc7F2mlA8yCu.1l.ccKM68f9gLICEUCnId1bdCcO5gZh.si',	'Samnad',	'S',	'test comp',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	NULL,	'::1',	'2022-07-02 07:05:29',	'2022-06-05 06:34:50',	'2021-04-20 19:22:52',	'2022-07-02 11:07:07',	NULL),
-(13,	2,	'rythse',	'$2y$10$A2Avf.FbCFpsUttbnIO9uOO0HS3nzZZnASe9yhLmDyZSbeM8Bxg4y',	'retety',	'tyty',	NULL,	'1992-10-30',	'ere@dfg.ddf',	'57567567',	NULL,	1,	NULL,	NULL,	'TVM',	NULL,	NULL,	NULL,	4,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-05-01 17:33:45',	'2022-07-02 08:48:42',	NULL),
-(24,	1,	'rtretrt',	'$2y$10$6Ycp.jwd.QJUZ.mjxTuTd.nnXLQRnfOSaLSymS3LdQNQf580ZAkQe',	'ertert',	NULL,	NULL,	'0000-00-00',	'ryr@et.rtrt',	'465464564456',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-05-01 20:24:41',	'2022-07-02 08:48:42',	NULL),
-(26,	1,	'fff',	'$2y$10$s2laXQmwAt4K8431Y/nubue1Z8OL3mELtHevdcXIFECmRHX7OPXN6',	'asdasd',	NULL,	NULL,	'0000-00-00',	'sf@dgdg.fgfdg',	'5454545',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-05-07 20:05:30',	'2022-07-02 08:48:42',	NULL);
+INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-07-04 16:48:15',	'2022-06-05 06:34:50',	'2021-04-20 19:22:52',	'2022-07-04 16:48:15',	NULL),
+(30,	'C2',	3,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something speci',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-04 12:54:40',	NULL),
+(31,	'C3',	2,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-04 12:54:45',	NULL),
+(32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
+(33,	'USER0033',	1,	'sfdfdsf',	'$2y$10$m3SCyOOEBf9x7zHoJD5nkuajcLI0MqPypDIsXo0zVE6pKwZ9ebP3u',	'dfdfsdf',	NULL,	NULL,	'2022-07-26',	'safdf@fdsfgdfg.ghgfh',	'7475454545',	NULL,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-04 12:57:40',	NULL,	NULL),
+(34,	'USER0034',	1,	'sdfsdfsdf',	'$2y$10$X5g0UY6y6ciaAxYoHj//CeuwoWdwZ5S2v8qgVUAOyB.dirVZI1uyC',	'sdfdf',	'dfdfdsf',	NULL,	'2022-07-05',	'trt@ghjhg.fghfh',	'444544545',	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-04 13:09:49',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `variant`;
 CREATE TABLE `variant` (
@@ -1091,4 +1097,4 @@ INSERT INTO `warehouse` (`id`, `name`, `code`, `phone`, `email`, `address`, `lon
 (23,	'erer',	'erwer',	'45',	'fddf@wdwd.cv',	'erwer',	NULL,	NULL,	'ererererrer',	'2021-04-22 18:00:23',	'2021-04-23 19:31:27',	NULL),
 (25,	'tret',	'rtert',	'4545',	'fgfdg@er.t',	'ryty',	NULL,	NULL,	NULL,	'2021-04-23 19:31:52',	NULL,	NULL);
 
--- 2022-07-02 13:44:31
+-- 2022-07-04 17:10:50

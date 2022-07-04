@@ -78,6 +78,30 @@
                 <div class="invalid-feedback">{{ errorDescription }}</div>
               </div>
             </div>
+            <div class="row">
+              <div class="col">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th scope="col">Module</th>
+                      <th scope="col" class="text-center">VIEW</th>
+                      <th scope="col" class="text-center">CREATE</th>
+                      <th scope="col" class="text-center">UPDATE</th>
+                      <th scope="col" class="text-center">DELETE</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td class="text-center">Mark</td>
+                      <td class="text-center">Otto</td>
+                      <td class="text-center">@mdo</td>
+                      <td class="text-center">@mdo</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
           <div class="m-1 row">
             <p class="text-muted small">
@@ -311,7 +335,7 @@ export default {
       backdrop: true,
       show: true,
     });
-    //window.ROLE_NEW_MODAL.show();
+    window.ROLE_NEW_MODAL.show();
   },
   beforeUnmount() {
     var self = this;

@@ -26,14 +26,14 @@ class Role_model extends CI_Model
         $query = $this->db->get();
         return $query->result();
     }
-    function recordsTotal()
+    function datatable_recordsTotal()
     {
         $this->db->select('count(id)');
         $query = $this->db->get(TABLE_ROLE);
         $cnt = $query->row_array();
         return $cnt['count(id)'];
     }
-    function datatable_data($columns = null, $search, $offset, $limit, $order_by, $order)
+    function datatable_data($search, $offset, $limit, $order_by, $order, $columns = null)
     {
         $search = trim($search);
 
@@ -47,6 +47,7 @@ class Role_model extends CI_Model
         r.editable as editable,
         r.updatable_rights as updatable_rights,
         r.deletable as deletable,
+        r.deleted_at as deleted_at,
         r.limit as limit,
 
         
@@ -55,13 +56,18 @@ class Role_model extends CI_Model
 		COUNT(case when u.status = 5 then u.status end) as count_pending,
         COUNT(case when u.status = 15 then u.status end) as count_blocked,
         COUNT(u.id) as count_user,
-        ' . $this->session->role . ' as self_role');
+        ' . $this->session->role . ' as self_role'
+        );
 
         $this->db->join(TABLE_USER . ' u', 'u.role=r.id', 'left');
         $this->db->join(TABLE_STATUS . ' s', 's.id=u.status', 'left');
 
+        $this->db->where(array('r.deleted_at' => NULL)); // select only not deleted rows
+
+        $this->db->group_start();
         $this->db->or_like('r.name', $search);
         $this->db->or_like('r.description', $search);
+        $this->db->group_end();
 
         $this->db->group_by('r.id');
 

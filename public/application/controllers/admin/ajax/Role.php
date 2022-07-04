@@ -25,9 +25,9 @@ class Role extends CI_Controller
 						$order = $this->input->get('order')[0]['dir']; // order asc or desc
 						$search = $this->input->get('search')['value']; // search query
 						$offset = $this->input->get('start'); // start position
-						$data['data'] = $this->Role_model->datatable_data(null, $search, $offset, $limit, $order_by, $order);
+						$data['data'] = $this->Role_model->datatable_data($search, $offset, $limit, $order_by, $order);
 						$data["draw"] = $this->input->get('draw'); // unique
-						$data["recordsTotal"] = $this->Role_model->recordsTotal();
+						$data["recordsTotal"] = $this->Role_model->datatable_recordsTotal();
 						$data["recordsFiltered"] = $this->Role_model->datatable_recordsFiltered($search);
 						$data['success'] = true;
 						//$data[ 'error' ] = '';
