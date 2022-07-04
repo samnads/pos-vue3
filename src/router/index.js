@@ -23,6 +23,9 @@ import AdminCustomerList from '../admin/customer/CustomerList.vue'
 // User based pages
 import AdminUserMain from '../admin/user/UserMain.vue'
 import AdminUserList from '../admin/user/UserList.vue'
+// Role based pages
+import AdminRoleMain from '../admin/role/RoleMain.vue'
+import AdminRoleList from '../admin/role/RoleList.vue'
 // error pages
 import PageNotFound from '../admin/PageNotFound.vue'
 
@@ -151,6 +154,19 @@ const routes = [
             path: 'list',
             name: 'adminUserList',
             component: AdminUserList,
+          }
+        ],
+      },
+      {
+        path: 'role',
+        name: 'adminRoleMain',
+        component: AdminRoleMain,
+        redirect: '/admin/role/list',
+        children: [
+          {
+            path: 'list',
+            name: 'adminRoleList',
+            component: AdminRoleList,
           }
         ],
       },

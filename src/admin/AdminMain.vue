@@ -130,6 +130,11 @@
               >
             </li>
             <li>
+              <router-link class="nav-link" to="/admin/role/list"
+                >Roles</router-link
+              >
+            </li>
+            <li>
               <router-link class="nav-link" to="/admin/login"
                 >Login</router-link
               >

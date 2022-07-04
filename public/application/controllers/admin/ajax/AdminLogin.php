@@ -20,7 +20,7 @@ class AdminLogin extends CI_Controller
                 $row = $this->User_model->getRow(array('username' => $this->input->post('username')));
                 if ($row) { // username exist
                     if (password_verify($this->input->post('password'), $row['password'])) { // password correct
-                        $session = array('login' => true, 'id' => $row['id'], 'username' => $row['username'], 'first_name' => $row['first_name'], 'last_name' => $row['last_name'], 'avatar' => $row['avatar'], 'role_id' => $row['role']);
+                        $session = array('login' => true, 'id' => $row['id'], 'username' => $row['username'], 'first_name' => $row['first_name'], 'last_name' => $row['last_name'], 'avatar' => $row['avatar'], 'role' => $row['role']);
                         $this->session->set_userdata($session); // set session
                         $query = $this->User_model->updateLogin($row['id']); // update db
                         $alert['login'] = array('type' => 'success', 'message' => 'Hi, ' . $this->session->first_name . ' ' . $this->session->last_name . ' what\'s up ?', 'timeout' => 5000);

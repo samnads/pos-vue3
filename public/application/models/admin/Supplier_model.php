@@ -116,7 +116,7 @@ class Supplier_model extends CI_Model
     {
         $this->db->select('AUTO_INCREMENT');
         $this->db->from('INFORMATION_SCHEMA.TABLES');
-        $this->db->where(array('TABLE_NAME' => TABLE_SUPPLIER));
+        $this->db->where(array('TABLE_NAME' => TABLE_SUPPLIER, 'TABLE_SCHEMA' => $this->db->database));
         $query = $this->db->get();
         $cnt = $query->row_array();
         return $cnt['AUTO_INCREMENT'];

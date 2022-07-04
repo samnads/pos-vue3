@@ -31,7 +31,14 @@ class User extends CI_Controller
 				break;
 			case 'POST': // create
 				$_POST = $_POST['data'];
+				$auto_id = $this->User_model->get_AUTO_INCREMENT();
+				if (!$auto_id) {
+					$error = $this->db->error();
+					echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured (AUTO_INCREMENT) !")));
+					die();
+				}
 				$data = array(
+					'code'			=> sprintf("USER%04s", $auto_id),
 					'first_name'	=> $this->input->post('first_name'),
 					'gender'		=> $this->input->post('gender'),
 					'date_of_birth'	=> $this->input->post('dob'),
@@ -61,6 +68,11 @@ class User extends CI_Controller
 				$rule_password = 'callback_password_check[' .  $data['r_password'] . ']';
 				$rule_avatar = 'is_unique[' . TABLE_USER . '.avatar]';
 				$config = array(
+					array(
+						'field' => 'code',
+						'label' => 'Code',
+						'rules' => 'required|max_length[20]|is_unique[' . TABLE_USER . '.code]|xss_clean|trim'
+					),
 					array(
 						'field' => 'first_name',
 						'label' => 'First Name',

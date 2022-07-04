@@ -33,11 +33,12 @@ class Role_model extends CI_Model
         $cnt = $query->row_array();
         return $cnt['count(id)'];
     }
-    function datatable($columns = null, $search, $offset, $limit, $order_by, $order)
+    function datatable_data($columns = null, $search, $offset, $limit, $order_by, $order)
     {
         $search = trim($search);
 
-        $columns ? $this->db->select($columns) : $this->db->select('
+        $columns ? $this->db->select($columns) : $this->db->select(
+            '
 
 		r.id as id,
 		r.name as name,
@@ -46,14 +47,18 @@ class Role_model extends CI_Model
         r.editable as editable,
         r.updatable_rights as updatable_rights,
         r.deletable as deletable,
+        r.limit as limit,
 
         
-		COUNT(case when u.status = "ACTIVE" then u.status end) as count_active,
-		COUNT(case when u.status = "INACTIVE" then u.status end) as count_inactive,
-		COUNT(case when u.status = "PENDING" then u.status end) as count_pending,
-        COUNT(u.id) as count_user');
+		COUNT(case when u.status = 3 then u.status end) as count_active,
+		COUNT(case when u.status = 4 then u.status end) as count_inactive,
+		COUNT(case when u.status = 5 then u.status end) as count_pending,
+        COUNT(case when u.status = 15 then u.status end) as count_blocked,
+        COUNT(u.id) as count_user,
+        ' . $this->session->role . ' as self_role');
 
         $this->db->join(TABLE_USER . ' u', 'u.role=r.id', 'left');
+        $this->db->join(TABLE_STATUS . ' s', 's.id=u.status', 'left');
 
         $this->db->or_like('r.name', $search);
         $this->db->or_like('r.description', $search);

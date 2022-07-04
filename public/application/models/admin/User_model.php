@@ -74,7 +74,7 @@ class User_model extends CI_Model
 		r.limit as role_limit,
 
         
-        '.$this->session->id.' as self_id');
+        ' . $this->session->id . ' as self_id');
 
         $this->db->from(TABLE_USER . ' u');
         $this->db->join(TABLE_ROLE . ' r', 'r.id=u.role', 'left');
@@ -187,11 +187,14 @@ class User_model extends CI_Model
         $query = $this->db->get();
         return  $query->row_array();
     }
-    function delete_where($where)
+    function get_AUTO_INCREMENT()
     {
-        $this->db->where($where);
-        $query = $this->db->delete(TABLE_USER);
-        return $query;
+        $this->db->select('AUTO_INCREMENT');
+        $this->db->from('INFORMATION_SCHEMA.TABLES');
+        $this->db->where(array('TABLE_NAME' => TABLE_USER, 'TABLE_SCHEMA' => $this->db->database));
+        $query = $this->db->get();
+        $cnt = $query->row_array();
+        return $cnt['AUTO_INCREMENT'];
     }
     function set_deleted_at($id) // mark as deleted
     {

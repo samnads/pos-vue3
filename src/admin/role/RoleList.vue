@@ -3,7 +3,7 @@
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
         <h5 class="title">
-          <i class="fa-solid fa-user"></i><span>Users</span>
+          <i class="fa-solid fa-user-lock"></i><span>Roles</span>
         </h5>
       </div>
       <div class="p-2 bd-highlight">
@@ -41,13 +41,13 @@
             <i class="fa-solid fa-id-card-clip"></i>
           </th>
           <th scope="col" class="d-none">ID</th>
-          <th scope="col">User Name</th>
           <th scope="col">Role</th>
-          <th scope="col">Name</th>
-          <th scope="col">Email</th>
-          <th scope="col">Phone</th>
-          <th scope="col">Place</th>
-          <th scope="col">Status</th>
+          <th scope="col">Description</th>
+          <th scope="col">Active</th>
+          <th scope="col">Inactive</th>
+          <th scope="col">Pending</th>
+          <th scope="col">Blocked</th>
+          <th scope="col">Total</th>
           <th scope="col"><i class="fa-solid fa-bars"></i></th>
         </tr>
       </thead>
@@ -92,8 +92,8 @@ export default {
   mounted() {
     var self = this;
     $(function () {
-      $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
-        console.log(message);
+      $.fn.dataTable.ext.errMode = function (settings, techNote, message) {
+        //
       };
       self.table = $("#datatable").DataTable({
         searching: true, // remove default search box
@@ -112,7 +112,7 @@ export default {
         order: [[1, "asc"]],
         ajax: {
           method: "GET",
-          url: process.env.VUE_APP_API_ROOT + "admin/ajax/user",
+          url: process.env.VUE_APP_API_ROOT + "admin/ajax/role",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {
@@ -131,6 +131,9 @@ export default {
               self.$router
                 .push({ path: "/" + response.location })
                 .catch((e) => {});
+            } else if (response.success == false) {
+              self.$Progress.fail();
+              self.notifyApiResponse(response);
             } else {
               self.$Progress.finish();
               return response.data;
@@ -161,25 +164,25 @@ export default {
             data: "id",
           },
           {
-            data: "username",
+            data: "name",
           },
           {
-            data: "role_name",
+            data: "description",
           },
           {
-            data: "first_name",
+            data: "count_active",
           },
           {
-            data: "email",
+            data: "count_inactive",
           },
           {
-            data: "phone",
+            data: "count_pending",
           },
           {
-            data: "place",
+            data: "count_blocked",
           },
           {
-            data: "status_name",
+            data: "count_user",
           },
           {
             data: null,
@@ -202,13 +205,14 @@ export default {
             targets: [2],
             className: "align-middle",
             render: function (data, type, row, meta) {
-              if (row["id"] == row["self_id"]) {
+              if (row["id"] == row["self_role"]) {
                 return (
+                  "<b>" +
                   data +
-                  '<span class="float-end text-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Current User"><i class="fas fa-check-circle"></i></span>'
+                  '</b><span class="float-end text-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Current Role"><i class="fas fa-check-circle"></i></span>'
                 );
               }
-              return data;
+              return "<b>" + data + "</b>";
             },
           },
           {
@@ -217,50 +221,56 @@ export default {
           },
           {
             targets: [4],
-            className: "align-middle",
+            className: "align-middle text-center",
+            width: "5%",
             render: function (data, type, row, meta) {
               return (
-                "<b>" +
-                row["first_name"] +
-                " " +
-                (row["last_name"] ? row["last_name"] : "") +
-                "</b>"
+                '<span class="badge bg-success w-100 fs-6">' + data + "</span>"
               );
             },
           },
           {
             targets: [5],
-            className: "align-middle",
+            className: "align-middle text-center",
+            width: "5%",
+            render: function (data, type, row, meta) {
+              return (
+                '<span class="badge bg-secondary w-100 fs-6">' +
+                data +
+                "</span>"
+              );
+            },
           },
           {
             targets: [6],
-            className: "align-middle",
+            className: "align-middle text-center",
+            width: "5%",
             render: function (data, type, row, meta) {
-              return data == null
-                ? '<i class="text-muted small">NIL</i>'
-                : "<i>" + data + "</i>";
+              return (
+                '<span class="badge bg-warning text-dark w-100 fs-6">' +
+                data +
+                "</span>"
+              );
             },
           },
           {
             targets: [7],
-            className: "align-middle",
+            className: "align-middle text-center",
+            width: "5%",
             render: function (data, type, row, meta) {
-              return data == null
-                ? '<i class="text-muted small">NIL</i>'
-                : data;
+              return (
+                '<span class="badge bg-danger  w-100 fs-6">' + data + "</span>"
+              );
             },
           },
           {
             targets: [8],
             width: "1%",
-            className: "align-middle text-capitalize",
+            className: "align-middle text-center",
+            width: "5%",
             render: function (data, type, row, meta) {
               return (
-                '<span class="badge ' +
-                row["css_class"] +
-                ' w-100">' +
-                data +
-                "</span>"
+                '<span class="badge bg-primary  w-100 fs-6">' + data + "</span>"
               );
             },
           },
@@ -382,10 +392,10 @@ export default {
             text: '<i class="fa-solid fa-plus"></i>',
             className: "btn-light",
             action: function () {
-              self.emitter.emit("newUserModal", {
-                title: "New User",
+              self.emitter.emit("newRoleModal", {
+                title: "New Role",
                 type: "success",
-                emit: "refreshUserDataTable",
+                emit: "refreshRoleDataTable",
               });
             },
             attr: {
@@ -403,8 +413,7 @@ export default {
         initComplete: function (settings) {
           $("#buttons").html(self.table.buttons().container());
         },
-        drawCallback: function (settings) {
-        },
+        drawCallback: function (settings) {},
         createdRow: function (row, data, dataIndex) {
           if (data["deleted_at"]) {
             $(row).addClass("bg-danger");
@@ -422,10 +431,10 @@ export default {
       $("#datatable tbody").on("click", "#edit", function () {
         // edit from action menu
         let row = self.table.row($(this).parents("tr")).data();
-        self.emitter.emit("newUserModal", {
-          title: "Edit User",
+        self.emitter.emit("newRoleModal", {
+          title: "Edit Role",
           data: row,
-          emit: "refreshUserDataTable",
+          emit: "refreshRoleDataTable",
           type: "primary",
         });
       });
@@ -440,13 +449,13 @@ export default {
         self.emitter.emit("deleteConfirmModal", {
           title: null,
           body:
-            "Delete user with name <b>" +
+            "Delete role with name <b>" +
             row.first_name +
             "</b>" +
             (row.place ? " | " + row.place : "") +
             " ?",
           data: row,
-          emit: "confirmDeleteUser",
+          emit: "confirmDeleteRole",
           hide: true,
           type: "danger",
         });
@@ -466,7 +475,7 @@ export default {
           self.table.search("").draw();
         });
     });
-    self.emitter.on("confirmDeleteUser", (data) => {
+    self.emitter.on("confirmDeleteRole", (data) => {
       // delete selected supplier stuff here
       if (self.controller_delete.value) {
         self.controller_delete.value.abort();
@@ -475,7 +484,7 @@ export default {
       self
         .axiosAsyncCallReturnData(
           "delete",
-          "user",
+          "role",
           {
             data: data,
           },
@@ -502,14 +511,14 @@ export default {
           }
         });
     });
-    self.emitter.on("refreshUserDataTable", (data) => {
+    self.emitter.on("refreshRoleDataTable", (data) => {
       self.table.ajax.reload();
     });
   },
   beforeUnmount() {
     var self = this;
-    self.emitter.off("confirmDeleteUser");
-    self.emitter.off("refreshUserDataTable");
+    self.emitter.off("confirmDeleteRole");
+    self.emitter.off("refreshRoleDataTable");
     // turn off for duplicate calling
     // because its called multiple times when page loaded multiple times
   },
