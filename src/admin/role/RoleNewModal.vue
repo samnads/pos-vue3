@@ -80,23 +80,50 @@
             </div>
             <div class="row">
               <div class="col">
-                <table class="table table-bordered" :class="DATA.data ? 'border-primary' : 'border-success'">
+                <table
+                  class="table table-bordered"
+                  :class="DATA.data ? 'border-primary' : 'border-success'"
+                >
                   <thead>
                     <tr>
                       <th scope="col">Module</th>
-                      <th scope="col" class="text-center">VIEW</th>
                       <th scope="col" class="text-center">CREATE</th>
+                      <th scope="col" class="text-center">VIEW</th>
                       <th scope="col" class="text-center">UPDATE</th>
                       <th scope="col" class="text-center">DELETE</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td class="text-center">Mark</td>
-                      <td class="text-center">Otto</td>
-                      <td class="text-center">@mdo</td>
-                      <td class="text-center">@mdo</td>
+                    <tr v-for="MODULE in MODULES" :key="MODULE.name">
+                      <td class="text-capitalize">{{ MODULE.name }}</td>
+                      <td class="text-center">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          v-model="rights[MODULE.name].POST"
+                        />
+                      </td>
+                      <td class="text-center">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          v-model="rights[MODULE.name].GET"
+                        />
+                      </td>
+                      <td class="text-center">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          v-model="rights[MODULE.name].PUT"
+                        />
+                      </td>
+                      <td class="text-center">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          v-model="rights[MODULE.name].DELETE"
+                        />
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -166,7 +193,19 @@ export default {
     const DATA = ref({});
     const { axiosAsyncCallReturnData, axiosAsyncStoreReturnBool } = admin();
     /************************************************************************* */
-    const formValues = ref({});
+    const MODULES = [
+      { id: 10, name: "role" },
+      { id: 3, name: "brand" },
+      { id: 2, name: "category" },
+    ];
+    var rightsData = {};
+    // eslint-disable-next-line
+    MODULES.forEach((element, index, array) => { // dynamic object creation
+      rightsData[element.name] = {};
+    });
+    var formValues = {
+      rights: rightsData,
+    };
     /************************************************************************* */
     const schema = computed(() => {
       return yup.object({
@@ -196,6 +235,7 @@ export default {
             val != null && val.length > 0 ? val : undefined
           )
           .label("Description"),
+        rights: yup.object().label("Rights"),
       });
     });
     /************************************************************************* */
@@ -229,7 +269,9 @@ export default {
     });
     /************************************************************************* */
     // eslint-disable-next-line
-    function onInvalidSubmit({ values, errors, results }) {}
+    function onInvalidSubmit({ values, errors, results }) {
+      console.log(values);
+    }
     const onSubmit = handleSubmit((values, { resetForm }) => {
       values.db = DATA.value.data;
       let method = DATA.value.data ? "put" : "post";
@@ -299,12 +341,13 @@ export default {
       }
     }
     /************************************************************************* */
-    const { value: name, errorMessage: errorName } =
-      useField("name");
-    const { value: limit, errorMessage: errorLimit } =
-      useField("limit");
+    const { value: name, errorMessage: errorName } = useField("name");
+    const { value: limit, errorMessage: errorLimit } = useField("limit");
     const { value: description, errorMessage: errorDescription } =
       useField("description");
+    const { value: rights } = useField("rights");
+    //const { value: role } = useField("permissions.role");
+    //const { value: brand } = useField("permissions.brand");
     /*************************************** */
     return {
       /******* form fields   */
@@ -325,6 +368,12 @@ export default {
       close,
       DATA,
       emitter,
+      //
+      MODULES,
+      rights,
+      // modules data
+      //role,
+      //brand,
     };
   },
   data() {

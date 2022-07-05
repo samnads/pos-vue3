@@ -94,12 +94,12 @@ class Warehouse extends CI_Controller
 					array(
 						'field' => 'phone',
 						'label' => 'Phone',
-						'rules' => 'required|max_length[40]|is_unique[' . TABLE_WAREHOUSE . '.code]|xss_clean|trim'
+						'rules' => 'required|max_length[40]|is_unique[' . TABLE_WAREHOUSE . '.phone]|xss_clean|trim'
 					),
 					array(
 						'field' => 'email',
 						'label' => 'Email',
-						'rules' => 'required|valid_email|max_length[255]|is_unique[' . TABLE_WAREHOUSE . '.code]|xss_clean|trim'
+						'rules' => 'required|valid_email|max_length[255]|is_unique[' . TABLE_WAREHOUSE . '.email]|xss_clean|trim'
 					),
 					array(
 						'field' => 'country',
@@ -118,12 +118,12 @@ class Warehouse extends CI_Controller
 					),
 					array(
 						'field' => 'address',
-						'label' => 'Warehouse Address',
+						'label' => 'Address',
 						'rules' => 'max_length[255]|xss_clean|trim'
 					),
 					array(
 						'field' => 'description',
-						'label' => 'Warehouse Description',
+						'label' => 'Description',
 						'rules' => 'max_length[255]|xss_clean|trim'
 					)
 				);
@@ -165,7 +165,7 @@ class Warehouse extends CI_Controller
 				$config = array(
 					array(
 						'field' => 'name',
-						'label' => 'Warehouse Name',
+						'label' => 'Name',
 						'rules' => 'required|max_length[150]|max_length[150]|' . $rule_name . '|xss_clean|trim'
 					),
 					array(
@@ -215,18 +215,18 @@ class Warehouse extends CI_Controller
 					),
 					array(
 						'field' => 'address',
-						'label' => 'Warehouse Address',
+						'label' => 'Address',
 						'rules' => 'max_length[255]|xss_clean|trim'
 					),
 					array(
 						'field' => 'description',
-						'label' => 'Warehouse Description',
+						'label' => 'Description',
 						'rules' => 'max_length[255]|xss_clean|trim'
 					)
 				);
 				$this->form_validation->set_rules($config);
 				if ($this->form_validation->run() == FALSE) {
-					echo json_encode(array('success' => false, 'message' => $this->form_validation->error_array()));
+					echo json_encode(array('success' => false, 'errors' => $this->form_validation->error_array()));
 				} else {
 					//$data['manual_error'] = 'error';
 					$this->Warehouse_model->update_warehouse($data, array('id' => $id));

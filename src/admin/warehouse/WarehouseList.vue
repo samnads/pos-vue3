@@ -3,7 +3,7 @@
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
         <h5 class="title">
-          <i class="fa-solid fa-user"></i><span>Warehouses</span>
+          <i class="fa-solid fa-warehouse"></i><span>Warehouses</span>
         </h5>
       </div>
       <div class="p-2 bd-highlight">
