@@ -202,7 +202,6 @@ class User extends CI_Controller
 					'email'			=> $this->input->post('email'),
 					'phone'			=> $this->input->post('phone'),
 					'last_name'		=> $this->input->post('last_name') ?: NULL,
-					'place'			=> $this->input->post('place') ?: NULL,
 					'company_name'	=> $this->input->post('company_name') ?: NULL,
 					'avatar'		=> $this->input->post('avatar') ?: NULL,
 					'country'		=> $this->input->post('country') ?: NULL,

@@ -134,13 +134,34 @@
                 >Roles</router-link
               >
             </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Settings
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li>
+                  <router-link class="dropdown-item" to="/admin/warehouse/list"
+                    >Warehouses</router-link
+                  >
+                </li>
+                <li>
+                  <router-link class="dropdown-item" to="/admin/brand/list"
+                    >Brands</router-link
+                  >
+                </li>
+              </ul>
+            </li>
             <li>
               <router-link class="nav-link" to="/admin/login"
                 >Login</router-link
               >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link disabled">Contacts</a>
             </li>
           </ul>
           <form class="d-flex">
@@ -254,11 +275,11 @@ a {
   color: #fff !important;
 }
 /* for all modal footer buttons */
-.modal-footer .btn:not(.icon)  svg{
+.modal-footer .btn:not(.icon) svg {
   /* icon is for icon only button */
   padding-right: 5px;
 }
-.modal-title svg{
+.modal-title svg {
   /* icon is for icon only button */
   padding-right: 15px;
 }
@@ -367,7 +388,7 @@ import pdfMake from "pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 // because datatable not showing excel button
-import jsZip from 'jszip';
+import jsZip from "jszip";
 window.JSZip = jsZip;
 //
 import { Modal } from "bootstrap";
@@ -379,7 +400,7 @@ export default {
   components: {
     AlertBoxDefault,
     DeleteConfirmModalDefault,
-    PlaySound
+    PlaySound,
   },
   setup() {
     const alertModalTitle = ref("");
@@ -405,7 +426,7 @@ export default {
       show: true,
     });
     // delete confirm modal default
-     window.DELETE_CONFIRM_DEFAULT_MODAL = new Modal($("#deleteConfirmModal"), {
+    window.DELETE_CONFIRM_DEFAULT_MODAL = new Modal($("#deleteConfirmModal"), {
       backdrop: true,
       show: true,
     });

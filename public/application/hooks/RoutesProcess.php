@@ -34,10 +34,9 @@ class Classname
         if ($this->CI->uri->segment(2) == 'ajax') {
             if ($this->CI->session->login && ($this->CI->uri->segment(3) != "logout" && $this->CI->uri->segment(3) != "login")) {
                 $module = $this->CI->uri->segment(3);
-                $row = $this->CI->Permission_model->get_role_module_permission($this->CI->session->role_id, $module, $_SERVER['REQUEST_METHOD']);
-                if ($row['allow'] != 1) {
-                    $denied = array('success' => false, 'type' => 'danger', 'error' => 'You don\'t have the right to perform this action !');
-                    die(json_encode($denied));
+                $row = $this->CI->Permission_model->get_role_module_permission($this->CI->session->role, $module, $_SERVER['REQUEST_METHOD']);
+                if ($row['allow'] !== 1) {
+                    die(json_encode(array('success' => false, 'type' => 'danger', 'error' => 'You don\'t have the right to perform this action !')));
                 }
             }
         }

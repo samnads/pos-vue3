@@ -10,12 +10,21 @@ class Warehouse extends CI_Controller
 
 		switch ($_SERVER['REQUEST_METHOD']) {
 			case 'GET': // read
-				switch ($action = $this->input->get('action')) {
+				switch ($this->input->get('action')) {
 					case 'datatable':
-						$query = $this->input->get('query');
-						$result['data'] = $this->Warehouse_model->search_warehouses($query);
-						$result['success'] = true;
-						echo json_encode($result);
+						$data = array();
+						$limit = $this->input->get('length') <= 0 ? NULL : $this->input->get('length'); // limit
+						$order_by = $this->input->get('columns')[$this->input->get('order')[0]['column']]['data']; // order by column
+						$order = $this->input->get('order')[0]['dir']; // order asc or desc
+						$search = $this->input->get('search')['value']; // search query
+						$offset = $this->input->get('start'); // start position
+						$data['data'] = $this->Warehouse_model->datatable_data($search, $offset, $limit, $order_by, $order);
+						$data["draw"] = $this->input->get('draw'); // unique
+						$data["recordsTotal"] = $this->Warehouse_model->datatable_recordsTotal();
+						$data["recordsFiltered"] = $this->Warehouse_model->datatable_recordsFiltered($search);
+						$data['success'] = true;
+						//$data[ 'error' ] = '';
+						echo json_encode($data);
 						break;
 					case 'dropdown':
 						$result['data'] = $this->Warehouse_model->dropdown_all();
@@ -23,47 +32,94 @@ class Warehouse extends CI_Controller
 						echo json_encode($result);
 						break;
 					default:
-						$error = array('success' => false, 'type' => 'danger', 'error' => 'Unknown Action !');
-						echo json_encode($error);
+						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Unknown Action !'));
 				}
 				break;
 			case 'POST': // create
 				$_POST = $this->input->post('data');
+				$auto_id = $this->Warehouse_model->get_AUTO_INCREMENT();
+				if (!$auto_id) {
+					$error = $this->db->error();
+					echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured (AUTO_INCREMENT) !")));
+					die();
+				}
 				$data = array(
 					'name'			=> $this->input->post('name'),
-					'code'			=> $this->input->post('code'),
-					'phone'			=> $this->input->post('phone'),
+					'code'			=> sprintf("WARE%04s", $auto_id),
+					'place'			=> $this->input->post('place'),
+					'date_of_open'	=> $this->input->post('date_of_open'),
+					'status'		=> $this->input->post('status'),
 					'email'			=> $this->input->post('email'),
-					'address'		=> $this->input->post('address') == NULL ? NULL : $this->input->post('address'),
-					'description'	=> $this->input->post('description') == NULL ? NULL : $this->input->post('description')
+					'phone'			=> $this->input->post('phone'),
+					'status_reason'	=> $this->input->post('status_reason') ?: NULL,
+					'country'		=> $this->input->post('country') ?: NULL,
+					'city'			=> $this->input->post('city') ?: NULL,
+					'pin_code'		=> $this->input->post('pin_code') ?: NULL,
+					'address'		=> $this->input->post('address') ?: NULL,
+					'description'	=> $this->input->post('description') ?: NULL
 				);
 				//$data['email'] = "error";
 				$this->form_validation->set_data($data);
 				$config = array(
 					array(
 						'field' => 'name',
-						'label' => 'Warehouse Name',
+						'label' => 'Name',
 						'rules' => 'required|max_length[150]|max_length[150]|is_unique[' . TABLE_WAREHOUSE . '.name]|xss_clean|trim'
 					),
 					array(
 						'field' => 'code',
-						'label' => 'Warehouse Code',
+						'label' => 'Code',
 						'rules' => 'required|max_length[50]|is_unique[' . TABLE_WAREHOUSE . '.code]|xss_clean|trim'
 					),
 					array(
+						'field' => 'place',
+						'label' => 'Place',
+						'rules' => 'required|max_length[150]|xss_clean|trim'
+					),
+					array(
+						'field' => 'date_of_open',
+						'label' => 'Date of Open',
+						'rules' => 'required|max_length[150]|xss_clean|trim'
+					),
+					array(
+						'field' => 'status',
+						'label' => 'Status',
+						'rules' => 'required|xss_clean|trim'
+					),
+					array(
+						'field' => 'status_reason',
+						'label' => 'Status Reason',
+						'rules' => 'max_length[100]|xss_clean|trim'
+					),
+					array(
 						'field' => 'phone',
-						'label' => 'Warehouse Phone',
+						'label' => 'Phone',
 						'rules' => 'required|max_length[40]|is_unique[' . TABLE_WAREHOUSE . '.code]|xss_clean|trim'
 					),
 					array(
 						'field' => 'email',
-						'label' => 'Warehouse Email',
+						'label' => 'Email',
 						'rules' => 'required|valid_email|max_length[255]|is_unique[' . TABLE_WAREHOUSE . '.code]|xss_clean|trim'
+					),
+					array(
+						'field' => 'country',
+						'label' => 'Country',
+						'rules' => 'min_length[3]|max_length[50]|xss_clean|trim'
+					),
+					array(
+						'field' => 'city',
+						'label' => 'City',
+						'rules' => 'min_length[3]|max_length[50]|xss_clean|trim'
+					),
+					array(
+						'field' => 'pin_code',
+						'label' => 'Pin Code',
+						'rules' => 'min_length[3]|max_length[15]|xss_clean|trim'
 					),
 					array(
 						'field' => 'address',
 						'label' => 'Warehouse Address',
-						'rules' => 'required|max_length[255]|xss_clean|trim'
+						'rules' => 'max_length[255]|xss_clean|trim'
 					),
 					array(
 						'field' => 'description',
@@ -76,7 +132,7 @@ class Warehouse extends CI_Controller
 					echo json_encode(array('success' => false, 'errors' => $this->form_validation->error_array()));
 				} else {
 					//$data['manual_error'] = 'error';
-					$this->db->insert(TABLE_WAREHOUSE, $data);
+					$this->Warehouse_model->insert_warehouse($data);
 					if ($this->db->affected_rows() == 1) {
 						echo json_encode(array('success' => true, 'type' => 'success', 'id' => $this->db->insert_id(), 'message' => 'Successfully added new warehouse <strong><em>' . $data['name'] . '</em></strong> !'));
 					} else {
@@ -89,16 +145,21 @@ class Warehouse extends CI_Controller
 				$_POST = $this->input->post('data');
 				$id = (int)$this->input->post('db')['id'];
 				$rule_name = 'callback_edit_unique_name[' . $id . ']';
-				$rule_code = 'callback_edit_unique_code[' . $id . ']';
 				$rule_phone = 'callback_edit_unique_phone[' . $id . ']';
 				$rule_email = 'callback_edit_unique_email[' . $id . ']';
 				$data = array(
 					'name'			=> $this->input->post('name'),
-					'code'			=> $this->input->post('code'),
-					'phone'			=> $this->input->post('phone'),
+					'place'			=> $this->input->post('place'),
+					'date_of_open'	=> $this->input->post('date_of_open'),
+					'status'		=> $this->input->post('status'),
 					'email'			=> $this->input->post('email'),
-					'address'		=> $this->input->post('address') == NULL ? NULL : $this->input->post('address'),
-					'description'	=> $this->input->post('description') == NULL ? NULL : $this->input->post('description')
+					'phone'			=> $this->input->post('phone'),
+					'status_reason'	=> $this->input->post('status_reason') ?: NULL,
+					'country'		=> $this->input->post('country') ?: NULL,
+					'city'			=> $this->input->post('city') ?: NULL,
+					'pin_code'		=> $this->input->post('pin_code') ?: NULL,
+					'address'		=> $this->input->post('address') ?: NULL,
+					'description'	=> $this->input->post('description') ?: NULL
 				);
 				$this->form_validation->set_data($data);
 				$config = array(
@@ -108,24 +169,54 @@ class Warehouse extends CI_Controller
 						'rules' => 'required|max_length[150]|max_length[150]|' . $rule_name . '|xss_clean|trim'
 					),
 					array(
-						'field' => 'code',
-						'label' => 'Warehouse Code',
-						'rules' => 'required|max_length[50]|' . $rule_code . '|xss_clean|trim'
+						'field' => 'place',
+						'label' => 'Place',
+						'rules' => 'required|max_length[150]|xss_clean|trim'
+					),
+					array(
+						'field' => 'date_of_open',
+						'label' => 'Date of Open',
+						'rules' => 'required|max_length[150]|xss_clean|trim'
+					),
+					array(
+						'field' => 'status',
+						'label' => 'Status',
+						'rules' => 'required|xss_clean|trim'
+					),
+					array(
+						'field' => 'status_reason',
+						'label' => 'Status Reason',
+						'rules' => 'max_length[100]|xss_clean|trim'
 					),
 					array(
 						'field' => 'phone',
-						'label' => 'Warehouse Phone',
+						'label' => 'Phone',
 						'rules' => 'required|max_length[40]|' . $rule_phone . '|xss_clean|trim'
 					),
 					array(
 						'field' => 'email',
-						'label' => 'Warehouse Email',
+						'label' => 'Email',
 						'rules' => 'required|valid_email|max_length[255]|' . $rule_email . '|xss_clean|trim'
+					),
+					array(
+						'field' => 'country',
+						'label' => 'Country',
+						'rules' => 'min_length[3]|max_length[50]|xss_clean|trim'
+					),
+					array(
+						'field' => 'city',
+						'label' => 'City',
+						'rules' => 'min_length[3]|max_length[50]|xss_clean|trim'
+					),
+					array(
+						'field' => 'pin_code',
+						'label' => 'Pin Code',
+						'rules' => 'min_length[3]|max_length[15]|xss_clean|trim'
 					),
 					array(
 						'field' => 'address',
 						'label' => 'Warehouse Address',
-						'rules' => 'required|max_length[255]|xss_clean|trim'
+						'rules' => 'max_length[255]|xss_clean|trim'
 					),
 					array(
 						'field' => 'description',
@@ -138,7 +229,7 @@ class Warehouse extends CI_Controller
 					echo json_encode(array('success' => false, 'message' => $this->form_validation->error_array()));
 				} else {
 					//$data['manual_error'] = 'error';
-					$this->db->update(TABLE_WAREHOUSE, $data, array('id' => $id));
+					$this->Warehouse_model->update_warehouse($data, array('id' => $id));
 					if ($this->db->affected_rows() == 1) {
 						echo json_encode(array('success' => true, 'type' => 'success', 'id' => $id, 'message' => 'Successfully updated warehouse <strong><em>' . $this->input->post('db')['name'] . '</em></strong> !'));
 					} else if ($this->db->affected_rows() == 0) {
@@ -152,19 +243,16 @@ class Warehouse extends CI_Controller
 			case 'DELETE': // delete
 				$_POST = $this->input->post('data');
 				$id = (int)$this->input->post('id');
-				$query = $this->Warehouse_model->deleteById($id);
-				$error = $this->db->error();
-				if ($error['code'] == 1451) {
-					echo json_encode(array('success' => false, 'type' => 'danger', 'id' => $id, 'timeout' => 5000, 'message' => 'Delete all data associated with the warehouse <strong><em>' . $this->input->post('name') . '</em></strong> then try again !'));
-				} else if ($error['code'] == 0 && $this->db->affected_rows() == 1) {
+				$this->Warehouse_model->set_deleted_at($id);
+				if ($this->db->affected_rows() == 1) {
 					echo json_encode(array('success' => true, 'type' => 'success', 'id' => $id, 'message' => 'Successfully deleted warehouse <strong><em>' . $this->input->post('name') . '</em></strong> !'));
 				} else {
+					$error = $this->db->error();
 					echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));
 				}
 				break;
 			default:
-				$error = array('success' => false, 'type' => 'danger', 'error' => 'Unknown Request Method Found !');
-				echo json_encode($error);
+				echo json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Unknown Request Method Found !'));
 		}
 	}
 	public function edit_unique_name($name, $id)
@@ -175,18 +263,6 @@ class Warehouse extends CI_Controller
 		$query = $this->db->get();
 		if ($query->num_rows() > 0) {
 			$this->form_validation->set_message('edit_unique_name', '%s already exist.');
-			return FALSE;
-		}
-		return TRUE;
-	}
-	public function edit_unique_code($code, $id)
-	{
-		$this->db->select('id');
-		$this->db->from(TABLE_WAREHOUSE);
-		$this->db->where(array('code' => $code, 'id !=' => $id));
-		$query = $this->db->get();
-		if ($query->num_rows() > 0) {
-			$this->form_validation->set_message('edit_unique_code', '%s already exist.');
 			return FALSE;
 		}
 		return TRUE;
