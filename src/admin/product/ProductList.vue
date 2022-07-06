@@ -126,7 +126,7 @@ export default {
           "get",
           "product",
           {
-            action: "getInfo",
+            action: "details",
             id: self.productRow.id,
           },
           self.controller,
@@ -247,7 +247,10 @@ export default {
               self.notifyCatchResponse(response);
               self.$router
                 .push({ path: "/" + response.location })
-                .catch(() => {});
+                .catch((e) => {});
+            } else if (response.success == false) {
+              self.$Progress.fail();
+              self.notifyApiResponse(response);
             } else {
               self.$Progress.finish();
               return response.data;

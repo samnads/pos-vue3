@@ -7,7 +7,7 @@ class Permission_model extends CI_Model
         // Call the Model constructor
         parent::__construct();
     }
-    function get_all_permissions($columns)
+    function get_all_permissions()
     {
         $this->db->select('p.id,p.name');
         $this->db->from(TABLE_PERMISSION . ' p');

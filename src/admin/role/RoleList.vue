@@ -448,12 +448,7 @@ export default {
         let row = self.table.row($(this).parents("tr")).data();
         self.emitter.emit("deleteConfirmModal", {
           title: null,
-          body:
-            "Delete role with name <b>" +
-            row.first_name +
-            "</b>" +
-            (row.place ? " | " + row.place : "") +
-            " ?",
+          body: "Delete role with name <b>" + row.name + " ?",
           data: row,
           emit: "confirmDeleteRole",
           hide: true,

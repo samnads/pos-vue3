@@ -396,6 +396,7 @@ export default {
     const onSubmit = handleSubmit((values, { resetForm }) => {
       values.db = DATA.value.data;
       let method = DATA.value.data ? "put" : "post";
+      let action = DATA.value.data ? "update" : "create";
       let controller;
       if (method == "post") {
         // new
@@ -415,6 +416,7 @@ export default {
         "customer",
         {
           data: values,
+          action: action,
         },
         controller,
         {
@@ -511,14 +513,12 @@ export default {
       customReset,
       close,
       DATA,
-      emitter
+      emitter,
     };
   },
   data() {
     return {};
   },
-  methods: {},
-  created() {},
   mounted() {
     window.CUSTOMER_NEW_MODAL = new Modal($("#customerNewModal"), {
       backdrop: true,
@@ -527,7 +527,7 @@ export default {
     if (!this.customerGroups) {
       // if not found on store
       this.axiosAsyncStoreReturnBool("storeCustomerGroups", "customer_group", {
-        action: "getall",
+        action: "dropdown",
       });
       // get customer groups
     }

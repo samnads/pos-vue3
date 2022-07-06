@@ -29,7 +29,9 @@ class Role_model extends CI_Model
     function datatable_recordsTotal()
     {
         $this->db->select('count(id)');
-        $query = $this->db->get(TABLE_ROLE);
+        $this->db->from(TABLE_ROLE);
+        $this->db->where(array('deleted_at' => NULL)); // select only not deleted rows
+        $query = $this->db->get();
         $cnt = $query->row_array();
         return $cnt['count(id)'];
     }
@@ -82,6 +84,8 @@ class Role_model extends CI_Model
         $search = trim($search);
 
         $this->db->select('COUNT(*) as count');
+
+        $this->db->where(array('r.deleted_at' => NULL)); // select only not deleted rows
 
         $this->db->from(TABLE_ROLE . ' r');
 
@@ -149,10 +153,11 @@ class Role_model extends CI_Model
         $query = $this->db->insert(TABLE_ROLE, $data);
         return $query;
     }
-    function deleteById($id)
+    function set_deleted_at($id) // mark as deleted
     {
-        $this->db->where(array("id" => $id, "deletable" => '1'));
-        $query = $this->db->delete(TABLE_ROLE);
+        $this->db->where(array('id' => $id, 'deletable' => NULL, 'deleted_at' => NULL));
+        $this->db->set('deleted_at', 'NOW()', FALSE); // deleted rows have a timestamp
+        $query = $this->db->update(TABLE_ROLE);
         return $query;
     }
 }

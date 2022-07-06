@@ -10,13 +10,12 @@ class Customer_group extends CI_Controller
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET': // read
                 switch ($this->input->get('action')) {
-                    case 'getall':
+                    case 'dropdown':
                         $query = $this->Cutomer_group_model->getall(array('cg.id', 'cg.name', 'cg.percentage'));
                         echo json_encode(array('success' => true, 'type' => 'success', 'data' => $query->result()));
                         break;
                     default:
-                        $error = array('success' => false, 'type' => 'danger', 'error' => 'Unknown Action !');
-                        echo json_encode($error);
+                        echo json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Unknown Action !'));
                 }
                 break;
             case 'POST': // create

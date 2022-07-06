@@ -34,9 +34,24 @@ class Classname
         if ($this->CI->uri->segment(2) == 'ajax') {
             if ($this->CI->session->login && ($this->CI->uri->segment(3) != "logout" && $this->CI->uri->segment(3) != "login")) {
                 $module = $this->CI->uri->segment(3);
-                $row = $this->CI->Permission_model->get_role_module_permission($this->CI->session->role, $module, $_SERVER['REQUEST_METHOD']);
-                if ($row['allow'] !== 1) {
-                    die(json_encode(array('success' => false, 'type' => 'danger', 'error' => 'You don\'t have the right to perform this action !')));
+                $getData = $this->CI->input->get();
+                $postData = $this->CI->input->post();
+                $action = null;
+                if (isset($getData['action'])) {
+                    $action = $getData['action'];
+                } else if (isset($postData['action'])) {
+                    $action = $postData['action'];
+                } else {
+                    $post = raw_input_to_post();
+                    if (!isset($post['action'])) {
+                        die(json_encode(array('success' => false, 'type' => 'danger', 'error' => 'There is no action specified in your request !')));
+                    }
+                    $action = $post['action'];
+                }
+                //$row = $this->CI->Permission_model->get_role_module_permission($this->CI->session->role, $module, $_SERVER['REQUEST_METHOD']);
+                $row = $this->CI->Permission_model->get_role_module_permission($this->CI->session->role, $module, $action);
+                if ($row['allow'] !== 1 && $module != "common") {
+                    die(json_encode(array('success' => false, 'type' => 'danger', 'error' => 'You don\'t have the right to perform [' . $module . ' - ' . $action . '] action !')));
                 }
             }
         }

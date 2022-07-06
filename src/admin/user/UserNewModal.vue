@@ -693,6 +693,7 @@ export default {
     const onSubmit = handleSubmit((values, { resetForm }) => {
       values.db = DATA.value.data;
       let method = DATA.value.data ? "put" : "post";
+      let action = DATA.value.data ? "update" : "create";
       let controller;
       if (method == "post") {
         // new
@@ -712,6 +713,7 @@ export default {
         "user",
         {
           data: values,
+          action: action,
         },
         controller,
         {

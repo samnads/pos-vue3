@@ -7,7 +7,7 @@ class Module_model extends CI_Model
         // Call the Model constructor
         parent::__construct();
     }
-    function get_all_modules($columns)
+    function get_all_modules()
     {
         $this->db->select('m.id,m.name');
         $this->db->from(TABLE_MODULE . ' m');

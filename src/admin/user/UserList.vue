@@ -131,6 +131,9 @@ export default {
               self.$router
                 .push({ path: "/" + response.location })
                 .catch((e) => {});
+            } else if (response.success == false) {
+              self.$Progress.fail();
+              self.notifyApiResponse(response);
             } else {
               self.$Progress.finish();
               return response.data;
@@ -403,8 +406,7 @@ export default {
         initComplete: function (settings) {
           $("#buttons").html(self.table.buttons().container());
         },
-        drawCallback: function (settings) {
-        },
+        drawCallback: function (settings) {},
         createdRow: function (row, data, dataIndex) {
           if (data["deleted_at"]) {
             $(row).addClass("bg-danger");
@@ -478,6 +480,7 @@ export default {
           "user",
           {
             data: data,
+            action: "delete",
           },
           self.controller_delete.value,
           {

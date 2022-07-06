@@ -480,6 +480,7 @@ export default {
     const onSubmit = handleSubmit((values, { resetForm }) => {
       values.db = DATA.value.data;
       let method = DATA.value.data ? "put" : "post";
+      let action = DATA.value.data ? "update" : "create";
       let controller;
       if (method == "post") {
         // new
@@ -499,6 +500,7 @@ export default {
         "warehouse",
         {
           data: values,
+          action: action,
         },
         controller,
         {
@@ -537,7 +539,7 @@ export default {
       if (DATA.value.data) {
         // edit form
         let fields = DATA.value.data;
-       setFieldValue("name", fields.name);
+        setFieldValue("name", fields.name);
         setFieldValue("date_of_open", fields.date_of_open);
         setFieldValue("status", fields.status);
         setFieldValue("status_reason", fields.status_reason);

@@ -118,7 +118,7 @@ export default {
           "get",
           "stock_adjustment",
           {
-            action: "getInfo",
+            action: "details",
             id: self.adjustRow.id,
           },
           self.controller,
@@ -192,6 +192,9 @@ export default {
               self.$router
                 .push({ path: "/" + response.location })
                 .catch((e) => {});
+            } else if (response.success == false) {
+              self.$Progress.fail();
+              self.notifyApiResponse(response);
             } else {
               self.$Progress.finish();
               return response.data;
@@ -282,11 +285,11 @@ export default {
             },
           },
           {
-            targets: [4]
+            targets: [4],
           },
           {
             targets: [5],
-            className: "text-center"
+            className: "text-center",
           },
           {
             targets: [6],

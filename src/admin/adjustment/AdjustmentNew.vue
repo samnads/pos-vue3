@@ -335,12 +335,15 @@ export default {
       values.products = products.value;
       console.log(values.date);
       var method = "POST";
+      var action = "create";
       if (route.name == "adminProductAdjustmentEdit") {
         values.id = dbData.value.id;
         method = "PUT";
+        action = "update";
       }
       return axiosAsyncCallReturnData(method, "stock_adjustment", {
         data: values,
+        action: action,
       }).then(function (data) {
         if (data.success == true) {
           console.log("Adjustment added !");
@@ -404,14 +407,14 @@ export default {
         title: null,
         body: "Confirm delete <b>" + data.name + "</b> from list ?",
         data: data,
-        hide:true,
+        hide: true,
         emit: "confirmDeleteProduct",
         type: "danger",
       });
       window.DELETE_CONFIRM_DEFAULT_MODAL.show();
     }
     emitter.on("confirmDeleteProduct", (data) => {
-      console.log(data)
+      console.log(data);
       // delete selected adjustment stuff here
       let index = products.value.findIndex((item) => item.id === data.id);
       products.value.splice(index, 1);
@@ -628,8 +631,7 @@ export default {
   data() {
     return {};
   },
-  methods: {
-  },
+  methods: {},
   watch: {
     search(query) {
       var self = this;
@@ -677,7 +679,7 @@ export default {
               });
             }
           } else {
-           // network error or cancelled duplicate call
+            // network error or cancelled duplicate call
           }
         });
       } else {

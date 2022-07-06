@@ -140,6 +140,9 @@ export default {
               self.$router
                 .push({ path: "/" + response.location })
                 .catch((e) => {});
+            } else if (response.success == false) {
+              self.$Progress.fail();
+              self.notifyApiResponse(response);
             } else {
               self.$Progress.finish();
               return response.data;
@@ -524,6 +527,7 @@ export default {
           "customer",
           {
             data: data,
+            action: "delete",
           },
           self.controller_delete.value,
           {

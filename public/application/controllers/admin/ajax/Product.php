@@ -12,8 +12,8 @@ class Product extends CI_Controller
         $_POST = raw_input_to_post();
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET': // read
-                switch ($action = $this->input->get('action')) {
-                    case 'getInfo':
+                switch ($this->input->get('action')) {
+                    case 'details':
                         $query = $this->Product_model->getInfo($this->input->get('id'));
                         $data['data'] = $query->row();
                         $data['success'] = true;

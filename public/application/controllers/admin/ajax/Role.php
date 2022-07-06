@@ -74,8 +74,8 @@ class Role extends CI_Controller
 						// role added
 						$role_id = $this->db->insert_id();
 						// get module id's
-						$rows_modules = $this->Module_model->get_all_modules(null);
-						$rows_permissions = $this->Permission_model->get_all_permissions(null);
+						$rows_modules = $this->Module_model->get_all_modules();
+						$rows_permissions = $this->Permission_model->get_all_permissions();
 						// create array for ids
 						$modules = array();
 						$permissions = array();
@@ -223,12 +223,10 @@ class Role extends CI_Controller
 				$id = (int)$this->input->post('id');
 				$role = $this->Role_model->getRoleData($id);
 				if ($role['id']) {
-					if ($role['deletable'] == 1) {
-						$this->Role_model->deleteById($id);
+					if ($role['deletable'] === NULL) {
+						$this->Role_model->set_deleted_at($id);
 						$error = $this->db->error();
-						if ($error['code'] == 1451) {
-							echo json_encode(array('success' => false, 'type' => 'danger', 'id' => $id, 'timeout' => 5000, 'message' => 'Delete all data associated with the role <strong><em>' . $role['name'] . '</em></strong> then try again !'));
-						} else if ($error['code'] == 0 && $this->db->affected_rows() == 1) {
+						if ($this->db->affected_rows() == 1) {
 							echo json_encode(array('success' => true, 'type' => 'success', 'id' => $id, 'message' => 'Successfully deleted role <strong><em>' . $role['name'] . '</em></strong> !'));
 						} else {
 							echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));

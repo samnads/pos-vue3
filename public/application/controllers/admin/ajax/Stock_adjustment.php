@@ -28,7 +28,7 @@ class Stock_adjustment extends CI_Controller
                         //$data[ 'error' ] = '';
                         echo json_encode($data);
                         break;
-                    case 'getInfo':
+                    case 'details':
                         $query = $this->Stock_adjustment_model->getInfo($this->input->get('id'));
                         $data['data'] = $query->result_array();
                         $data['success'] = true;
