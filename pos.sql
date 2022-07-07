@@ -34,7 +34,9 @@ CREATE TABLE `brand` (
   `code` varchar(10) NOT NULL,
   `name` varchar(50) NOT NULL,
   `image` varchar(255) DEFAULT NULL,
-  `description` text DEFAULT NULL,
+  `description` varchar(150) DEFAULT NULL,
+  `deletable` tinyint(1) DEFAULT NULL,
+  `editable` tinyint(1) DEFAULT NULL,
   `added_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -44,46 +46,20 @@ CREATE TABLE `brand` (
   UNIQUE KEY `image` (`image`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `brand` (`id`, `code`, `name`, `image`, `description`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'L',	'Lexi',	NULL,	'yggp=',	'2021-01-24 06:01:28',	'2021-04-21 17:49:35',	NULL),
-(3,	'CM',	'Camlin',	NULL,	'gjfjsd sg fpt',	'2021-01-24 06:01:54',	'2021-05-08 17:54:24',	NULL),
-(67,	'ew',	'rere',	NULL,	'wqq6',	'2021-04-23 18:17:49',	'2021-04-23 18:19:48',	NULL),
-(69,	'ry',	'lexi6',	NULL,	'7u7',	'2021-04-23 20:11:19',	NULL,	NULL),
-(70,	'df',	'df',	NULL,	'dfdf',	'2021-04-30 07:01:19',	NULL,	NULL),
-(72,	'yuyu',	'ty',	NULL,	'ytu',	'2021-05-08 18:00:04',	NULL,	NULL),
-(73,	'fgdfg',	'gfg',	NULL,	'dgddd',	'2021-05-11 20:48:27',	NULL,	NULL),
-(74,	'werwer',	'wer',	NULL,	'werwr',	'2021-05-11 20:52:34',	NULL,	NULL),
-(75,	'try',	'rty',	NULL,	'rtyrty',	'2021-05-11 20:52:49',	NULL,	NULL),
-(76,	'ytr',	'ryrty',	NULL,	'rtyrtyy',	'2021-05-11 20:53:39',	NULL,	NULL),
-(77,	'7567',	'756',	NULL,	'676',	'2021-05-11 22:17:08',	NULL,	NULL),
-(78,	'567',	'567',	NULL,	'657567',	'2021-05-17 19:12:50',	NULL,	NULL),
-(81,	'ty',	'ytuty',	NULL,	't76878',	'2021-08-19 19:54:10',	NULL,	NULL),
-(82,	'9879',	'8',	NULL,	'789',	'2021-08-19 19:54:19',	NULL,	NULL),
-(83,	'uyy',	'ooipo',	NULL,	NULL,	'2022-04-05 10:50:58',	NULL,	NULL),
-(84,	'cc',	'Apple',	NULL,	NULL,	'2022-04-05 10:51:12',	NULL,	NULL),
-(85,	'n,m',	'nm,n,m',	NULL,	NULL,	'2022-04-05 12:24:24',	NULL,	NULL),
-(86,	'ff',	'yhgfhgf',	NULL,	NULL,	'2022-04-06 13:38:00',	NULL,	NULL),
-(87,	'3d',	'dgdfg',	NULL,	NULL,	'2022-04-11 07:18:03',	NULL,	NULL),
-(88,	'dfs',	'fdf',	NULL,	NULL,	'2022-04-11 07:20:05',	NULL,	NULL),
-(89,	'gr4',	'hgjghj',	NULL,	NULL,	'2022-04-11 07:22:34',	NULL,	NULL),
-(90,	'56',	'uiouio',	NULL,	NULL,	'2022-04-11 07:22:57',	NULL,	NULL),
-(91,	'3f',	'trtert',	NULL,	NULL,	'2022-04-11 07:41:22',	NULL,	NULL),
-(92,	'45d',	'rttrt',	NULL,	NULL,	'2022-04-11 07:41:30',	NULL,	NULL),
-(93,	's2',	'dsfsdf',	NULL,	NULL,	'2022-04-11 07:42:30',	NULL,	NULL),
-(94,	'34',	'sdfdfs',	NULL,	NULL,	'2022-04-12 10:24:58',	NULL,	NULL),
-(95,	'es3',	'dgfg',	NULL,	NULL,	'2022-04-12 10:25:35',	NULL,	NULL),
-(96,	'sdsd',	'sss',	NULL,	NULL,	'2022-04-12 10:27:15',	NULL,	NULL),
-(97,	'fsdfsf',	'sssw',	NULL,	NULL,	'2022-04-12 10:30:26',	NULL,	NULL),
-(98,	'fgfg',	'vbvbvb',	NULL,	'fgfg',	'2022-04-12 11:57:25',	NULL,	NULL),
-(99,	'ytyytyr',	'tytyt',	NULL,	NULL,	'2022-04-12 11:57:32',	NULL,	NULL),
-(100,	'5656',	'yyy',	NULL,	NULL,	'2022-04-14 08:33:54',	NULL,	NULL),
-(101,	'tyty',	'ghjghjghj',	NULL,	NULL,	'2022-04-15 10:54:52',	NULL,	NULL),
-(102,	'hfghfgh',	'fghgf',	NULL,	NULL,	'2022-04-15 10:55:08',	NULL,	NULL),
-(103,	'fhhgh',	'ghfghf',	NULL,	NULL,	'2022-04-15 10:57:34',	NULL,	NULL),
-(104,	'gdfg',	'ggg',	NULL,	NULL,	'2022-04-15 10:59:04',	NULL,	NULL),
-(105,	'bnvbnvbn',	'vnvbnvbn',	NULL,	NULL,	'2022-04-15 11:09:17',	NULL,	NULL),
-(106,	'uyuj',	'jhkhkjhkhjkjhk',	NULL,	NULL,	'2022-04-15 11:13:00',	NULL,	NULL),
-(107,	'fgf',	'ggfgfg',	NULL,	NULL,	'2022-04-15 11:43:26',	NULL,	NULL);
+INSERT INTO `brand` (`id`, `code`, `name`, `image`, `description`, `deletable`, `editable`, `added_at`, `updated_at`, `deleted_at`) VALUES
+(1,	'LX',	'Lexi',	NULL,	'Tesssssssssst.......',	0,	0,	'2021-01-24 06:01:28',	'2022-07-07 17:06:42',	NULL),
+(3,	'CM',	'Camlin',	NULL,	'jt',	NULL,	NULL,	'2021-01-24 06:01:54',	'2022-07-07 17:00:15',	NULL),
+(67,	'ew',	'rere',	NULL,	'wqq6',	NULL,	NULL,	'2021-04-23 18:17:49',	'2021-04-23 18:19:48',	NULL),
+(69,	'ry',	'lexi6',	NULL,	'7u7',	NULL,	NULL,	'2021-04-23 20:11:19',	NULL,	NULL),
+(70,	'df',	'df',	NULL,	'dfdf',	NULL,	NULL,	'2021-04-30 07:01:19',	'2022-07-07 17:00:15',	NULL),
+(72,	'yuyu',	'ty',	NULL,	'ytu',	NULL,	NULL,	'2021-05-08 18:00:04',	NULL,	NULL),
+(73,	'fgdfg',	'gfg',	NULL,	'dgddd',	NULL,	NULL,	'2021-05-11 20:48:27',	NULL,	NULL),
+(74,	'werwer',	'wer',	NULL,	'werwr',	NULL,	NULL,	'2021-05-11 20:52:34',	NULL,	NULL),
+(75,	'try',	'rty',	NULL,	'rtyrty',	NULL,	NULL,	'2021-05-11 20:52:49',	NULL,	NULL),
+(76,	'ytr',	'ryrty',	NULL,	'rtyrtyy',	NULL,	NULL,	'2021-05-11 20:53:39',	NULL,	NULL),
+(77,	'7567',	'756',	NULL,	'676',	NULL,	NULL,	'2021-05-11 22:17:08',	NULL,	NULL),
+(78,	'567',	'567',	NULL,	'657567',	NULL,	NULL,	'2021-05-17 19:12:50',	NULL,	NULL),
+(81,	'ty',	'ytuty',	NULL,	't76878',	NULL,	NULL,	'2021-08-19 19:54:10',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `category`;
 CREATE TABLE `category` (
@@ -303,7 +279,8 @@ INSERT INTO `permission` (`id`, `name`, `added_at`, `updated_at`) VALUES
 (4,	'delete',	'2021-05-07 16:33:39',	'2022-07-06 15:07:33'),
 (5,	'dropdown',	'2021-08-02 18:46:06',	'2022-07-06 17:10:05'),
 (6,	'datatable',	'2021-08-07 19:31:59',	'2022-07-06 13:42:37'),
-(7,	'details',	'2022-07-06 17:31:43',	NULL);
+(7,	'details',	'2022-07-06 17:31:43',	NULL),
+(8,	'search_product',	'2022-07-07 07:55:03',	'2022-07-07 13:15:47');
 
 DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product` (
@@ -510,6 +487,10 @@ INSERT INTO `role_permission` (`role_id`, `module_id`, `permission_id`, `readonl
 (1,	1,	4,	1,	'PRODUCT - delete',	1,	'2022-07-06 17:36:43',	NULL),
 (1,	1,	6,	1,	'PRODUCT - datatable',	1,	'2022-07-06 17:30:12',	NULL),
 (1,	1,	7,	1,	'PRODUCT - details',	1,	'2022-07-06 17:34:16',	NULL),
+(1,	3,	1,	1,	'BRAND - create',	1,	'2022-07-07 15:44:37',	NULL),
+(1,	3,	3,	1,	'BRAND - update',	1,	'2022-07-07 15:50:35',	NULL),
+(1,	3,	4,	1,	'BRAND - delete',	1,	'2022-07-07 16:49:43',	NULL),
+(1,	3,	6,	1,	'BRAND - datatable',	1,	'2022-07-07 14:03:41',	NULL),
 (1,	6,	1,	1,	'SUPPLIER - create',	1,	'2021-09-29 18:24:05',	'2022-07-06 16:55:02'),
 (1,	6,	3,	1,	'SUPPLIER - update',	1,	'2021-09-29 18:24:05',	'2022-07-06 16:55:02'),
 (1,	6,	4,	1,	'SUPPLIER - delete',	1,	'2021-09-29 18:24:05',	'2022-07-06 16:55:02'),
@@ -539,6 +520,7 @@ INSERT INTO `role_permission` (`role_id`, `module_id`, `permission_id`, `readonl
 (1,	15,	3,	1,	'STOCK ADJ - edit',	1,	'2022-06-23 07:14:24',	'2022-07-06 17:49:45'),
 (1,	15,	6,	1,	'STOCK ADJ - datatable',	1,	'2022-07-06 17:39:39',	NULL),
 (1,	15,	7,	1,	'STOCK ADJ - details',	1,	'2022-07-06 17:41:16',	NULL),
+(1,	15,	8,	1,	'STOCK ADJ - autocomplete product',	1,	'2022-07-07 08:03:27',	NULL),
 (1,	16,	2,	1,	'MANUAL list customer groups (admin default)',	1,	'2022-06-30 12:33:11',	'2022-06-30 14:53:29'),
 (1,	16,	5,	1,	'CUSTOMER GROUP - dropdown',	1,	'2022-07-06 17:12:27',	NULL),
 (1,	17,	2,	1,	'MANUAL genders (admin default)',	1,	'2022-07-02 13:02:09',	NULL);
@@ -647,10 +629,12 @@ INSERT INTO `stock_adjustment` (`id`, `warehouse`, `added_by`, `date`, `time`, `
 (167,	20,	1,	'2022-06-24',	'12:40:07',	'ref',	'not',	'2022-06-24 07:07:33',	'2022-06-26 16:26:09',	NULL),
 (168,	20,	1,	'2022-06-10',	'12:00:50',	NULL,	NULL,	'2022-06-24 07:08:00',	'2022-06-27 07:44:10',	NULL),
 (169,	20,	1,	'2022-06-24',	'16:06:17',	'ref 231',	'Not 79',	'2022-06-24 10:36:39',	'2022-06-28 07:41:50',	NULL),
-(170,	27,	1,	'2022-06-26',	'19:58:12',	NULL,	NULL,	'2022-06-26 14:28:15',	'2022-07-05 12:29:13',	NULL),
-(171,	20,	1,	'2022-06-28',	'13:12:18',	'ee',	NULL,	'2022-06-28 07:42:21',	'2022-06-28 12:20:26',	NULL),
+(170,	27,	1,	'2022-06-26',	'19:58:12',	NULL,	NULL,	'2022-06-26 14:28:15',	'2022-07-07 07:53:53',	NULL),
+(171,	20,	1,	'2022-06-28',	'13:12:18',	'ee',	NULL,	'2022-06-28 07:42:21',	'2022-07-07 13:16:27',	NULL),
 (172,	20,	1,	'2022-06-09',	'17:53:51',	NULL,	NULL,	'2022-06-28 12:23:54',	'2022-07-06 17:49:51',	NULL),
-(173,	20,	1,	'0000-00-00',	'00:00:00',	NULL,	NULL,	'2022-07-05 12:07:03',	NULL,	NULL);
+(173,	20,	1,	'0000-00-00',	'00:00:00',	NULL,	NULL,	'2022-07-05 12:07:03',	'2022-07-07 08:05:53',	NULL),
+(174,	28,	1,	'2022-07-07',	'13:35:33',	NULL,	NULL,	'2022-07-07 08:05:42',	'2022-07-07 08:06:55',	NULL),
+(175,	27,	1,	'2022-07-07',	'18:46:37',	NULL,	NULL,	'2022-07-07 13:16:41',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `stock_adjustment_product`;
 CREATE TABLE `stock_adjustment_product` (
@@ -755,14 +739,17 @@ INSERT INTO `stock_adjustment_product` (`id`, `stock_adjustment`, `product`, `no
 (294,	169,	5,	NULL,	5.0000),
 (295,	169,	173,	NULL,	4.0000),
 (296,	169,	6,	NULL,	3.0000),
-(297,	170,	186,	NULL,	1.0000),
+(297,	170,	186,	NULL,	-1.0000),
 (298,	170,	5,	NULL,	4.0000),
 (299,	170,	173,	NULL,	2.0000),
-(301,	171,	5,	'fdfdf',	4.0000),
+(301,	171,	5,	'fdfdf',	5.0000),
 (302,	172,	5,	NULL,	1.0000),
 (303,	172,	180,	NULL,	4.0000),
 (304,	172,	186,	NULL,	2.0000),
-(305,	173,	188,	NULL,	555.0000);
+(305,	173,	188,	NULL,	555.0000),
+(307,	173,	173,	NULL,	1.0000),
+(309,	174,	10,	NULL,	1.0000),
+(310,	175,	10,	NULL,	1.0000);
 
 DROP TABLE IF EXISTS `sub_category`;
 CREATE TABLE `sub_category` (
@@ -1050,14 +1037,15 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-07-06 13:59:26',	'2022-07-05 03:46:37',	'2021-04-20 19:22:52',	'2022-07-06 13:59:26',	NULL),
-(30,	'C2',	3,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-06 16:44:32',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-07-07 12:59:47',	'2022-07-05 03:46:37',	'2021-04-20 19:22:52',	'2022-07-07 12:59:47',	NULL),
+(30,	'C2',	3,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-07 13:21:24',	NULL),
 (31,	'C3',	2,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-04 12:54:45',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
 (33,	'USER0033',	1,	'sfdfdsf',	'$2y$10$m3SCyOOEBf9x7zHoJD5nkuajcLI0MqPypDIsXo0zVE6pKwZ9ebP3u',	'dfdfsdf',	NULL,	NULL,	'2022-07-26',	'safdf@fdsfgdfg.ghgfh',	'7475454545',	NULL,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-04 12:57:40',	'2022-07-06 16:37:47',	'2022-07-06 16:37:47'),
 (34,	'USER0034',	1,	'sdfsdfsdf',	'$2y$10$X5g0UY6y6ciaAxYoHj//CeuwoWdwZ5S2v8qgVUAOyB.dirVZI1uyC',	'sdfdf',	'dfdfdsf',	NULL,	'2022-07-05',	'trt@ghjhg.fghfh',	'444544545',	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-04 13:09:49',	'2022-07-06 16:37:07',	'2022-07-06 16:37:07'),
 (35,	'USER0035',	3,	'hjhgjhg',	'$2y$10$vUGaJ4qQGg7yHt1hbP9eZOIFzL5SHX.ynu.w.EUwiiZIlUFJMbSoi',	'gikghjg',	'jghjghjhgj',	NULL,	'2022-07-05',	'fdf@g.ghgh',	'7574544454',	NULL,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	4,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-06 16:38:36',	NULL,	NULL),
-(36,	'USER0036',	3,	'dfdf',	'$2y$10$728Kvxh9olwHyXoUQ4Lq.e7aALAXdOO/s4zy3SNwi3464CYTWYfFS',	'dfdf',	'dfdfd',	NULL,	'2022-07-05',	'dfd@fsg.gdfgg',	'546464645645',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	4,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-06 16:45:10',	'2022-07-06 16:45:25',	'2022-07-06 16:45:25');
+(36,	'USER0036',	3,	'dfdf',	'$2y$10$728Kvxh9olwHyXoUQ4Lq.e7aALAXdOO/s4zy3SNwi3464CYTWYfFS',	'dfdf',	'dfdfd',	NULL,	'2022-07-05',	'dfd@fsg.gdfgg',	'546464645645',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	4,	NULL,	NULL,	'::1',	'2022-07-07 07:50:50',	NULL,	'2022-07-06 16:45:10',	'2022-07-07 07:50:50',	'2022-07-06 16:45:25'),
+(37,	'USER0037',	3,	'dfdfdf',	'$2y$10$.eYvj6.BMLYuGUDvlwSLnO4ZzR8OO8.SpB7Z/mR45zZUWIo/GJbMG',	'yuytuytu',	'ytuytu',	NULL,	'2022-07-12',	'ds@rtg.jghjg',	'5646456456',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	4,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-07 13:22:05',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `variant`;
 CREATE TABLE `variant` (
@@ -1117,4 +1105,4 @@ INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country
 (31,	'WARE0031',	'jhjhgjgjhg',	'jhgjhgjhgj',	'2022-07-01',	NULL,	NULL,	NULL,	'56565656',	'fgf@dy.hjgj',	NULL,	NULL,	NULL,	NULL,	16,	'hjhj',	NULL,	NULL,	'2022-07-05 12:36:57',	NULL,	NULL),
 (32,	'WARE0032',	'uiuiui',	'uiuiuiuiu',	'2022-07-06',	NULL,	NULL,	NULL,	'4545454',	'ui@gf.ghgh',	NULL,	NULL,	NULL,	NULL,	17,	NULL,	NULL,	NULL,	'2022-07-06 17:24:34',	NULL,	NULL);
 
--- 2022-07-06 17:52:09
+-- 2022-07-07 17:17:50

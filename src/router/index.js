@@ -29,6 +29,9 @@ import AdminRoleList from '../admin/role/RoleList.vue'
 // Warehouse based pages
 import AdminWarehouseMain from '../admin/warehouse/WarehouseMain.vue'
 import AdminWarehouseList from '../admin/warehouse/WarehouseList.vue'
+// Brand based pages
+import AdminBrandMain from '../admin/brand/BrandMain.vue'
+import AdminBrandList from '../admin/brand/BrandList.vue'
 // error pages
 import PageNotFound from '../admin/PageNotFound.vue'
 
@@ -170,6 +173,19 @@ const routes = [
             path: 'list',
             name: 'adminWarehouseList',
             component: AdminWarehouseList,
+          }
+        ],
+      },
+      {
+        path: 'brand',
+        name: 'adminBrandMain',
+        component: AdminBrandMain,
+        redirect: '/admin/brand/list',
+        children: [
+          {
+            path: 'list',
+            name: 'adminBrandList',
+            component: AdminBrandList,
           }
         ],
       },

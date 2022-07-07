@@ -16,11 +16,20 @@ class Brand extends CI_Controller
 						$result['success'] = true;
 						echo json_encode($result);
 						break;
-					case 'datatable': // get all brand rows
-						$query = $this->input->get('query');
-						$result['data'] = $this->Brand_model->search_brands($query);
-						$result['success'] = true;
-						echo json_encode($result);
+					case 'datatable':
+						$data = array();
+						$limit = $this->input->get('length') <= 0 ? NULL : $this->input->get('length'); // limit
+						$order_by = $this->input->get('columns')[$this->input->get('order')[0]['column']]['data']; // order by column
+						$order = $this->input->get('order')[0]['dir']; // order asc or desc
+						$search = $this->input->get('search')['value']; // search query
+						$offset = $this->input->get('start'); // start position
+						$data['data'] = $this->Brand_model->datatable_data($search, $offset, $limit, $order_by, $order);
+						$data["draw"] = $this->input->get('draw'); // unique
+						$data["recordsTotal"] = $this->Brand_model->datatable_recordsTotal();
+						$data["recordsFiltered"] = $this->Brand_model->datatable_recordsFiltered($search);
+						$data['success'] = true;
+						//$data[ 'error' ] = '';
+						echo json_encode($data);
 						break;
 					default:
 						$error = array('success' => false, 'type' => 'danger', 'error' => 'Unknown Action !');
@@ -30,26 +39,36 @@ class Brand extends CI_Controller
 			case 'POST': // create
 				$_POST = $this->input->post('data');
 				$data = array(
-					'name'			=> $this->input->post('name'),
-					'code'			=> $this->input->post('code'),
-					'description'	=> $this->input->post('description') == NULL ? NULL : $this->input->post('description')
+					'name'			=> $this->input->post('name') ?: NULL,
+					'description'	=> $this->input->post('description') ?: NULL
 				);
+				if ($this->input->post('code')) {
+					$data['code'] = $this->input->post('code');
+				} else {
+					$data['code'] = $this->Brand_model->get_AUTO_INCREMENT();
+					if (!$data['code']) {
+						$error = $this->db->error();
+						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured (AUTO_INCREMENT) !")));
+						die();
+					}
+					$data['code'] = sprintf("BRAN%04s", $data['code']);
+				}
 				//$data['code'] = 'error_error_error_error_error_';
 				$this->form_validation->set_data($data);
 				$config = array(
 					array(
 						'field' => 'name',
-						'label' => 'Brand Name',
+						'label' => 'Name',
 						'rules' => 'required|max_length[50]|is_unique[' . TABLE_BRAND . '.name]|xss_clean|trim'
 					),
 					array(
 						'field' => 'code',
-						'label' => 'Brand Code',
+						'label' => 'Code',
 						'rules' => 'required|max_length[10]|is_unique[' . TABLE_BRAND . '.code]|xss_clean|trim'
 					),
 					array(
 						'field' => 'description',
-						'label' => 'Brand Description',
+						'label' => 'Description',
 						'rules' => 'max_length[100]|is_unique[' . TABLE_BRAND . '.description]|xss_clean|trim'
 					)
 				);
@@ -58,7 +77,7 @@ class Brand extends CI_Controller
 					echo json_encode(array('success' => false, 'errors' => $this->form_validation->error_array()));
 				} else {
 					//$data['manual_error'] = 'error';
-					$this->db->insert(TABLE_BRAND, $data);
+					$this->Brand_model->insert_brand($data);
 					if ($this->db->affected_rows() == 1) {
 						echo json_encode(array('success' => true, 'type' => 'success', 'id' => $this->db->insert_id(), 'message' => 'Successfully added new brand <strong><em>' . $data['name'] . '</em></strong> !'));
 					} else {
@@ -69,30 +88,30 @@ class Brand extends CI_Controller
 				break;
 			case 'PUT': // update
 				$_POST = $this->input->post('data');
-				$id = $this->input->post('id');
+				$id = $this->input->post('db')['id'];
 				$rule_name = 'callback_edit_unique_name_check[' . $id . ']';
 				$rule_code = 'callback_edit_unique_code_check[' . $id . ']';
 				$data = array(
-					'name'			=> $this->input->post('name'),
-					'code'			=> $this->input->post('code'),
-					'description'	=> $this->input->post('description') == NULL ? NULL : $this->input->post('description')
+					'name'			=> $this->input->post('name') ?: NULL,
+					'code'			=> $this->input->post('code') ?: NULL,
+					'description'	=> $this->input->post('description') ?: NULL
 				);
 				//$data['code'] = 'error_error_error_error_error_';
 				$this->form_validation->set_data($data);
 				$config = array(
 					array(
 						'field' => 'name',
-						'label' => 'Brand Name',
+						'label' => 'Name',
 						'rules' => 'required|max_length[50]|' . $rule_name . '|xss_clean|trim'
 					),
 					array(
 						'field' => 'code',
-						'label' => 'Brand Code',
+						'label' => 'Code',
 						'rules' => 'required|max_length[10]|' . $rule_code . '|xss_clean|trim'
 					),
 					array(
 						'field' => 'description',
-						'label' => 'Brand Description',
+						'label' => 'Description',
 						'rules' => 'max_length[100]|xss_clean|trim'
 					)
 				);
@@ -101,7 +120,7 @@ class Brand extends CI_Controller
 					echo json_encode(array('success' => false, 'errors' => $this->form_validation->error_array()));
 				} else {
 					//$data['manual_error'] = 'error';
-					$this->db->update(TABLE_BRAND, $data, array('id' => $id));
+					$this->Brand_model->update_brand($data,array('id' => $id, 'editable' => NULL, 'deleted_at' => NULL));
 					if ($this->db->affected_rows() == 1) {
 						echo json_encode(array('success' => true, 'type' => 'success', 'id' => $id, 'message' => 'Successfully updated brand <strong><em>' . $this->input->post('db')['name'] . '</em></strong> !'));
 					} else if ($this->db->affected_rows() == 0) {
@@ -114,17 +133,13 @@ class Brand extends CI_Controller
 				break;
 			case 'DELETE': // delete
 				$_POST = $this->input->post('data');
-				$id = $this->input->post('id');
-				$query = $this->Brand_model->deleteById($id);
-				$error = $this->db->error();
-				if ($error['code'] == 1451) {
-					echo json_encode(array('success' => false, 'type' => 'danger', 'id' => $id, 'timeout' => 5000, 'error' => 'Delete all data associated with the brand <strong><em>' . $this->input->post('name') . '</em></strong> then try again !'));
-				} else if ($this->db->affected_rows() == 1) {
+				$id = (int)$this->input->post('id');
+				$this->Brand_model->set_deleted_at(array('id' => $id, 'deletable' => NULL, 'deleted_at' => NULL));
+				if ($this->db->affected_rows() == 1) {
 					echo json_encode(array('success' => true, 'type' => 'success', 'id' => $id, 'message' => 'Successfully deleted brand <strong><em>' . $this->input->post('name') . '</em></strong> !'));
-				} else if ($error['code'] == 0) {
-					echo json_encode(array('success' => true, 'type' => 'primary', 'id' => $id, 'message' => 'No data found for deleting brand <strong><em>' . $this->input->post('name') . '</em></strong> !'));
 				} else {
-					echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));
+					$error = $this->db->error();
+					echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));
 				}
 				break;
 			default:
