@@ -5,6 +5,7 @@ class Stock_adjustment extends CI_Controller
     public function index() // view products
     {
         header('Content-Type: application/json; charset=utf-8');
+        $this->load->model('admin/Product_model');
         $this->load->model('admin/Stock_adjustment_model');
         $this->load->model('admin/Stock_adjustment_product_model');
         $_POST = raw_input_to_post();
@@ -34,9 +35,22 @@ class Stock_adjustment extends CI_Controller
                         $data['success'] = true;
                         echo json_encode($data);
                         break;
+                    case 'search_product': // search products for add to stock adj
+                        $query["offset"] = 0;
+                        $query["limit"] = 10;
+                        $query["order_by"] = 'label';
+                        $query["order"] = 'asc';
+                        $query["search"] = $this->input->get('search');
+                        $query = $this->Product_model->suggestProdsForAdjustment($query["search"], $query["offset"], $query["limit"], $query["order_by"], $query["order"]);
+                        $error = $this->db->error();
+                        if ($error['code'] == 0) {
+                            echo json_encode(array('success' => true, 'type' => 'success', 'data' => $query->result()));
+                        } else {
+                            echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
+                        }
+                        break;
                     default:
-                        $error = array('success' => false, 'type' => 'danger', 'error' => 'Unknown Action !');
-                        echo json_encode($error);
+                        echo json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Unknown Action !'));
                 }
                 break;
             case 'POST': // add new stock adjustment

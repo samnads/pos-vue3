@@ -643,10 +643,9 @@ export default {
         self.controller = new AbortController();
         this.axiosAsyncCallReturnData(
           "get",
-          "product",
+          "stock_adjustment",
           {
-            action: "autocomplete",
-            type: "adjustment",
+            action: "search_product",
             search: query,
           },
           self.controller,
