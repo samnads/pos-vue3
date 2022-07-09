@@ -32,6 +32,12 @@ import AdminWarehouseList from '../admin/warehouse/WarehouseList.vue'
 // Brand based pages
 import AdminBrandMain from '../admin/brand/BrandMain.vue'
 import AdminBrandList from '../admin/brand/BrandList.vue'
+// Unit based pages
+import AdminUnitMain from '../admin/unit/UnitMain.vue'
+import AdminUnitList from '../admin/unit/UnitList.vue'
+// Tax based pages
+import AdminTaxMain from '../admin/tax/TaxMain.vue'
+import AdminTaxList from '../admin/tax/TaxList.vue'
 // error pages
 import PageNotFound from '../admin/PageNotFound.vue'
 
@@ -186,6 +192,32 @@ const routes = [
             path: 'list',
             name: 'adminBrandList',
             component: AdminBrandList,
+          }
+        ],
+      },
+      {
+        path: 'unit',
+        name: 'adminUnitMain',
+        component: AdminUnitMain,
+        redirect: '/admin/unit/list',
+        children: [
+          {
+            path: 'list',
+            name: 'adminUnitList',
+            component: AdminUnitList,
+          }
+        ],
+      },
+      {
+        path: 'tax',
+        name: 'adminTaxMain',
+        component: AdminTaxMain,
+        redirect: '/admin/tax/list',
+        children: [
+          {
+            path: 'list',
+            name: 'adminTaxList',
+            component: AdminTaxList,
           }
         ],
       },

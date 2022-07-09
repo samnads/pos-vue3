@@ -63,36 +63,51 @@ class Unit_model extends CI_Model
         $query = $this->db->query($query1 . " UNION " . $query2 . " order by " . $order_by . " " . $order . " limit " . $offset . "," . $limit);
         return $query->result();
     }
-    function datatable_units($search, $offset, $limit, $order_by, $order)
+    function datatable_data($search, $offset, $limit, $order_by, $order)
     {
         $search = trim($this->security->xss_clean($search));
-        $this->db->select(' u.id     as id,
-                            u.name      as name,
-                            u.code      as code,
-                            u.description      as description');
+        $this->db->select('
+        u.id     as id,
+        u.name   as name,
+        u.code   as code,
+        u.deletable   as deletable,
+        u.editable   as editable,
+        u.deleted_at as deleted_at,
+        u.description      as description');
+
+        $this->db->where(array('u.deleted_at' => NULL)); // select only not deleted rows
+
+        $this->db->group_start();
         $this->db->or_like('u.name',    $search);
         $this->db->or_like('u.code',    $search);
         $this->db->or_like('u.description',    $search);
+        $this->db->group_end();
+
         $this->db->order_by($order_by, $order);
         $this->db->limit($limit, $offset);
         $query = $this->db->get(TABLE_UNIT . ' u');
         return $query->result();
     }
-    function datatable_units_count($search)
+    function datatable_recordsFiltered($search)
     {
         $search = trim($this->security->xss_clean($search));
         $this->db->select('COUNT(*) as count');
-        $this->db->or_like('u.name', $search);
-        $this->db->or_like('u.code', $search);
-        $this->db->or_like('u.description', $search);
+        $this->db->where(array('u.deleted_at' => NULL)); // select only not deleted rows
+        $this->db->group_start();
+        $this->db->or_like('u.name',    $search);
+        $this->db->or_like('u.code',    $search);
+        $this->db->or_like('u.description',    $search);
+        $this->db->group_end();
         $query = $this->db->get(TABLE_UNIT . ' u');
         $query    = $query->row();
         return $query->count;
     }
-    function totalRows()
+    function datatable_recordsTotal()
     {
         $this->db->select('count(id)');
-        $query = $this->db->get(TABLE_UNIT);
+        $this->db->from(TABLE_UNIT . ' u');
+        $this->db->where(array('u.deleted_at' => NULL)); // select only not deleted rows
+        $query = $this->db->get();
         $cnt = $query->row_array();
         return $cnt['count(id)'];
     }
@@ -161,6 +176,25 @@ class Unit_model extends CI_Model
     {
         $this->db->where('id', $id);
         $query = $this->db->delete(TABLE_UNIT);
+        return $query;
+    }
+
+
+    function insert_unit($data)
+    {
+        $query = $this->db->insert(TABLE_UNIT, $data);
+        return $query;
+    }
+    function update_unit($data, $where)
+    {
+        $query = $this->db->update(TABLE_UNIT, $data, $where);
+        return $query;
+    }
+    function set_deleted_at($where) // mark as deleted
+    {
+        $this->db->where($where);
+        $this->db->set('deleted_at', 'NOW()', FALSE); // deleted rows have a timestamp
+        $query = $this->db->update(TABLE_UNIT);
         return $query;
     }
 }

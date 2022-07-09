@@ -156,6 +156,16 @@
                     >Brands</router-link
                   >
                 </li>
+                <li>
+                  <router-link class="dropdown-item" to="/admin/unit/list"
+                    >Units</router-link
+                  >
+                </li>
+                <li>
+                  <router-link class="dropdown-item" to="/admin/tax/list"
+                    >Tax</router-link
+                  >
+                </li>
               </ul>
             </li>
             <li>
