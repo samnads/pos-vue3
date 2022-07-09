@@ -127,16 +127,17 @@ class Supplier_model extends CI_Model
         $query = $this->db->update(TABLE_SUPPLIER, $data);
         return $query;
     }
-    function set_deleted_at($id)
+    function set_deleted_at($where)
     {
-        $this->db->where(array('id' => $id, 'deletable' => NULL, 'deleted_at' => NULL));
+        $this->db->where($where);
         $this->db->set('deleted_at', 'NOW()', FALSE); // deleted rows have a timestamp
         $query = $this->db->update(TABLE_SUPPLIER);
         return $query;
     }
-    function delete_wherein_id($ids)
+    function delete_wherein_id($ids, $where)
     {
         $this->db->where_in('id', $ids);
+        $this->db->where($where);
         $query = $this->db->delete(TABLE_SUPPLIER);
         return $query;
     }

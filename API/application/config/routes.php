@@ -53,6 +53,7 @@ $route['default_controller'] = '';
 $route['404_override'] = 'ghg';
 $route['translate_uri_dashes'] = FALSE;
 // Admin
+$route['admin/ajax/']  = "admin/ajax/";
 /*$route['admin']  = "admin/Admin";
 $route['admin/login']  = "admin/Login";
 $route['admin/dashboard']  = "admin/Dashboard";

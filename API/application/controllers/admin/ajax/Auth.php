@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
-class AdminLogin extends CI_Controller
+class Auth extends CI_Controller
 {
     public $login_redirect = FALSE;
     public function __construct()
@@ -14,7 +14,7 @@ class AdminLogin extends CI_Controller
         $post = $this->input->raw_input_stream;
         $post = json_decode($post);
         $_POST = json_decode(json_encode($post), true);
-        switch ($action = $this->input->post('action')) {
+        switch ($this->input->post('action')) {
             case 'login':
                 $_POST = $this->input->post('data');
                 $row = $this->User_model->getRow(array('username' => $this->input->post('username')));
@@ -38,19 +38,18 @@ class AdminLogin extends CI_Controller
                 }
                 echo json_encode($data);
                 break;
+            case 'logout':
+                if ($this->input->server('REQUEST_METHOD') === 'POST') {
+                    $this->User_model->updateLogout($this->session->id); // update db
+                    $this->session->sess_destroy();
+                    $data = array('success' => true, 'location' => base_url("admin/login"));
+                    echo json_encode($data);
+                } else {
+                    redirect('admin/login', 'location', 301);
+                }
+                break;
             default:
-                echo json_encode(array('success' => false, 'type' => 'dark', 'message' => 'Data Error - Unknown Action !', 'timeout' => '5000'));
-        }
-    }
-    public function logout()
-    {
-        if ($this->input->server('REQUEST_METHOD') === 'POST') {
-            $this->User_model->updateLogout($this->session->id); // update db
-            $this->session->sess_destroy();
-            $data = array('success' => true, 'location' => base_url("admin/login"));
-            echo json_encode($data);
-        } else {
-            redirect('admin/login', 'location', 301);
+                echo json_encode(array('success' => false, 'type' => 'danger', 'message' => 'Data Error - Unknown Action !', 'timeout' => '5000'));
         }
     }
 }

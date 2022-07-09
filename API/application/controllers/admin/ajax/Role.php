@@ -224,7 +224,7 @@ class Role extends CI_Controller
 				$role = $this->Role_model->getRoleData($id);
 				if ($role['id']) {
 					if ($role['deletable'] === NULL) {
-						$this->Role_model->set_deleted_at($id);
+						$this->Role_model->set_deleted_at(array('id' => $id, 'deletable' => NULL, 'deleted_at' => NULL));
 						$error = $this->db->error();
 						if ($this->db->affected_rows() == 1) {
 							echo json_encode(array('success' => true, 'type' => 'success', 'id' => $id, 'message' => 'Successfully deleted role <strong><em>' . $role['name'] . '</em></strong> !'));

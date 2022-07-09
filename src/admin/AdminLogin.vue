@@ -114,7 +114,9 @@ export default {
         action: "login",
         data: { username: this.username, password: this.password },
       };
-      this.axiosAsyncCallReturnData("post", "login", formData).then(function () {});
+      this.axiosAsyncCallReturnData("post", "auth", formData).then(
+        function () {}
+      );
     },
   },
 };

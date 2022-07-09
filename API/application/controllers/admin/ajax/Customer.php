@@ -240,11 +240,9 @@ class Customer extends CI_Controller
 					$customer = $this->Customer_model->getCustomer(array('id' => $id));
 					if ($customer['id']) {
 						if ($customer['deletable'] !== 0) {
-							$this->Customer_model->set_deleted_at($id);
+							$this->Customer_model->set_deleted_at(array('id' => $id, 'deletable' => NULL, 'deleted_at' => NULL));
 							$error = $this->db->error();
-							if ($error['code'] == 1451) {
-								echo json_encode(array('success' => false, 'type' => 'danger', 'id' => $id, 'timeout' => 5000, 'message' => 'Delete all data associated with the customer <strong><em>' . $customer['name'] . '</em></strong> then try again !'));
-							} else if ($error['code'] == 0 && $this->db->affected_rows() == 1) {
+							if ($this->db->affected_rows() == 1) {
 								echo json_encode(array('success' => true, 'type' => 'success', 'id' => $id, 'message' => 'Successfully deleted customer <strong><em>' . $customer['name'] . '</em></strong> !'));
 							} else {
 								echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));
@@ -261,12 +259,9 @@ class Customer extends CI_Controller
 					foreach ($this->input->post('data') as $key => $value) {
 						array_push($ids, $value['id']);
 					}
-					$this->Customer_model->set_deleted_at_multi($ids);
+					$this->Customer_model->set_deleted_at_multi($ids, array('deletable' => NULL, 'deleted_at' => NULL));
 					$error = $this->db->error();
-					/*if ($error['code'] == 1451) {
-						echo json_encode(array('success' => false, 'type' => 'danger', 'ids' => $ids, 'error' => 'Delete all data associated with the customers then try again !'));
-					}*/
-					if ($error['code'] == 0) {
+					if ($this->db->affected_rows() >= 1) {
 						echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Customer(s) successfully deleted !'));
 					} else {
 						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));

@@ -25,7 +25,7 @@ export default function () {
                 signal: AbortController ? AbortController.signal : undefined,
                 timeout: 8000,
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 }
             })
             if (res.status == 200) {

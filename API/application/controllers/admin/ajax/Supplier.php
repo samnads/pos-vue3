@@ -20,7 +20,7 @@ class Supplier extends CI_Controller
 		*/
 		switch ($_SERVER['REQUEST_METHOD']) {
 			case 'GET': // read
-				switch ($action = $this->input->get('action')) {
+				switch ($this->input->get('action')) {
 					case 'list':
 						$result['data'] = $this->Supplier_model->get_all_taxes();
 						$result['success'] = true;
@@ -243,11 +243,9 @@ class Supplier extends CI_Controller
 					$supplier = $this->Supplier_model->getSupplier($id, null);
 					if ($supplier['id']) {
 						if ($supplier['deletable'] !== 0) {
-							$this->Supplier_model->set_deleted_at($id);
+							$this->Supplier_model->set_deleted_at(array('id' => $id, 'deletable' => NULL, 'deleted_at' => NULL));
 							$error = $this->db->error();
-							if ($error['code'] == 1451) {
-								echo json_encode(array('success' => false, 'type' => 'danger', 'id' => $id, 'timeout' => 5000, 'message' => 'Delete all data associated with the supplier <strong><em>' . $supplier['name'] . '</em></strong> then try again !'));
-							} else if ($error['code'] == 0 && $this->db->affected_rows() == 1) {
+							if ($this->db->affected_rows() == 1) {
 								echo json_encode(array('success' => true, 'type' => 'success', 'id' => $id, 'message' => 'Successfully deleted supplier <strong><em>' . $supplier['name'] . '</em></strong> !'));
 							} else {
 								echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));
@@ -263,11 +261,9 @@ class Supplier extends CI_Controller
 					foreach ($this->input->post('data') as $key => $value) {
 						array_push($ids, $value['id']);
 					}
-					$this->Supplier_model->delete_wherein_id($ids);
+					$this->Supplier_model->delete_wherein_id($ids, array('deletable' => NULL, 'deleted_at' => NULL));
 					$error = $this->db->error();
-					if ($error['code'] == 1451) {
-						echo json_encode(array('success' => false, 'type' => 'danger', 'ids' => $ids, 'error' => 'Delete all data associated with the suppliers then try again !'));
-					} else if ($error['code'] == 0) {
+					if ($this->db->affected_rows() >= 1) {
 						echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Supplier(s) successfully deleted !'));
 					} else {
 						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));

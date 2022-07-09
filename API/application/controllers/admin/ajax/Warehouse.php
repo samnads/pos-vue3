@@ -243,7 +243,7 @@ class Warehouse extends CI_Controller
 			case 'DELETE': // delete
 				$_POST = $this->input->post('data');
 				$id = (int)$this->input->post('id');
-				$this->Warehouse_model->set_deleted_at($id);
+				$this->Warehouse_model->set_deleted_at(array('id' => $id, 'deletable' => NULL, 'deleted_at' => NULL));
 				if ($this->db->affected_rows() == 1) {
 					echo json_encode(array('success' => true, 'type' => 'success', 'id' => $id, 'message' => 'Successfully deleted warehouse <strong><em>' . $this->input->post('name') . '</em></strong> !'));
 				} else {

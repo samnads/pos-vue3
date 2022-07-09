@@ -32,7 +32,7 @@ class Classname
     function ajaxPermCheck() // check for allowed ajax action
     {
         if ($this->CI->uri->segment(2) == 'ajax') {
-            if ($this->CI->session->login && ($this->CI->uri->segment(3) != "logout" && $this->CI->uri->segment(3) != "login")) {
+            if ($this->CI->session->login && ($this->CI->uri->segment(3) != "auth")) {
                 $module = $this->CI->uri->segment(3);
                 $getData = $this->CI->input->get();
                 $postData = $this->CI->input->post();

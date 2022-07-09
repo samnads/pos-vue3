@@ -350,7 +350,7 @@ class User extends CI_Controller
 				$user = $this->User_model->getUser(array('u.id' => $id));
 				if ($user['id']) {
 					if ($user['deletable'] === NULL) { // delete allowed
-						$this->User_model->set_deleted_at($id);
+						$this->User_model->set_deleted_at(array('id' => $id, 'deletable' => NULL, 'deleted_at' => NULL));
 						$error = $this->db->error();
 						if ($this->db->affected_rows() == 1) {
 							echo json_encode(array('success' => true, 'type' => 'success', 'id' => $id, 'message' => 'Successfully deleted user <strong><em>' . $user['first_name'] . '</em></strong> !'));

@@ -196,9 +196,9 @@ class User_model extends CI_Model
         $cnt = $query->row_array();
         return $cnt['AUTO_INCREMENT'];
     }
-    function set_deleted_at($id) // mark as deleted
+    function set_deleted_at($where) // mark as deleted
     {
-        $this->db->where(array('id' => $id, 'deletable' => NULL, 'deleted_at' => NULL));
+        $this->db->where($where);
         $this->db->set('deleted_at', 'NOW()', FALSE); // deleted rows have a timestamp
         $query = $this->db->update(TABLE_USER);
         return $query;
