@@ -22,11 +22,11 @@ class Tax extends CI_Controller
 						$order = $this->input->get('order')[0]['dir']; // order asc or desc
 						$search = $this->input->get('search')['value']; // search query
 						$offset = $this->input->get('start'); // start position
-						$query = $this->Tax_model->listTaxes($search, $offset, $limit, $order_by, $order);
+						$query = $this->Tax_model->datatable_data($search, $offset, $limit, $order_by, $order);
 						$data['data'] = $query->result();
 						$data["draw"] = $this->input->get('draw'); // unique
-						$data["recordsTotal"] = $this->Tax_model->totalRows();
-						$data["recordsFiltered"] = $this->Tax_model->listTaxes_FilteredCount($search);
+						$data["recordsTotal"] = $this->Tax_model->datatable_recordsTotal();
+						$data["recordsFiltered"] = $this->Tax_model->datatable_recordsFiltered($search);
 						$data['success'] = true;
 						//$data[ 'error' ] = '';
 						echo json_encode($data);
@@ -42,8 +42,8 @@ class Tax extends CI_Controller
 					'name'			=> $this->input->post('name'),
 					'code'			=> $this->input->post('code'),
 					'rate'			=> $this->input->post('rate'),
-					'type'			=> $this->input->post('type'),
-					'description'	=> $this->input->post('description') == NULL ? NULL : $this->input->post('description')
+					'type'			=> $this->input->post('type') ?: 'P',
+					'description'	=> $this->input->post('description') ?: NULL
 				);
 				//$data['rate'] = 'error';
 				$this->form_validation->set_data($data);
@@ -51,27 +51,27 @@ class Tax extends CI_Controller
 				$config = array(
 					array(
 						'field' => 'name',
-						'label' => 'Tax Name',
+						'label' => 'Name',
 						'rules' => 'required|max_length[50]|xss_clean|trim'
 					),
 					array(
 						'field' => 'code',
-						'label' => 'Tax Code',
+						'label' => 'Code',
 						'rules' => 'required|max_length[50]|is_unique[' . TABLE_TAX_RATE . '.code]|xss_clean|trim'
 					),
 					array(
 						'field' => 'rate',
-						'label' => 'Tax Rate',
+						'label' => 'Rate',
 						'rules' => 'required|numeric|max_length[10]|' . $rule_rate . '|xss_clean|trim'
 					),
 					array(
 						'field' => 'type',
-						'label' => 'Tax Type',
-						'rules' => 'required|min_length[1]|xss_clean|trim'
+						'label' => 'Type',
+						'rules' => 'required|in_list[P,F]|min_length[1]|xss_clean|trim'
 					),
 					array(
 						'field' => 'description',
-						'label' => 'Tax Description',
+						'label' => 'Description',
 						'rules' => 'max_length[100]|xss_clean|trim'
 					)
 				);
@@ -95,8 +95,8 @@ class Tax extends CI_Controller
 					'name'			=> $this->input->post('name'),
 					'code'			=> $this->input->post('code'),
 					'rate'			=> $this->input->post('rate'),
-					'type'			=> $this->input->post('type'),
-					'description'	=> $this->input->post('description') == NULL ? NULL : $this->input->post('description')
+					'type'			=> $this->input->post('type') ?: 'P',
+					'description'	=> $this->input->post('description') ?: NULL
 				);
 				$id = $this->input->post('db')['id'];
 				//$data['rate'] = 'error';
@@ -106,27 +106,27 @@ class Tax extends CI_Controller
 				$config = array(
 					array(
 						'field' => 'name',
-						'label' => 'Tax Name',
+						'label' => 'Name',
 						'rules' => 'required|max_length[50]|xss_clean|trim'
 					),
 					array(
 						'field' => 'code',
-						'label' => 'Tax Code',
+						'label' => 'Code',
 						'rules' => 'required|max_length[50]|' . $rule_code . '|xss_clean|trim'
 					),
 					array(
 						'field' => 'rate',
-						'label' => 'Tax Rate',
+						'label' => 'Rate',
 						'rules' => 'required|numeric|max_length[10]|' . $rule_rate . '|xss_clean|trim'
 					),
 					array(
 						'field' => 'type',
-						'label' => 'Tax Type',
-						'rules' => 'required|min_length[1]|xss_clean|trim'
+						'label' => 'Type',
+						'rules' => 'required|in_list[P,F]|min_length[1]|xss_clean|trim'
 					),
 					array(
 						'field' => 'description',
-						'label' => 'Tax Description',
+						'label' => 'Description',
 						'rules' => 'max_length[100]|xss_clean|trim'
 					)
 				);
@@ -135,7 +135,7 @@ class Tax extends CI_Controller
 					echo json_encode(array('success' => false, 'errors' => $this->form_validation->error_array()));
 				} else {
 					//$data['manual_error'] = 'error';
-					$this->db->update(TABLE_TAX_RATE, $data, array('id' => $this->input->post('db')['id']));
+					 $this->Tax_model->update_tax_rate($data, array('id' => $id, 'editable' => NULL, 'deleted_at' => NULL));
 					if ($this->db->affected_rows() == 1) {
 						echo json_encode(array('success' => true, 'type' => 'success', 'id' => $this->input->post('db')['id'], 'message' => 'Successfully updated tax <strong><em>' . $this->input->post('db')['name'] . '</em></strong> !', 'timeout' => 5000));
 					} else if ($this->db->affected_rows() == 0) {
@@ -150,17 +150,15 @@ class Tax extends CI_Controller
 				if (isset($this->input->post('data')['id'])) { // single delete
 					$_POST = $this->input->post('data');
 					$id = $this->input->post('id');
-					$query = $this->Tax_model->deleteById($id);
+					$query = $this->Tax_model->set_deleted_at(array('id' => $id, 'deletable' => NULL, 'deleted_at' => NULL));
 					$error = $this->db->error();
-					if ($error['code'] == 1451) {
-						echo json_encode(array('success' => false, 'type' => 'danger', 'id' => $id, 'error' => 'Delete all data associated with the tax <strong><i>' . $this->input->post('name') . '</i></strong> then try again !'));
-					} else if ($error['code'] == 0 && $this->db->affected_rows() == 1) {
+					if ($this->db->affected_rows() == 1) {
 						echo json_encode(array('success' => true, 'type' => 'success', 'id' => $id, 'message' => 'Successfully deleted tax <strong><em>' . $this->input->post('name') . '</em></strong> !'));
 					} else {
 						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));
 					}
 				} else {
-					$ids = array();
+					/*$ids = array();
 					foreach ($this->input->post('data') as $key => $value) {
 						array_push($ids, $value['id']);
 					}
@@ -174,12 +172,11 @@ class Tax extends CI_Controller
 						echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Taxes successfully deleted !'));
 					} else {
 						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));
-					}
+					}*/
 				}
 				break;
 			default:
-				$error = array('success' => false, 'type' => 'danger', 'error' => 'Unknown Request Method Found !');
-				echo json_encode($error);
+				echo json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Unknown Request Method !'));
 		}
 	}
 	public function same_name_rate_check($rate, $name)

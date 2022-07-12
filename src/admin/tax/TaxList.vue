@@ -429,7 +429,7 @@ export default {
       self
         .axiosAsyncCallReturnData(
           "delete",
-          "unit",
+          "tax",
           {
             data: data,
             action: "delete",

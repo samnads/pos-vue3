@@ -63,9 +63,10 @@
             <div class="row">
               <div class="col">
                 <label class="form-label">Tax Rate<i>*</i></label>
-                <div class="input-group">
+                <div class="input-group has-validation">
                   <input
-                    type="text"
+                    type="number"
+                    step="any"
                     name="rate"
                     v-model="rate"
                     class="form-control"
@@ -81,22 +82,37 @@
                     <input
                       class="form-check-input mt-0"
                       type="radio"
+                      value="P"
                       name="type"
                       v-model="type"
-                      aria-label="Radio button for following text input"
+                      v-bind:class="[
+                        errorType
+                          ? 'is-invalid'
+                          : !errorType && type
+                          ? 'is-valid'
+                          : '',
+                      ]"
                     />&nbsp;%
                   </div>
                   <div class="input-group-text">
                     <input
                       class="form-check-input mt-0"
                       type="radio"
+                      value="F"
                       name="type"
                       v-model="type"
-                      aria-label="Radio button for following text input"
+                      v-bind:class="[
+                        errorType
+                          ? 'is-invalid'
+                          : !errorType && type
+                          ? 'is-valid'
+                          : '',
+                      ]"
                     />&nbsp;Fixed
+                    <div class="invalid-feedback">{{ errorType }}</div>
                   </div>
+                  <div class="invalid-feedback">{{ errorRate }}</div>
                 </div>
-                <div class="invalid-feedback">{{ errorRate }}</div>
               </div>
             </div>
             <div class="row">
@@ -201,12 +217,7 @@ export default {
           .nullable(true)
           .transform((_, val) => (val.length > 0 ? val : undefined))
           .label("Code"),
-        rate: yup
-          .number()
-          .required()
-          .nullable(true)
-          .transform((_, val) => (val.length > 0 ? val : undefined))
-          .label("Rate"),
+        rate: yup.number().required().nullable(true).label("Rate"),
         type: yup
           .string()
           .required()
@@ -244,6 +255,8 @@ export default {
         let fields = DATA.value.data;
         setFieldValue("name", fields.name);
         setFieldValue("code", fields.code);
+        setFieldValue("rate", fields.rate);
+        setFieldValue("type", fields.type);
         setFieldValue("description", fields.description || "");
       } else {
         //
@@ -252,7 +265,9 @@ export default {
     });
     /************************************************************************* */
     // eslint-disable-next-line
-    function onInvalidSubmit({ values, errors, results }) {}
+    function onInvalidSubmit({ values, errors, results }) {
+      console.log(errors);
+    }
     const onSubmit = handleSubmit((values, { resetForm }) => {
       values.db = DATA.value.data;
       let method = DATA.value.data ? "put" : "post";
@@ -273,7 +288,7 @@ export default {
       }
       return axiosAsyncCallReturnData(
         method,
-        "unit",
+        "tax",
         {
           data: values,
           action: action,
@@ -317,6 +332,8 @@ export default {
         let fields = DATA.value.data;
         setFieldValue("name", fields.name);
         setFieldValue("code", fields.code);
+        setFieldValue("rate", fields.rate);
+        setFieldValue("type", fields.type);
         setFieldValue("description", fields.description || "");
       } else {
         // new
