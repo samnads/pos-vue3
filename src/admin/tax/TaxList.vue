@@ -37,14 +37,11 @@
     >
       <thead>
         <tr>
-          <th scope="col">
-            <i class="fa-solid fa-scale-unbalanced"></i>
-          </th>
           <th scope="col" class="d-none">ID</th>
           <th scope="col">Name</th>
           <th scope="col">Code</th>
           <th scope="col">Tax Rate</th>
-          <th scope="col">Type</th>
+          <th scope="col">Calculation Type</th>
           <th scope="col">Description</th>
           <th scope="col"><i class="fa-solid fa-bars"></i></th>
         </tr>
@@ -107,7 +104,7 @@ export default {
           fixedColumnsLeft: 1,
           fixedColumnsRight: 1,
         },
-        order: [[1, "desc"]],
+        order: [[0, "desc"]],
         ajax: {
           method: "GET",
           url: process.env.VUE_APP_API_ROOT + "admin/ajax/tax",
@@ -156,9 +153,6 @@ export default {
         },
         columns: [
           {
-            data: null,
-          },
-          {
             data: "id",
           },
           {
@@ -183,19 +177,15 @@ export default {
         columnDefs: [
           {
             targets: [0],
-            orderable: false,
-            width: "2%",
-            searchable: false,
-            defaultContent: '<i class="fa-solid fa-scale-unbalanced"></i>',
-          },
-          {
-            targets: [1],
             className: "d-none",
             searchable: false,
           },
           {
+            targets: [1],
+            className: "align-middle fw-bold",
+          },
+          {
             targets: [2],
-            width: "1%",
             className: "align-middle",
           },
           {
@@ -205,18 +195,14 @@ export default {
           {
             targets: [4],
             className: "align-middle",
-          },
-          {
-            targets: [5],
-            className: "align-middle",
             render: function (data, type, row, meta) {
               return data == "P"
-                ? '<i class="small text-muted">Percentage</i>'
-                : '<i class="small">Fixed</i>';
+                ? '<i class="small"><i class="fa-solid fa-percent"></i>&nbsp;Percentage</i>'
+                : '<i class="small"><i class="fa-solid fa-hand-holding-dollar"></i>&nbsp;Fixed</i>';
             },
           },
           {
-            targets: [6],
+            targets: [5],
             className: "align-middle",
             render: function (data, type, row, meta) {
               return data == null
@@ -225,7 +211,7 @@ export default {
             },
           },
           {
-            targets: [7],
+            targets: [6],
             className: "text-center align-middle",
             orderable: false,
             searchable: false,
@@ -267,7 +253,7 @@ export default {
             text: '<i class="fa-solid fa-print"></i>',
             className: "btn-light",
             exportOptions: {
-              columns: [2, 3, 4, 5, 6],
+              columns: [1, 2, 3, 4, 5],
             },
             attr: {
               "data-bs-toggle": "tooltip",
@@ -279,7 +265,7 @@ export default {
             text: '<i class="fas fa-download"></i>',
             className: "btn-light",
             exportOptions: {
-              columns: [2, 3, 4, 5, 6],
+              columns: [1, 2, 3, 4, 5],
             },
             attr: {
               "data-toggle": "tooltip",
@@ -292,7 +278,7 @@ export default {
             text: '<i class="fas fa-file-excel"></i>',
             className: "btn-light",
             exportOptions: {
-              columns: [2, 3, 4, 5, 6],
+              columns: [1, 2, 3, 4, 5],
             },
             attr: {
               "data-toggle": "tooltip",
@@ -304,7 +290,7 @@ export default {
             text: '<i class="fas fa-file-csv"></i>',
             className: "btn-light",
             exportOptions: {
-              columns: [2, 3, 4, 5, 6],
+              columns: [1, 2, 3, 4, 5],
             },
             attr: {
               "data-toggle": "tooltip",

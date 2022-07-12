@@ -112,9 +112,10 @@ defined('TABLE_CUSTOMER_GROUP')     or define('TABLE_CUSTOMER_GROUP', 'customer_
 defined('TABLE_WAREHOUSE')          or define('TABLE_WAREHOUSE', 'warehouse');
 defined('TABLE_SUPPLIER')           or define('TABLE_SUPPLIER', 'supplier');
 defined('TABLE_MODULE')             or define('TABLE_MODULE', 'module');
+defined('TABLE_PERMISSION')         or define('TABLE_PERMISSION', 'permission');
+defined('TABLE_MODULE_PERMISSION')  or define('TABLE_MODULE_PERMISSION', 'module_permission');
 defined('TABLE_ROLE')               or define('TABLE_ROLE', 'role');
 defined('TABLE_STATUS')             or define('TABLE_STATUS', 'status');
-defined('TABLE_PERMISSION')         or define('TABLE_PERMISSION', 'permission');
 defined('TABLE_ROLE_PERMISSION')    or define('TABLE_ROLE_PERMISSION', 'role_permission');
 defined('TABLE_STOCK_ADJUSTMENT')   or define('TABLE_STOCK_ADJUSTMENT', 'stock_adjustment');
 defined('TABLE_STOCK_ADJUSTMENT_PRODUCT')    or define('TABLE_STOCK_ADJUSTMENT_PRODUCT', 'stock_adjustment_product');

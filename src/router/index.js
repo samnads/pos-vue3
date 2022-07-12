@@ -38,6 +38,8 @@ import AdminUnitList from '../admin/unit/UnitList.vue'
 // Tax based pages
 import AdminTaxMain from '../admin/tax/TaxMain.vue'
 import AdminTaxList from '../admin/tax/TaxList.vue'
+// TEST pages
+import AdminTestQuery from '../admin/test_query.vue'
 // error pages
 import PageNotFound from '../admin/PageNotFound.vue'
 
@@ -237,6 +239,11 @@ const routes = [
       {
         path: 'profile',
         component: AdminProfile,
+      },
+      {
+        path: 'test_query',
+        name: 'test_query',
+        component: AdminTestQuery,
       },
       {
         path: '/:pathMatch(.*)*',

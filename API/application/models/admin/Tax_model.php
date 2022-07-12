@@ -69,6 +69,11 @@ class Tax_model extends CI_Model
         $query = $this->db->update(TABLE_TAX_RATE);
         return $query;
     }
+    function insert_tax_rate($data)
+    {
+        $query = $this->db->insert(TABLE_TAX_RATE, $data);
+        return $query;
+    }
     function update_tax_rate($data, $where)
     {
         $query = $this->db->update(TABLE_TAX_RATE, $data, $where);

@@ -80,7 +80,7 @@ class Tax extends CI_Controller
 					echo json_encode(array('success' => false, 'errors' => $this->form_validation->error_array()));
 				} else {
 					//$data['manual_error'] = 'error';
-					$this->db->insert(TABLE_TAX_RATE, $data);
+					$this->Tax_model->insert_tax_rate($data);
 					if ($this->db->affected_rows() == 1) {
 						echo json_encode(array('success' => true, 'type' => 'success', 'id' => $this->db->insert_id(), 'message' => 'Successfully added new tax <strong><em>' . $data['name'] . '</em></strong> !', 'timeout' => 5000));
 					} else {
@@ -150,7 +150,7 @@ class Tax extends CI_Controller
 				if (isset($this->input->post('data')['id'])) { // single delete
 					$_POST = $this->input->post('data');
 					$id = $this->input->post('id');
-					$query = $this->Tax_model->set_deleted_at(array('id' => $id, 'deletable' => NULL, 'deleted_at' => NULL));
+					$this->Tax_model->set_deleted_at(array('id' => $id, 'deletable' => NULL, 'deleted_at' => NULL));
 					$error = $this->db->error();
 					if ($this->db->affected_rows() == 1) {
 						echo json_encode(array('success' => true, 'type' => 'success', 'id' => $id, 'message' => 'Successfully deleted tax <strong><em>' . $this->input->post('name') . '</em></strong> !'));

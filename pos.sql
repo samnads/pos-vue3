@@ -44,7 +44,7 @@ CREATE TABLE `brand` (
   UNIQUE KEY `code` (`code`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `image` (`image`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=119 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `brand` (`id`, `code`, `name`, `image`, `description`, `deletable`, `editable`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (1,	'LX',	'Lexi',	NULL,	'Tesssssssssst.......',	0,	0,	'2021-01-24 06:01:28',	'2022-07-07 17:06:42',	NULL),
@@ -59,7 +59,8 @@ INSERT INTO `brand` (`id`, `code`, `name`, `image`, `description`, `deletable`, 
 (76,	'ytr',	'ryrty',	NULL,	'rtyrtyy',	NULL,	NULL,	'2021-05-11 20:53:39',	NULL,	NULL),
 (77,	'7567',	'756',	NULL,	'676',	NULL,	NULL,	'2021-05-11 22:17:08',	NULL,	NULL),
 (78,	'567',	'567',	NULL,	'657567',	NULL,	NULL,	'2021-05-17 19:12:50',	NULL,	NULL),
-(81,	'ty',	'ytuty',	NULL,	't76878',	NULL,	NULL,	'2021-08-19 19:54:10',	NULL,	NULL);
+(81,	'ty',	'ytuty',	NULL,	't76878',	NULL,	NULL,	'2021-08-19 19:54:10',	NULL,	NULL),
+(118,	'BRAN0118',	'oikpiopip',	NULL,	NULL,	NULL,	NULL,	'2022-07-09 14:43:31',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `category`;
 CREATE TABLE `category` (
@@ -77,7 +78,7 @@ CREATE TABLE `category` (
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `slug` (`slug`),
   UNIQUE KEY `image` (`image`) USING HASH
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `category` (`id`, `code`, `name`, `slug`, `image`, `description`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (1,	'SI',	'School Items',	'school-items',	NULL,	'uidgdgfd',	'2021-01-24 05:49:06',	NULL,	NULL),
@@ -110,7 +111,7 @@ CREATE TABLE `currency` (
   UNIQUE KEY `code` (`code`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `symbol` (`symbol`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `currency` (`id`, `code`, `name`, `symbol`, `rate`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (1,	'INR',	'Indian Rupee',	'₹',	1,	'2021-03-02 14:11:32',	NULL,	NULL),
@@ -140,16 +141,16 @@ CREATE TABLE `customer` (
   UNIQUE KEY `email` (`email`),
   KEY `group` (`group`),
   CONSTRAINT `customer_ibfk_1` FOREIGN KEY (`group`) REFERENCES `customer_group` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `customer` (`id`, `code`, `group`, `name`, `place`, `email`, `phone`, `address`, `pin_code`, `city`, `description`, `editable`, `deletable`, `status`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(41,	'CUST0041',	1,	'uyuytu',	'yuytuyuyt',	NULL,	NULL,	NULL,	NULL,	NULL,	'oipi',	NULL,	NULL,	'ACTIVE',	'2022-06-30 16:11:34',	'2022-07-06 17:06:23',	NULL),
+(41,	'CUST0041',	1,	'uyuytu',	'yuytuyuyt',	NULL,	NULL,	NULL,	NULL,	NULL,	'oipi',	NULL,	NULL,	'ACTIVE',	'2022-06-30 16:11:34',	'2022-07-09 13:54:01',	'2022-07-09 13:54:01'),
 (42,	'CUST0042',	3,	'yuyuyu',	'yuyuyu',	NULL,	NULL,	'898',	NULL,	NULL,	'88890',	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:26:31',	'2022-07-06 17:05:31',	'2022-07-06 17:05:31'),
 (44,	'CUST0044',	2,	'aaa',	'tytyt',	'dfdf@fg.ghgh',	'565656',	'jhkuhoi',	'65656',	'6565',	'uiiouioiuo',	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:38:41',	'2022-07-06 17:04:48',	'2022-07-06 17:04:48'),
 (45,	'CUST0045',	2,	'tyutu6767',	'6767',	NULL,	NULL,	'jkjk',	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:51:58',	'2022-07-01 14:26:53',	'2022-07-01 14:26:53'),
 (48,	'CUST0048',	4,	'aaaa',	'aaa',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	0,	0,	'ACTIVE',	'2022-07-01 04:52:16',	'2022-07-01 14:26:40',	NULL),
 (50,	'CUST0050',	2,	'rtdtg',	'ggfg',	NULL,	NULL,	NULL,	NULL,	NULL,	'klklkluy',	NULL,	NULL,	'ACTIVE',	'2022-07-01 04:52:27',	'2022-07-06 17:12:57',	NULL),
-(51,	'CUST0051',	1,	'kjjhkjk',	'uiuii',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-07-01 05:38:54',	'2022-07-01 14:26:40',	NULL),
+(51,	'CUST0051',	1,	'kjjhkjk',	'uiuii',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-07-01 05:38:54',	'2022-07-09 13:53:54',	'2022-07-09 13:53:54'),
 (52,	'CUST0052',	1,	'tyutyu',	'yutyutyu',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	0,	'ACTIVE',	'2022-07-01 06:50:43',	'2022-07-01 14:26:40',	NULL),
 (53,	'CUST0053',	2,	'jmhjhgj',	'hjhgjghjhgj',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-07-06 17:13:05',	NULL,	NULL);
 
@@ -163,7 +164,7 @@ CREATE TABLE `customer_group` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `customer_group` (`id`, `name`, `percentage`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (1,	'General',	0.0000,	'2021-04-02 06:33:09',	NULL,	NULL),
@@ -179,7 +180,7 @@ CREATE TABLE `gender` (
   `description` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `gender` (`id`, `name`, `code`, `description`) VALUES
 (1,	'Male',	'M',	NULL),
@@ -206,7 +207,7 @@ CREATE TABLE `label_size` (
   `margin_l` float(6,2) NOT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `label_size` (`id`, `code`, `name`, `p_width`, `p_height`, `labels`, `l_width`, `l_height`, `rows`, `columns`, `row_gutter`, `column_gutter`, `margin_t`, `margin_r`, `margin_b`, `margin_l`, `deleted_at`) VALUES
 (1,	'A456',	'A4 56 Label Per Page',	210.00,	297.00,	56.00,	48.00,	20.00,	14.00,	4.00,	1.00,	2.00,	2.00,	6.00,	2.00,	6.00,	NULL),
@@ -221,19 +222,19 @@ CREATE TABLE `module` (
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `module` (`id`, `name`, `description`, `added_at`, `updated_at`) VALUES
 (1,	'product',	'',	'2022-07-06 11:59:05',	NULL),
 (2,	'category',	'',	'2022-07-06 11:59:05',	NULL),
 (3,	'brand',	'This module is for product brands, here you can set permission for add, edit, update and delete the brands.',	'2022-07-06 11:59:05',	NULL),
-(4,	'tax',	'',	'2022-07-06 11:59:05',	NULL),
+(4,	'tax',	'This module can add create unique tax name based on tax rate and calculation type.',	'2022-07-06 11:59:05',	'2022-07-12 16:41:18'),
 (5,	'unit',	'',	'2022-07-06 11:59:05',	NULL),
 (6,	'supplier',	'',	'2022-07-06 11:59:05',	NULL),
 (7,	'customer',	'',	'2022-07-06 11:59:05',	NULL),
 (8,	'user',	'',	'2022-07-06 11:59:05',	NULL),
 (9,	'warehouse',	'',	'2022-07-06 11:59:05',	NULL),
-(10,	'role',	'',	'2022-07-06 11:59:05',	NULL),
+(10,	'role',	'Role is to restrict or allow actions based on user level.',	'2022-07-06 11:59:05',	'2022-07-12 13:31:17'),
 (11,	'pos',	'',	'2022-07-06 11:59:05',	NULL),
 (12,	'type',	'',	'2022-07-06 11:59:05',	NULL),
 (13,	'symbology',	'',	'2022-07-06 11:59:05',	NULL),
@@ -244,43 +245,44 @@ INSERT INTO `module` (`id`, `name`, `description`, `added_at`, `updated_at`) VAL
 
 DROP TABLE IF EXISTS `module_permission`;
 CREATE TABLE `module_permission` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
   `module` int(11) NOT NULL,
   `permission` int(11) NOT NULL,
-  `read_only` tinyint(1) DEFAULT NULL COMMENT 'manually added rows',
-  `allow` tinyint(1) DEFAULT NULL,
   `comments` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`),
   UNIQUE KEY `module_permission` (`module`,`permission`),
   KEY `permission` (`permission`),
   CONSTRAINT `module_permission_ibfk_1` FOREIGN KEY (`module`) REFERENCES `module` (`id`),
   CONSTRAINT `module_permission_ibfk_2` FOREIGN KEY (`permission`) REFERENCES `permission` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Available Permissions for each modules';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COMMENT='Available Permissions for each modules';
 
-INSERT INTO `module_permission` (`module`, `permission`, `read_only`, `allow`, `comments`) VALUES
-(10,	1,	1,	1,	'ROLE - post'),
-(10,	2,	1,	1,	'ROLE - get'),
-(10,	3,	1,	1,	'ROLE - put'),
-(10,	4,	1,	1,	'ROLE - delete'),
-(10,	6,	1,	1,	'ROLE - datatable');
+INSERT INTO `module_permission` (`id`, `module`, `permission`, `comments`) VALUES
+(1,	4,	6,	NULL),
+(2,	10,	1,	'ROLE - post'),
+(3,	10,	3,	'ROLE - put'),
+(4,	10,	4,	'ROLE - delete'),
+(5,	10,	6,	'ROLE - datatable');
 
 DROP TABLE IF EXISTS `permission`;
 CREATE TABLE `permission` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
+  `usage` varchar(100) NOT NULL,
   `added_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `permission` (`id`, `name`, `added_at`, `updated_at`) VALUES
-(1,	'create',	'2021-05-07 16:33:13',	'2022-07-06 16:41:06'),
-(2,	'read',	'2021-05-07 16:33:28',	'2022-07-06 16:42:42'),
-(3,	'update',	'2021-05-07 16:33:34',	'2022-07-06 16:41:27'),
-(4,	'delete',	'2021-05-07 16:33:39',	'2022-07-06 15:07:33'),
-(5,	'dropdown',	'2021-08-02 18:46:06',	'2022-07-06 17:10:05'),
-(6,	'datatable',	'2021-08-07 19:31:59',	'2022-07-06 13:42:37'),
-(7,	'details',	'2022-07-06 17:31:43',	NULL),
-(8,	'search_product',	'2022-07-07 07:55:03',	'2022-07-07 13:15:47');
+INSERT INTO `permission` (`id`, `name`, `usage`, `added_at`, `updated_at`) VALUES
+(1,	'create',	'Create',	'2021-05-07 16:33:13',	'2022-07-12 12:23:58'),
+(2,	'read',	'Read',	'2021-05-07 16:33:28',	'2022-07-12 12:24:26'),
+(3,	'update',	'Update',	'2021-05-07 16:33:34',	'2022-07-12 12:24:14'),
+(4,	'delete',	'Delete',	'2021-05-07 16:33:39',	'2022-07-12 12:24:21'),
+(5,	'dropdown',	'Dropdown Item',	'2021-08-02 18:46:06',	'2022-07-12 12:24:47'),
+(6,	'datatable',	'Data Table',	'2021-08-07 19:31:59',	'2022-07-12 12:25:08'),
+(7,	'details',	'Details View',	'2022-07-06 17:31:43',	'2022-07-12 12:25:28'),
+(8,	'search_product',	'Search',	'2022-07-07 07:55:03',	'2022-07-12 12:25:44');
 
 DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product` (
@@ -351,7 +353,7 @@ CREATE TABLE `product` (
   CONSTRAINT `product_ibfk_1` FOREIGN KEY (`symbology`) REFERENCES `symbology` (`id`),
   CONSTRAINT `price_check` CHECK (`price` <= `mrp`),
   CONSTRAINT `pos_max_sale_qty_check` CHECK (`pos_max_sale_qty` >= `pos_min_sale_qty`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=189 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `product` (`id`, `type`, `code`, `symbology`, `name`, `slug`, `thumbnail`, `weight`, `category`, `sub_category`, `brand`, `unit`, `p_unit`, `s_unit`, `is_auto_cost`, `cost`, `mrp`, `markup`, `price`, `auto_discount`, `mfg_date`, `exp_date`, `tax_method`, `tax_rate`, `quantity`, `alert`, `alert_quantity`, `pos_sale`, `custom_discount`, `pos_min_sale_qty`, `pos_max_sale_qty`, `pos_sale_note`, `pos_custom_discount`, `pos_custom_tax`, `pos_data_field_1`, `pos_data_field_2`, `pos_data_field_3`, `pos_data_field_4`, `pos_data_field_5`, `pos_data_field_6`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (1,	1,	'37519985',	1,	'King Book',	'king-book',	'https://www.escoffier.edu/wp-content/uploads/reading-is-a-great-way-to-continue-your-growth-as-a-chef_1028_40137340_1_14130186_500.jpg',	NULL,	1,	1,	3,	1,	NULL,	NULL,	'1',	NULL,	35.0000,	0.0000,	30.0000,	NULL,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	3,	NULL,	NULL,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:14:30',	'2021-04-03 23:59:43',	NULL),
@@ -387,7 +389,7 @@ CREATE TABLE `product_gallery` (
   UNIQUE KEY `image` (`image`),
   KEY `product_id` (`product`),
   CONSTRAINT `product_gallery_ibfk_1` FOREIGN KEY (`product`) REFERENCES `product` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `product_gallery` (`id`, `product`, `image`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (2,	1,	'fgfgdgfg',	'2021-04-06 05:59:32',	'2021-04-06 05:59:50',	NULL);
@@ -420,7 +422,7 @@ CREATE TABLE `product_stock` (
   KEY `warehouse` (`warehouse`),
   CONSTRAINT `product_stock_ibfk_1` FOREIGN KEY (`product`) REFERENCES `product` (`id`),
   CONSTRAINT `product_stock_ibfk_2` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4;
 
 
 DROP TABLE IF EXISTS `product_type`;
@@ -433,7 +435,7 @@ CREATE TABLE `product_type` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `product_type` (`id`, `code`, `name`, `description`, `deleted_at`) VALUES
 (1,	'S',	'Standard Product',	'Standard Product hereeeeeee',	NULL),
@@ -455,7 +457,7 @@ CREATE TABLE `role` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='This is user groups';
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COMMENT='This is user groups';
 
 INSERT INTO `role` (`id`, `name`, `description`, `editable`, `updatable_rights`, `deletable`, `limit`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (1,	'Administrator',	'All permissions allowed.',	0,	0,	0,	1,	'2021-04-21 00:19:28',	'2022-07-06 12:10:28',	NULL),
@@ -491,6 +493,14 @@ INSERT INTO `role_permission` (`role_id`, `module_id`, `permission_id`, `readonl
 (1,	3,	3,	1,	'BRAND - update',	1,	'2022-07-07 15:50:35',	NULL),
 (1,	3,	4,	1,	'BRAND - delete',	1,	'2022-07-07 16:49:43',	NULL),
 (1,	3,	6,	1,	'BRAND - datatable',	1,	'2022-07-07 14:03:41',	NULL),
+(1,	4,	1,	1,	'TAX RATE - create',	1,	'2022-07-12 07:23:28',	NULL),
+(1,	4,	3,	1,	'TAX RATE - update',	1,	'2022-07-12 06:58:18',	NULL),
+(1,	4,	4,	1,	'TAX RATE - delete',	1,	'2022-07-12 07:29:35',	NULL),
+(1,	4,	6,	1,	'TAX RATE - datatable',	1,	'2022-07-09 17:13:42',	NULL),
+(1,	5,	1,	1,	'UNIT - create',	1,	'2022-07-09 14:44:52',	NULL),
+(1,	5,	3,	1,	'UNIT - update',	1,	'2022-07-09 16:41:23',	NULL),
+(1,	5,	4,	1,	'UNIT - delete',	1,	'2022-07-09 14:54:21',	'2022-07-09 14:55:02'),
+(1,	5,	6,	1,	'UNIT - datatable',	1,	'2022-07-09 14:50:33',	'2022-07-09 14:54:50'),
 (1,	6,	1,	1,	'SUPPLIER - create',	1,	'2021-09-29 18:24:05',	'2022-07-06 16:55:02'),
 (1,	6,	3,	1,	'SUPPLIER - update',	1,	'2021-09-29 18:24:05',	'2022-07-06 16:55:02'),
 (1,	6,	4,	1,	'SUPPLIER - delete',	1,	'2021-09-29 18:24:05',	'2022-07-06 16:55:02'),
@@ -538,7 +548,7 @@ CREATE TABLE `status` (
   `user_status` tinyint(1) DEFAULT NULL,
   `warehouse_status` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `status` (`id`, `name`, `css_class`, `css_color`, `online_status`, `payment_status`, `order_status`, `role_status`, `user_status`, `warehouse_status`) VALUES
 (1,	'online',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL),
@@ -579,7 +589,7 @@ CREATE TABLE `stock_adjustment` (
   KEY `added_by` (`added_by`),
   CONSTRAINT `stock_adjustment_ibfk_2` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`),
   CONSTRAINT `stock_adjustment_ibfk_3` FOREIGN KEY (`added_by`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=176 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `stock_adjustment` (`id`, `warehouse`, `added_by`, `date`, `time`, `reference_no`, `note`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (104,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2021-10-30 18:52:14',	'2022-06-24 10:44:46',	NULL),
@@ -649,7 +659,7 @@ CREATE TABLE `stock_adjustment_product` (
   KEY `product_id` (`product`),
   CONSTRAINT `stock_adjustment_product_ibfk_1` FOREIGN KEY (`stock_adjustment`) REFERENCES `stock_adjustment` (`id`),
   CONSTRAINT `stock_adjustment_product_ibfk_2` FOREIGN KEY (`product`) REFERENCES `product` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=311 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `stock_adjustment_product` (`id`, `stock_adjustment`, `product`, `note`, `quantity`) VALUES
 (103,	104,	5,	'eqq',	4.0000),
@@ -768,7 +778,7 @@ CREATE TABLE `sub_category` (
   UNIQUE KEY `image` (`image`) USING HASH,
   KEY `sub_category_category` (`category`),
   CONSTRAINT `sub_category_category` FOREIGN KEY (`category`) REFERENCES `category` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `sub_category` (`id`, `category`, `code`, `name`, `slug`, `image`, `description`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (1,	1,	'B',	'Books',	'books',	NULL,	'fg fsf f ffdd',	'2021-01-24 05:50:07',	'2021-05-11 15:54:41',	NULL),
@@ -837,7 +847,7 @@ CREATE TABLE `supplier` (
   UNIQUE KEY `code` (`code`),
   UNIQUE KEY `phone` (`phone`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=108 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `supplier` (`id`, `code`, `name`, `place`, `address`, `pin_code`, `city`, `phone`, `email`, `gst_no`, `tax_no`, `description`, `editable`, `deletable`, `status`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (83,	'SUPP0083',	'fgdfg',	'fdgdg',	NULL,	NULL,	NULL,	'45546',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 12:25:23',	'2022-07-01 14:14:35',	NULL),
@@ -845,8 +855,7 @@ INSERT INTO `supplier` (`id`, `code`, `name`, `place`, `address`, `pin_code`, `c
 (87,	'SUPP0087',	'rt5rt56546',	'565656544',	NULL,	NULL,	NULL,	'65654656',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:25:18',	'2022-07-01 14:14:35',	NULL),
 (88,	'SUPP0088',	'tryt',	'rwrr5',	NULL,	NULL,	NULL,	'53535355',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:30:51',	'2022-07-01 14:14:35',	NULL),
 (89,	'SUPP0089',	'eeeeeeeeee',	'rrrrrrrrrrr',	NULL,	NULL,	NULL,	'6664564564',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:31:29',	'2022-07-01 14:14:35',	NULL),
-(90,	'SUPP0090',	'tyryrty',	'rty6575',	NULL,	NULL,	NULL,	'5764465656',	NULL,	NULL,	NULL,	'987',	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:33:00',	'2022-07-01 14:14:35',	NULL),
-(91,	'SUPP0091',	'ryrtyrty',	'tyrytry',	NULL,	NULL,	NULL,	'564335466',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:34:00',	'2022-07-01 14:14:35',	NULL),
+(91,	'SUPP0091',	'ryrtyrty',	'tyrytry',	NULL,	NULL,	NULL,	'564335466',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:34:00',	'2022-07-09 13:44:50',	'2022-07-09 13:44:50'),
 (92,	'SUPP0092',	'utyu6',	'7576',	NULL,	NULL,	NULL,	'4368455447',	NULL,	NULL,	NULL,	'uiouo9',	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:34:12',	'2022-07-01 14:19:54',	'2022-07-01 14:19:54'),
 (93,	'SUPP0093',	'fggfg',	'gfdsser',	NULL,	NULL,	NULL,	'0000000000000',	NULL,	NULL,	NULL,	'o88',	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:34:25',	'2022-07-01 14:19:30',	'2022-07-01 14:19:30'),
 (94,	'SUPP0094',	'tyutyu',	'yuytuytu',	NULL,	NULL,	NULL,	'565655757',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-06-29 14:35:16',	'2022-07-01 14:18:00',	'2022-07-01 14:18:00'),
@@ -854,10 +863,7 @@ INSERT INTO `supplier` (`id`, `code`, `name`, `place`, `address`, `pin_code`, `c
 (100,	'SUPP0100',	'`6r7yrtyty',	'ttyty',	NULL,	NULL,	NULL,	'56464656',	NULL,	NULL,	NULL,	'jtt',	NULL,	NULL,	'ACTIVE',	'2022-06-30 04:08:35',	'2022-07-01 14:15:48',	'2022-07-01 14:15:48'),
 (102,	'SUPP0102',	'ghfhgfh g',	'tteerr',	'aaa',	123,	'tgft',	'77575547',	'ff@ds.fg',	'eee',	'jjj',	'dddydo',	0,	0,	'ACTIVE',	'2022-06-30 05:45:45',	'2022-07-01 14:14:35',	NULL),
 (103,	'SUPP0103',	'aaa',	'bbb',	NULL,	NULL,	NULL,	'111111',	NULL,	NULL,	NULL,	'dfdt',	NULL,	NULL,	'ACTIVE',	'2022-06-30 05:55:00',	'2022-07-01 14:14:59',	'2022-07-01 14:14:59'),
-(104,	'SUPP0104',	'aaa',	'bbb',	NULL,	NULL,	NULL,	'1111111',	NULL,	NULL,	NULL,	'aaaa',	NULL,	NULL,	'ACTIVE',	'2022-06-30 06:01:54',	'2022-07-06 16:56:31',	'2022-07-06 16:56:31'),
-(105,	'SUPP0105',	'hjguj',	'gujyuyu',	NULL,	NULL,	NULL,	'56565656',	NULL,	NULL,	NULL,	'lll',	NULL,	NULL,	'ACTIVE',	'2022-06-30 06:40:53',	'2022-07-01 14:21:34',	NULL),
-(106,	'SUPP0106',	'0909808',	'789789879',	NULL,	NULL,	NULL,	'654656565',	NULL,	NULL,	NULL,	'iouioiuoio',	NULL,	NULL,	'ACTIVE',	'2022-06-30 08:03:33',	'2022-07-01 14:22:02',	NULL),
-(107,	'SUPP0107',	'yuyu',	'uytuytu',	NULL,	NULL,	'yhgfhgh',	'4645645646',	'ghgf@fgcfgg.hjkhgk',	NULL,	NULL,	NULL,	NULL,	NULL,	'ACTIVE',	'2022-07-06 16:51:58',	NULL,	NULL);
+(104,	'SUPP0104',	'aaa',	'bbb',	NULL,	NULL,	NULL,	'1111111',	NULL,	NULL,	NULL,	'aaaa',	NULL,	NULL,	'ACTIVE',	'2022-06-30 06:01:54',	'2022-07-06 16:56:31',	'2022-07-06 16:56:31');
 
 DROP TABLE IF EXISTS `symbology`;
 CREATE TABLE `symbology` (
@@ -887,7 +893,7 @@ CREATE TABLE `tax_group` (
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `tax_group` (`id`, `name`, `code`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (1,	'Tax Group 1',	'TG1',	'2021-04-06 10:25:57',	'2021-04-06 10:26:59',	NULL);
@@ -902,7 +908,7 @@ CREATE TABLE `tax_group_rate` (
   KEY `tax_rate` (`tax_rate`),
   CONSTRAINT `tax_group_rate_ibfk_1` FOREIGN KEY (`tax_group`) REFERENCES `tax_group` (`id`),
   CONSTRAINT `tax_group_rate_ibfk_2` FOREIGN KEY (`tax_rate`) REFERENCES `tax_rate` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `tax_group_rate` (`id`, `tax_group`, `tax_rate`) VALUES
 (1,	1,	1),
@@ -915,52 +921,46 @@ CREATE TABLE `tax_rate` (
   `code` varchar(15) NOT NULL,
   `name` varchar(50) NOT NULL,
   `rate` decimal(12,4) NOT NULL,
-  `type` enum('P','F') NOT NULL DEFAULT 'P',
+  `type` enum('P','F') NOT NULL,
   `description` varchar(255) DEFAULT NULL,
+  `editable` tinyint(1) DEFAULT NULL,
+  `deletable` tinyint(1) DEFAULT NULL,
   `added_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `tax_rate` (`id`, `code`, `name`, `rate`, `type`, `description`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'GST10',	'GST',	10.0000,	'P',	NULL,	'2021-03-02 14:12:44',	'2021-04-12 13:49:32',	NULL),
-(2,	'IGST2',	'IGST',	2.1300,	'P',	'sdsdsdd',	'2021-03-02 14:12:44',	'2021-05-08 17:06:45',	NULL),
-(3,	'VAT',	'VAT',	10.5000,	'P',	NULL,	'2021-03-02 14:12:44',	NULL,	NULL),
-(137,	'44',	'test',	6.0000,	'P',	NULL,	'2022-04-08 05:25:21',	NULL,	NULL),
-(138,	'55',	'yiyu',	56.0000,	'P',	NULL,	'2022-04-08 05:57:07',	NULL,	NULL),
-(139,	'de',	'45545',	3.0000,	'P',	NULL,	'2022-04-08 05:57:16',	NULL,	NULL),
-(140,	'ee',	'ghfgh',	4.0000,	'P',	NULL,	'2022-04-08 06:01:20',	NULL,	NULL),
-(141,	'e3',	'dgdfgd',	3.0000,	'P',	NULL,	'2022-04-08 10:36:29',	NULL,	NULL),
-(183,	'4e',	'TTT',	3.0000,	'P',	NULL,	'2022-04-11 07:33:07',	NULL,	NULL),
-(184,	'rwewr',	'333',	23.0000,	'P',	NULL,	'2022-04-11 07:33:32',	NULL,	NULL),
-(185,	'te',	'fhfgh',	3.0000,	'P',	NULL,	'2022-04-11 12:13:10',	NULL,	NULL),
-(186,	'22',	'w345325',	31.0000,	'P',	NULL,	'2022-04-12 06:37:36',	NULL,	NULL);
+INSERT INTO `tax_rate` (`id`, `code`, `name`, `rate`, `type`, `description`, `editable`, `deletable`, `added_at`, `updated_at`, `deleted_at`) VALUES
+(1,	'GST10',	'GST',	10.0000,	'P',	NULL,	NULL,	NULL,	'2021-03-02 14:12:44',	'2022-07-12 07:53:30',	NULL),
+(2,	'IGST2',	'IGST',	2.1300,	'F',	NULL,	NULL,	NULL,	'2021-03-02 14:12:44',	'2022-07-12 09:38:57',	NULL),
+(3,	'VAT',	'VAT',	10.5000,	'P',	NULL,	NULL,	NULL,	'2021-03-02 14:12:44',	'2022-07-12 09:38:49',	NULL),
+(5,	'gfg',	'hjhj',	5646.0000,	'P',	NULL,	NULL,	NULL,	'2022-07-12 08:42:48',	'2022-07-12 09:38:46',	NULL);
 
 DROP TABLE IF EXISTS `unit`;
 CREATE TABLE `unit` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `code` varchar(5) NOT NULL,
+  `code` varchar(10) NOT NULL,
   `name` varchar(15) NOT NULL,
   `description` varchar(30) DEFAULT NULL,
   `added_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `editable` tinyint(1) DEFAULT NULL,
+  `deletable` tinyint(1) DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=166 DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `unit` (`id`, `code`, `name`, `description`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'PC',	'Piece',	'md df d',	'2021-01-24 06:02:13',	NULL,	NULL),
-(38,	'mtr',	'Meter',	'dsfsf',	'2021-04-18 19:00:13',	NULL,	NULL),
-(39,	'rtert',	'et',	'tretrt',	'2021-04-18 19:09:37',	NULL,	NULL),
-(40,	'sd',	'sdf',	'dfsdfsdf',	'2021-04-18 19:10:12',	NULL,	NULL),
-(41,	'fg',	'dfgfg',	'fgfgfg',	'2021-04-18 19:10:40',	NULL,	NULL),
-(42,	'fdgf',	'dfg',	'gfddfg',	'2021-04-18 19:11:26',	NULL,	NULL),
-(92,	'dsfsd',	'sdfsdf9',	'sdfsdf',	'2021-05-11 22:14:33',	NULL,	NULL),
-(163,	'uyiui',	'yuiuyi',	'dfdf',	'2022-04-15 11:44:48',	NULL,	NULL);
+INSERT INTO `unit` (`id`, `code`, `name`, `description`, `added_at`, `editable`, `deletable`, `updated_at`, `deleted_at`) VALUES
+(1,	'PC',	'Piece',	'Piece',	'2021-01-24 06:02:13',	NULL,	NULL,	'2022-07-09 16:49:33',	NULL),
+(38,	'MTR',	'Meter',	'Meter',	'2021-04-18 19:00:13',	NULL,	NULL,	'2022-07-09 16:49:45',	NULL),
+(39,	'KG',	'Kilo Gram',	'Kilo Gram',	'2021-04-18 19:09:37',	NULL,	NULL,	'2022-07-09 16:50:00',	NULL),
+(40,	'DZ',	'Dozen',	'Dozen',	'2021-04-18 19:10:12',	NULL,	NULL,	'2022-07-09 16:50:19',	NULL),
+(41,	'BO10',	'Box of 10',	'Box of 10 pieces',	'2021-04-18 19:10:40',	NULL,	NULL,	'2022-07-09 16:57:51',	NULL),
+(42,	'BO-100',	'Box of 100',	'Box of 100 pieces',	'2021-04-18 19:11:26',	NULL,	NULL,	'2022-07-09 16:59:29',	NULL);
 
 DROP TABLE IF EXISTS `unit_bulk`;
 CREATE TABLE `unit_bulk` (
@@ -970,31 +970,23 @@ CREATE TABLE `unit_bulk` (
   `code` varchar(10) NOT NULL,
   `name` varchar(15) NOT NULL,
   `description` varchar(30) DEFAULT NULL,
+  `editable` tinyint(1) DEFAULT NULL,
+  `deletable` tinyint(1) DEFAULT NULL,
   `added_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `unit` (`unit`) USING BTREE,
   CONSTRAINT `unit_bulk-unit` FOREIGN KEY (`unit`) REFERENCES `unit` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `unit_bulk` (`id`, `unit`, `value`, `code`, `name`, `description`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(38,	1,	10,	'10b',	'Box of 10',	NULL,	'2021-04-18 15:16:00',	NULL,	NULL),
-(39,	1,	5535,	'dsf',	'dsf',	'ert',	'2021-04-18 18:58:09',	NULL,	NULL),
-(70,	1,	6,	'fgh',	'rrr',	NULL,	'2022-04-15 05:52:47',	NULL,	NULL),
-(71,	1,	6,	'fc',	'ttt',	NULL,	'2022-04-15 05:55:13',	NULL,	NULL),
-(72,	1,	34,	'aa',	'ggg',	NULL,	'2022-04-15 05:57:14',	NULL,	NULL),
-(73,	1,	565,	'r5',	'tyty',	NULL,	'2022-04-15 05:58:17',	NULL,	NULL),
-(74,	1,	4,	'qq',	'qqq',	NULL,	'2022-04-15 06:06:01',	NULL,	NULL),
-(75,	1,	5,	'ss',	'sss',	NULL,	'2022-04-15 06:06:34',	NULL,	NULL),
-(76,	1,	5,	'jjj',	'jjj',	NULL,	'2022-04-15 06:07:38',	NULL,	NULL),
-(77,	1,	4,	'gfdfg',	'gdfg',	NULL,	'2022-04-15 06:10:56',	NULL,	NULL),
-(78,	1,	4545,	'efg',	'kkk',	NULL,	'2022-04-15 06:19:22',	NULL,	NULL),
-(79,	1,	5,	'ggg4',	'ddd',	NULL,	'2022-04-15 06:19:49',	NULL,	NULL),
-(80,	1,	45,	'fhgf',	'yyy',	NULL,	'2022-04-15 11:40:55',	NULL,	NULL),
-(81,	1,	554545,	'ghghgh',	'etttrt',	NULL,	'2022-04-15 11:45:34',	NULL,	NULL),
-(82,	1,	2147483647,	'ffdgdfgdfg',	'dgfdgd',	NULL,	'2022-04-26 12:19:59',	NULL,	NULL),
-(83,	1,	3,	'fgd',	'erewrer',	NULL,	'2022-04-26 12:21:13',	NULL,	NULL);
+INSERT INTO `unit_bulk` (`id`, `unit`, `value`, `code`, `name`, `description`, `editable`, `deletable`, `added_at`, `updated_at`, `deleted_at`) VALUES
+(38,	1,	10,	'10b',	'Box of 10',	NULL,	NULL,	NULL,	'2021-04-18 15:16:00',	NULL,	NULL),
+(39,	1,	5535,	'dsf',	'dsf',	'ert',	NULL,	NULL,	'2021-04-18 18:58:09',	NULL,	NULL),
+(70,	1,	6,	'fgh',	'rrr',	NULL,	NULL,	NULL,	'2022-04-15 05:52:47',	NULL,	NULL),
+(71,	1,	6,	'fc',	'ttt',	NULL,	NULL,	NULL,	'2022-04-15 05:55:13',	NULL,	NULL),
+(72,	1,	34,	'aa',	'ggg',	NULL,	NULL,	NULL,	'2022-04-15 05:57:14',	NULL,	NULL),
+(73,	1,	565,	'r5',	'tyty',	NULL,	NULL,	NULL,	'2022-04-15 05:58:17',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
@@ -1034,18 +1026,18 @@ CREATE TABLE `user` (
   CONSTRAINT `user_ibfk_1` FOREIGN KEY (`role`) REFERENCES `role` (`id`),
   CONSTRAINT `user_ibfk_2` FOREIGN KEY (`gender`) REFERENCES `gender` (`id`),
   CONSTRAINT `user_ibfk_3` FOREIGN KEY (`status`) REFERENCES `status` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-07-07 12:59:47',	'2022-07-05 03:46:37',	'2021-04-20 19:22:52',	'2022-07-07 12:59:47',	NULL),
-(30,	'C2',	3,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-07 13:21:24',	NULL),
-(31,	'C3',	2,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-04 12:54:45',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-07-12 06:52:03',	'2022-07-05 03:46:37',	'2021-04-20 19:22:52',	'2022-07-12 06:52:03',	NULL),
+(30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
+(31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
 (33,	'USER0033',	1,	'sfdfdsf',	'$2y$10$m3SCyOOEBf9x7zHoJD5nkuajcLI0MqPypDIsXo0zVE6pKwZ9ebP3u',	'dfdfsdf',	NULL,	NULL,	'2022-07-26',	'safdf@fdsfgdfg.ghgfh',	'7475454545',	NULL,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-04 12:57:40',	'2022-07-06 16:37:47',	'2022-07-06 16:37:47'),
 (34,	'USER0034',	1,	'sdfsdfsdf',	'$2y$10$X5g0UY6y6ciaAxYoHj//CeuwoWdwZ5S2v8qgVUAOyB.dirVZI1uyC',	'sdfdf',	'dfdfdsf',	NULL,	'2022-07-05',	'trt@ghjhg.fghfh',	'444544545',	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-04 13:09:49',	'2022-07-06 16:37:07',	'2022-07-06 16:37:07'),
 (35,	'USER0035',	3,	'hjhgjhg',	'$2y$10$vUGaJ4qQGg7yHt1hbP9eZOIFzL5SHX.ynu.w.EUwiiZIlUFJMbSoi',	'gikghjg',	'jghjghjhgj',	NULL,	'2022-07-05',	'fdf@g.ghgh',	'7574544454',	NULL,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	4,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-06 16:38:36',	NULL,	NULL),
 (36,	'USER0036',	3,	'dfdf',	'$2y$10$728Kvxh9olwHyXoUQ4Lq.e7aALAXdOO/s4zy3SNwi3464CYTWYfFS',	'dfdf',	'dfdfd',	NULL,	'2022-07-05',	'dfd@fsg.gdfgg',	'546464645645',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	4,	NULL,	NULL,	'::1',	'2022-07-07 07:50:50',	NULL,	'2022-07-06 16:45:10',	'2022-07-07 07:50:50',	'2022-07-06 16:45:25'),
-(37,	'USER0037',	3,	'dfdfdf',	'$2y$10$.eYvj6.BMLYuGUDvlwSLnO4ZzR8OO8.SpB7Z/mR45zZUWIo/GJbMG',	'yuytuytu',	'ytuytu',	NULL,	'2022-07-12',	'ds@rtg.jghjg',	'5646456456',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	4,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-07 13:22:05',	NULL,	NULL);
+(37,	'USER0037',	3,	'dfdfdf',	'$2y$10$.eYvj6.BMLYuGUDvlwSLnO4ZzR8OO8.SpB7Z/mR45zZUWIo/GJbMG',	'yuytuytu',	'ytuytu',	NULL,	'2022-07-12',	'ds@rtg.jghjg',	'5646456456',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	4,	NULL,	NULL,	'::1',	'2022-07-09 13:27:36',	NULL,	'2022-07-07 13:22:05',	'2022-07-09 13:55:29',	'2022-07-09 13:55:29');
 
 DROP TABLE IF EXISTS `variant`;
 CREATE TABLE `variant` (
@@ -1095,14 +1087,14 @@ CREATE TABLE `warehouse` (
   UNIQUE KEY `name_place` (`name`,`place`),
   KEY `status` (`status`),
   CONSTRAINT `warehouse_ibfk_1` FOREIGN KEY (`status`) REFERENCES `status` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country`, `city`, `pin_code`, `phone`, `email`, `address`, `longitude`, `latitude`, `description`, `status`, `status_reason`, `editable`, `deletable`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (20,	'WARE0020',	'CyberKids',	'dsds',	'2020-02-12',	'India',	'TVM',	'695505',	'+91-9745451448',	'tewest@gmail.com',	'TVM',	NULL,	NULL,	'Desc',	19,	'Flood',	NULL,	NULL,	'2021-04-14 19:54:53',	'2022-07-05 12:48:00',	NULL),
 (27,	'WARE0027',	'Test',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	19,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-07-05 12:49:13',	NULL),
-(28,	'WARE0028',	'cvccvcx',	'ggfdgfgfg',	'2022-07-01',	NULL,	NULL,	NULL,	'646665465',	'gfgg@f.ghgh',	NULL,	NULL,	NULL,	'opopj',	19,	'fgfgfg',	NULL,	NULL,	'2022-07-05 12:31:47',	'2022-07-06 17:26:38',	NULL),
+(28,	'WARE0028',	'cvccvcx',	'ggfdgfgfg',	'2022-07-01',	NULL,	NULL,	NULL,	'646665465',	'gfgg@f.ghgh',	NULL,	NULL,	NULL,	'opopj',	19,	'fgfgfg',	NULL,	NULL,	'2022-07-05 12:31:47',	'2022-07-09 14:04:12',	'2022-07-09 14:04:12'),
 (30,	'WARE0030',	'ouioiuo',	'uiouio',	'2022-07-02',	NULL,	NULL,	NULL,	'5565656',	'ff@g.yty',	NULL,	NULL,	NULL,	NULL,	18,	'iuoiuoi',	NULL,	NULL,	'2022-07-05 12:35:29',	'2022-07-06 17:24:59',	'2022-07-06 17:24:59'),
 (31,	'WARE0031',	'jhjhgjgjhg',	'jhgjhgjhgj',	'2022-07-01',	NULL,	NULL,	NULL,	'56565656',	'fgf@dy.hjgj',	NULL,	NULL,	NULL,	NULL,	16,	'hjhj',	NULL,	NULL,	'2022-07-05 12:36:57',	NULL,	NULL),
 (32,	'WARE0032',	'uiuiui',	'uiuiuiuiu',	'2022-07-06',	NULL,	NULL,	NULL,	'4545454',	'ui@gf.ghgh',	NULL,	NULL,	NULL,	NULL,	17,	NULL,	NULL,	NULL,	'2022-07-06 17:24:34',	NULL,	NULL);
 
--- 2022-07-07 17:17:50
+-- 2022-07-12 16:52:26

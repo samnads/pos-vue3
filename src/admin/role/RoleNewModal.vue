@@ -84,6 +84,45 @@
                   class="table table-bordered"
                   :class="DATA.data ? 'border-primary' : 'border-success'"
                 >
+                  <thead class="table-dark">
+                    <tr>
+                      <th scope="col">Module</th>
+                      <th scope="col" class="text-center">Permissions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(row, key) in MODULE_PERMISSIONS" :key="key">
+                      <td class="text-capitalize">
+                        <h4>{{ key }}</h4>
+                        <p>{{ row[0]["module_description"] }}</p>
+                      </td>
+                      <td class="align-middle">
+                        <ul
+                          v-for="(permObj, permKey) in row"
+                          :key="permKey"
+                          class="text-capitalize mt-3"
+                        >
+                          <span>
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              v-model="
+                                rights[permObj['module_name']][
+                                  permObj['permission']
+                                ]
+                              "
+                            />&nbsp;&nbsp;&nbsp;
+                            {{ permObj["permission_name"] }}
+                          </span>
+                        </ul>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <!--<table
+                  class="table table-bordered"
+                  :class="DATA.data ? 'border-primary' : 'border-success'"
+                >
                   <thead>
                     <tr>
                       <th scope="col">Module</th>
@@ -126,7 +165,7 @@
                       </td>
                     </tr>
                   </tbody>
-                </table>
+                </table>-->
               </div>
             </div>
           </div>
@@ -176,6 +215,7 @@
   </div>
 </template>
 <script>
+/* eslint-disable */
 import {
   useForm,
   useField,
@@ -193,19 +233,11 @@ export default {
     const DATA = ref({});
     const { axiosAsyncCallReturnData, axiosAsyncStoreReturnBool } = admin();
     /************************************************************************* */
-    const MODULES = [
-      { id: 10, name: "role" },
-      { id: 3, name: "brand" },
-      { id: 2, name: "category" },
-    ];
-    var rightsData = {};
-    // eslint-disable-next-line
-    MODULES.forEach((element, index, array) => { // dynamic object creation
-      rightsData[element.name] = {};
+    const MODULE_PERMISSIONS = ref({});
+    const DEF_MODULE_PERMISSIONS = ref({});
+    const formValues = ref({
+      rights: {},
     });
-    var formValues = {
-      rights: rightsData,
-    };
     /************************************************************************* */
     const schema = computed(() => {
       return yup.object({
@@ -255,15 +287,19 @@ export default {
     const newController = ref(null);
     /************************************************************************* NEW or EDIT Supplier */
     emitter.on("newRoleModal", (data) => {
-      resetForm();
+      //resetForm();
       DATA.value = data;
       if (DATA.value.data) {
         let fields = DATA.value.data;
         setFieldValue("name", fields.name);
         setFieldValue("limit", fields.limit);
-        setFieldValue("description", fields.description);
+        setFieldValue("description", fields.description || "");
+        setFieldValue("rights", DEF_MODULE_PERMISSIONS);
       } else {
-        //
+        setFieldValue("name", null);
+        setFieldValue("limit", null);
+        setFieldValue("description", "");
+        setFieldValue("rights", DEF_MODULE_PERMISSIONS);
       }
       window.ROLE_NEW_MODAL.show();
     });
@@ -304,7 +340,7 @@ export default {
       ).then(function (data) {
         if (data.success == true) {
           // added
-          resetForm();
+          //resetForm();
           window.window.ROLE_NEW_MODAL.hide();
           if (DATA.value.emit) {
             emitter.emit(DATA.value.emit, {}); // do something (emit)
@@ -326,7 +362,10 @@ export default {
     }, onInvalidSubmit);
     /************************************************************************* */
     function close() {
-      resetForm();
+      setFieldValue("name", null);
+      setFieldValue("limit", null);
+      setFieldValue("description", null);
+      setFieldValue("rights", DEF_MODULE_PERMISSIONS);
     }
     function customReset() {
       if (DATA.value.data) {
@@ -334,10 +373,14 @@ export default {
         let fields = DATA.value.data;
         setFieldValue("name", fields.name);
         setFieldValue("limit", fields.limit);
-        setFieldValue("description", fields.description);
+        setFieldValue("description", fields.description || "");
+        setFieldValue("rights", DEF_MODULE_PERMISSIONS);
       } else {
         // new
-        resetForm();
+        setFieldValue("name", null);
+        setFieldValue("limit", null);
+        setFieldValue("description", null);
+        setFieldValue("rights", DEF_MODULE_PERMISSIONS);
       }
     }
     /************************************************************************* */
@@ -359,6 +402,7 @@ export default {
       errorDescription,
       /*************** */
       axiosAsyncStoreReturnBool,
+      axiosAsyncCallReturnData,
       formValues,
       isDirty,
       isValid,
@@ -369,11 +413,10 @@ export default {
       DATA,
       emitter,
       //
-      MODULES,
+      MODULE_PERMISSIONS,
+      DEF_MODULE_PERMISSIONS,
       rights,
-      // modules data
-      //role,
-      //brand,
+      setFieldValue,
     };
   },
   data() {
@@ -384,7 +427,41 @@ export default {
       backdrop: true,
       show: true,
     });
-    //window.ROLE_NEW_MODAL.show();
+    window.ROLE_NEW_MODAL.show();
+    var self = this;
+    this.axiosAsyncCallReturnData(
+      "get",
+      "common",
+      {
+        action: "test_query",
+      },
+      null,
+      {
+        showSuccessNotification: false,
+        showCatchNotification: true,
+        showProgress: true,
+      }
+    ).then(function (data) {
+      if (data.success == true) {
+        self.MODULE_PERMISSIONS = data.data;
+        var module_perms = data.data;
+        self.DEF_MODULE_PERMISSIONS = data.data;
+        for (var key in module_perms) {
+          if (module_perms.hasOwnProperty(key)) {
+            self.rights[key] = {};
+            for (var obj in module_perms[key]) {
+              if (module_perms[key].hasOwnProperty(obj)) {
+                let permission = module_perms[key][obj]["permission"];
+                self.rights[key][permission] = false;
+              }
+            }
+          }
+        }
+        self.setFieldValue("rights", self.rights);
+      } else {
+        //
+      }
+    });
   },
   beforeUnmount() {
     var self = this;
