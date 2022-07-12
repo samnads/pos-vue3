@@ -74,7 +74,7 @@ class Role extends CI_Controller
 						// role added
 						$role_id = $this->db->insert_id();
 						// get module id's
-						$rows_modules = $this->Module_model->get_all_modules();
+						/*$rows_modules = $this->Module_model->get_all_modules();
 						$rows_permissions = $this->Permission_model->get_all_permissions();
 						// create array for ids
 						$modules = array();
@@ -84,7 +84,7 @@ class Role extends CI_Controller
 						}
 						foreach ($rows_permissions as $permission) {
 							$permissions[$permission['name']] = $permission['id']; // permissions
-						}
+						}*/
 						// save role permissions
 						if (is_array($rights) || is_object($rights)) {
 							foreach ($rights as $module => $permissions2) {
@@ -93,13 +93,13 @@ class Role extends CI_Controller
 										$allow,
 										FILTER_VALIDATE_BOOLEAN
 									)) { // ALLOW
-										$update_row = array(
+										$insert_data = array(
 											'role_id' => $role_id,
-											'module_id' => $modules[$module],
-											'permission_id' => $permissions[$permission],
+											'module_id' => $module,
+											'permission_id' => $permission,
 											'allow' => 1
 										);
-										$this->db->insert(TABLE_ROLE_PERMISSION, $update_row);
+										$this->Role_model->insert_role_permission($insert_data);
 									}
 								}
 							}

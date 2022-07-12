@@ -92,8 +92,8 @@
                   </thead>
                   <tbody>
                     <tr v-for="(row, key) in MODULE_PERMISSIONS" :key="key">
-                      <td class="text-capitalize">
-                        <h4>{{ key }}</h4>
+                      <td>
+                        <h4 class="text-capitalize">{{ row[0]["module_name"] }}</h4>
                         <p>{{ row[0]["module_description"] }}</p>
                       </td>
                       <td class="align-middle">
@@ -107,9 +107,7 @@
                               class="form-check-input"
                               type="checkbox"
                               v-model="
-                                rights[permObj['module_name']][
-                                  permObj['permission']
-                                ]
+                                rights[permObj['module']][permObj['permission']]
                               "
                             />&nbsp;&nbsp;&nbsp;
                             {{ permObj["permission_name"] }}
@@ -296,9 +294,9 @@ export default {
         setFieldValue("description", fields.description || "");
         setFieldValue("rights", DEF_MODULE_PERMISSIONS);
       } else {
-        setFieldValue("name", null);
-        setFieldValue("limit", null);
-        setFieldValue("description", "");
+        setFieldValue("name", undefined);
+        setFieldValue("limit", undefined);
+        setFieldValue("description", undefined);
         setFieldValue("rights", DEF_MODULE_PERMISSIONS);
       }
       window.ROLE_NEW_MODAL.show();
@@ -329,6 +327,7 @@ export default {
         method,
         "role",
         {
+          action: "create",
           data: values,
         },
         controller,
@@ -377,9 +376,9 @@ export default {
         setFieldValue("rights", DEF_MODULE_PERMISSIONS);
       } else {
         // new
-        setFieldValue("name", null);
-        setFieldValue("limit", null);
-        setFieldValue("description", null);
+        setFieldValue("name", undefined);
+        setFieldValue("limit", undefined);
+        setFieldValue("description", undefined);
         setFieldValue("rights", DEF_MODULE_PERMISSIONS);
       }
     }
@@ -433,7 +432,7 @@ export default {
       "get",
       "common",
       {
-        action: "test_query",
+        action: "module_permission",
       },
       null,
       {

@@ -153,6 +153,11 @@ class Role_model extends CI_Model
         $query = $this->db->insert(TABLE_ROLE, $data);
         return $query;
     }
+    function insert_role_permission($data)
+    {
+        $query = $this->db->insert(TABLE_ROLE_PERMISSION, $data);
+        return $query;
+    }
     function set_deleted_at($where) // mark as deleted
     {
         $this->db->where($where);
