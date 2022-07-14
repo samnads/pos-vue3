@@ -26,6 +26,7 @@ class Common extends CI_Controller
                         $this->db->select('
                         mp.module		as module,
                         mp.permission	as permission,
+                        mp.checked      as checked,
 		                m.name		    as module_name,
                         m.description   as module_description,
                         p.name		    as permission_name,

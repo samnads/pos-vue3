@@ -16,6 +16,14 @@ class Role_model extends CI_Model
         $query = $this->db->get();
         return $query->row_array();
     }
+    function get_role_data($id)
+    {
+        $this->db->select('r.*');
+        $this->db->from(TABLE_ROLE . ' r');
+        $this->db->where('r.id', $id);
+        $query = $this->db->get();
+        return $query->row_array();
+    }
     function get_all_roles($all = false)
     {
         $all ? $this->db->select('*') : $this->db->select('
@@ -151,6 +159,11 @@ class Role_model extends CI_Model
     function insert_role($data)
     {
         $query = $this->db->insert(TABLE_ROLE, $data);
+        return $query;
+    }
+    function update_role($data,$where)
+    {
+        $query = $this->db->update(TABLE_ROLE, $data, $where);
         return $query;
     }
     function insert_role_permission($data)

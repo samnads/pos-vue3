@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 // admin pages
 import AdminMain from '../admin/AdminMain.vue'
@@ -26,6 +26,8 @@ import AdminUserList from '../admin/user/UserList.vue'
 // Role based pages
 import AdminRoleMain from '../admin/role/RoleMain.vue'
 import AdminRoleList from '../admin/role/RoleList.vue'
+import AdminRoleNew from '../admin/role/RoleNew.vue'
+import AdminRoleEdit from '../admin/role/RoleNew.vue'
 // Warehouse based pages
 import AdminWarehouseMain from '../admin/warehouse/WarehouseMain.vue'
 import AdminWarehouseList from '../admin/warehouse/WarehouseList.vue'
@@ -233,7 +235,17 @@ const routes = [
             path: 'list',
             name: 'adminRoleList',
             component: AdminRoleList,
-          }
+          },
+          {
+            path: 'new',
+            name: 'adminRoleNew',
+            component: AdminRoleNew,
+          },
+          {
+            path: 'edit/:id',
+            name: 'adminRoleEdit',
+            component: AdminRoleEdit,
+          },
         ],
       },
       {
@@ -252,9 +264,8 @@ const routes = [
     ],
   },
 ]
-
 const router = createRouter({
-  history: createWebHashHistory(process.env.BASE_URL),
+  history: createWebHistory(),
   routes
 })
 router.beforeEach((to, from, next) => {

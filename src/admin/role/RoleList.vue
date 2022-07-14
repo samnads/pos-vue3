@@ -12,9 +12,12 @@
           id="length_change"
           name="length_change"
         >
-          <option selected>5</option>
-          <option value="10">10</option>
-          <option value="20">20</option>
+          <option :selected="page_length == 5">5</option>
+          <option value="10" :selected="page_length == 10">10</option>
+          <option value="20" :selected="page_length == 20">20</option>
+          <option value="25" :selected="page_length == 25">25</option>
+          <option value="50" :selected="page_length == 50">50</option>
+          <option value="100" :selected="page_length == 100">100</option>
           <option value="-1">All</option>
         </select>
       </div>
@@ -70,6 +73,7 @@ export default {
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
     const controller_delete = ref({});
+    var page_length = 25;
     // notify
     const {
       notifyDefault,
@@ -84,6 +88,7 @@ export default {
       axiosAsyncCallReturnData,
       emitter,
       controller_delete,
+      page_length,
     };
   },
   methods: {
@@ -98,7 +103,7 @@ export default {
       self.table = $("#datatable").DataTable({
         searching: true, // remove default search box
         bLengthChange: false, // remove default length change menu
-        pageLength: 5,
+        pageLength: self.page_length,
         searchDelay: 750,
         processing: true,
         serverSide: true,
@@ -109,7 +114,7 @@ export default {
           fixedColumnsLeft: 1,
           fixedColumnsRight: 1,
         },
-        order: [[1, "asc"]],
+        order: [[1, "desc"]],
         ajax: {
           method: "GET",
           url: process.env.VUE_APP_API_ROOT + "admin/ajax/role",
@@ -144,11 +149,11 @@ export default {
           processing:
             '<div class="spinner-grow" style="width: 3rem; height: 3rem;" role="status"> <span class="visually-hidden">Loading...</span></div>',
           emptyTable: "No data available in table",
-          zeroRecords: "No matching supplier found",
-          info: "Showing _START_ to _END_ of _TOTAL_ suppliers",
-          infoEmpty: "No supplier info found",
-          emptyTable: "No supplier found",
-          infoFiltered: "(filtered from _MAX_ suppliers)",
+          zeroRecords: "No matching role found",
+          info: "Showing _START_ to _END_ of _TOTAL_ roles",
+          infoEmpty: "No role info found",
+          emptyTable: "No role found",
+          infoFiltered: "(filtered from _MAX_ roles)",
           paginate: {
             first: "First",
             last: "Last",
@@ -218,6 +223,11 @@ export default {
           {
             targets: [3],
             className: "align-middle",
+            render: function (data, type, row, meta) {
+              return data == null
+                ? '<i class="text-muted small">NIL</i>'
+                : data;
+            },
           },
           {
             targets: [4],
@@ -392,11 +402,7 @@ export default {
             text: '<i class="fa-solid fa-plus"></i>',
             className: "btn-light",
             action: function () {
-              self.emitter.emit("newRoleModal", {
-                title: "New Role",
-                type: "success",
-                emit: "refreshRoleDataTable",
-              });
+              self.$router.push({ name: "adminRoleNew" }).catch((e) => {});
             },
             attr: {
               "data-bs-toggle": "tooltip",
@@ -431,12 +437,12 @@ export default {
       $("#datatable tbody").on("click", "#edit", function () {
         // edit from action menu
         let row = self.table.row($(this).parents("tr")).data();
-        self.emitter.emit("newRoleModal", {
-          title: "Edit Role",
-          data: row,
-          emit: "refreshRoleDataTable",
-          type: "primary",
-        });
+        self.$router
+          .push({
+            name: "adminRoleEdit",
+            params: { id: row.id, data: JSON.stringify(row) },
+          })
+          .catch((e) => {});
       });
       $("#datatable tbody").on("click", "#info", function () {
         // info from action menu
@@ -481,6 +487,7 @@ export default {
           "delete",
           "role",
           {
+            action: "delete",
             data: data,
           },
           self.controller_delete.value,

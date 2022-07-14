@@ -245,23 +245,61 @@ INSERT INTO `module` (`id`, `name`, `description`, `added_at`, `updated_at`) VAL
 
 DROP TABLE IF EXISTS `module_permission`;
 CREATE TABLE `module_permission` (
-  `id` bigint(11) NOT NULL AUTO_INCREMENT,
   `module` int(11) NOT NULL,
   `permission` int(11) NOT NULL,
+  `checked` tinyint(1) DEFAULT NULL COMMENT 'default checked or not',
   `comments` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id`),
   UNIQUE KEY `module_permission` (`module`,`permission`),
   KEY `permission` (`permission`),
   CONSTRAINT `module_permission_ibfk_1` FOREIGN KEY (`module`) REFERENCES `module` (`id`),
   CONSTRAINT `module_permission_ibfk_2` FOREIGN KEY (`permission`) REFERENCES `permission` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COMMENT='Available Permissions for each modules';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Available Permissions for each modules';
 
-INSERT INTO `module_permission` (`id`, `module`, `permission`, `comments`) VALUES
-(1,	4,	6,	NULL),
-(2,	10,	1,	'ROLE - post'),
-(3,	10,	3,	'ROLE - put'),
-(4,	10,	4,	'ROLE - delete'),
-(5,	10,	6,	'ROLE - datatable');
+INSERT INTO `module_permission` (`module`, `permission`, `checked`, `comments`) VALUES
+(1,	1,	NULL,	'PRODUCT'),
+(1,	3,	NULL,	'PRODUCT'),
+(1,	4,	NULL,	'PRODUCT'),
+(1,	6,	1,	'PRODUCT'),
+(2,	1,	NULL,	'CATEGORY'),
+(2,	3,	NULL,	'CATEGORY'),
+(2,	4,	NULL,	'CATEGORY'),
+(2,	6,	NULL,	'CATEGORY'),
+(3,	1,	NULL,	'BRAND'),
+(3,	3,	NULL,	'BRAND'),
+(3,	4,	NULL,	'BRAND'),
+(3,	6,	NULL,	'BRAND'),
+(4,	1,	NULL,	'TAX'),
+(4,	3,	NULL,	'TAX'),
+(4,	4,	NULL,	'TAX'),
+(4,	6,	NULL,	'TAX'),
+(5,	1,	NULL,	'UNIT'),
+(5,	3,	NULL,	'UNIT'),
+(5,	4,	NULL,	'UNIT'),
+(5,	6,	NULL,	'UNIT'),
+(6,	1,	NULL,	'SUPPLIER'),
+(6,	3,	NULL,	'SUPPLIER'),
+(6,	4,	NULL,	'SUPPLIER'),
+(6,	6,	NULL,	'SUPPLIER'),
+(7,	1,	NULL,	'CUSTOMER'),
+(7,	3,	NULL,	'CUSTOMER'),
+(7,	4,	NULL,	'CUSTOMER'),
+(7,	6,	NULL,	'CUSTOMER'),
+(8,	1,	NULL,	'USER'),
+(8,	3,	NULL,	'USER'),
+(8,	4,	NULL,	'USER'),
+(8,	6,	NULL,	'USER'),
+(9,	1,	NULL,	'WAREHOUSE'),
+(9,	3,	NULL,	'WAREHOUSE'),
+(9,	4,	NULL,	'WAREHOUSE'),
+(9,	6,	NULL,	'WAREHOUSE'),
+(10,	1,	NULL,	'ROLE'),
+(10,	3,	NULL,	'ROLE'),
+(10,	4,	NULL,	'ROLE'),
+(10,	6,	NULL,	'ROLE'),
+(15,	1,	1,	'STOCK ADJ.'),
+(15,	3,	NULL,	'STOCK ADJ.'),
+(15,	4,	NULL,	'STOCK ADJ.'),
+(15,	6,	NULL,	'STOCK ADJ.');
 
 DROP TABLE IF EXISTS `permission`;
 CREATE TABLE `permission` (
@@ -448,24 +486,22 @@ CREATE TABLE `role` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `description` varchar(150) DEFAULT NULL,
-  `editable` tinyint(1) NOT NULL DEFAULT 1,
-  `updatable_rights` tinyint(1) NOT NULL DEFAULT 1,
-  `deletable` tinyint(1) DEFAULT NULL,
   `limit` int(11) NOT NULL,
+  `editable` tinyint(1) DEFAULT NULL,
+  `deletable` tinyint(1) DEFAULT NULL,
+  `updatable_rights` tinyint(1) NOT NULL DEFAULT 1,
   `added_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp(),
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COMMENT='This is user groups';
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COMMENT='This is user groups';
 
-INSERT INTO `role` (`id`, `name`, `description`, `editable`, `updatable_rights`, `deletable`, `limit`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'Administrator',	'All permissions allowed.',	0,	0,	0,	1,	'2021-04-21 00:19:28',	'2022-07-06 12:10:28',	NULL),
-(2,	'Seller',	'Sales permissions.',	1,	1,	NULL,	2,	'2021-04-21 00:21:17',	'2022-07-06 15:21:36',	NULL),
-(3,	'Purchaser',	'Purchase permissions.',	1,	1,	NULL,	1,	'2021-04-21 00:21:35',	'2022-07-06 15:21:36',	NULL),
-(19,	'test',	'test',	1,	1,	NULL,	3,	'2021-08-15 23:49:29',	'2022-07-06 15:21:36',	NULL),
-(28,	'rerere',	'tgtrrtrt',	1,	1,	NULL,	1,	'2022-07-04 23:10:41',	'2022-07-06 15:21:36',	NULL),
-(29,	'testt',	'sdsd',	1,	1,	0,	3,	'2022-07-06 11:57:03',	'2022-07-06 12:10:28',	NULL);
+INSERT INTO `role` (`id`, `name`, `description`, `limit`, `editable`, `deletable`, `updatable_rights`, `added_at`, `updated_at`, `deleted_at`) VALUES
+(1,	'Administrator',	'All permissions allowed.',	1,	0,	0,	0,	'2021-04-21 00:19:28',	'2022-07-06 12:10:28',	NULL),
+(2,	'Seller',	'Sales permissions.',	2,	NULL,	NULL,	1,	'2021-04-21 00:21:17',	'2022-07-14 23:13:37',	NULL),
+(3,	'Purchaser',	'Purchase permissions.',	1,	NULL,	NULL,	1,	'2021-04-21 00:21:35',	'2022-07-14 23:13:37',	NULL),
+(46,	'Test',	'fdf',	12,	NULL,	NULL,	1,	'2022-07-14 23:23:18',	'2022-07-14 23:24:49',	NULL);
 
 DROP TABLE IF EXISTS `role_permission`;
 CREATE TABLE `role_permission` (
@@ -486,54 +522,54 @@ CREATE TABLE `role_permission` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Rows with readonly flag are read only or manually added rows ';
 
 INSERT INTO `role_permission` (`role_id`, `module_id`, `permission_id`, `readonly`, `comment`, `allow`, `added_at`, `updated_at`) VALUES
-(1,	1,	4,	1,	'PRODUCT - delete',	1,	'2022-07-06 17:36:43',	NULL),
-(1,	1,	6,	1,	'PRODUCT - datatable',	1,	'2022-07-06 17:30:12',	NULL),
-(1,	1,	7,	1,	'PRODUCT - details',	1,	'2022-07-06 17:34:16',	NULL),
-(1,	3,	1,	1,	'BRAND - create',	1,	'2022-07-07 15:44:37',	NULL),
-(1,	3,	3,	1,	'BRAND - update',	1,	'2022-07-07 15:50:35',	NULL),
-(1,	3,	4,	1,	'BRAND - delete',	1,	'2022-07-07 16:49:43',	NULL),
-(1,	3,	6,	1,	'BRAND - datatable',	1,	'2022-07-07 14:03:41',	NULL),
-(1,	4,	1,	1,	'TAX RATE - create',	1,	'2022-07-12 07:23:28',	NULL),
-(1,	4,	3,	1,	'TAX RATE - update',	1,	'2022-07-12 06:58:18',	NULL),
-(1,	4,	4,	1,	'TAX RATE - delete',	1,	'2022-07-12 07:29:35',	NULL),
-(1,	4,	6,	1,	'TAX RATE - datatable',	1,	'2022-07-09 17:13:42',	NULL),
-(1,	5,	1,	1,	'UNIT - create',	1,	'2022-07-09 14:44:52',	NULL),
-(1,	5,	3,	1,	'UNIT - update',	1,	'2022-07-09 16:41:23',	NULL),
-(1,	5,	4,	1,	'UNIT - delete',	1,	'2022-07-09 14:54:21',	'2022-07-09 14:55:02'),
-(1,	5,	6,	1,	'UNIT - datatable',	1,	'2022-07-09 14:50:33',	'2022-07-09 14:54:50'),
-(1,	6,	1,	1,	'SUPPLIER - create',	1,	'2021-09-29 18:24:05',	'2022-07-06 16:55:02'),
-(1,	6,	3,	1,	'SUPPLIER - update',	1,	'2021-09-29 18:24:05',	'2022-07-06 16:55:02'),
-(1,	6,	4,	1,	'SUPPLIER - delete',	1,	'2021-09-29 18:24:05',	'2022-07-06 16:55:02'),
-(1,	6,	6,	1,	'SUPPLIER - datatable',	1,	'2022-07-06 16:49:35',	'2022-07-06 16:55:02'),
-(1,	7,	1,	1,	'CUSTOMER - create',	1,	'2021-09-29 18:24:05',	'2022-07-06 16:59:56'),
-(1,	7,	3,	1,	'CUSTOMER - update',	1,	'2021-09-29 18:24:05',	'2022-07-06 17:00:08'),
-(1,	7,	4,	1,	'CUSTOMER - delete',	1,	'2021-09-29 18:24:05',	'2022-07-06 17:00:27'),
-(1,	7,	6,	1,	'CUSTOMER - datatable',	1,	'2022-07-06 16:58:16',	'2022-07-06 17:02:19'),
-(1,	8,	1,	1,	'USER - create',	1,	'2021-09-29 18:24:05',	'2022-07-06 14:28:42'),
-(1,	8,	3,	1,	'USER - update',	1,	'2021-09-29 18:24:05',	'2022-07-06 16:40:22'),
-(1,	8,	4,	1,	'USER - delete',	1,	'2021-09-29 18:24:05',	'2022-07-06 14:28:42'),
-(1,	8,	6,	1,	'USER - datatable',	1,	'2022-07-06 14:27:24',	'2022-07-06 16:46:30'),
-(1,	9,	1,	1,	'WAREHOUSE - create',	1,	'2022-07-06 17:24:31',	NULL),
-(1,	9,	3,	1,	'WAREHOUSE - update',	1,	'2022-07-06 17:22:04',	NULL),
-(1,	9,	4,	1,	'WAREHOUSE - delete',	1,	'2022-07-06 17:24:56',	'2022-07-06 17:26:00'),
-(1,	9,	5,	1,	'WAREHOUSE - dropdown',	1,	'2022-07-06 17:42:28',	NULL),
-(1,	9,	6,	1,	'WAREHOUSE - datatable',	1,	'2022-07-06 17:21:27',	NULL),
-(1,	10,	1,	1,	'ROLE - create',	1,	'2021-09-29 18:24:05',	'2022-07-06 17:01:27'),
-(1,	10,	3,	1,	'ROLE - update',	1,	'2021-09-29 18:24:05',	'2022-07-06 17:01:35'),
-(1,	10,	4,	1,	'ROLE - delete',	1,	'2021-09-29 18:24:05',	'2022-07-06 17:01:42'),
-(1,	10,	6,	1,	'ROLE - datatable',	1,	'2022-07-06 14:17:43',	'2022-07-06 17:01:49'),
-(1,	11,	2,	1,	'MANUAL (pos list product)',	1,	'2021-09-29 18:30:33',	NULL),
-(1,	12,	2,	1,	'MANUAL (list product types)',	1,	'2021-09-23 17:49:34',	'2021-10-18 19:55:23'),
-(1,	13,	2,	1,	'MANUAL (list barcode symbs)',	1,	'2021-09-23 18:02:55',	'2021-09-29 17:50:05'),
-(1,	14,	2,	1,	'MANUAL (print barcode or label)',	1,	'2021-10-01 18:16:31',	NULL),
-(1,	15,	1,	1,	'STOCK ADJ - create',	1,	'2021-10-29 17:45:44',	'2022-07-06 17:50:44'),
-(1,	15,	3,	1,	'STOCK ADJ - edit',	1,	'2022-06-23 07:14:24',	'2022-07-06 17:49:45'),
-(1,	15,	6,	1,	'STOCK ADJ - datatable',	1,	'2022-07-06 17:39:39',	NULL),
-(1,	15,	7,	1,	'STOCK ADJ - details',	1,	'2022-07-06 17:41:16',	NULL),
-(1,	15,	8,	1,	'STOCK ADJ - autocomplete product',	1,	'2022-07-07 08:03:27',	NULL),
-(1,	16,	2,	1,	'MANUAL list customer groups (admin default)',	1,	'2022-06-30 12:33:11',	'2022-06-30 14:53:29'),
-(1,	16,	5,	1,	'CUSTOMER GROUP - dropdown',	1,	'2022-07-06 17:12:27',	NULL),
-(1,	17,	2,	1,	'MANUAL genders (admin default)',	1,	'2022-07-02 13:02:09',	NULL);
+(1,	1,	4,	1,	'PRODUCT - delete',	1,	'2022-07-06 12:06:43',	NULL),
+(1,	1,	6,	1,	'PRODUCT - datatable',	1,	'2022-07-06 12:00:12',	NULL),
+(1,	1,	7,	1,	'PRODUCT - details',	1,	'2022-07-06 12:04:16',	NULL),
+(1,	3,	1,	1,	'BRAND - create',	1,	'2022-07-07 10:14:37',	NULL),
+(1,	3,	3,	1,	'BRAND - update',	1,	'2022-07-07 10:20:35',	NULL),
+(1,	3,	4,	1,	'BRAND - delete',	1,	'2022-07-07 11:19:43',	NULL),
+(1,	3,	6,	1,	'BRAND - datatable',	1,	'2022-07-07 08:33:41',	NULL),
+(1,	4,	1,	1,	'TAX RATE - create',	1,	'2022-07-12 01:53:28',	NULL),
+(1,	4,	3,	1,	'TAX RATE - update',	1,	'2022-07-12 01:28:18',	NULL),
+(1,	4,	4,	1,	'TAX RATE - delete',	1,	'2022-07-12 01:59:35',	NULL),
+(1,	4,	6,	1,	'TAX RATE - datatable',	1,	'2022-07-09 11:43:42',	NULL),
+(1,	5,	1,	1,	'UNIT - create',	1,	'2022-07-09 09:14:52',	NULL),
+(1,	5,	3,	1,	'UNIT - update',	1,	'2022-07-09 11:11:23',	NULL),
+(1,	5,	4,	1,	'UNIT - delete',	1,	'2022-07-09 09:24:21',	'2022-07-09 09:25:02'),
+(1,	5,	6,	1,	'UNIT - datatable',	1,	'2022-07-09 09:20:33',	'2022-07-09 09:24:50'),
+(1,	6,	1,	1,	'SUPPLIER - create',	1,	'2021-09-29 12:54:05',	'2022-07-06 11:25:02'),
+(1,	6,	3,	1,	'SUPPLIER - update',	1,	'2021-09-29 12:54:05',	'2022-07-06 11:25:02'),
+(1,	6,	4,	1,	'SUPPLIER - delete',	1,	'2021-09-29 12:54:05',	'2022-07-06 11:25:02'),
+(1,	6,	6,	1,	'SUPPLIER - datatable',	1,	'2022-07-06 11:19:35',	'2022-07-06 11:25:02'),
+(1,	7,	1,	1,	'CUSTOMER - create',	1,	'2021-09-29 12:54:05',	'2022-07-06 11:29:56'),
+(1,	7,	3,	1,	'CUSTOMER - update',	1,	'2021-09-29 12:54:05',	'2022-07-06 11:30:08'),
+(1,	7,	4,	1,	'CUSTOMER - delete',	1,	'2021-09-29 12:54:05',	'2022-07-06 11:30:27'),
+(1,	7,	6,	1,	'CUSTOMER - datatable',	1,	'2022-07-06 11:28:16',	'2022-07-06 11:32:19'),
+(1,	8,	1,	1,	'USER - create',	1,	'2021-09-29 12:54:05',	'2022-07-06 08:58:42'),
+(1,	8,	3,	1,	'USER - update',	1,	'2021-09-29 12:54:05',	'2022-07-06 11:10:22'),
+(1,	8,	4,	1,	'USER - delete',	1,	'2021-09-29 12:54:05',	'2022-07-06 08:58:42'),
+(1,	8,	6,	1,	'USER - datatable',	1,	'2022-07-06 08:57:24',	'2022-07-06 11:16:30'),
+(1,	9,	1,	1,	'WAREHOUSE - create',	1,	'2022-07-06 11:54:31',	NULL),
+(1,	9,	3,	1,	'WAREHOUSE - update',	1,	'2022-07-06 11:52:04',	NULL),
+(1,	9,	4,	1,	'WAREHOUSE - delete',	1,	'2022-07-06 11:54:56',	'2022-07-06 11:56:00'),
+(1,	9,	5,	1,	'WAREHOUSE - dropdown',	1,	'2022-07-06 12:12:28',	NULL),
+(1,	9,	6,	1,	'WAREHOUSE - datatable',	1,	'2022-07-06 11:51:27',	NULL),
+(1,	10,	1,	1,	'ROLE - create',	1,	'2021-09-29 12:54:05',	'2022-07-06 11:31:27'),
+(1,	10,	3,	1,	'ROLE - update',	1,	'2021-09-29 12:54:05',	'2022-07-06 11:31:35'),
+(1,	10,	4,	1,	'ROLE - delete',	1,	'2021-09-29 12:54:05',	'2022-07-06 11:31:42'),
+(1,	10,	6,	1,	'ROLE - datatable',	1,	'2022-07-06 08:47:43',	'2022-07-06 11:31:49'),
+(1,	11,	2,	1,	'MANUAL (pos list product)',	1,	'2021-09-29 13:00:33',	NULL),
+(1,	12,	2,	1,	'MANUAL (list product types)',	1,	'2021-09-23 12:19:34',	'2021-10-18 14:25:23'),
+(1,	13,	2,	1,	'MANUAL (list barcode symbs)',	1,	'2021-09-23 12:32:55',	'2021-09-29 12:20:05'),
+(1,	14,	2,	1,	'MANUAL (print barcode or label)',	1,	'2021-10-01 12:46:31',	NULL),
+(1,	15,	1,	1,	'STOCK ADJ - create',	1,	'2021-10-29 12:15:44',	'2022-07-06 12:20:44'),
+(1,	15,	3,	1,	'STOCK ADJ - edit',	1,	'2022-06-23 01:44:24',	'2022-07-06 12:19:45'),
+(1,	15,	6,	1,	'STOCK ADJ - datatable',	1,	'2022-07-06 12:09:39',	NULL),
+(1,	15,	7,	1,	'STOCK ADJ - details',	1,	'2022-07-06 12:11:16',	NULL),
+(1,	15,	8,	1,	'STOCK ADJ - autocomplete product',	1,	'2022-07-07 02:33:27',	NULL),
+(1,	16,	2,	1,	'MANUAL list customer groups (admin default)',	1,	'2022-06-30 07:03:11',	'2022-06-30 09:23:29'),
+(1,	16,	5,	1,	'CUSTOMER GROUP - dropdown',	1,	'2022-07-06 11:42:27',	NULL),
+(1,	17,	2,	1,	'MANUAL genders (admin default)',	1,	'2022-07-02 07:32:09',	NULL);
 
 DROP TABLE IF EXISTS `status`;
 CREATE TABLE `status` (
@@ -936,7 +972,7 @@ INSERT INTO `tax_rate` (`id`, `code`, `name`, `rate`, `type`, `description`, `ed
 (1,	'GST10',	'GST',	10.0000,	'P',	NULL,	NULL,	NULL,	'2021-03-02 14:12:44',	'2022-07-12 07:53:30',	NULL),
 (2,	'IGST2',	'IGST',	2.1300,	'F',	NULL,	NULL,	NULL,	'2021-03-02 14:12:44',	'2022-07-12 09:38:57',	NULL),
 (3,	'VAT',	'VAT',	10.5000,	'P',	NULL,	NULL,	NULL,	'2021-03-02 14:12:44',	'2022-07-12 09:38:49',	NULL),
-(5,	'gfg',	'hjhj',	5646.0000,	'P',	NULL,	NULL,	NULL,	'2022-07-12 08:42:48',	'2022-07-12 09:38:46',	NULL);
+(5,	'gfg',	'hjhj',	5646.0000,	'P',	NULL,	NULL,	NULL,	'2022-07-12 08:42:48',	'2022-07-14 14:01:24',	'2022-07-14 14:01:24');
 
 DROP TABLE IF EXISTS `unit`;
 CREATE TABLE `unit` (
@@ -1029,7 +1065,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-07-12 06:52:03',	'2022-07-05 03:46:37',	'2021-04-20 19:22:52',	'2022-07-12 06:52:03',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-07-14 17:58:11',	'2022-07-05 03:46:37',	'2021-04-20 19:22:52',	'2022-07-14 17:58:11',	NULL),
 (30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
 (31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
@@ -1097,4 +1133,4 @@ INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country
 (31,	'WARE0031',	'jhjhgjgjhg',	'jhgjhgjhgj',	'2022-07-01',	NULL,	NULL,	NULL,	'56565656',	'fgf@dy.hjgj',	NULL,	NULL,	NULL,	NULL,	16,	'hjhj',	NULL,	NULL,	'2022-07-05 12:36:57',	NULL,	NULL),
 (32,	'WARE0032',	'uiuiui',	'uiuiuiuiu',	'2022-07-06',	NULL,	NULL,	NULL,	'4545454',	'ui@gf.ghgh',	NULL,	NULL,	NULL,	NULL,	17,	NULL,	NULL,	NULL,	'2022-07-06 17:24:34',	NULL,	NULL);
 
--- 2022-07-12 16:52:26
+-- 2022-07-14 18:16:06
