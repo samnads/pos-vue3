@@ -149,7 +149,7 @@
                           '_' +
                           permObj['permission_name']
                         "
-                        :disabled="permObj['read_only']"
+                        :disabled="permObj['disabled']"
                       />
                       <label
                         class="form-check-label"

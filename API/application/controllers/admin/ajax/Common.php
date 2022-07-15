@@ -6,6 +6,8 @@ class Common extends CI_Controller
     {
         header('Content-Type: application/json; charset=utf-8');
         $this->load->model('admin/Common_model');
+        $this->load->model('admin/Product_Type_model');
+        $this->load->model('admin/Barcode_Symbology_model');
         $_POST = raw_input_to_post();
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET': // read
@@ -21,6 +23,16 @@ class Common extends CI_Controller
                     case 'status':
                         $data = $this->Common_model->getStatuses($this->input->get('type'));
                         echo json_encode(array('success' => true, 'type' => 'success', 'data' => $data));
+                        break;
+                    case 'dropdown_product_types':
+                        $result['data'] = $this->Product_Type_model->getAll();
+                        $result['success'] = true;
+                        echo json_encode($result);
+                        break;
+                    case 'dropdown_barcode_symbologies':
+                        $result['data'] = $this->Barcode_Symbology_model->options();
+                        $result['success'] = true;
+                        echo json_encode($result);
                         break;
                     case 'module_permission':
                         $this->db->select('

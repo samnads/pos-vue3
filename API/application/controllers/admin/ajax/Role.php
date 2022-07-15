@@ -147,7 +147,7 @@ class Role extends CI_Controller
                         p.name		    as permission_name,
                         p.usage		    as usage,
 						rp.allow		as allow,
-						rp.read_only	as read_only,
+						rp.disabled		as disabled,
 						r.name			as name,
 						r.limit			as limit,
 						r.description	as description');
@@ -196,7 +196,6 @@ class Role extends CI_Controller
 							)
 						);
 						$this->form_validation->set_rules($config);
-						$role_changed = false;
 						if ($this->form_validation->run() == FALSE) {
 							die(json_encode(array('success' => false, 'errors' => $this->form_validation->error_array())));
 						} else {
@@ -206,7 +205,6 @@ class Role extends CI_Controller
 							$this->Role_model->update_role($data, array('id' => $id, 'editable' => NULL, 'deleted_at' => NULL));
 							if ($this->db->affected_rows() == 1) {
 								// role data changed
-								$role_changed = true;
 							} else if ($this->db->affected_rows() == 0) {
 								// role data not changed
 							} else {
@@ -222,23 +220,33 @@ class Role extends CI_Controller
 						if (is_array($rights) || is_object($rights)) {
 							foreach ($rights as $module => $permObject) {
 								foreach ($permObject as $permission => $allow) {
-									$update_row = array(
-										'allow' => $allow || 0
-									);
-									$where = array(
-										'role_id' => $id,
-										'module_id' => $module,
-										'permission_id' => $permission,
-										'readonly' => NULL,
-									);
 									if (filter_var($allow, FILTER_VALIDATE_BOOLEAN)) { // ALLOW
-										$this->Role_model->update_role_permission($update_row, $where);
-									} else {
+										$where = array(
+											'role_id' => $id,
+											'module_id' => $module,
+											'permission_id' => $permission,
+										);
+										$update_row_data = array(
+											'role_id' => $id,
+											'module_id' => $module,
+											'permission_id' => $permission,
+											'allow' => 1
+										);
+										$this->Role_model->insert_or_keep_role_permission($update_row_data, $where);
+									} else { // NOT ALLOW - because only allowed role perm will be keep other wise delete
+										$where = array(
+											'role_id' => $id,
+											'module_id' => $module,
+											'permission_id' => $permission,
+											'readonly' => NULL, // because some defaults have readonly flag - keep them
+										);
 										$this->Role_model->delete_role_permission($where);
 									}
-									if ($this->db->affected_rows() != 1 && $this->db->affected_rows() != 0) {
+									if ($this->db->affected_rows() == 1 || $this->db->affected_rows() == 0) {
+									} else {
+										$error = $this->db->error();
 										$this->db->trans_rollback();
-										die(json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Role-Permission updation failed !')));
+										die(json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !"))));
 									}
 								}
 							}

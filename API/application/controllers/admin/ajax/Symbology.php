@@ -10,11 +10,6 @@ class Symbology extends CI_Controller
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET': // read
                 switch ($action = $this->input->get('action')) {
-                    case 'dropdown':
-                        $result['data'] = $this->Barcode_Symbology_model->options();
-                        $result['success'] = true;
-                        echo json_encode($result);
-                        break;
                     default:
                         $error = array('success' => false, 'type' => 'danger', 'error' => 'Unknown Action !');
                         echo json_encode($error);

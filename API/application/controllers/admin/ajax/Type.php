@@ -10,11 +10,6 @@ class Type extends CI_Controller
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET': // read
                 switch ($action = $this->input->get('action')) {
-                    case 'all':
-                        $result['data'] = $this->Product_Type_model->getAll();
-                        $result['success'] = true;
-                        echo json_encode($result);
-                        break;
                     default:
                         $error = array('success' => false, 'type' => 'danger', 'error' => 'Unknown Action !');
                         echo json_encode($error);

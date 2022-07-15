@@ -1974,15 +1974,15 @@ export default {
   mounted() {
     if (!this.productTypes) {
       // if not found on store
-      this.axiosAsyncStoreReturnBool("storeProductTypes", "type", {
-        action: "all",
+      this.axiosAsyncStoreReturnBool("storeProductTypes", "common", {
+        action: "dropdown_product_types",
       });
       // get product types
     }
     if (!this.symbologies) {
       // if not found on store
-      this.axiosAsyncStoreReturnBool("storeSymbologies", "symbology", {
-        action: "dropdown",
+      this.axiosAsyncStoreReturnBool("storeSymbologies", "common", {
+        action: "dropdown_barcode_symbologies",
       }); // get symbologies
     }
     if (!this.categories) {

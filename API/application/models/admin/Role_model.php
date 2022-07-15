@@ -7,7 +7,7 @@ class Role_model extends CI_Model
         // Call the Model constructor
         parent::__construct();
     }
-    function get_current_role()
+    /*function get_current_role()
     {
         $this->db->select('r.*');
         $this->db->from(TABLE_ROLE . ' r');
@@ -15,7 +15,7 @@ class Role_model extends CI_Model
         $this->db->where('u.id', $this->session->id);
         $query = $this->db->get();
         return $query->row_array();
-    }
+    }*/
     function get_role_data($id)
     {
         $this->db->select('r.*');
@@ -24,7 +24,7 @@ class Role_model extends CI_Model
         $query = $this->db->get();
         return $query->row_array();
     }
-    function get_all_roles($all = false)
+    /*function get_all_roles($all = false)
     {
         $all ? $this->db->select('*') : $this->db->select('
 		r.id as id,
@@ -33,7 +33,7 @@ class Role_model extends CI_Model
         $this->db->from(TABLE_ROLE . ' r');
         $query = $this->db->get();
         return $query->result();
-    }
+    }*/
     function datatable_recordsTotal()
     {
         $this->db->select('count(id)');
@@ -128,7 +128,7 @@ class Role_model extends CI_Model
         $query = $this->db->get();
         return  $query->row_array();
     }
-    function getRoleRights($role_id)
+    /*function getRoleRights($role_id)
     {
 
         $this->db->select('
@@ -155,7 +155,7 @@ class Role_model extends CI_Model
             $result[$res['module']][$res['permission']] = (bool)$res['allow'];
         }
         return $result;
-    }
+    }*/
     function insert_role($data)
     {
         $query = $this->db->insert(TABLE_ROLE, $data);
@@ -171,10 +171,23 @@ class Role_model extends CI_Model
         $query = $this->db->insert(TABLE_ROLE_PERMISSION, $data);
         return $query;
     }
-    function update_role_permission($row_data, $where)
+    /*function update_role_permission($row_data, $where)
     {
         $query = $this->db->update(TABLE_ROLE_PERMISSION, $row_data, $where);
         return $query;
+    }*/
+    function insert_or_keep_role_permission($row_data, $where)
+    {
+        $this->db->select('*');
+        $this->db->from(TABLE_ROLE_PERMISSION . ' rp');
+        $this->db->where($where);
+        $query = $this->db->get();
+        //$row = $query->row_array();
+        if ($query->num_rows() == 0) { // insert
+            $query = $this->db->insert(TABLE_ROLE_PERMISSION, $row_data);
+            return $query;
+        }
+        return false; // already exist
     }
     function delete_role_permission($where)
     {
