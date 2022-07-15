@@ -161,7 +161,7 @@ class Role_model extends CI_Model
         $query = $this->db->insert(TABLE_ROLE, $data);
         return $query;
     }
-    function update_role($data,$where)
+    function update_role($data, $where)
     {
         $query = $this->db->update(TABLE_ROLE, $data, $where);
         return $query;
@@ -169,6 +169,16 @@ class Role_model extends CI_Model
     function insert_role_permission($data)
     {
         $query = $this->db->insert(TABLE_ROLE_PERMISSION, $data);
+        return $query;
+    }
+    function update_role_permission($row_data, $where)
+    {
+        $query = $this->db->update(TABLE_ROLE_PERMISSION, $row_data, $where);
+        return $query;
+    }
+    function delete_role_permission($where)
+    {
+        $query = $this->db->delete(TABLE_ROLE_PERMISSION, $where);
         return $query;
     }
     function set_deleted_at($where) // mark as deleted

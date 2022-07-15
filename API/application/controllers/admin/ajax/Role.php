@@ -45,6 +45,7 @@ class Role extends CI_Controller
                         mp.module		as module,
                         mp.permission	as permission,
                         mp.checked      as checked,
+						mp.read_only	as read_only,
 		                m.name		    as module_name,
                         m.description   as module_description,
                         p.name		    as permission_name,
@@ -66,9 +67,9 @@ class Role extends CI_Controller
 						$_POST = $this->input->post('data');
 						$rights = $this->input->post('rights');
 						$data = array(
-							'name'			=> $this->input->post('name'),
-							'limit'			=> $this->input->post('limit'),
-							'description'	=> $this->input->post('description')
+							'name'			=> $this->input->post('name') ?: NULL,
+							'limit'			=> $this->input->post('limit') ?: NULL,
+							'description'	=> $this->input->post('description') ?: NULL
 						);
 						$this->form_validation->set_data($data);
 						$config = array(
@@ -92,14 +93,15 @@ class Role extends CI_Controller
 						if ($this->form_validation->run() == FALSE) {
 							echo json_encode(array('success' => false, 'errors' => $this->form_validation->error_array()));
 						} else {
+							$this->db->trans_begin();
 							$this->Role_model->insert_role($data);
 							if ($this->db->affected_rows() == 1) {
 								// role added
 								$role_id = $this->db->insert_id();
 								// save role permissions
 								if (is_array($rights) || is_object($rights)) {
-									foreach ($rights as $module => $permissions2) {
-										foreach ($permissions2 as $permission => $allow) {
+									foreach ($rights as $module => $permObj) {
+										foreach ($permObj as $permission => $allow) {
 											if (filter_var(
 												$allow,
 												FILTER_VALIDATE_BOOLEAN
@@ -111,13 +113,23 @@ class Role extends CI_Controller
 													'allow' => 1
 												);
 												$this->Role_model->insert_role_permission($insert_data);
+												if ($this->db->affected_rows() != 1) { // one of insertion failure
+													$error = $this->db->error();
+													$this->db->trans_rollback();
+													die(json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !"))));
+												}
 											}
 										}
 									}
+									$this->db->trans_commit();
+									echo json_encode(array('success' => true, 'type' => 'success', 'id' => $role_id, 'message' => 'Successfully added new role <strong><em>' . $data['name'] . '</em></strong> !', 'timeout' => 5000, 'location' => "admin/role/list"));
+								} else { // rights data not found
+									$this->db->trans_rollback();
+									echo json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Rights data not found !'));
 								}
-								echo json_encode(array('success' => true, 'type' => 'success', 'id' => $role_id, 'message' => 'Successfully added new role <strong><em>' . $data['name'] . '</em></strong> !', 'timeout' => 5000, 'location' => "admin/role/list"));
 							} else {
 								$error = $this->db->error();
+								$this->db->trans_rollback();
 								echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));
 							}
 						}
@@ -135,6 +147,7 @@ class Role extends CI_Controller
                         p.name		    as permission_name,
                         p.usage		    as usage,
 						rp.allow		as allow,
+						rp.read_only	as read_only,
 						r.name			as name,
 						r.limit			as limit,
 						r.description	as description');
@@ -155,21 +168,14 @@ class Role extends CI_Controller
 						echo json_encode(array('success' => true, 'type' => 'success', 'data' => $data));
 						break;
 					default:
-						$role_id_db = $this->input->post('data')['db']['id'];
-						$role_limit_db = $this->input->post('data')['db']['limit'];
-						$role_name_db = $this->input->post('data')['db']['name'];
-						$role_desc_db = $this->input->post('data')['db']['description'];
+						$id = $this->input->post('data')['db']['id']; // unique bd id
 						//
-						$role_name_new = $this->input->post('data')['name'] ?:  NULL;
-						$role_limit_new = $this->input->post('data')['limit'] ?: NULL;
-						$role_desc_new = $this->input->post('data')['description'] ?: NULL;
-						//
-						$rule_name = 'callback_edit_unique_name[' . $role_id_db . ']';
+						$rule_name = 'callback_edit_unique_name[' . $id . ']';
 						// update role name or limit
 						$data = array(
-							'name'			=> $role_name_new,
-							'limit'			=> $role_limit_new,
-							'description'	=> $role_desc_new
+							'name'			=> $this->input->post('data')['name'] ?:  NULL,
+							'limit'			=> $this->input->post('data')['limit'] ?: NULL,
+							'description'	=> $this->input->post('data')['description'] ?: NULL
 						);
 						$this->form_validation->set_data($data);
 						$config = array(
@@ -190,18 +196,22 @@ class Role extends CI_Controller
 							)
 						);
 						$this->form_validation->set_rules($config);
+						$role_changed = false;
 						if ($this->form_validation->run() == FALSE) {
 							die(json_encode(array('success' => false, 'errors' => $this->form_validation->error_array())));
 						} else {
 							//$data['manual_error'] = 'error';
 							// update role table
-							$this->Role_model->update_role($data, array('id' => $role_id_db, 'editable' => NULL, 'deleted_at' => NULL));
+							$this->db->trans_begin();
+							$this->Role_model->update_role($data, array('id' => $id, 'editable' => NULL, 'deleted_at' => NULL));
 							if ($this->db->affected_rows() == 1) {
 								// role data changed
+								$role_changed = true;
 							} else if ($this->db->affected_rows() == 0) {
 								// role data not changed
 							} else {
 								$error = $this->db->error();
+								$this->db->trans_rollback();
 								die(json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !"))));
 							}
 						}
@@ -209,32 +219,34 @@ class Role extends CI_Controller
 						$_POST = $this->input->post('data');
 						$rights = $this->input->post('rights');
 						// save updates
-						foreach ($rights as $module => $permObject) {
-							foreach ($permObject as $permission => $allow) {
-								$update_row = array(
-									'role_id' => $role_id_db,
-									'module_id' => $module,
-									'permission_id' => $permission,
-									'allow' => $allow || 0
-								);
-								$update_where = array(
-									'role_id' => $role_id_db,
-									'module_id' => $module,
-									'permission_id' => $permission,
-									'readonly' => NULL,
-								);
-								if (filter_var($allow, FILTER_VALIDATE_BOOLEAN)) { // ALLOW
-									$this->db->update(TABLE_ROLE_PERMISSION, $update_row, $update_where);
-								} else {
-									$this->db->delete(TABLE_ROLE_PERMISSION, $update_where);
+						if (is_array($rights) || is_object($rights)) {
+							foreach ($rights as $module => $permObject) {
+								foreach ($permObject as $permission => $allow) {
+									$update_row = array(
+										'allow' => $allow || 0
+									);
+									$where = array(
+										'role_id' => $id,
+										'module_id' => $module,
+										'permission_id' => $permission,
+										'readonly' => NULL,
+									);
+									if (filter_var($allow, FILTER_VALIDATE_BOOLEAN)) { // ALLOW
+										$this->Role_model->update_role_permission($update_row, $where);
+									} else {
+										$this->Role_model->delete_role_permission($where);
+									}
+									if ($this->db->affected_rows() != 1 && $this->db->affected_rows() != 0) {
+										$this->db->trans_rollback();
+										die(json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Role-Permission updation failed !')));
+									}
 								}
 							}
-						}
-						if ($this->db->affected_rows() >= 0) {
-							echo json_encode(array('success' => true, 'type' => 'success',  'timeout' => '5000', 'message' => 'Successfully updated permissions for role <strong><em>' . ($role_name_new ? $role_name_new : $role_name_db) . '</em></strong> !', 'location' => "admin/role"));
-						} else {
-							$error = $this->db->error();
-							echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));
+							$this->db->trans_commit();
+							echo json_encode(array('success' => true, 'type' => 'success', 'id' => $id, 'message' => 'Successfully updated permissions for role <strong><em>' . $data['name'] . '</em></strong> !', 'timeout' => 5000, 'location' => "admin/role/list"));
+						} else { // rights data not found
+							$this->db->trans_rollback();
+							echo json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Rights data not found !'));
 						}
 				}
 				break;
