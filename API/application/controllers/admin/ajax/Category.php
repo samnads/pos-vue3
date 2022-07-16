@@ -22,18 +22,8 @@ class Category extends CI_Controller
 						$data = array('success' => true, 'type' => 'success', 'data' => $results);
 						echo json_encode($data);
 						break;
-					case 'getall':
-						$result['data'] = $this->Category_model->get_categories();
-						$result['success'] = true;
-						echo json_encode($result);
-						break;
 					case 'defcat':
 						$result = array("id" => 113); // can change in user settings
-						echo json_encode($result);
-						break;
-					case 'subcats':
-						$result['data'] = $this->Category_model->get_sub_categories($this->input->get('id'));
-						$result['success'] = true;
 						echo json_encode($result);
 						break;
 					case 'datatable':

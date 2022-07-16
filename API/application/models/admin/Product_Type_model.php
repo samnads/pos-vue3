@@ -7,16 +7,13 @@ class Product_Type_model extends CI_Model
         // Call the Model constructor
         parent::__construct();
     }
-    function getAll($all = false)
+    function dropdown_active($columns = false)
     {
-        $all ? $this->db->select('*') : $this->db->select('
+        $columns ? $this->db->select('*') : $this->db->select('
 		pt.id as id,
         pt.name as name');
         $this->db->from(TABLE_PRODUCT_TYPE . ' pt');
         $query = $this->db->get();
-        return $query->result();
-    }
-    function getDefault()
-    {
+        return $query->result_array();
     }
 }

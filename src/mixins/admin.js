@@ -154,21 +154,6 @@ export default function () {
             }
         });
     }
-    function addUnitsBulk(id) {
-        store.commit("storeUnitsBulk", undefined);
-        axiosAsyncCallReturnData("get", "unit", {
-            action: "list_sub",
-            id: id
-        }, null, {
-            showSuccessNotification: false,
-            showCatchNotification: true,
-            showProgress: true,
-        }).then(function (response) {
-            if (response.success == true) {
-                store.commit("storeUnitsBulk", response.data);
-            }
-        });
-    }
     async function axiosAsyncStoreUpdateReturnData(mutation, url, data, method = "get") {
         internalInstance.appContext.config.globalProperties.$Progress.start();
         store.commit(mutation, false); // reset specific store data
@@ -228,7 +213,6 @@ export default function () {
         notifyFormError,
         /******************* for data */
         addSubCatsLevel1,
-        addUnitsBulk,
         /******************* */
         axiosAsyncCallReturnData,
         axiosAsyncStoreUpdateReturnData,

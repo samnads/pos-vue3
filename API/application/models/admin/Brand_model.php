@@ -7,6 +7,15 @@ class Brand_model extends CI_Model
         // Call the Model constructor
         parent::__construct();
     }
+    function dropdown_active($columns = false)
+    {
+        $columns ? $this->db->select('*') : $this->db->select('
+		b.id as id,
+        b.name as name');
+        $this->db->from(TABLE_BRAND . ' b');
+        $query = $this->db->get();
+        return $query->result_array();
+    }
     function datatable_data($search, $offset, $limit, $order_by, $order, $columns = null)
     {
         $search = trim($search);

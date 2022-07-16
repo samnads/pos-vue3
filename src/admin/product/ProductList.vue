@@ -2,12 +2,6 @@
   <AdminProductDetailsModal
     :propProductRow="productRow"
     :propProductInfo="productInfo"
-    :propConfirmDeleteModal="confirmDeleteModal"
-  />
-  <AdminProductDeleteConfirmModal
-    :propProductData="delete_modal_row"
-    :propConfirmDeleteProduct="confirmDeleteProduct"
-    :propDeleting="delete_modal_delete"
   />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
@@ -80,16 +74,17 @@
 <script>
 import { ref } from "vue";
 import AdminProductDetailsModal from "../modal/ProductDetailsModal.vue";
-import AdminProductDeleteConfirmModal from "../modal/ProductDeleteConfirmModal.vue";
 import { Modal } from "bootstrap";
 import admin from "@/mixins/admin.js";
+import { inject } from "vue";
 export default {
   components: {
     AdminProductDetailsModal,
-    AdminProductDeleteConfirmModal,
   },
   /* eslint-disable */
   setup() {
+    const emitter = inject("emitter"); // Inject `emitter`
+    const controller_delete = ref({});
     var productRow = ref({});
     var productInfo = ref({});
     var delete_modal_row = ref({});
@@ -106,6 +101,8 @@ export default {
       productInfo,
       delete_modal_row,
       delete_modal_delete,
+      emitter,
+      controller_delete,
       axiosAsyncCallReturnData,
       notifyDefault,
       notifyApiResponse,
@@ -152,52 +149,6 @@ export default {
               }
             }
           }
-        });
-    },
-    confirmDeleteModal(row) {
-      this.delete_modal_row = row;
-      window.PROD_DELETE_MODAL.show();
-    },
-    confirmDeleteProduct(row) {
-      var self = this;
-      self.delete_modal_delete = true;
-      if (self.controller_delete) {
-        self.controller_delete.abort();
-      }
-      self.controller_delete = new AbortController();
-      self
-        .axiosAsyncCallReturnData(
-          "delete",
-          "product",
-          {
-            data: row,
-            action: "delete",
-            bulk: row.length ? true : false,
-          },
-          self.controller_delete,
-          {
-            showSuccessNotification: true,
-            showCatchNotification: true,
-            showProgress: true,
-          }
-        )
-        .then(function (data) {
-          if (data.success == true) {
-            // success
-            window.PROD_DELETE_MODAL.hide();
-            self.table.ajax.reload();
-          } else {
-            if (data.success == false) {
-              // not ok
-              window.PROD_DELETE_MODAL.hide();
-            } else {
-              // other error
-              if (data.message != "canceled") {
-                window.PROD_DELETE_MODAL.hide();
-              }
-            }
-          }
-          self.delete_modal_delete = false;
         });
     },
   },
@@ -474,11 +425,15 @@ export default {
             className: "btn-light",
             enabled: false,
             action: function () {
-              self.delete_modal_row = self.table
-                .rows(".selected")
-                .data()
-                .toArray();
-              window.PROD_DELETE_MODAL.show();
+              let rows = self.table.rows(".selected").data().toArray();
+              self.emitter.emit("deleteConfirmModal", {
+                title: null,
+                body: "Delete products <b>(" + rows.length + ")</b> ?",
+                data: { bulk: true, rows: rows },
+                emit: "confirmDeleteProduct",
+                hide: true,
+                type: "danger",
+              });
             },
             attr: {
               title: "Delete",
@@ -528,6 +483,11 @@ export default {
           $("#checkall").prop("indeterminate", false);
           $("#checkall").prop("checked", false);
         },
+        createdRow: function (row, data, dataIndex) {
+          if (data["deleted_at"]) {
+            $(row).addClass("bg-danger");
+          }
+        },
       });
       $("#datatable tbody").on(
         "click",
@@ -560,9 +520,16 @@ export default {
           .catch(() => {});
       });
       $("#datatable tbody").on("click", "#delete", function () {
-        // delete from row action
-        self.delete_modal_row = self.table.row($(this).parents("tr")).data();
-        window.PROD_DELETE_MODAL.show();
+        // delete from action menu
+        let row = self.table.row($(this).parents("tr")).data();
+        self.emitter.emit("deleteConfirmModal", {
+          title: null,
+          body: "Delete product with name <b>" + row.name + "</b> ?",
+          data: row,
+          emit: "confirmDeleteProduct",
+          hide: true,
+          type: "danger",
+        });
       });
       self.table.on("select deselect", function () {
         self.rows = self.table.rows(".selected").data().toArray();
@@ -600,15 +567,54 @@ export default {
           self.table.search("").draw();
         });
     });
+    self.emitter.on("confirmDeleteProduct", (data) => {
+      // delete selected supplier stuff here
+      if (self.controller_delete.value) {
+        self.controller_delete.value.abort();
+      }
+      self.controller_delete.value = new AbortController();
+      self
+        .axiosAsyncCallReturnData(
+          "delete",
+          "product",
+          {
+            data: data,
+            action: "delete",
+          },
+          self.controller_delete.value,
+          {
+            showSuccessNotification: true,
+            showCatchNotification: true,
+            showProgress: true,
+          }
+        )
+        .then(function (data) {
+          if (data.success == true) {
+            // success
+            self.table.ajax.reload();
+          } else {
+            if (data.success == false) {
+              // not ok
+            } else {
+              // other error
+              if (data.message != "canceled") {
+                //
+              }
+            }
+          }
+        });
+    });
     /******************** */
     window.PROD_DETAILS_MODAL = new Modal($("#detailsModal"), {
       backdrop: true,
       show: true,
     });
-    window.PROD_DELETE_MODAL = new Modal($("#deleteModal"), {
-      backdrop: true,
-      show: true,
-    });
+  },
+  beforeUnmount() {
+    var self = this;
+    self.emitter.off("confirmDeleteProduct");
+    // turn off for duplicate calling
+    // because its called multiple times when page loaded multiple times
   },
   data: function () {
     return {

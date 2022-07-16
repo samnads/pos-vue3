@@ -1247,7 +1247,6 @@ export default {
     const router = useRouter();
     const { randCode } = adminProduct();
     const {
-      addUnitsBulk,
       notifyDefault,
       axiosAsyncCallReturnData,
       axiosAsyncStoreUpdateReturnData,
@@ -1592,8 +1591,7 @@ export default {
       useField("exp_date");
     const { value: tax_rate, errorMessage: errorTaxRate } =
       useField("tax_rate");
-      const { value: tax, errorMessage: errorTax } =
-      useField("tax");
+    const { value: tax, errorMessage: errorTax } = useField("tax");
     const { value: tax_method, errorMessage: errorTaxMethod } =
       useField("tax_method");
     const { value: cost, errorMessage: errorCost } = useField("cost");
@@ -1637,6 +1635,7 @@ export default {
         route.name == "adminProductEdit" ? "PUT" : "POST",
         "product",
         {
+          action: "create",
           data: values,
         }
       ).then(function (data) {
@@ -1709,9 +1708,10 @@ export default {
       if (id) {
         axiosAsyncCallReturnData(
           "get",
-          "category",
+          "product",
           {
-            action: "subcats",
+            action: "create",
+            dropdown: "categories_level_1",
             id: id,
           },
           null,
@@ -1856,7 +1856,6 @@ export default {
       axiosAsyncCallReturnData,
       axiosAsyncStoreUpdateReturnData,
       axiosAsyncStoreReturnBool,
-      addUnitsBulk,
       x_percentage_of_y,
     };
   },
@@ -1869,8 +1868,19 @@ export default {
       this.handleChangeCat();
     },
     unit(value) {
-      this.p_unit = this.s_unit = null;
-      if (value) this.addUnitsBulk(value);
+      if (value) {
+        this.axiosAsyncStoreUpdateReturnData("storeUnitsBulk", "product", {
+          action: "create",
+          dropdown: "sub_units",
+          id: value,
+        }).then(function (data) {
+          if (data.success == true) {
+            this.p_unit = this.s_unit = null;
+          }
+        });
+      } else {
+        this.p_unit = this.s_unit = null;
+      }
     },
     cost(cost) {
       if (cost) {
@@ -1914,11 +1924,11 @@ export default {
       }
       this.price = Number(tag_price - this.auto_discount).toFixed(2);
     },
-    tax_method() {
-
-    },
+    tax_method() {},
     tax_rate(rate) {
-      this.tax = Number(this.x_percentage_of_y(rate,this.tag_price)).toFixed(2)
+      this.tax = Number(this.x_percentage_of_y(rate, this.tag_price)).toFixed(
+        2
+      );
     },
   },
   methods: {
@@ -1960,8 +1970,9 @@ export default {
     },
     changePunitSunit: function (id) {
       let self = this;
-      this.axiosAsyncStoreUpdateReturnData("storeUnitsBulk", "unit", {
-        action: "list_sub",
+      this.axiosAsyncStoreUpdateReturnData("storeUnitsBulk", "product", {
+        action: "create",
+        dropdown: "sub_units",
         id: self.unit,
       }).then(function (data) {
         if (data.success == true) {
@@ -1974,49 +1985,57 @@ export default {
   mounted() {
     if (!this.productTypes) {
       // if not found on store
-      this.axiosAsyncStoreReturnBool("storeProductTypes", "common", {
-        action: "dropdown_product_types",
+      this.axiosAsyncStoreReturnBool("storeProductTypes", "product", {
+        action: "create",
+        dropdown: "product_types",
       });
       // get product types
     }
     if (!this.symbologies) {
       // if not found on store
-      this.axiosAsyncStoreReturnBool("storeSymbologies", "common", {
-        action: "dropdown_barcode_symbologies",
+      this.axiosAsyncStoreReturnBool("storeSymbologies", "product", {
+        action: "create",
+        dropdown: "barcode_symbologies",
       }); // get symbologies
     }
     if (!this.categories) {
       // if not found on store
-      this.axiosAsyncStoreReturnBool("storeCategories", "category", {
-        action: "getall",
+      this.axiosAsyncStoreReturnBool("storeCategories", "product", {
+        action: "create",
+        dropdown: "categories_level_0",
       }); // get categories
     }
     if (!this.brands) {
       // if not found on store
-      this.axiosAsyncStoreReturnBool("storeBrands", "brand", {
-        action: "dropdown",
+      this.axiosAsyncStoreReturnBool("storeBrands", "product", {
+        action: "create",
+        dropdown: "brands",
       }); // get brands
     }
     if (!this.units) {
       // if not found on store
-      this.axiosAsyncStoreReturnBool("storeUnits", "unit", {
-        action: "list_base",
+      this.axiosAsyncStoreReturnBool("storeUnits", "product", {
+        action: "create",
+        dropdown: "base_units",
       }); // get units
     }
     if (!this.taxes) {
       // if not found on store
-      this.axiosAsyncStoreReturnBool("storeTaxes", "tax", {
-        action: "dropdown",
+      this.axiosAsyncStoreReturnBool("storeTaxes", "product", {
+        action: "create",
+        dropdown: "tax_rates",
       }); // get tax rates
     }
     if (!this.warehouses) {
       // if not found on store
-      this.axiosAsyncStoreReturnBool("storeWareHouses", "warehouse", {
-        action: "dropdown",
+      this.axiosAsyncStoreReturnBool("storeWareHouses", "product", {
+        action: "create",
+        dropdown: "warehouses",
       }); // get ware houses
     }
-    this.axiosAsyncStoreReturnBool("storeUnitsBulk", "unit", {
-      action: "list_sub",
+    this.axiosAsyncStoreReturnBool("storeUnitsBulk", "product", {
+      action: "create",
+      dropdown: "sub_units",
       id: this.unit,
     });
     this.handleChangeCat();

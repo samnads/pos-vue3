@@ -7,7 +7,7 @@ class Unit_model extends CI_Model
         // Call the Model constructor
         parent::__construct();
     }
-    function get_all_units()
+    function dropdown_active()
     {
         $query = $this->db->get(TABLE_UNIT);
         return $query->result();
@@ -22,7 +22,7 @@ class Unit_model extends CI_Model
         $query = $this->db->get_where(TABLE_UNIT, array('id' => $id));;
         return $query->row();
     }
-    function get_bulk_units($id)
+    function dropdown_sub_active($id)
     {
         $query = $this->db->get_where(TABLE_UNIT_BULK, array('unit' => $id));
         return $query->result();

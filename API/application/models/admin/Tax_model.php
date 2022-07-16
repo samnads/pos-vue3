@@ -88,9 +88,9 @@ class Tax_model extends CI_Model
         $query = $this->db->delete(TABLE_TAX_RATE);
         return $query;
     }
-    function get_all_taxes($all = false)
+    function dropdown_active($columns = false)
     {
-        $all ? $this->db->select('*') : $this->db->select('
+        $columns ? $this->db->select('*') : $this->db->select('
 		tr.id as id,
         tr.name as name,
 		tr.code as code,
@@ -99,6 +99,6 @@ class Tax_model extends CI_Model
         tr.description as description');
         $this->db->from(TABLE_TAX_RATE . '  tr');
         $query = $this->db->get();
-        return $query->result();
+        return $query->result_array();
     }
 }

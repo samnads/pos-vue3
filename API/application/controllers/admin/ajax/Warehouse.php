@@ -26,11 +26,6 @@ class Warehouse extends CI_Controller
 						//$data[ 'error' ] = '';
 						echo json_encode($data);
 						break;
-					case 'dropdown':
-						$result['data'] = $this->Warehouse_model->dropdown_all();
-						$result['success'] = true;
-						echo json_encode($result);
-						break;
 					default:
 						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Unknown Action !'));
 				}

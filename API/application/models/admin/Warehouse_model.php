@@ -7,7 +7,7 @@ class Warehouse_model extends CI_Model
         // Call the Model constructor
         parent::__construct();
     }
-    function dropdown_all()
+    function dropdown_active()
     {
         $this->db->select('wh.id,wh.name');
         $this->db->from(TABLE_WAREHOUSE . ' wh');

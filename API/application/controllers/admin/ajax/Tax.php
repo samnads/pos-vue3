@@ -9,12 +9,7 @@ class Tax extends CI_Controller
 		$_POST = raw_input_to_post();
 		switch ($_SERVER['REQUEST_METHOD']) {
 			case 'GET': // read
-				switch ($action = $this->input->get('action')) {
-					case 'dropdown': // get all tax rows for dropdown
-						$result['data'] = $this->Tax_model->get_all_taxes();
-						$result['success'] = true;
-						echo json_encode($result);
-						break;
+				switch ($this->input->get('action')) {
 					case 'datatable': // get all brand rows
 						$data = array();
 						$limit = $this->input->get('length') <= 0 ? NULL : $this->input->get('length'); // limit

@@ -158,7 +158,7 @@
                           '_' +
                           permObj['permission_name']
                         "
-                        >{{ permObj["permission_name"] }}</label
+                        >{{ permObj["usage"] }}</label
                       >
                     </div>
                   </div>

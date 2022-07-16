@@ -9,18 +9,7 @@ class Unit extends CI_Controller
 		$_POST = raw_input_to_post();
 		switch ($_SERVER['REQUEST_METHOD']) {
 			case 'GET': // read
-				switch ($action = $this->input->get('action')) {
-					case 'list_base': // get all unit rows
-						$result['data'] = $this->Unit_model->get_all_units();
-						$result['success'] = true;
-						echo json_encode($result);
-						break;
-					case 'list_sub': // get subunits from base unit
-						$id = $this->input->get('id');
-						$result['data'] = $this->Unit_model->get_bulk_units($id);
-						$result['success'] = true;
-						echo json_encode($result);
-						break;
+				switch ($this->input->get('action')) {
 					case 'datatable': // get all unit rows
 						$data = array();
 						$limit = $this->input->get('length') <= 0 ? NULL : $this->input->get('length'); // limit

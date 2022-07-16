@@ -7,7 +7,7 @@ class Category_model extends CI_Model
 		// Call the Model constructor
 		parent::__construct();
 	}
-	function get_categories()
+	function dropdown_level_0_active()
 	{
 		$query = $this->db->get(TABLE_CATEGORY);
 		return $query->result();
@@ -17,7 +17,7 @@ class Category_model extends CI_Model
 		$query = $this->db->get_where(TABLE_CATEGORY, array($cnmae => $value));
 		return $query;
 	}
-	function get_sub_categories($catid)
+	function dropdown_level_1_active($catid)
 	{
 		$this->db->select('
 		sc.id as id,

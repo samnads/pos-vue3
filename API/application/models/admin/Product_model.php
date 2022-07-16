@@ -57,10 +57,12 @@ class Product_model extends CI_Model
 		$query = $this->db->get();
 		return $query;
 	}
-	function totalRows()
+	function datatable_recordsTotal()
 	{
 		$this->db->select('count(id)');
-		$query = $this->db->get(TABLE_PRODUCT);
+		$this->db->from(TABLE_PRODUCT . ' p');
+		$this->db->where(array('p.deleted_at' => NULL)); // select only not deleted rows
+		$query = $this->db->get();
 		$cnt = $query->row_array();
 		return $cnt['count(id)'];
 	}
@@ -151,7 +153,7 @@ class Product_model extends CI_Model
 		$query = $this->db->get();
 		return $query;
 	}
-	function listProducts($search, $offset, $limit, $order_by, $order)
+	function datatable_data($search, $offset, $limit, $order_by, $order)
 	{
 		$search = trim($search);
 		$this->db->select('
@@ -182,6 +184,8 @@ class Product_model extends CI_Model
 		p.pos_data_field_4 	as pos_data_field_4,
 		p.pos_data_field_5 	as pos_data_field_5,
 		p.pos_data_field_6 	as pos_data_field_6,
+		p.editable			as editable,
+		p.deleted_at		as deleted_at,
 		
 		t.id 		as type,
 		t.name 		as type_name,
@@ -223,6 +227,8 @@ class Product_model extends CI_Model
 		$this->db->order_by($order_by, $order);
 		$this->db->group_by('p.id');
 
+		$this->db->where(array('p.deleted_at' => NULL)); // select only not deleted rows
+		$this->db->group_start();
 		$this->db->or_like('p.code',	$search);
 		$this->db->or_like('p.name',	$search);
 		$this->db->or_like('p.slug',	$search);
@@ -240,12 +246,13 @@ class Product_model extends CI_Model
 		$this->db->or_like('tr.code',	$search);
 		$this->db->or_like('tr.name',	$search);
 		$this->db->or_like('tr.rate',	$search);
+		$this->db->group_end();
 		$query = $this->db->get('', $limit, $offset);
 		//die($this->db->last_query());
 		//die(print_r($query));
 		return $query;
 	}
-	function listProducts_FilteredCount($search)
+	function datatable_recordsFiltered($search)
 	{
 		$search = trim($search);
 		$this->db->select('COUNT(*) as count');
@@ -258,6 +265,8 @@ class Product_model extends CI_Model
 		$this->db->join(TABLE_UNIT . '				u',	'u.id=p.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . '			tr',	'tr.id=p.tax_rate',	'left');
 
+		$this->db->where(array('p.deleted_at' => NULL)); // select only not deleted rows
+		$this->db->group_start();
 		$this->db->or_like('p.code',	$search);
 		$this->db->or_like('p.name',	$search);
 		$this->db->or_like('p.slug',	$search);
@@ -275,6 +284,7 @@ class Product_model extends CI_Model
 		$this->db->or_like('tr.code',	$search);
 		$this->db->or_like('tr.name',	$search);
 		$this->db->or_like('tr.rate',	$search);
+		$this->db->group_end();
 		$query = $this->db->get();
 		$query	= $query->row();
 		return $query->count;
@@ -335,16 +345,19 @@ class Product_model extends CI_Model
 		$query = $this->db->get('', $limit, $offset);
 		return $query;
 	}
-	function delete($id)
+	function set_deleted_at($where) // mark as deleted
 	{
-		$id = trim($id);
-		$query = $this->db->delete(TABLE_PRODUCT, array('id' => $id));
+		$this->db->where($where);
+		$this->db->set('deleted_at', 'NOW()', FALSE); // deleted rows have a timestamp
+		$query = $this->db->update(TABLE_PRODUCT);
 		return $query;
 	}
-	function deletes($ids)
+	function multi_set_deleted_at($ids,$where) // mark as deleted
 	{
 		$this->db->where_in('id', $ids);
-		$query = $this->db->delete(TABLE_PRODUCT);
+		$this->db->where($where);
+		$this->db->set('deleted_at', 'NOW()', FALSE); // deleted rows have a timestamp
+		$query = $this->db->update(TABLE_PRODUCT);
 		return $query;
 	}
 	function create($data)
