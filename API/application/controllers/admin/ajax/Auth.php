@@ -42,7 +42,7 @@ class Auth extends CI_Controller
                 if ($this->input->server('REQUEST_METHOD') === 'POST') {
                     $this->User_model->updateLogout($this->session->id); // update db
                     $this->session->sess_destroy();
-                    $data = array('success' => true, 'location' => base_url("admin/login"));
+                    $data = array('success' => true, 'location' => "admin/login");
                     echo json_encode($data);
                 } else {
                     redirect('admin/login', 'location', 301);

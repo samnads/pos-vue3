@@ -1875,11 +1875,13 @@ export default {
           id: value,
         }).then(function (data) {
           if (data.success == true) {
-            this.p_unit = this.s_unit = null;
+            this.p_unit = null;
+            this.s_unit = null;
           }
         });
       } else {
-        this.p_unit = this.s_unit = null;
+        this.p_unit = null;
+        this.s_unit = null;
       }
     },
     cost(cost) {

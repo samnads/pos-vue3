@@ -69,14 +69,7 @@
           <div class="invalid-feedback">{{ errorDescription }}</div>
         </div>
       </div>
-      <div
-        class="d-flex justify-content-center"
-        v-if="!Object.keys(MODULE_PERMISSIONS).length"
-      >
-        <div class="spinner-border" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-      </div>
+      <AdminLoadingSpinnerDiv v-if="!Object.keys(MODULE_PERMISSIONS).length" />
       <div class="row">
         <div
           class="col-xxl-3 col-xl-4 col-sm-6 mb-2"

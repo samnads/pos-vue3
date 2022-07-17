@@ -185,6 +185,7 @@ class Product_model extends CI_Model
 		p.pos_data_field_5 	as pos_data_field_5,
 		p.pos_data_field_6 	as pos_data_field_6,
 		p.editable			as editable,
+		p.deletable			as deletable,
 		p.deleted_at		as deleted_at,
 		
 		t.id 		as type,

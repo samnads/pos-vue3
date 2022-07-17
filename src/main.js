@@ -13,6 +13,8 @@ import "@fortawesome/fontawesome-free/css/all.min.css" // css
 import "@fortawesome/fontawesome-free/js/all.min" // js
 //
 import Notifications from '@kyvg/vue3-notification'
+// global components
+import AdminLoadingSpinnerDiv from "./admin/common/LoadingSpinnerDiv.vue";
 //
 import mitt from 'mitt';                  // Import mitt
 const emitter = mitt();                   // Initialize mitt
@@ -32,3 +34,4 @@ app.use(VueProgressBar, options);
 app.use(Notifications);
 app.provide('emitter',emitter);
 app.mount('#app');
+app.component("AdminLoadingSpinnerDiv", AdminLoadingSpinnerDiv); // global registration - can be used anywhere

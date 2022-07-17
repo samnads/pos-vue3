@@ -56,17 +56,8 @@ class Common extends CI_Controller
                         echo json_encode(array('success' => true, 'type' => 'success', 'data' => $new));
                         break;
                     case 'test_query':
-                        $this->db->select('
-		                mp.id		as id,
-                        mp.module		as module,
-                        mp.permission	as permission,
-		                m.name		    as module_name,
-                        m.description   as module_description,
-                        p.name		    as permission_name,
-                        p.usage		    as usage');
-                        $this->db->from(TABLE_MODULE_PERMISSION . ' mp');
-                        $this->db->join(TABLE_MODULE . '		m',    'm.id=mp.module', 'left');
-                        $this->db->join(TABLE_PERMISSION . '	p',    'p.id=mp.permission', 'left');
+                        $this->db->select('*');
+                        $this->db->from(TABLE_CATEGORY_NEW . ' c');
                         $query = $this->db->get();
                         //die($this->db->last_query());
                         echo json_encode(array('success' => true, 'type' => 'success', 'data' => $query->result_array()));

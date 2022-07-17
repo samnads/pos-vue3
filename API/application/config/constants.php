@@ -92,7 +92,7 @@ defined('EXIT__AUTO_MAX')      or define('EXIT__AUTO_MAX', 125); // highest auto
 */
 defined('TABLE_ADMIN')              or define('TABLE_ADMIN', 'admin');
 defined('TABLE_USER')               or define('TABLE_USER', 'user');
-defined('TABLE_BARCODE_SYMBOLOGY')  or define('TABLE_BARCODE_SYMBOLOGY', 'symbology');
+defined('TABLE_BARCODE_SYMBOLOGY')  or define('TABLE_BARCODE_SYMBOLOGY', 'barcode_symbology');
 defined('TABLE_BRAND')              or define('TABLE_BRAND', 'brand');
 defined('TABLE_CURRENCY')           or define('TABLE_CURRENCY', 'currency');
 defined('TABLE_LABEL_SIZE')         or define('TABLE_LABEL_SIZE', 'label_size');
@@ -100,8 +100,9 @@ defined('TABLE_PRODUCT')            or define('TABLE_PRODUCT', 'product');
 defined('TABLE_PRODUCT_STOCK')      or define('TABLE_PRODUCT_STOCK', 'product_stock');
 defined('TABLE_PRODUCT_TYPE')       or define('TABLE_PRODUCT_TYPE', 'product_type');
 defined('TABLE_PRODUCT_GALLERY')    or define('TABLE_PRODUCT_GALLERY', 'product_gallery');
-defined('TABLE_CATEGORY')           or define('TABLE_CATEGORY', 'category');
-defined('TABLE_SUB_CATEGORY')       or define('TABLE_SUB_CATEGORY', 'sub_category');
+defined('TABLE_CATEGORY_NEW')       or define('TABLE_CATEGORY_NEW', 'category');
+defined('TABLE_CATEGORY')           or define('TABLE_CATEGORY', 'category_level_0');
+defined('TABLE_SUB_CATEGORY')       or define('TABLE_SUB_CATEGORY', 'category_level_1');
 defined('TABLE_TAX_RATE')           or define('TABLE_TAX_RATE', 'tax_rate');
 defined('TABLE_TAX_GROUP')          or define('TABLE_TAX_GROUP', 'tax_group');
 defined('TABLE_TAX_GROUP_RATE')     or define('TABLE_TAX_GROUP_RATE', 'tax_group_rate');

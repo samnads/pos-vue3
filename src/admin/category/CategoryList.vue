@@ -3,7 +3,7 @@
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
         <h5 class="title">
-          <i class="fa-solid fa-cart-shopping"></i><span>Products</span>
+          <i class="fa-solid fa-layer-group"></i><span>Categories</span>
         </h5>
       </div>
       <div class="p-2 bd-highlight">
@@ -45,17 +45,14 @@
               id="checkall"
             />
           </th>
-          <th scope="col"><i class="fa-solid fa-image"></i></th>
           <th scope="col" class="d-none">ID</th>
           <th scope="col">Code</th>
           <th scope="col">Name</th>
-          <th scope="col">Brand</th>
-          <th scope="col">Category</th>
-          <th scope="col">MRP</th>
-          <th scope="col">Stock</th>
-          <th scope="col">Unit</th>
-          <th scope="col">Cost</th>
-          <th scope="col">Price</th>
+          <th scope="col">URL Slug (SEO)</th>
+          <th scope="col">Description</th>
+          <th scope="col">Sub Categories</th>
+          <th scope="col">Products</th>
+          <th scope="col">Brands</th>
           <th scope="col"><i class="fa-solid fa-bars"></i></th>
         </tr>
       </thead>
@@ -68,35 +65,35 @@
 <style>
 </style>
 <script>
+/* eslint-disable */
 import { ref } from "vue";
 import admin from "@/mixins/admin.js";
 import { inject } from "vue";
 export default {
-  components: {
-  },
+  components: {},
   /* eslint-disable */
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
     const controller_delete = ref({});
     // notify
     const {
-      axiosAsyncCallReturnData,
       notifyDefault,
       notifyApiResponse,
       notifyCatchResponse,
+      axiosAsyncCallReturnData,
     } = admin();
     return {
-      emitter,
-      controller_delete,
-      axiosAsyncCallReturnData,
       notifyDefault,
       notifyApiResponse,
       notifyCatchResponse,
+      axiosAsyncCallReturnData,
+      emitter,
+      controller_delete,
     };
   },
   methods: {
+    getAdjustInfo() {},
   },
-  created() {},
   mounted() {
     var self = this;
     $(function () {
@@ -121,10 +118,10 @@ export default {
           fixedColumnsLeft: 1,
           fixedColumnsRight: 1,
         },
-        order: [[2, "desc"]],
+        order: [[1, "desc"]],
         ajax: {
           method: "GET",
-          url: process.env.VUE_APP_API_ROOT + "admin/ajax/product",
+          url: process.env.VUE_APP_API_ROOT + "admin/ajax/category",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {
@@ -156,11 +153,11 @@ export default {
           processing:
             '<div class="spinner-grow" style="width: 3rem; height: 3rem;" role="status"> <span class="visually-hidden">Loading...</span></div>',
           emptyTable: "No data available in table",
-          zeroRecords: "No matching products found",
-          info: "Showing _START_ to _END_ of _TOTAL_ Products",
-          infoEmpty: "No product info found",
-          emptyTable: "No products found",
-          infoFiltered: "(filtered from _MAX_ Products)",
+          zeroRecords: "No matching category found",
+          info: "Showing _START_ to _END_ of _TOTAL_ categories",
+          infoEmpty: "No category info found",
+          emptyTable: "No category found",
+          infoFiltered: "(filtered from _MAX_ categories)",
           paginate: {
             first: "First",
             last: "Last",
@@ -173,9 +170,6 @@ export default {
             data: null,
           },
           {
-            data: "thumbnail",
-          },
-          {
             data: "id",
           },
           {
@@ -185,25 +179,19 @@ export default {
             data: "name",
           },
           {
-            data: "brand_name",
+            data: "slug",
           },
           {
-            data: "category_name",
+            data: "description",
           },
           {
-            data: "mrp",
+            data: "sc_count",
           },
           {
-            data: "quantity",
+            data: "p_count",
           },
           {
-            data: "unit_code",
-          },
-          {
-            data: "cost",
-          },
-          {
-            data: "price",
+            data: "b_count",
           },
           {
             data: null,
@@ -220,81 +208,71 @@ export default {
           },
           {
             targets: [1],
-            orderable: false,
-            searchable: false,
-            className: "text-center",
-            render: function (data, type, full, meta) {
-              return (
-                'IMG'
-              );
-            },
-          },
-          {
-            targets: [2],
             className: "d-none",
             searchable: false,
           },
           {
+            targets: [2],
+            visible: true,
+            searchable: true,
+          },
+          {
+            targets: [3],
+          },
+          {
+            targets: [4],
+          },
+          {
             targets: [5],
             render: function (data, type, row, meta) {
-              return data == null ? '<i class="text-muted small">-</i>' : data;
-            },
-          },
-          {
-            targets: [7],
-            render: function (data, type, row, meta) {
               return data == null
-                ? '<i class="text-muted small">-</i>'
-                : parseFloat(data).toFixed(2);
+                ? '<i class="text-muted small">NIL</i>'
+                : data;
             },
           },
           {
-            targets: [8],
-            className: "text-center",
-            render: function (data, type, row, meta) {
-              return data == 0
-                ? '<i class="text-secondary small">' +
-                    parseFloat(data).toFixed(2) +
-                    "</i>"
-                : parseFloat(data).toFixed(2);
-            },
-          },
-          {
-            targets: [9],
-            className: "text-center",
+            targets: [6],
+            width: "15%",
             render: function (data, type, row, meta) {
               return (
-                '<span class="text-secondary small" title="' +
-                row.unit_name +
-                '">' +
+                '<span class="badge bg-secondary w-100 fs-6">' +
                 data +
                 "</span>"
               );
             },
           },
           {
-            targets: [10],
-            render: function (data, type, row, meta) {
-              return data == null
-                ? '<i class="text-muted small">-</i>'
-                : parseFloat(data).toFixed(2);
-            },
-          },
-          {
-            targets: [11],
-            render: function (data, type, row, meta) {
-              return parseFloat(data).toFixed(2);
-            },
-          },
-          {
-            targets: [12],
-            orderable: false,
-            className: "text-center",
-            searchable: false,
+            targets: [7],
             width: "1%",
             render: function (data, type, row, meta) {
+              return (
+                '<span class="badge bg-secondary w-100 fs-6">' +
+                data +
+                "</span>"
+              );
+            },
+          },
+          {
+            targets: [8],
+            width: "1%",
+            render: function (data, type, row, meta) {
+              return (
+                '<span class="badge bg-secondary w-100 fs-6">' +
+                data +
+                "</span>"
+              );
+            },
+          },
+          {
+            targets: [9],
+            className: "text-center",
+            orderable: false,
+            searchable: false,
+            width: "1%",
+            defaultContent: "",
+            render: function (data, type, row, meta) {
               let infoBtn =
-                '<button type="button" id="details" class="btn btn-success" data-toggle="tooltip" data-placement="left" title="Info"><i class="fas fa-info-circle"></i></button>';
+                '<button type="button" id="info" class="btn btn-success" data-toggle="tooltip" data-placement="left" title="Info"><i class="fas fa-info-circle"></i></button>';
               let editBtn =
                 '<button type="button" id="edit" class="btn btn-' +
                 (row["editable"] !== 0 ? "primary" : "secondary") +
@@ -329,7 +307,7 @@ export default {
             text: '<i class="fa-solid fa-print"></i>',
             className: "btn-light",
             exportOptions: {
-              columns: [2, 3, 4, 5, 6, 7],
+              columns: [1, 2, 3, 4, 5, 6, 7, 8],
             },
             attr: {
               "data-bs-toggle": "tooltip",
@@ -341,7 +319,7 @@ export default {
             text: '<i class="fas fa-download"></i>',
             className: "btn-light",
             exportOptions: {
-              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+              columns: [1, 2, 3, 4, 5, 6, 7, 8],
             },
             attr: {
               "data-toggle": "tooltip",
@@ -354,7 +332,7 @@ export default {
             text: '<i class="fas fa-file-excel"></i>',
             className: "btn-light",
             exportOptions: {
-              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+              columns: [1, 2, 3, 4, 5, 6, 7, 8],
             },
             attr: {
               "data-toggle": "tooltip",
@@ -366,14 +344,13 @@ export default {
             text: '<i class="fas fa-file-csv"></i>',
             className: "btn-light",
             exportOptions: {
-              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+              columns: [1, 2, 3, 4, 5, 6, 7, 8],
             },
             attr: {
               "data-toggle": "tooltip",
               title: "Download CSV",
             },
           },
-
           {
             text: '<i class="fa fa-sync-alt"></i>',
             className: "btn-light",
@@ -397,9 +374,15 @@ export default {
               let rows = self.table.rows(".selected").data().toArray();
               self.emitter.emit("deleteConfirmModal", {
                 title: null,
-                body: "Delete products <b>(" + rows.length + ")</b> ?",
-                data: { bulk: true, rows: rows },
-                emit: "confirmDeleteProduct",
+                body:
+                  "Delete selected supplier" +
+                  (rows.length > 1 ? "s " : "") +
+                  (rows.length > 1
+                    ? "(" + rows.length + ")"
+                    : " <b>" + rows[0].name + "</b> (" + rows[0].name + ")") +
+                  " ?",
+                data: self.table.rows(".selected").data().toArray(),
+                emit: "confirmDeleteSupplier",
                 hide: true,
                 type: "danger",
               });
@@ -418,7 +401,7 @@ export default {
             text: '<i class="fas fa-copy"></i>',
             className: "btn-light",
             exportOptions: {
-              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+              columns: [1, 2, 3, 4, 5, 6, 7, 8],
             },
             attr: {
               "data-toggle": "tooltip",
@@ -429,7 +412,11 @@ export default {
             text: '<i class="fa-solid fa-plus"></i>',
             className: "btn-light",
             action: function () {
-              self.$router.push({ name: "adminProductNew" }).catch((e) => {});
+              self.emitter.emit("newSupplierModal", {
+                title: "New Supplier",
+                type: "success",
+                emit: "refreshSupplierDataTable",
+              });
             },
             attr: {
               "data-bs-toggle": "tooltip",
@@ -462,44 +449,38 @@ export default {
         "click",
         "td:not(:first-child):not(:last-child),#details",
         function () {
-          // show single product info
-          let row = self.table.row($(this).parents("tr")).data();
-          self.emitter.emit("showProductDetails", {
-            title: null,
-            body: null,
-            data: row,
-            type: "danger",
-          });
+          self.adjustRow = self.table.row($(this).parents("tr")).data(); // row data
+          window.SUPPLIER_INFO_MODAL.show();
         }
       );
       $("#datatable tbody").on("click", "#edit", function () {
         // edit from action menu
-        self.row = self.table.row($(this).parents("tr")).data();
-        self.$router
-          .push({
-            name: "adminProductEdit",
-            params: { id: self.row.id, data: JSON.stringify(self.row) },
-          })
-          .catch(() => {});
+        let row = self.table.row($(this).parents("tr")).data();
+        self.emitter.emit("newSupplierModal", {
+          title: "Edit Supplier",
+          data: row,
+          emit: "refreshSupplierDataTable",
+          type: "primary",
+        });
       });
-      $("#datatable tbody").on("click", "#copy", function () {
-        // copy from action menu
+      $("#datatable tbody").on("click", "#info", function () {
+        // info from action menu
         self.row = self.table.row($(this).parents("tr")).data();
-        self.$router
-          .push({
-            name: "adminProductCopy",
-            params: { id: self.row.id, data: JSON.stringify(self.row) },
-          })
-          .catch(() => {});
+        window.SUPPLIER_INFO_MODAL.show();
       });
       $("#datatable tbody").on("click", "#delete", function () {
         // delete from action menu
         let row = self.table.row($(this).parents("tr")).data();
         self.emitter.emit("deleteConfirmModal", {
           title: null,
-          body: "Delete product with name <b>" + row.name + "</b> ?",
+          body:
+            "Delete supplier with name <b>" +
+            row.name +
+            "</b> (" +
+            row.place +
+            ")?",
           data: row,
-          emit: "confirmDeleteProduct",
+          emit: "confirmDeleteSupplier",
           hide: true,
           type: "danger",
         });
@@ -540,7 +521,7 @@ export default {
           self.table.search("").draw();
         });
     });
-    self.emitter.on("confirmDeleteProduct", (data) => {
+    self.emitter.on("confirmDeleteSupplier", (data) => {
       // delete selected supplier stuff here
       if (self.controller_delete.value) {
         self.controller_delete.value.abort();
@@ -549,10 +530,11 @@ export default {
       self
         .axiosAsyncCallReturnData(
           "delete",
-          "product",
+          "supplier",
           {
             data: data,
             action: "delete",
+            bulk: data.length ? true : false,
           },
           self.controller_delete.value,
           {
@@ -577,20 +559,19 @@ export default {
           }
         });
     });
+    self.emitter.on("refreshSupplierDataTable", (data) => {
+      self.table.ajax.reload();
+    });
   },
   beforeUnmount() {
     var self = this;
-    self.emitter.off("confirmDeleteProduct");
+    self.emitter.off("confirmDeleteSupplier");
+    self.emitter.off("refreshSupplierDataTable");
     // turn off for duplicate calling
     // because its called multiple times when page loaded multiple times
   },
   data: function () {
-    return {
-      products: [],
-      product: {
-        details: {},
-      },
-    };
+    return {};
   },
 };
 </script>

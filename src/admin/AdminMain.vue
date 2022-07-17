@@ -168,23 +168,37 @@
                 </li>
               </ul>
             </li>
-            <li>
-              <router-link class="nav-link" to="/admin/login"
-                >Login</router-link
-              >
-            </li>
           </ul>
-          <form class="d-flex">
-            <input
-              class="form-control me-2"
-              type="search"
-              placeholder="Search"
-              aria-label="Search"
-            />
-            <button class="btn btn-outline-success" type="submit">
-              Search
-            </button>
-          </form>
+          <div class="d-flex align-items-center">
+            <div class="flex-shrink-0 dropdown">
+              <a
+                href="#"
+                class="d-block link-dark text-decoration-none dropdown-toggle"
+                id="dropdownUser2"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <img
+                  src="https://avatars.githubusercontent.com/u/10187201?v=4"
+                  width="32"
+                  height="32"
+                  class="rounded-circle"
+                />
+              </a>
+              <ul
+                class="dropdown-menu dropdown-menu-end text-small shadow"
+                aria-labelledby="dropdownUser2"
+              >
+                <li><a class="dropdown-item" href="#">New project...</a></li>
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><hr class="dropdown-divider" /></li>
+                <li v-on:click="logout()">
+                  <a class="dropdown-item" href="#">Sign out</a>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </nav>
@@ -405,6 +419,7 @@ import { Modal } from "bootstrap";
 import AlertBoxDefault from "./modal/AlertBoxDefault.vue";
 import DeleteConfirmModalDefault from "./modal/DeleteConfirmModalDefault.vue";
 import PlaySound from "../admin/PlaySound.vue";
+import admin from "@/mixins/admin.js";
 import { ref } from "vue";
 export default {
   components: {
@@ -415,7 +430,10 @@ export default {
   setup() {
     const alertModalTitle = ref("");
     const alertModalBody = ref("");
+    const { axiosAsyncCallReturnData, notifyCatchResponse } = admin();
     return {
+      axiosAsyncCallReturnData,
+      notifyCatchResponse,
       alertModalTitle,
       alertModalBody,
     };
@@ -426,7 +444,40 @@ export default {
       general: { closeOnClick: false, max: 3 },
     };
   },
-  methods: {},
+  methods: {
+    logout() {
+      var self = this;
+      self
+        .axiosAsyncCallReturnData(
+          "post",
+          "auth",
+          {
+            action: "logout",
+          },
+          null,
+          {
+            showSuccessNotification: false,
+            showCatchNotification: false,
+            showProgress: true,
+          }
+        )
+        .then(function (data) {
+          if (data.success == true) {
+            console.log(data)
+            // ok
+          } else {
+            if (data.success == false) {
+              // not ok
+            } else {
+              // other error
+              if (data.message != "canceled") {
+                self.notifyCatchResponse({ title: data.message });
+              }
+            }
+          }
+        });
+    },
+  },
   mounted() {
     //  [App.vue specific] When App.vue is finish loading finish the progress bar
     this.$Progress.finish();
