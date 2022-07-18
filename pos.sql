@@ -76,7 +76,7 @@ CREATE TABLE `category` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `parent_name` (`parent`,`name`),
   CONSTRAINT `category_ibfk_1` FOREIGN KEY (`parent`) REFERENCES `category` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `category` (`id`, `parent`, `name`, `description`, `slug`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (1,	NULL,	'Miscellaneous',	NULL,	NULL,	'2022-07-17 16:19:16',	NULL,	NULL),
@@ -95,95 +95,21 @@ INSERT INTO `category` (`id`, `parent`, `name`, `description`, `slug`, `added_at
 (14,	NULL,	'Mobiles',	NULL,	NULL,	'2022-07-17 16:23:20',	NULL,	NULL),
 (15,	14,	'Apple',	NULL,	NULL,	'2022-07-17 16:23:37',	NULL,	NULL),
 (16,	14,	'One Plus',	NULL,	NULL,	'2022-07-17 16:23:55',	NULL,	NULL),
-(17,	14,	'Nothing',	NULL,	NULL,	'2022-07-17 16:24:03',	NULL,	NULL);
-
-DROP TABLE IF EXISTS `category_level_0`;
-CREATE TABLE `category_level_0` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `code` varchar(5) NOT NULL,
-  `name` varchar(30) NOT NULL,
-  `slug` varchar(30) NOT NULL,
-  `image` text DEFAULT NULL,
-  `description` text DEFAULT NULL,
-  `added_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
-  `deleted_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `code` (`code`),
-  UNIQUE KEY `name` (`name`),
-  UNIQUE KEY `slug` (`slug`),
-  UNIQUE KEY `image` (`image`) USING HASH
-) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8mb4;
-
-INSERT INTO `category_level_0` (`id`, `code`, `name`, `slug`, `image`, `description`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'SI',	'School Items',	'school-items',	NULL,	'uidgdgfd',	'2021-01-24 05:49:06',	NULL,	NULL),
-(2,	'OI',	'Office Items',	'office-items',	NULL,	'gfhfgh hghh',	'2021-01-24 05:49:25',	NULL,	NULL),
-(4,	'E',	'Electronics',	'electronics',	NULL,	'df df fd f',	'2021-01-24 14:49:36',	NULL,	NULL),
-(5,	'BI',	'Baby Items',	'baby-items',	NULL,	'hdf  gtt',	'2021-01-24 14:51:37',	NULL,	NULL),
-(52,	'GI',	'Gift Items',	'gift-items',	NULL,	NULL,	'2022-04-02 10:56:45',	NULL,	NULL),
-(53,	'gh',	'hjhjhj',	'hjhjhj',	NULL,	'jhgjhjhj',	'2022-04-03 10:19:10',	NULL,	NULL),
-(54,	'sa',	'dsss',	'dsss',	NULL,	NULL,	'2022-04-03 11:23:07',	NULL,	NULL);
-
-DROP TABLE IF EXISTS `category_level_1`;
-CREATE TABLE `category_level_1` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `category` int(11) NOT NULL,
-  `code` varchar(5) NOT NULL,
-  `name` varchar(30) NOT NULL,
-  `slug` varchar(30) NOT NULL,
-  `image` text DEFAULT NULL,
-  `description` text DEFAULT NULL,
-  `added_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
-  `deleted_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `slug` (`slug`),
-  UNIQUE KEY `image` (`image`) USING HASH,
-  KEY `sub_category_category` (`category`)
-) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4;
-
-INSERT INTO `category_level_1` (`id`, `category`, `code`, `name`, `slug`, `image`, `description`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	1,	'B',	'Books',	'books',	NULL,	'fg fsf f ffdd',	'2021-01-24 05:50:07',	'2021-05-11 15:54:41',	NULL),
-(2,	1,	'PS',	'Pencils',	'pencils',	NULL,	'g gfgfg g',	'2021-01-24 05:50:20',	'2021-05-11 15:50:05',	NULL),
-(3,	2,	'SP',	'Seal Pad',	'seal-pad',	NULL,	'cxgfgfgfg',	'2021-01-24 06:00:56',	NULL,	NULL),
-(4,	1,	'P',	'Pens',	'pens',	NULL,	'ggh gh',	'2021-01-24 14:45:20',	NULL,	NULL),
-(5,	5,	'FB',	'Feeding Bottle',	'feeding-bottle',	NULL,	'fg rtgt t',	'2021-01-24 14:51:54',	NULL,	NULL),
-(35,	1,	'erer',	'feer',	'werwe',	NULL,	'erw',	'2021-05-11 20:21:05',	NULL,	NULL),
-(36,	1,	'gdfg',	'fgf',	'dfgd',	NULL,	'ddd',	'2021-05-11 20:48:11',	NULL,	NULL),
-(37,	1,	't',	'sdfsdf',	'etr',	NULL,	'retrt',	'2021-05-11 21:42:22',	NULL,	NULL),
-(38,	1,	'ee',	'ertert',	'retret',	NULL,	'ertertert',	'2021-05-11 21:49:22',	NULL,	NULL),
-(39,	1,	'rty',	'rty',	'rty35',	NULL,	'534545',	'2021-05-11 22:17:01',	NULL,	NULL),
-(40,	1,	'ryrt',	'tyrr',	'yrty',	NULL,	'tyrty',	'2021-05-19 20:59:33',	NULL,	NULL),
-(41,	1,	'er',	'tyt',	'ytryrty',	NULL,	'tryrtyrty',	'2021-05-30 18:14:07',	NULL,	NULL),
-(42,	4,	'xcvx',	'Mobiles',	'xcv',	NULL,	NULL,	'2021-10-11 16:55:34',	'2022-03-23 14:32:56',	NULL),
-(43,	4,	'we',	'Smart TVs',	'ewewe',	NULL,	NULL,	'2022-03-23 14:33:10',	NULL,	NULL),
-(44,	1,	'fa',	'TTT',	'tttgg',	NULL,	'fgfgfg',	'2022-04-03 10:34:49',	NULL,	NULL),
-(45,	1,	'sf',	'QQQ',	'qqq',	NULL,	'jhjhh',	'2022-04-03 10:35:37',	NULL,	NULL),
-(46,	5,	'fd',	'ghgg',	'ghgg',	NULL,	'gg',	'2022-04-03 10:36:32',	NULL,	NULL),
-(47,	5,	'yr',	'yuyuyu',	'yuyuyu',	NULL,	NULL,	'2022-04-03 10:36:56',	NULL,	NULL),
-(48,	2,	'gt',	'jkjkj',	'jkjkj',	NULL,	'ii',	'2022-04-03 10:38:28',	NULL,	NULL),
-(49,	1,	'rr',	'trtrtr',	'trtrtr',	NULL,	NULL,	'2022-04-03 11:23:27',	NULL,	NULL),
-(50,	1,	'tt',	'uyu',	'uyu',	NULL,	NULL,	'2022-04-03 11:59:58',	NULL,	NULL),
-(51,	1,	'trt',	'uityr',	'uityr',	NULL,	'e',	'2022-04-03 12:02:34',	NULL,	NULL),
-(52,	1,	'ag',	'tyty',	'tyty',	NULL,	NULL,	'2022-04-03 12:27:08',	NULL,	NULL),
-(53,	1,	'lk',	'yettwt',	'yettwt',	NULL,	NULL,	'2022-04-03 12:28:08',	NULL,	NULL),
-(54,	1,	'ww',	'yuyuyuy',	'yuyuyuy',	NULL,	'ytyty',	'2022-04-03 12:28:34',	NULL,	NULL),
-(55,	1,	'eq',	'tytyty',	'tytyty',	NULL,	NULL,	'2022-04-03 12:29:12',	NULL,	NULL),
-(56,	1,	'hh',	'tytrytry',	'tytrytry',	NULL,	'tytyyt',	'2022-04-03 12:29:30',	NULL,	NULL),
-(57,	1,	'55',	'hjhgjgj',	'hjhgjgj',	NULL,	'tyty',	'2022-04-03 12:29:57',	NULL,	NULL),
-(58,	1,	'ra',	'uyuyu',	'uyuyu',	NULL,	NULL,	'2022-04-03 12:33:11',	NULL,	NULL),
-(59,	1,	'ttr',	'iuiu',	'iuiu',	NULL,	NULL,	'2022-04-03 12:33:42',	NULL,	NULL),
-(60,	1,	'hxj',	'ioiuoio',	'ioiuoio',	NULL,	'uyuy',	'2022-04-03 12:34:13',	NULL,	NULL),
-(61,	1,	'ahg',	'uyut',	'uyut',	NULL,	'yty',	'2022-04-03 12:34:38',	NULL,	NULL),
-(62,	1,	'rw',	'kjkhkj',	'kjkhkj',	NULL,	'rtrt',	'2022-04-03 12:36:52',	NULL,	NULL),
-(63,	1,	'rrr',	'uyi',	'uyi',	NULL,	NULL,	'2022-04-03 12:38:29',	NULL,	NULL),
-(64,	1,	'65',	'uyiuyiyu',	'uyiuyiyu',	NULL,	NULL,	'2022-04-08 11:23:29',	NULL,	NULL),
-(65,	1,	'54',	'yuiyiy',	'yuiyiy',	NULL,	'ytry',	'2022-04-08 11:24:13',	NULL,	NULL),
-(66,	1,	'66',	'uouo',	'uouo',	NULL,	NULL,	'2022-04-08 11:25:14',	NULL,	NULL),
-(67,	1,	'65464',	'666',	'666',	NULL,	NULL,	'2022-04-11 07:11:24',	NULL,	NULL),
-(68,	54,	'ete',	'trret',	'trret',	NULL,	NULL,	'2022-04-12 10:31:20',	NULL,	NULL),
-(69,	1,	'86886',	'787878',	'787878',	NULL,	NULL,	'2022-04-12 11:21:25',	NULL,	NULL),
-(70,	1,	'uyyui',	'uyiyuiyuiyuiyui',	'uyiyuiyuiyuiyui',	NULL,	NULL,	'2022-04-15 11:52:11',	NULL,	NULL);
+(17,	14,	'Nothing',	NULL,	NULL,	'2022-07-17 16:24:03',	NULL,	NULL),
+(18,	15,	'I Phone 11',	NULL,	NULL,	'2022-07-18 04:57:00',	NULL,	NULL),
+(19,	18,	'I Phone 11 - 16 GB',	NULL,	NULL,	'2022-07-18 04:58:53',	NULL,	NULL),
+(20,	18,	'I Phone 11 - 32 GB',	NULL,	NULL,	'2022-07-18 04:59:00',	NULL,	NULL),
+(21,	12,	'i5 Generation',	NULL,	NULL,	'2022-07-18 05:00:51',	NULL,	NULL),
+(22,	4,	'King Blue',	NULL,	NULL,	'2022-07-18 05:11:52',	NULL,	NULL),
+(23,	2,	'Charts',	NULL,	NULL,	'2022-07-18 06:54:53',	NULL,	NULL),
+(24,	23,	'Pink Chart',	NULL,	NULL,	'2022-07-18 10:36:34',	NULL,	NULL),
+(25,	19,	'I Phone 11 - 16 GB Blue',	NULL,	NULL,	'2022-07-18 13:47:06',	NULL,	NULL),
+(26,	19,	'I Phone 11 - 16 GB Red',	NULL,	NULL,	'2022-07-18 13:47:06',	NULL,	NULL),
+(27,	4,	'King Red',	NULL,	NULL,	'2022-07-18 14:13:37',	NULL,	NULL),
+(28,	4,	'King Pink',	NULL,	NULL,	'2022-07-18 05:11:52',	NULL,	NULL),
+(29,	26,	'I Phone 11 - 16 GB Red V1',	NULL,	NULL,	'2022-07-18 15:20:51',	NULL,	NULL),
+(30,	29,	'I Phone 11 - 16 GB Red V1 - 1',	NULL,	NULL,	'2022-07-18 15:20:51',	NULL,	NULL),
+(31,	NULL,	'Empty',	NULL,	NULL,	'2022-07-18 15:52:27',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `currency`;
 CREATE TABLE `currency` (
@@ -423,7 +349,6 @@ CREATE TABLE `product` (
   `thumbnail` varchar(255) DEFAULT NULL,
   `weight` decimal(10,4) DEFAULT NULL,
   `category` int(11) NOT NULL,
-  `sub_category` int(11) DEFAULT NULL,
   `brand` int(11) DEFAULT NULL,
   `unit` int(11) NOT NULL,
   `p_unit` int(11) DEFAULT NULL,
@@ -465,49 +390,47 @@ CREATE TABLE `product` (
   UNIQUE KEY `slug` (`slug`),
   KEY `product-product_type` (`type`),
   KEY `product-symbology` (`symbology`),
-  KEY `product-category` (`category`),
-  KEY `product-sub_category` (`sub_category`),
   KEY `product-brand` (`brand`),
   KEY `product-unit` (`unit`),
   KEY `product-unit_bulk1` (`p_unit`),
   KEY `product-unit_bulk2` (`s_unit`),
   KEY `product-tax_rate` (`tax_rate`),
+  KEY `category` (`category`),
   CONSTRAINT `product-brand` FOREIGN KEY (`brand`) REFERENCES `brand` (`id`),
   CONSTRAINT `product-product_type` FOREIGN KEY (`type`) REFERENCES `product_type` (`id`),
   CONSTRAINT `product-tax_rate` FOREIGN KEY (`tax_rate`) REFERENCES `tax_rate` (`id`),
   CONSTRAINT `product-unit` FOREIGN KEY (`unit`) REFERENCES `unit` (`id`),
   CONSTRAINT `product-unit_bulk1` FOREIGN KEY (`p_unit`) REFERENCES `unit_bulk` (`id`),
   CONSTRAINT `product-unit_bulk2` FOREIGN KEY (`s_unit`) REFERENCES `unit_bulk` (`id`),
-  CONSTRAINT `product_ibfk_2` FOREIGN KEY (`category`) REFERENCES `category_level_0` (`id`),
-  CONSTRAINT `product_ibfk_3` FOREIGN KEY (`sub_category`) REFERENCES `category_level_1` (`id`),
   CONSTRAINT `product_ibfk_4` FOREIGN KEY (`symbology`) REFERENCES `barcode_symbology` (`id`),
+  CONSTRAINT `product_ibfk_5` FOREIGN KEY (`category`) REFERENCES `category` (`id`),
   CONSTRAINT `price_check` CHECK (`price` <= `mrp`),
   CONSTRAINT `pos_max_sale_qty_check` CHECK (`pos_max_sale_qty` >= `pos_min_sale_qty`)
 ) ENGINE=InnoDB AUTO_INCREMENT=191 DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `product` (`id`, `type`, `code`, `symbology`, `name`, `slug`, `thumbnail`, `weight`, `category`, `sub_category`, `brand`, `unit`, `p_unit`, `s_unit`, `is_auto_cost`, `cost`, `mrp`, `markup`, `price`, `auto_discount`, `mfg_date`, `exp_date`, `tax_method`, `tax_rate`, `quantity`, `alert`, `alert_quantity`, `pos_sale`, `custom_discount`, `pos_min_sale_qty`, `pos_max_sale_qty`, `pos_sale_note`, `pos_custom_discount`, `pos_custom_tax`, `pos_data_field_1`, `pos_data_field_2`, `pos_data_field_3`, `pos_data_field_4`, `pos_data_field_5`, `pos_data_field_6`, `added_at`, `updated_at`, `editable`, `deletable`, `deleted_at`) VALUES
-(1,	1,	'37519985',	1,	'King Book',	'king-book',	'https://www.escoffier.edu/wp-content/uploads/reading-is-a-great-way-to-continue-your-growth-as-a-chef_1028_40137340_1_14130186_500.jpg',	NULL,	1,	1,	3,	1,	NULL,	NULL,	'1',	NULL,	35.0000,	0.0000,	30.0000,	NULL,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	3,	NULL,	NULL,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:14:30',	'2022-07-17 12:49:10',	NULL,	NULL,	NULL),
-(2,	1,	'62305684',	1,	'Long Book',	'long-book',	'https://3ner1e34iilsjdn1qohanunu-wpengine.netdna-ssl.com/wp-content/uploads/2014/11/82175.jpg',	NULL,	1,	1,	3,	1,	NULL,	NULL,	'1',	NULL,	50.0000,	0.0000,	45.0000,	1.0000,	NULL,	NULL,	'E',	2,	0.0000,	'1',	3,	NULL,	NULL,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:14:54',	'2022-07-17 12:49:10',	NULL,	NULL,	NULL),
-(3,	1,	'25171014',	1,	'Pen 0.7mm',	'pen-0-7mm',	'https://www.proimprint.com/image/cache/data/KEYCHAINS-OPENERS/Promotional-Keychains-Openers/Custom-Logo-Imprinted-Plastic-Keychains/Customized-Roslin-Stylus-Pens-500x500.jpg',	NULL,	1,	4,	1,	1,	NULL,	NULL,	'1',	NULL,	NULL,	0.0000,	5.0000,	NULL,	NULL,	'2021-01-28',	'E',	2,	0.0000,	'1',	3,	NULL,	NULL,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:15:37',	'2022-07-17 12:49:10',	NULL,	NULL,	NULL),
-(4,	1,	'80493457',	1,	'Stylish',	'stylish',	'https://5.imimg.com/data5/GK/JK/MY-45473441/stylish-pen-500x500.jpg',	NULL,	1,	4,	NULL,	1,	NULL,	NULL,	'1',	NULL,	5.0000,	0.0000,	5.0000,	NULL,	NULL,	'2021-01-06',	'E',	NULL,	0.0000,	'1',	3,	NULL,	NULL,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:17:04',	'2022-07-17 12:49:10',	NULL,	NULL,	NULL),
-(5,	1,	'38644788',	1,	'Couple Photo Frame',	'couple-photo-frame',	'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7iyBDZf-tfvjCrGwONFuvg3Wj33FJ8xrsBg&usqp=CAU',	NULL,	1,	NULL,	1,	1,	NULL,	NULL,	'1',	NULL,	300.0000,	0.0000,	200.0000,	NULL,	NULL,	NULL,	'E',	2,	0.0000,	'1',	3,	NULL,	NULL,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:18:37',	'2022-07-17 12:49:10',	NULL,	NULL,	NULL),
-(6,	1,	'94426911',	1,	'Wall Clock',	'wall-clock',	'https://images-na.ssl-images-amazon.com/images/I/51VjOomhxoL._SY355_.jpg',	NULL,	1,	NULL,	1,	1,	NULL,	NULL,	'0',	300.0000,	NULL,	0.0000,	570.0000,	NULL,	NULL,	NULL,	'E',	2,	0.0000,	'1',	3,	NULL,	NULL,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:19:09',	'2022-07-17 12:49:10',	NULL,	NULL,	NULL),
-(10,	1,	'39741136',	1,	'Keyboard Mouse Combo',	'keyboard-mouse-combo',	'https://images-na.ssl-images-amazon.com/images/I/619gY3%2BheVL._SL1000_.jpg',	NULL,	4,	NULL,	1,	1,	NULL,	NULL,	'1',	NULL,	4500.0000,	0.0000,	1000.0000,	250.0000,	NULL,	NULL,	'I',	2,	0.0000,	'1',	3,	NULL,	NULL,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:23:19',	'2022-07-17 12:49:10',	NULL,	NULL,	NULL),
-(149,	1,	'56904366',	1,	'fhfgh',	'fghetrty',	NULL,	NULL,	1,	NULL,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-10-19 02:22:05',	'2022-07-17 12:49:10',	NULL,	NULL,	NULL),
-(150,	1,	'65640426',	1,	'gdgserer',	'dfghfhdh',	NULL,	NULL,	1,	NULL,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-10-19 02:22:22',	'2022-07-17 12:49:10',	NULL,	NULL,	NULL),
-(151,	1,	'78154768',	1,	'tyur',	'urutyutyuytu',	NULL,	NULL,	1,	NULL,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-10-24 02:14:50',	'2022-07-17 12:49:10',	NULL,	NULL,	NULL),
-(152,	1,	'86112495',	1,	'ertert',	'rreyryryy',	NULL,	NULL,	1,	NULL,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-10-25 00:30:23',	'2022-07-17 12:49:10',	NULL,	NULL,	NULL),
-(161,	1,	'63886634',	1,	'78768',	'6787688',	NULL,	NULL,	1,	NULL,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-04-11 16:55:30',	'2022-07-17 12:49:10',	NULL,	NULL,	NULL),
-(165,	1,	'27144759',	1,	'dffsfsf',	'dffsfsf',	NULL,	NULL,	1,	NULL,	NULL,	1,	NULL,	NULL,	'1',	NULL,	NULL,	50.0000,	3.0000,	NULL,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	0,	NULL,	NULL,	NULL,	0,	0,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-04-12 17:31:44',	'2022-07-17 12:49:10',	NULL,	NULL,	NULL),
-(173,	1,	'48386886',	1,	'AAA',	'aaa',	NULL,	NULL,	1,	NULL,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	NULL,	75.0000,	0.0000,	'2022-06-23',	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-04-14 17:00:06',	'2022-07-17 12:49:10',	NULL,	NULL,	NULL),
-(174,	1,	'33267747',	1,	'etertet',	'etertet',	NULL,	NULL,	1,	NULL,	NULL,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	NULL,	50.0000,	0.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	'Serial No.',	'Serial No.',	NULL,	NULL,	NULL,	NULL,	'2022-04-14 17:00:29',	'2022-07-17 12:49:10',	NULL,	NULL,	NULL),
-(176,	1,	'23556049',	1,	'Dell Monotor',	'dell-monotor',	NULL,	NULL,	4,	NULL,	NULL,	1,	NULL,	NULL,	'1',	400.0000,	NULL,	NULL,	400.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	10,	1,	NULL,	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-04-18 13:03:23',	'2022-07-17 12:49:10',	NULL,	NULL,	NULL),
-(180,	1,	'54805482',	1,	'Name 1',	'name-1',	NULL,	NULL,	1,	NULL,	1,	1,	NULL,	NULL,	'1',	10.0000,	500.0000,	NULL,	10.0000,	0.0000,	NULL,	NULL,	'I',	1,	0.0000,	'1',	20,	1,	NULL,	NULL,	NULL,	1,	1,	1,	'Serial No.',	'Color',	NULL,	NULL,	NULL,	'6',	'2022-04-26 16:14:34',	'2022-07-17 12:49:10',	NULL,	NULL,	NULL),
-(186,	1,	'96213555',	2,	'have data field 1 - 2',	'have-data-field-1---2',	NULL,	NULL,	2,	NULL,	1,	39,	NULL,	NULL,	'1',	100.0000,	500.0000,	NULL,	150.0000,	10.0000,	'2022-05-30',	'2022-06-06',	'I',	NULL,	0.0000,	'1',	12,	1,	NULL,	NULL,	NULL,	1,	1,	1,	'IMEI No.',	'IMEI No.',	'IMEI No. 2 :',	'b',	'c',	'4454',	'2022-04-28 16:42:25',	'2022-07-17 12:49:10',	NULL,	NULL,	NULL),
-(187,	1,	'24366313',	1,	'yuiyui',	'yuiyui',	NULL,	NULL,	1,	NULL,	NULL,	1,	NULL,	NULL,	'1',	10.0000,	NULL,	NULL,	15.0000,	0.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	1,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-06-27 20:42:52',	'2022-07-17 12:49:10',	NULL,	NULL,	NULL),
-(188,	1,	'98141630',	1,	'tytytytyty',	'tytytytyty',	NULL,	NULL,	1,	NULL,	NULL,	1,	NULL,	NULL,	'1',	65.0000,	NULL,	50.0000,	97.5000,	5.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	5,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-05 17:37:03',	'2022-07-17 12:49:10',	NULL,	NULL,	NULL),
-(189,	1,	'39857931',	1,	'jklkjl',	'jklkjl',	NULL,	NULL,	1,	NULL,	NULL,	1,	NULL,	NULL,	'1',	6767.0000,	NULL,	50.0000,	10150.5000,	66.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	45,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-16 19:49:34',	'2022-07-17 12:49:30',	NULL,	NULL,	NULL),
-(190,	1,	'60706432',	1,	'yuyuuyu',	'yuyuuyu',	NULL,	NULL,	1,	NULL,	3,	40,	NULL,	NULL,	'1',	434.0000,	NULL,	NULL,	651.0000,	34.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-16 20:08:52',	'2022-07-17 12:50:11',	NULL,	NULL,	NULL);
+INSERT INTO `product` (`id`, `type`, `code`, `symbology`, `name`, `slug`, `thumbnail`, `weight`, `category`, `brand`, `unit`, `p_unit`, `s_unit`, `is_auto_cost`, `cost`, `mrp`, `markup`, `price`, `auto_discount`, `mfg_date`, `exp_date`, `tax_method`, `tax_rate`, `quantity`, `alert`, `alert_quantity`, `pos_sale`, `custom_discount`, `pos_min_sale_qty`, `pos_max_sale_qty`, `pos_sale_note`, `pos_custom_discount`, `pos_custom_tax`, `pos_data_field_1`, `pos_data_field_2`, `pos_data_field_3`, `pos_data_field_4`, `pos_data_field_5`, `pos_data_field_6`, `added_at`, `updated_at`, `editable`, `deletable`, `deleted_at`) VALUES
+(1,	1,	'37519985',	1,	'King Book',	'king-book',	'https://www.escoffier.edu/wp-content/uploads/reading-is-a-great-way-to-continue-your-growth-as-a-chef_1028_40137340_1_14130186_500.jpg',	NULL,	1,	3,	1,	NULL,	NULL,	'1',	NULL,	35.0000,	0.0000,	30.0000,	NULL,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	3,	NULL,	NULL,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:14:30',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(2,	1,	'62305684',	1,	'Long Book',	'long-book',	'https://3ner1e34iilsjdn1qohanunu-wpengine.netdna-ssl.com/wp-content/uploads/2014/11/82175.jpg',	NULL,	1,	3,	1,	NULL,	NULL,	'1',	NULL,	50.0000,	0.0000,	45.0000,	1.0000,	NULL,	NULL,	'E',	2,	0.0000,	'1',	3,	NULL,	NULL,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:14:54',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(3,	1,	'25171014',	1,	'Pen 0.7mm',	'pen-0-7mm',	'https://www.proimprint.com/image/cache/data/KEYCHAINS-OPENERS/Promotional-Keychains-Openers/Custom-Logo-Imprinted-Plastic-Keychains/Customized-Roslin-Stylus-Pens-500x500.jpg',	NULL,	1,	1,	1,	NULL,	NULL,	'1',	NULL,	NULL,	0.0000,	5.0000,	NULL,	NULL,	'2021-01-28',	'E',	2,	0.0000,	'1',	3,	NULL,	NULL,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:15:37',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(4,	1,	'80493457',	1,	'Stylish',	'stylish',	'https://5.imimg.com/data5/GK/JK/MY-45473441/stylish-pen-500x500.jpg',	NULL,	1,	NULL,	1,	NULL,	NULL,	'1',	NULL,	5.0000,	0.0000,	5.0000,	NULL,	NULL,	'2021-01-06',	'E',	NULL,	0.0000,	'1',	3,	NULL,	NULL,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:17:04',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(5,	1,	'38644788',	1,	'Couple Photo Frame',	'couple-photo-frame',	'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7iyBDZf-tfvjCrGwONFuvg3Wj33FJ8xrsBg&usqp=CAU',	NULL,	1,	1,	1,	NULL,	NULL,	'1',	NULL,	300.0000,	0.0000,	200.0000,	NULL,	NULL,	NULL,	'E',	2,	0.0000,	'1',	3,	NULL,	NULL,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:18:37',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(6,	1,	'94426911',	1,	'Wall Clock',	'wall-clock',	'https://images-na.ssl-images-amazon.com/images/I/51VjOomhxoL._SY355_.jpg',	NULL,	1,	1,	1,	NULL,	NULL,	'0',	300.0000,	NULL,	0.0000,	570.0000,	NULL,	NULL,	NULL,	'E',	2,	0.0000,	'1',	3,	NULL,	NULL,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:19:09',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(10,	1,	'39741136',	1,	'Keyboard Mouse Combo',	'keyboard-mouse-combo',	'https://images-na.ssl-images-amazon.com/images/I/619gY3%2BheVL._SL1000_.jpg',	NULL,	1,	1,	1,	NULL,	NULL,	'1',	NULL,	4500.0000,	0.0000,	1000.0000,	250.0000,	NULL,	NULL,	'I',	2,	0.0000,	'1',	3,	NULL,	NULL,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:23:19',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(149,	1,	'56904366',	1,	'fhfgh',	'fghetrty',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-10-19 02:22:05',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(150,	1,	'65640426',	1,	'gdgserer',	'dfghfhdh',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-10-19 02:22:22',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(151,	1,	'78154768',	1,	'tyur',	'urutyutyuytu',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-10-24 02:14:50',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(152,	1,	'86112495',	1,	'ertert',	'rreyryryy',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-10-25 00:30:23',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(161,	1,	'63886634',	1,	'78768',	'6787688',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-04-11 16:55:30',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(165,	1,	'27144759',	1,	'dffsfsf',	'dffsfsf',	NULL,	NULL,	1,	NULL,	1,	NULL,	NULL,	'1',	NULL,	NULL,	50.0000,	3.0000,	NULL,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	0,	NULL,	NULL,	NULL,	0,	0,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-04-12 17:31:44',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(173,	1,	'48386886',	1,	'AAA',	'aaa',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	NULL,	75.0000,	0.0000,	'2022-06-23',	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-04-14 17:00:06',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(174,	1,	'33267747',	1,	'etertet',	'etertet',	NULL,	NULL,	1,	NULL,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	NULL,	50.0000,	0.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	'Serial No.',	'Serial No.',	NULL,	NULL,	NULL,	NULL,	'2022-04-14 17:00:29',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(176,	1,	'23556049',	1,	'Dell Monotor',	'dell-monotor',	NULL,	NULL,	1,	NULL,	1,	NULL,	NULL,	'1',	400.0000,	NULL,	NULL,	400.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	10,	1,	NULL,	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-04-18 13:03:23',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(180,	1,	'54805482',	1,	'Name 1',	'name-1',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	10.0000,	500.0000,	NULL,	10.0000,	0.0000,	NULL,	NULL,	'I',	1,	0.0000,	'1',	20,	1,	NULL,	NULL,	NULL,	1,	1,	1,	'Serial No.',	'Color',	NULL,	NULL,	NULL,	'6',	'2022-04-26 16:14:34',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(186,	1,	'96213555',	2,	'have data field 1 - 2',	'have-data-field-1---2',	NULL,	NULL,	1,	1,	39,	NULL,	NULL,	'1',	100.0000,	500.0000,	NULL,	150.0000,	10.0000,	'2022-05-30',	'2022-06-06',	'I',	NULL,	0.0000,	'1',	12,	1,	NULL,	NULL,	NULL,	1,	1,	1,	'IMEI No.',	'IMEI No.',	'IMEI No. 2 :',	'b',	'c',	'4454',	'2022-04-28 16:42:25',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(187,	1,	'24366313',	1,	'yuiyui',	'yuiyui',	NULL,	NULL,	1,	NULL,	1,	NULL,	NULL,	'1',	10.0000,	NULL,	NULL,	15.0000,	0.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	1,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-06-27 20:42:52',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(188,	1,	'98141630',	1,	'tytytytyty',	'tytytytyty',	NULL,	NULL,	1,	NULL,	1,	NULL,	NULL,	'1',	65.0000,	NULL,	50.0000,	97.5000,	5.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	5,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-05 17:37:03',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(189,	1,	'39857931',	1,	'jklkjl',	'jklkjl',	NULL,	NULL,	1,	NULL,	1,	NULL,	NULL,	'1',	6767.0000,	NULL,	50.0000,	10150.5000,	66.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	45,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-16 19:49:34',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL),
+(190,	1,	'60706432',	1,	'yuyuuyu',	'yuyuuyu',	NULL,	NULL,	1,	3,	40,	NULL,	NULL,	'1',	434.0000,	NULL,	NULL,	651.0000,	34.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-16 20:08:52',	'2022-07-18 21:15:55',	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `product_gallery`;
 CREATE TABLE `product_gallery` (
@@ -1097,7 +1020,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-07-17 14:21:33',	'2022-07-17 14:21:18',	'2021-04-20 19:22:52',	'2022-07-17 14:21:33',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-07-18 04:37:53',	'2022-07-18 04:37:51',	'2021-04-20 19:22:52',	'2022-07-18 04:37:53',	NULL),
 (30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
 (31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
@@ -1165,4 +1088,4 @@ INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country
 (31,	'WARE0031',	'jhjhgjgjhg',	'jhgjhgjhgj',	'2022-07-01',	NULL,	NULL,	NULL,	'56565656',	'fgf@dy.hjgj',	NULL,	NULL,	NULL,	NULL,	16,	'hjhj',	NULL,	NULL,	'2022-07-05 12:36:57',	NULL,	NULL),
 (32,	'WARE0032',	'uiuiui',	'uiuiuiuiu',	'2022-07-06',	NULL,	NULL,	NULL,	'4545454',	'ui@gf.ghgh',	NULL,	NULL,	NULL,	NULL,	17,	NULL,	NULL,	NULL,	'2022-07-06 17:24:34',	NULL,	NULL);
 
--- 2022-07-17 16:25:18
+-- 2022-07-18 15:58:32

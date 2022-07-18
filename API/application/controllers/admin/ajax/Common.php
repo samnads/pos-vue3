@@ -56,8 +56,12 @@ class Common extends CI_Controller
                         echo json_encode(array('success' => true, 'type' => 'success', 'data' => $new));
                         break;
                     case 'test_query':
-                        $this->db->select('*');
+                        $this->db->select('
+        c.id as id,
+        c.parent as parent,
+        c.name as name');
                         $this->db->from(TABLE_CATEGORY_NEW . ' c');
+                        $this->db->where('c.parent !=', NULL);
                         $query = $this->db->get();
                         //die($this->db->last_query());
                         echo json_encode(array('success' => true, 'type' => 'success', 'data' => $query->result_array()));

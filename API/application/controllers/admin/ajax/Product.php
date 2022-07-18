@@ -561,6 +561,16 @@ class Product extends CI_Controller
                 $result['success'] = true;
                 echo json_encode($result);
                 break;
+            case 'categories':
+                $result['data'] = $this->Category_model->dropdown_categories();
+                $result['success'] = true;
+                echo json_encode($result);
+                break;
+            case 'categories_subs':
+                $result['data'] = $this->Category_model->dropdown_categories_subs($this->input->get('id'));
+                $result['success'] = true;
+                echo json_encode($result);
+                break;
             case 'categories_level_0':
                 $result['data'] = $this->Category_model->dropdown_level_0_active();
                 $result['success'] = true;

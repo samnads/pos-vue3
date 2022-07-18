@@ -7,6 +7,16 @@ class Category_model extends CI_Model
 		// Call the Model constructor
 		parent::__construct();
 	}
+	function dropdown_categories()
+	{
+		$this->db->select('
+        c.id as id,
+        c.parent as parent,
+        c.name as name');
+		$this->db->from(TABLE_CATEGORY_NEW . ' c');
+		$query = $this->db->get();
+		return $query->result();
+	}
 	function dropdown_level_0_active()
 	{
 		$query = $this->db->get(TABLE_CATEGORY);

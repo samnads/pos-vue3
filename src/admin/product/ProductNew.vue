@@ -216,12 +216,12 @@
                 <select
                   class="form-select"
                   name="category"
-                  :disabled="!categories"
+                  :disabled="!child_categories"
                   v-model="category"
                   v-bind:class="[
                     errorCategory
                       ? 'is-invalid'
-                      : categories && category
+                      : child_categories && category
                       ? 'is-valid'
                       : '',
                   ]"
@@ -229,18 +229,18 @@
                   <option
                     selected
                     :value="formValues.category"
-                    v-if="!categories"
+                    v-if="!child_categories"
                   >
                     Loading...
                   </option>
                   <option :value="null" selected>
                     {{
-                      !categories
+                      !child_categories
                         ? "Updating..."
-                        : "-- Select (" + categories.length + ")--"
+                        : "-- Select (" + child_categories.length + ")--"
                     }}
                   </option>
-                  <option v-for="c in categories" :key="c.id" :value="c.id">
+                  <option v-for="c in child_categories" :key="c.id" :value="c.id">
                     {{ c.name }}
                   </option>
                 </select>
@@ -248,49 +248,11 @@
                   class="input-group-text text-primary"
                   role="button"
                   @click="newCategory"
-                  v-if="categories"
+                  v-if="child_categories"
                   ><i class="fa-solid fa-plus"></i
                 ></span>
               </div>
               <div class="invalid-feedback">{{ errorCategory }}</div>
-            </div>
-            <div class="col">
-              <label class="form-label">Sub Category - Level 1</label>
-              <div class="input-group">
-                <select
-                  class="form-select"
-                  name="sub_category"
-                  :disabled="
-                    !categories || !category || !subCats || subCats.length == 0
-                  "
-                  v-model="sub_category"
-                >
-                  <option selected :value="null">
-                    {{
-                      !categories
-                        ? "Loading..."
-                        : !category
-                        ? "Select category first"
-                        : !subCats
-                        ? "Loading..."
-                        : subCats.length == 0
-                        ? "No sub category found"
-                        : "-- Select (" + subCats.length + ") --"
-                    }}
-                  </option>
-                  <option v-for="sc in subCats" :key="sc.id" :value="sc.id">
-                    {{ sc.name }}
-                  </option>
-                </select>
-                <button
-                  type="button"
-                  v-if="subCats"
-                  class="input-group-text text-primary"
-                  @click="newCategoryL1"
-                >
-                  <i class="fa-solid fa-plus"></i>
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -1281,6 +1243,8 @@ export default {
     });
     /**************************************** */ // Default values
     var subCats = ref(0);
+    var child_cats = ref([]);
+    var hyphen_count = ref(0);
     /************************************************************************* */
     var formValues = {}; // pre form values
     var dbData = ref({}); // pre form data for edit product
@@ -1299,7 +1263,6 @@ export default {
         slug: dbData.value.slug,
         weight: dbData.value.weight,
         category: dbData.value.category,
-        sub_category: dbData.value.sub_category,
         cost: Number(dbData.value.cost),
         tax_method: dbData.value.tax_method,
         tax_rate: dbData.value.tax_rate,
@@ -1337,8 +1300,7 @@ export default {
       formValues = {
         type: 1,
         symbology: 1,
-        category: 1,
-        sub_category: null,
+        category: 2,
         brand: null,
         unit: 1,
         p_unit: null,
@@ -1407,7 +1369,6 @@ export default {
           .nullable(true)
           .transform((_, val) => (val === Number(val) ? val : null))
           .label("Category"),
-        sub_category: yup.number().nullable(true).label("Subcategory"),
         brand: yup.number().nullable(true).label("Brand Name"),
         tag_price: yup
           .number()
@@ -1575,8 +1536,6 @@ export default {
     const { value: weight, errorMessage: errorWeight } = useField("weight");
     const { value: category, errorMessage: errorCategory } =
       useField("category");
-    const { value: sub_category, errorMessage: errorSubCategory } =
-      useField("sub_category");
     const { value: brand, errorMessage: errorBrand } = useField("brand");
     const { value: mrp, errorMessage: errorMrp } = useField("mrp");
     const { value: unit, errorMessage: errorUnit } = useField("unit");
@@ -1704,14 +1663,13 @@ export default {
     function handleChangeCat() {
       var id = category.value;
       subCats.value = undefined;
-      sub_category.value = null;
       if (id) {
         axiosAsyncCallReturnData(
           "get",
           "product",
           {
             action: "create",
-            dropdown: "categories_level_1",
+            dropdown: "categories",
             id: id,
           },
           null,
@@ -1783,8 +1741,6 @@ export default {
       errorWeight,
       category,
       errorCategory,
-      sub_category,
-      errorSubCategory,
       brand,
       errorBrand,
       mrp,
@@ -1857,10 +1813,114 @@ export default {
       axiosAsyncStoreUpdateReturnData,
       axiosAsyncStoreReturnBool,
       x_percentage_of_y,
+      child_cats,
+      hyphen_count,
     };
   },
   data() {
     return {};
+  },
+  /* eslint-disable */
+  computed: {
+    // a computed getter
+    child_categories() {
+      this.child_cats = [];
+      return this.test();
+    },
+  },
+  methods: {
+    test(
+      array = this.subCats,
+      parent = this.category,
+      length = 0,
+      first = true
+    ) {
+      var search = [];
+      if (Array.isArray(array)) {
+        search = array.filter(
+          (category) => category.parent == (first ? null : parent)
+        );
+        while (search.length > 0) {
+          search.forEach((element) => {
+            search = this.subCats.filter(
+              (category) => category.parent == element.id
+            ); // check for subs
+            if (search.length) {
+              element.name =
+                "---".repeat(length) +
+                "■ " +
+                element.name +
+                " (" +
+                search.length +
+                ")";
+            } else if (!search.length && first) {
+              element.name = "".repeat(length) + "  ■ " + element.name;
+              this.hyphen_count = 0;
+            }
+            else {
+              element.name = "---".repeat(length) + "  • " + element.name;
+              this.hyphen_count = 0;
+            }
+            this.child_cats.push(element);
+            if (search.length > 0) {
+              this.hyphen_count = this.hyphen_count + 1;
+              this.test(search, element.id, this.hyphen_count, false);
+            } else {
+            }
+            search = [];
+          });
+        }
+        return this.child_cats;
+      }
+      return [];
+    },
+    subCatsUpdated: function (id) {
+    },
+    loadBrandsAndSet: function (id) {
+      this.brand = null; // form data
+      let self = this;
+      this.axiosAsyncStoreUpdateReturnData("storeBrands", "brand", {
+        action: "dropdown",
+      }).then(function (data) {
+        if (data.success == true) {
+          self.brand = id;
+        }
+      });
+    },
+    loadUnits: function (id) {
+      let self = this;
+      this.unit = null; // form data
+      this.axiosAsyncStoreUpdateReturnData("storeUnits", "unit", {
+        action: "list_base",
+      }).then(function (data) {
+        if (data.success == true) {
+          self.unit = id;
+        }
+      });
+    },
+    updateTaxRates: function (id) {
+      let self = this;
+      this.tax_rate = null;
+      this.axiosAsyncStoreUpdateReturnData("storeTaxes", "tax", {
+        action: "dropdown",
+      }).then(function (data) {
+        if (data.success == true) {
+          self.tax_rate = id;
+        }
+      });
+    },
+    changePunitSunit: function (id) {
+      let self = this;
+      this.axiosAsyncStoreUpdateReturnData("storeUnitsBulk", "product", {
+        action: "create",
+        dropdown: "sub_units",
+        id: self.unit,
+      }).then(function (data) {
+        if (data.success == true) {
+          self.p_unit = self.s_unit = id;
+        }
+      });
+    },
   },
   watch: {
     category() {
@@ -1933,56 +1993,6 @@ export default {
       );
     },
   },
-  methods: {
-    subCatsUpdated: function (id) {
-      this.sub_category = id;
-    },
-    loadBrandsAndSet: function (id) {
-      this.brand = null; // form data
-      let self = this;
-      this.axiosAsyncStoreUpdateReturnData("storeBrands", "brand", {
-        action: "dropdown",
-      }).then(function (data) {
-        if (data.success == true) {
-          self.brand = id;
-        }
-      });
-    },
-    loadUnits: function (id) {
-      let self = this;
-      this.unit = null; // form data
-      this.axiosAsyncStoreUpdateReturnData("storeUnits", "unit", {
-        action: "list_base",
-      }).then(function (data) {
-        if (data.success == true) {
-          self.unit = id;
-        }
-      });
-    },
-    updateTaxRates: function (id) {
-      let self = this;
-      this.tax_rate = null;
-      this.axiosAsyncStoreUpdateReturnData("storeTaxes", "tax", {
-        action: "dropdown",
-      }).then(function (data) {
-        if (data.success == true) {
-          self.tax_rate = id;
-        }
-      });
-    },
-    changePunitSunit: function (id) {
-      let self = this;
-      this.axiosAsyncStoreUpdateReturnData("storeUnitsBulk", "product", {
-        action: "create",
-        dropdown: "sub_units",
-        id: self.unit,
-      }).then(function (data) {
-        if (data.success == true) {
-          self.p_unit = self.s_unit = id;
-        }
-      });
-    },
-  },
   created() {},
   mounted() {
     if (!this.productTypes) {
@@ -2004,7 +2014,7 @@ export default {
       // if not found on store
       this.axiosAsyncStoreReturnBool("storeCategories", "product", {
         action: "create",
-        dropdown: "categories_level_0",
+        dropdown: "categories",
       }); // get categories
     }
     if (!this.brands) {
