@@ -34,7 +34,6 @@ class Product_model extends CI_Model
 		bs.code 	as symbology_code,
 		
 		c.name 		as category_name,
-		sc.name 	as sub_category_name,
 		
 		b.code 		as brand_code,
 		b.name 		as brand_name,
@@ -49,7 +48,6 @@ class Product_model extends CI_Model
 		$this->db->join(TABLE_PRODUCT_TYPE . '		t',	't.id=p.type',	'left');
 		$this->db->join(TABLE_BARCODE_SYMBOLOGY . '	bs',	'bs.id=p.symbology',	'left');
 		$this->db->join(TABLE_CATEGORY . '			c',	'c.id=p.category',	'left');
-		$this->db->join(TABLE_SUB_CATEGORY . '		sc',	'sc.id=p.sub_category',	'left');
 		$this->db->join(TABLE_BRAND . '				b',	'b.id=p.brand',	'left');
 		$this->db->join(TABLE_UNIT . '				u',	'u.id=p.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . '			tr',	'tr.id=p.tax_rate',	'left');
@@ -195,8 +193,6 @@ class Product_model extends CI_Model
 		
 		c.id 		as category,
 		c.name 		as category_name,
-		sc.id 		as sub_category,
-		sc.name 	as sub_category_name,
 		
 		b.id 		as brand,
 		b.code 		as brand_code,
@@ -218,7 +214,6 @@ class Product_model extends CI_Model
 		$this->db->join(TABLE_PRODUCT_TYPE . '		t',		't.id=p.type',			'left');
 		$this->db->join(TABLE_BARCODE_SYMBOLOGY . '	bs',	'bs.id=p.symbology',	'left');
 		$this->db->join(TABLE_CATEGORY . '			c',		'c.id=p.category',		'left');
-		$this->db->join(TABLE_SUB_CATEGORY . '		sc',	'sc.id=p.sub_category',	'left');
 		$this->db->join(TABLE_BRAND . '				b',		'b.id=p.brand',			'left');
 		$this->db->join(TABLE_UNIT . '				u',		'u.id=p.unit',			'left');
 		$this->db->join(TABLE_UNIT_BULK . '			ubp',	'ubp.id=p.p_unit',		'left');
@@ -242,7 +237,6 @@ class Product_model extends CI_Model
 		$this->db->or_like('t.name',	$search);
 		$this->db->or_like('bs.code',	$search);
 		$this->db->or_like('c.name',	$search);
-		$this->db->or_like('sc.name',	$search);
 		$this->db->or_like('b.name',	$search);
 		$this->db->or_like('tr.code',	$search);
 		$this->db->or_like('tr.name',	$search);
@@ -261,7 +255,6 @@ class Product_model extends CI_Model
 		$this->db->join(TABLE_PRODUCT_TYPE . '		t',	't.id=p.type',	'left');
 		$this->db->join(TABLE_BARCODE_SYMBOLOGY . '	bs',	'bs.id=p.symbology',	'left');
 		$this->db->join(TABLE_CATEGORY . '			c',	'c.id=p.category',	'left');
-		$this->db->join(TABLE_SUB_CATEGORY . '		sc',	'sc.id=p.sub_category',	'left');
 		$this->db->join(TABLE_BRAND . '				b',	'b.id=p.brand',	'left');
 		$this->db->join(TABLE_UNIT . '				u',	'u.id=p.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . '			tr',	'tr.id=p.tax_rate',	'left');
@@ -280,7 +273,6 @@ class Product_model extends CI_Model
 		$this->db->or_like('t.name',	$search);
 		$this->db->or_like('bs.code',	$search);
 		$this->db->or_like('c.name',	$search);
-		$this->db->or_like('sc.name',	$search);
 		$this->db->or_like('b.name',	$search);
 		$this->db->or_like('tr.code',	$search);
 		$this->db->or_like('tr.name',	$search);

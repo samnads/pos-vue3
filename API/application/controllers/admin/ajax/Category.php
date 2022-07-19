@@ -33,11 +33,11 @@ class Category extends CI_Controller
 						$order = $this->input->get('order')[0]['dir']; // order asc or desc
 						$search = $this->input->get('search')['value']; // search query
 						$offset = $this->input->get('start'); // start position
-						$query = $this->Category_model->listCategoriesWithCount($search, $offset, $limit, $order_by, $order);
+						$query = $this->Category_model->datatable_data($search, $offset, $limit, $order_by, $order);
 						$data['data'] = $query->result();
 						$data["draw"] = $this->input->get('draw'); // unique
-						$data["recordsTotal"] = $this->Category_model->totalRows();
-						$data["recordsFiltered"] = $this->Category_model->listCategories_FilteredCount($search);
+						$data["recordsTotal"] = $this->Category_model->datatable_recordsTotal();
+						$data["recordsFiltered"] = $this->Category_model->datatable_recordsFiltered($search);
 						$data['success'] = true;
 						//$data[ 'error' ] = '';
 						echo json_encode($data);

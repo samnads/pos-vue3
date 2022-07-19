@@ -1,30 +1,4 @@
 <template>
-  <AdminProductNewCategoryModal />
-  <AdminProductNewCategoryL1Modal
-    v-bind:propHandleChangeCat="handleChangeCat"
-    v-bind:subCatsUpdated="subCatsUpdated"
-    :propCategory="
-      categories && category
-        ? categories.find((obj) => {
-            return obj.id === category;
-          })
-        : []
-    "
-  />
-  <AdminProductNewBrandModal v-bind:propUpdateBrandsAndSet="loadBrandsAndSet" />
-  <AdminProductNewUnitModal v-bind:propUpdateUnits="loadUnits" />
-  <AdminProductNewUnitBulkModal
-    v-bind:propUpdatePunitSUnit="changePunitSunit"
-    :propTest="unit"
-    :propUnit="
-      units && unit
-        ? units.find((obj) => {
-            return obj.id === unit;
-          })
-        : []
-    "
-  />
-  <AdminProductNewTaxRateModal :propUpdateTaxRates="updateTaxRates" />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
@@ -216,12 +190,12 @@
                 <select
                   class="form-select"
                   name="category"
-                  :disabled="!child_categories"
+                  :disabled="!computed_categories"
                   v-model="category"
                   v-bind:class="[
                     errorCategory
                       ? 'is-invalid'
-                      : child_categories && category
+                      : computed_categories && category
                       ? 'is-valid'
                       : '',
                   ]"
@@ -229,18 +203,18 @@
                   <option
                     selected
                     :value="formValues.category"
-                    v-if="!child_categories"
+                    v-if="!computed_categories"
                   >
                     Loading...
                   </option>
                   <option :value="null" selected>
                     {{
-                      !child_categories
+                      !computed_categories
                         ? "Updating..."
-                        : "-- Select (" + child_categories.length + ")--"
+                        : "-- Select (" + computed_categories.length + ")--"
                     }}
                   </option>
-                  <option v-for="c in child_categories" :key="c.id" :value="c.id">
+                  <option v-for="c in computed_categories" :key="c.id" :value="c.id">
                     {{ c.name }}
                   </option>
                 </select>
@@ -248,7 +222,7 @@
                   class="input-group-text text-primary"
                   role="button"
                   @click="newCategory"
-                  v-if="child_categories"
+                  v-if="computed_categories"
                   ><i class="fa-solid fa-plus"></i
                 ></span>
               </div>
@@ -1174,13 +1148,6 @@
 <style>
 </style>
 <script>
-import AdminProductNewCategoryModal from "../modal/CategoryNewModal.vue";
-import AdminProductNewCategoryL1Modal from "../modal/CategoryLevel1NewModal.vue";
-import AdminProductNewBrandModal from "../modal/BrandNewModal.vue";
-import AdminProductNewUnitModal from "../modal/UnitNewModal.vue";
-import AdminProductNewUnitBulkModal from "../modal/UnitBulkNewModal.vue";
-import AdminProductNewTaxRateModal from "../modal/TaxRateNewModal.vue";
-import { Modal } from "bootstrap";
 import {
   useForm,
   useField,
@@ -1197,12 +1164,6 @@ import { useRouter, useRoute } from "vue-router";
 export default {
   props: {},
   components: {
-    AdminProductNewCategoryModal,
-    AdminProductNewCategoryL1Modal,
-    AdminProductNewBrandModal,
-    AdminProductNewUnitModal,
-    AdminProductNewUnitBulkModal,
-    AdminProductNewTaxRateModal,
   },
   setup() {
     const route = useRoute();
@@ -1241,9 +1202,8 @@ export default {
     let warehouses = computed(function () {
       return store.state.WARE_HOUSES;
     });
-    /**************************************** */ // Default values
-    var subCats = ref(0);
-    var child_cats = ref([]);
+    /**************************************** */ // category things
+    var cats_list = ref([]);
     var hyphen_count = ref(0);
     /************************************************************************* */
     var formValues = {}; // pre form values
@@ -1320,7 +1280,6 @@ export default {
     } else {
       router.push({ name: "adminProductList" }).catch(() => {});
     }
-
     /************************************************************************* */
     const schema = computed(() => {
       return yup.object({
@@ -1617,24 +1576,6 @@ export default {
     function genRandCode() {
       setFieldValue("code", randCode());
     }
-    function newCategory() {
-      window.PROD_NEW_CATEGORY_MODAL.show();
-    }
-    function newCategoryL1() {
-      window.PROD_NEW_CATEGORY_L1_MODAL.show();
-    }
-    function newBrand() {
-      window.PROD_NEW_BRAND_MODAL.show();
-    }
-    function newUnit() {
-      window.PROD_NEW_UNIT_MODAL.show();
-    }
-    function newUnitBulk() {
-      window.PROD_NEW_UNIT_BULK_MODAL.show();
-    }
-    function newTaxRate() {
-      window.PROD_NEW_TAXRATE_MODAL.show();
-    }
     function toggleAlert() {
       if (!isalert.value) {
         alert_quantity.value = null;
@@ -1660,31 +1601,6 @@ export default {
         );
       }
     }
-    function handleChangeCat() {
-      var id = category.value;
-      subCats.value = undefined;
-      if (id) {
-        axiosAsyncCallReturnData(
-          "get",
-          "product",
-          {
-            action: "create",
-            dropdown: "categories",
-            id: id,
-          },
-          null,
-          {
-            showSuccessNotification: false,
-            showCatchNotification: true,
-            showProgress: true,
-          }
-        ).then(function (data) {
-          if (data.success == true) {
-            subCats.value = data.data;
-          }
-        });
-      }
-    }
     function resetCustom() {
       resetForm();
     }
@@ -1704,22 +1620,14 @@ export default {
       /**************** event handler */
       genRandCode,
       // modals
-      newCategory,
-      newCategoryL1,
-      newBrand,
-      newUnit,
-      newUnitBulk,
-      newTaxRate,
       toggleAlert,
       //
       handleChangeName,
       handleChangeSlug,
-      handleChangeCat,
       /************** db */
       productTypes,
       symbologies,
       categories,
-      subCats,
       brands,
       units,
       unitsBulk,
@@ -1813,7 +1721,7 @@ export default {
       axiosAsyncStoreUpdateReturnData,
       axiosAsyncStoreReturnBool,
       x_percentage_of_y,
-      child_cats,
+      cats_list,
       hyphen_count,
     };
   },
@@ -1823,15 +1731,15 @@ export default {
   /* eslint-disable */
   computed: {
     // a computed getter
-    child_categories() {
-      this.child_cats = [];
-      return this.test();
+    computed_categories() {
+      this.cats_list = [];
+      return this.make_category_tree();
     },
   },
   methods: {
-    test(
-      array = this.subCats,
-      parent = this.category,
+    make_category_tree(
+      array = this.categories,
+      parent = null,
       length = 0,
       first = true
     ) {
@@ -1842,7 +1750,7 @@ export default {
         );
         while (search.length > 0) {
           search.forEach((element) => {
-            search = this.subCats.filter(
+            search = this.categories.filter(
               (category) => category.parent == element.id
             ); // check for subs
             if (search.length) {
@@ -1861,20 +1769,18 @@ export default {
               element.name = "---".repeat(length) + "  • " + element.name;
               this.hyphen_count = 0;
             }
-            this.child_cats.push(element);
+            this.cats_list.push(element);
             if (search.length > 0) {
               this.hyphen_count = this.hyphen_count + 1;
-              this.test(search, element.id, this.hyphen_count, false);
+              this.make_category_tree(search, element.id, this.hyphen_count, false);
             } else {
             }
             search = [];
           });
         }
-        return this.child_cats;
+        return this.cats_list;
       }
-      return [];
-    },
-    subCatsUpdated: function (id) {
+      return undefined;
     },
     loadBrandsAndSet: function (id) {
       this.brand = null; // form data
@@ -1923,10 +1829,6 @@ export default {
     },
   },
   watch: {
-    category() {
-      // trigger when manual cat change only
-      this.handleChangeCat();
-    },
     unit(value) {
       if (value) {
         this.axiosAsyncStoreUpdateReturnData("storeUnitsBulk", "product", {
@@ -2050,35 +1952,9 @@ export default {
       dropdown: "sub_units",
       id: this.unit,
     });
-    this.handleChangeCat();
     //
-    window.PROD_NEW_CATEGORY_MODAL = new Modal($("#prodNewCategoryModal"), {
-      backdrop: true,
-      show: true,
-    });
-    window.PROD_NEW_CATEGORY_L1_MODAL = new Modal(
-      $("#prodNewCategoryLevel1Modal"),
-      {
-        backdrop: true,
-        show: true,
-      }
-    );
-    window.PROD_NEW_BRAND_MODAL = new Modal($("#prodNewBrandModal"), {
-      backdrop: true,
-      show: true,
-    });
-    window.PROD_NEW_UNIT_MODAL = new Modal($("#prodNewUnitModal"), {
-      backdrop: true,
-      show: true,
-    });
-    window.PROD_NEW_UNIT_BULK_MODAL = new Modal($("#prodNewUnitBulkModal"), {
-      backdrop: true,
-      show: true,
-    });
-    window.PROD_NEW_TAXRATE_MODAL = new Modal($("#prodNewTaxRateModal"), {
-      backdrop: true,
-      show: true,
-    });
+  },
+  beforeUnmount() {
   },
 };
 </script>

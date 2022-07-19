@@ -50,7 +50,6 @@
           <th scope="col">Name</th>
           <th scope="col">URL Slug (SEO)</th>
           <th scope="col">Description</th>
-          <th scope="col">Sub Categories</th>
           <th scope="col">Products</th>
           <th scope="col">Brands</th>
           <th scope="col"><i class="fa-solid fa-bars"></i></th>
@@ -185,9 +184,6 @@ export default {
             data: "description",
           },
           {
-            data: "sc_count",
-          },
-          {
             data: "p_count",
           },
           {
@@ -213,14 +209,22 @@ export default {
           },
           {
             targets: [2],
-            visible: true,
-            searchable: true,
+             render: function (data, type, row, meta) {
+              return data == null
+                ? '<i class="text-muted small">NIL</i>'
+                : data;
+            },
           },
           {
             targets: [3],
           },
           {
             targets: [4],
+             render: function (data, type, row, meta) {
+              return data == null
+                ? '<i class="text-muted small">NIL</i>'
+                : data;
+            },
           },
           {
             targets: [5],
@@ -232,7 +236,7 @@ export default {
           },
           {
             targets: [6],
-            width: "15%",
+            width: "1%",
             render: function (data, type, row, meta) {
               return (
                 '<span class="badge bg-secondary w-100 fs-6">' +
@@ -254,17 +258,6 @@ export default {
           },
           {
             targets: [8],
-            width: "1%",
-            render: function (data, type, row, meta) {
-              return (
-                '<span class="badge bg-secondary w-100 fs-6">' +
-                data +
-                "</span>"
-              );
-            },
-          },
-          {
-            targets: [9],
             className: "text-center",
             orderable: false,
             searchable: false,
