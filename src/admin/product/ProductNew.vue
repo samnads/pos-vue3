@@ -1,4 +1,6 @@
 <template>
+  <TaxNewModal />
+  <BrandNewModal />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
@@ -214,7 +216,11 @@
                         : "-- Select (" + computed_categories.length + ")--"
                     }}
                   </option>
-                  <option v-for="c in computed_categories" :key="c.id" :value="c.id">
+                  <option
+                    v-for="c in computed_categories"
+                    :key="c.id"
+                    :value="c.id"
+                  >
                     {{ c.name }}
                   </option>
                 </select>
@@ -1161,11 +1167,17 @@ import { useStore } from "vuex";
 import admin from "@/mixins/admin.js";
 import adminProduct from "@/mixins/adminProduct.js";
 import { useRouter, useRoute } from "vue-router";
+import { inject } from "vue";
+import TaxNewModal from "../tax/TaxNewModal.vue";
+import BrandNewModal from "../brand/BrandNewModal.vue";
 export default {
   props: {},
   components: {
+    TaxNewModal,
+    BrandNewModal,
   },
   setup() {
+    const emitter = inject("emitter"); // Inject `emitter`
     const route = useRoute();
     const router = useRouter();
     const { randCode } = adminProduct();
@@ -1203,7 +1215,7 @@ export default {
       return store.state.WARE_HOUSES;
     });
     /**************************************** */ // category things
-    var cats_list = ref([]);
+    const cats_list = ref([]);
     var hyphen_count = ref(0);
     /************************************************************************* */
     var formValues = {}; // pre form values
@@ -1613,6 +1625,44 @@ export default {
       }
       return Number(ad).toFixed(2);
     }
+    function newTaxRate() {
+      emitter.emit("newTaxModal", {
+        title: "New Tax Rate",
+        type: "success",
+        emit: "refreshTaxRateDropdown",
+      });
+    }
+    emitter.on("refreshTaxRateDropdown", (data) => {
+      /*****************************************  update list and set new ***********************************/
+      tax_rate.value = null;
+      axiosAsyncStoreUpdateReturnData("storeTaxes", "product", {
+        action: "create",
+        dropdown: "tax_rates",
+      }).then(function (response) {
+        if (response.success == true) {
+          tax_rate.value = data.id;
+        }
+      });
+    });
+    function newBrand() {
+      emitter.emit("newBrandModal", {
+        title: "New Brand",
+        type: "success",
+        emit: "refreshBrandDropdown",
+      });
+    }
+    emitter.on("refreshBrandDropdown", (data) => {
+      /*****************************************  update list and set new ***********************************/
+      brand.value = null;
+      axiosAsyncStoreUpdateReturnData("storeBrands", "product", {
+        action: "create",
+        dropdown: "brands",
+      }).then(function (response) {
+        if (response.success == true) {
+          brand.value = data.id;
+        }
+      });
+    });
     return {
       route,
       /**************** default form sel values */
@@ -1723,6 +1773,9 @@ export default {
       x_percentage_of_y,
       cats_list,
       hyphen_count,
+      newTaxRate,
+      newBrand,
+      emitter,
     };
   },
   data() {
@@ -1732,7 +1785,8 @@ export default {
   computed: {
     // a computed getter
     computed_categories() {
-      this.cats_list = [];
+      //alert();
+      //this.cats_list = [];
       return this.make_category_tree();
     },
   },
@@ -1764,15 +1818,19 @@ export default {
             } else if (!search.length && first) {
               element.name = "".repeat(length) + "  ■ " + element.name;
               this.hyphen_count = 0;
-            }
-            else {
+            } else {
               element.name = "---".repeat(length) + "  • " + element.name;
               this.hyphen_count = 0;
             }
             this.cats_list.push(element);
             if (search.length > 0) {
               this.hyphen_count = this.hyphen_count + 1;
-              this.make_category_tree(search, element.id, this.hyphen_count, false);
+              this.make_category_tree(
+                search,
+                element.id,
+                this.hyphen_count,
+                false
+              );
             } else {
             }
             search = [];
@@ -1955,6 +2013,8 @@ export default {
     //
   },
   beforeUnmount() {
+    var self = this;
+    self.emitter.off("refreshTaxRateDropdown");
   },
 };
 </script>

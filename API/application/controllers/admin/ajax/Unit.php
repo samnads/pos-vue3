@@ -17,7 +17,7 @@ class Unit extends CI_Controller
 						$order = $this->input->get('order')[0]['dir']; // order asc or desc
 						$search = $this->input->get('search')['value']; // search query
 						$offset = $this->input->get('start'); // start position
-						$results = $this->Unit_model->datatable_data($search, $offset, $limit, $order_by, $order);
+						$results = $this->Unit_model->datatable_data_test($search, $offset, $limit, $order_by, $order);
 						$data['data'] = $results;
 						$data["draw"] = $this->input->get('draw'); // unique
 						$data["recordsTotal"] = $this->Unit_model->datatable_recordsTotal();

@@ -305,7 +305,7 @@ export default {
           resetForm();
           window.TAX_NEW_MODAL.hide();
           if (DATA.value.emit) {
-            emitter.emit(DATA.value.emit, {}); // do something (emit)
+            emitter.emit(DATA.value.emit, data); // do something (emit)
           }
         } else {
           // not added
@@ -385,7 +385,7 @@ export default {
   },
   beforeUnmount() {
     var self = this;
-    self.emitter.off("newUnitModal");
+    self.emitter.off("newTaxModal");
     // turn off for duplicate calling
     // because its called multiple times when page loaded multiple times
   },

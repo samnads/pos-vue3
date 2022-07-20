@@ -12,6 +12,13 @@ class Stock_adjustment_model extends CI_Model
 		$query = $this->db->insert(TABLE_STOCK_ADJUSTMENT, $data);
 		return $query;
 	}
+	function create_with_new_product($data)
+	{
+		$this->db->set('date', 'CURRENT_DATE()', FALSE);
+		$this->db->set('time', 'CURRENT_TIME()', FALSE);
+		$query = $this->db->insert(TABLE_STOCK_ADJUSTMENT, $data);
+		return $query;
+	}
 	function update($data, $id)
 	{
 		$this->db->where('id', $id);

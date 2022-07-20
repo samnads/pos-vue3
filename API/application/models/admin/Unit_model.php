@@ -88,6 +88,34 @@ class Unit_model extends CI_Model
         $query = $this->db->get(TABLE_UNIT . ' u');
         return $query->result();
     }
+    function datatable_data_test($search, $offset, $limit, $order_by, $order)
+    {
+        $search = trim($this->security->xss_clean($search));
+        $this->db->select('
+        DISTINCT(u.id)     as id,
+        u.code   as code,
+        u.name   as name,
+        u.allow_decimal   as allow_decimal,
+        u.base  as base,
+        u1.name  as base_name,
+        u.deletable   as deletable,
+        u.editable   as editable,
+        u.deleted_at as deleted_at,
+        u.description      as description');
+        $this->db->from(TABLE_UNIT_NEW . ' u');
+        $this->db->join(TABLE_UNIT_NEW . ' u1',    'u1.id=u.base', 'left');
+        //$this->db->where(array('u.deleted_at' => NULL)); // select only not deleted rows
+        $this->db->group_start();
+        $this->db->or_like('u.name',    $search);
+        $this->db->or_like('u.code',    $search);
+        $this->db->or_like('u.description',    $search);
+        $this->db->group_end();
+        $this->db->order_by($order_by, $order);
+        $this->db->limit($limit, $offset);
+        $query = $this->db->get('');
+        die($this->db->last_query());
+        return $query->result();
+    }
     function datatable_recordsFiltered($search)
     {
         $search = trim($this->security->xss_clean($search));

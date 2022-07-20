@@ -196,16 +196,10 @@ export default function () {
             return err
         }
     }
-    function adminTest() {
-        router.push({ name: "adminDashboard" }).catch((e) => {
-            console.log(e);
-        });
-    }
     function x_percentage_of_y(x, y) {
         return (x / 100) * y;
     }
     return {
-        adminTest,
         /******************* for notify */
         notifyDefault,
         notifyApiResponse,

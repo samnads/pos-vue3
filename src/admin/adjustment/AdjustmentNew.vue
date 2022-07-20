@@ -645,8 +645,9 @@ export default {
           "get",
           "stock_adjustment",
           {
-            action: "search_product",
-            search: query,
+            action: "create",
+            search: "product",
+            query: query,
           },
           self.controller,
           {
@@ -690,8 +691,9 @@ export default {
   mounted() {
     if (!this.warehouses) {
       // if not found on store
-      this.axiosAsyncStoreReturnBool("storeWareHouses", "warehouse", {
-        action: "dropdown",
+      this.axiosAsyncStoreReturnBool("storeWareHouses", "stock_adjustment", {
+        action: "create",
+        dropdown: "warehouses",
       }); // get ware houses
     }
   },

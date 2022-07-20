@@ -8,10 +8,14 @@ class Stock_adjustment extends CI_Controller
         $this->load->model('admin/Product_model');
         $this->load->model('admin/Stock_adjustment_model');
         $this->load->model('admin/Stock_adjustment_product_model');
+        $this->load->model('admin/Warehouse_model');
         $_POST = raw_input_to_post();
+        $action = $this->input->get('action') ?: $this->input->post('action');
+        $dropdown = $this->input->get('dropdown') ?: $this->input->post('dropdown');
+        $search = $this->input->get('search') ?: $this->input->post('search');
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET': // read
-                switch ($this->input->get('action')) {
+                switch ($action) {
                     case 'datatable':
                         $data = array();
                         $limit = $this->input->get('length') <= 0 ? NULL : $this->input->get('length'); // limit
@@ -35,22 +39,7 @@ class Stock_adjustment extends CI_Controller
                         $data['success'] = true;
                         echo json_encode($data);
                         break;
-                    case 'search_product': // search products for add to stock adj
-                        $query["offset"] = 0;
-                        $query["limit"] = 10;
-                        $query["order_by"] = 'label';
-                        $query["order"] = 'asc';
-                        $query["search"] = $this->input->get('search');
-                        $query = $this->Product_model->suggestProdsForAdjustment($query["search"], $query["offset"], $query["limit"], $query["order_by"], $query["order"]);
-                        $error = $this->db->error();
-                        if ($error['code'] == 0) {
-                            echo json_encode(array('success' => true, 'type' => 'success', 'data' => $query->result()));
-                        } else {
-                            echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
-                        }
-                        break;
                     default:
-                        echo json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Unknown Action !'));
                 }
                 break;
             case 'POST': // add new stock adjustment
@@ -291,8 +280,32 @@ class Stock_adjustment extends CI_Controller
                 }
                 break;
             default:
-                $error = array('success' => false, 'type' => 'danger', 'error' => 'Request Method Not Defined !');
-                echo json_encode($error);
         }
+        switch ($dropdown) { // dropdown jobs
+            case 'warehouses':
+                $result['data'] = $this->Warehouse_model->dropdown_active();
+                $result['success'] = true;
+                echo json_encode($result);
+                break;
+            default:
+        }
+        switch ($search) { // dropdown jobs
+            case 'product':
+                $query["offset"] = 0;
+                $query["limit"] = 10;
+                $query["order_by"] = 'label';
+                $query["order"] = 'asc';
+                $query["query"] = $this->input->get('query');
+                $query = $this->Product_model->suggestProdsForAdjustment($query["query"], $query["offset"], $query["limit"], $query["order_by"], $query["order"]);
+                $error = $this->db->error();
+                if ($error['code'] == 0) {
+                    echo json_encode(array('success' => true, 'type' => 'success', 'data' => $query->result()));
+                } else {
+                    echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
+                }
+                break;
+            default:
+        }
+        die();
     }
 }

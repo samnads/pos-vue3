@@ -60,7 +60,6 @@ class Product extends CI_Controller
                                 'slug' => $this->input->post('slug'),
                                 'weight' => $this->input->post('weight') ?: NULL,
                                 'category' => $this->input->post('category'),
-                                'sub_category' => $this->input->post('sub_category') ?: NULL,
                                 'brand' => $this->input->post('brand') ?: NULL,
                                 'mrp' => $this->input->post('mrp') ?: NULL,
                                 'unit' => $this->input->post('unit'),
@@ -126,11 +125,6 @@ class Product extends CI_Controller
                                     'field' => 'category',
                                     'label' => 'Product Category',
                                     'rules' => 'required|trim|numeric|xss_clean'
-                                ),
-                                array(
-                                    'field' => 'sub_category',
-                                    'label' => 'Product Sub Category',
-                                    'rules' => 'trim|numeric|xss_clean'
                                 ),
                                 array(
                                     'field' => 'brand',
@@ -297,7 +291,7 @@ class Product extends CI_Controller
                             if ($this->db->affected_rows() == 1) { // success - add product
                                 $product_id = $this->db->insert_id();
                                 if ($data_stock_adjustment_product['quantity']) { // do stock adjust
-                                    $this->Stock_adjustment_model->create($data_stock_adjustment); // add product adjustment
+                                    $this->Stock_adjustment_model->create_with_new_product($data_stock_adjustment); // add product adjustment
                                     if ($this->db->affected_rows() == 1) { // success - product adjustment
                                         $stock_adjustment_id = $this->db->insert_id();
                                         $data_stock_adjustment_product['stock_adjustment'] = $stock_adjustment_id;
@@ -307,9 +301,7 @@ class Product extends CI_Controller
                                             $this->Product_stock_model->new($product_id, $data_stock_adjustment['warehouse'], $data_stock_adjustment_product['quantity']); // add product stock
                                             if ($this->db->affected_rows() == 1) { // success - add product stock
                                                 $this->db->trans_commit(); // all query ok
-                                                $alert['added'] = array('success' => true, 'type' => 'success', 'id' => $product_id, 'timeout' => '5000', 'message' => 'Successfully added new product <strong><em>' . $data_product['name'] . '</strong></em> !<br>[ Opening Stock Added ]', 'location' => "admin/product");
-                                                $this->session->set_flashdata('alert', $alert);
-                                                echo json_encode($alert['added']);
+                                                echo json_encode(array('success' => true, 'type' => 'success', 'id' => $product_id, 'timeout' => '5000', 'message' => 'Successfully added new product <strong><em>' . $data_product['name'] . '</strong></em> !<br>[ Opening Stock Added ]', 'location' => "admin/product"));
                                             } else {
                                                 $error = $this->db->error();
                                                 $this->db->trans_rollback();
@@ -327,9 +319,7 @@ class Product extends CI_Controller
                                     }
                                 } else {
                                     $this->db->trans_commit(); // all query ok
-                                    $alert['added'] = array('success' => true, 'type' => 'success', 'id' => $product_id, 'timeout' => '5000', 'message' => 'Successfully added new product <strong><em>' . $data_product['name'] . '</strong></em> !', 'location' => "admin/product");
-                                    $this->session->set_flashdata('alert', $alert);
-                                    echo json_encode($alert['added']);
+                                    echo json_encode(array('success' => true, 'type' => 'success', 'id' => $product_id, 'timeout' => '5000', 'message' => 'Successfully added new product <strong><em>' . $data_product['name'] . '</strong></em> !', 'location' => "admin/product"));
                                 }
                             } else {
                                 $error = $this->db->error();
