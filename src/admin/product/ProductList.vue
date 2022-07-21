@@ -294,13 +294,13 @@ export default {
             width: "1%",
             render: function (data, type, row, meta) {
               let infoBtn =
-                '<button type="button" id="details" class="btn btn-success" data-toggle="tooltip" data-placement="left" title="Info"><i class="fas fa-info-circle"></i></button>';
+                '<button type="button" id="details" class="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="left" title="Info"><i class="fas fa-info-circle"></i></button>';
               let editBtn =
                 '<button type="button" id="edit" class="btn btn-' +
                 (row["editable"] !== 0 ? "primary" : "secondary") +
                 '"' +
                 (row["editable"] !== 0
-                  ? 'data-toggle="tooltip" data-placement="left" title="Edit"'
+                  ? 'data-bs-toggle="tooltip" data-bs-placement="left" title="Edit"'
                   : "") +
                 (row["editable"] === 0 ? "disabled" : "") +
                 '><i class="fas fa-pencil-alt"></i></button> ';
@@ -309,7 +309,7 @@ export default {
                 (row["deletable"] !== 0 ? "danger" : "secondary") +
                 '"' +
                 (row["deletable"] !== 0
-                  ? 'data-toggle="tooltip" data-placement="left" title="Delete"'
+                  ? 'data-bs-toggle="tooltip" data-bs-placement="left" title="Delete"'
                   : "") +
                 (row["deletable"] === 0 ? "disabled" : "") +
                 '><i class="fas fa-trash"></i></button>';
@@ -344,7 +344,7 @@ export default {
               columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
             },
             attr: {
-              "data-toggle": "tooltip",
+              "data-bs-toggle": "tooltip",
               title: "Download PDF",
             },
           },
@@ -357,7 +357,7 @@ export default {
               columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
             },
             attr: {
-              "data-toggle": "tooltip",
+              "data-bs-toggle": "tooltip",
               title: "Download Excel",
             },
           },
@@ -369,7 +369,7 @@ export default {
               columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
             },
             attr: {
-              "data-toggle": "tooltip",
+              "data-bs-toggle": "tooltip",
               title: "Download CSV",
             },
           },
@@ -421,7 +421,7 @@ export default {
               columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
             },
             attr: {
-              "data-toggle": "tooltip",
+              "data-bs-toggle": "tooltip",
               title: "Copy to clipboard",
             },
           },

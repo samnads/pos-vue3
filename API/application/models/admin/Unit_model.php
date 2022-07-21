@@ -97,6 +97,9 @@ class Unit_model extends CI_Model
         u.name   as name,
         u.allow_decimal   as allow_decimal,
         u.base  as base,
+        u.operator   as operator,
+        u.step   as step,
+        u1.code  as base_code,
         u1.name  as base_name,
         u.deletable   as deletable,
         u.editable   as editable,
@@ -113,7 +116,7 @@ class Unit_model extends CI_Model
         $this->db->order_by($order_by, $order);
         $this->db->limit($limit, $offset);
         $query = $this->db->get('');
-        die($this->db->last_query());
+        //die($this->db->last_query());
         return $query->result();
     }
     function datatable_recordsFiltered($search)

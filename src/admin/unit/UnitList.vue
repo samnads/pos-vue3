@@ -43,6 +43,8 @@
           <th scope="col" class="d-none">ID</th>
           <th scope="col">Code</th>
           <th scope="col">Name</th>
+          <th scope="col">Base Unit</th>
+          <th scope="col">Equation</th>
           <th scope="col">Description</th>
           <th scope="col"><i class="fa-solid fa-bars"></i></th>
         </tr>
@@ -166,6 +168,12 @@ export default {
             data: "name",
           },
           {
+            data: "base_name",
+          },
+          {
+            data: null,
+          },
+          {
             data: "description",
           },
           {
@@ -193,9 +201,42 @@ export default {
           {
             targets: [3],
             className: "align-middle",
+            render: function (data, type, row, meta) {
+              return row["base"] == null
+                ? '<div class="d-flex justify-content-between"><div><span class="fw-bold">' +
+                    data +
+                    '</span></div><button id="newsub" type="button" class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" title="New Sub Unit"><i class="fa-solid fa-plus"></i></button></div></div>'
+                : '<span class="fw-bold">' + data + "</bold>";
+            },
           },
           {
             targets: [4],
+            className: "align-middle",
+            render: function (data, type, row, meta) {
+              return data == null
+                ? '<i class="text-muted small">-</i>'
+                : row["base_name"];
+            },
+          },
+          {
+            targets: [5],
+            className: "align-middle",
+            render: function (data, type, row, meta) {
+              return row["base"] == null
+                ? '<i class="text-muted small">-</i>'
+                : "<i>" +
+                    row["code"] +
+                    " = " +
+                    row["step"] +
+                    " " +
+                    row["operator"] +
+                    " " +
+                    row["base_code"] +
+                    "</i>";
+            },
+          },
+          {
+            targets: [6],
             className: "align-middle",
             render: function (data, type, row, meta) {
               return data == null
@@ -204,20 +245,20 @@ export default {
             },
           },
           {
-            targets: [5],
+            targets: [7],
             className: "text-center align-middle",
             orderable: false,
             searchable: false,
             width: "1%",
             render: function (data, type, row, meta) {
               let infoBtn =
-                '<button type="button" id="info" class="btn btn-success" data-toggle="tooltip" data-placement="left" title="Info"><i class="fas fa-info-circle"></i></button>';
+                '<button type="button" id="info" class="btn btn-success" data-bs-toggle="tooltip" title="Info"><i class="fas fa-info-circle"></i></button>';
               let editBtn =
                 '<button type="button" id="edit" class="btn btn-' +
                 (row["editable"] !== 0 ? "primary" : "secondary") +
                 '"' +
                 (row["editable"] !== 0
-                  ? 'data-toggle="tooltip" data-placement="left" title="Edit"'
+                  ? 'data-bs-toggle="tooltip" title="Edit"'
                   : "") +
                 (row["editable"] === 0 ? "disabled" : "") +
                 '><i class="fas fa-pencil-alt"></i></button> ';
@@ -226,7 +267,7 @@ export default {
                 (row["deletable"] !== 0 ? "danger" : "secondary") +
                 '"' +
                 (row["deletable"] !== 0
-                  ? 'data-toggle="tooltip" data-placement="left" title="Delete"'
+                  ? 'data-bs-toggle="tooltip" title="Delete"'
                   : "") +
                 (row["deletable"] === 0 ? "disabled" : "") +
                 '><i class="fas fa-trash"></i></button>';
@@ -261,7 +302,7 @@ export default {
               columns: [2, 3, 4],
             },
             attr: {
-              "data-toggle": "tooltip",
+              "data-bs-toggle": "tooltip",
               title: "Download PDF",
             },
           },
@@ -274,7 +315,7 @@ export default {
               columns: [2, 3, 4],
             },
             attr: {
-              "data-toggle": "tooltip",
+              "data-bs-toggle": "tooltip",
               title: "Download Excel",
             },
           },
@@ -286,7 +327,7 @@ export default {
               columns: [2, 3, 4],
             },
             attr: {
-              "data-toggle": "tooltip",
+              "data-bs-toggle": "tooltip",
               title: "Download CSV",
             },
           },
@@ -297,6 +338,7 @@ export default {
               self.table.ajax.reload();
             },
             attr: {
+              "data-bs-toggle": "tooltip",
               title: "Refresh",
               id: "refresh",
             },
@@ -313,7 +355,7 @@ export default {
               columns: [2, 3, 4],
             },
             attr: {
-              "data-toggle": "tooltip",
+              "data-bs-toggle": "tooltip",
               title: "Copy to clipboard",
             },
           },

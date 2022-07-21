@@ -20,3 +20,13 @@ nav a.router-link-exact-active {
   color: #42b983;
 }
 </style>
+<script>
+import { Tooltip } from "bootstrap";
+export default {
+  mounted() {
+    new Tooltip(document.body, {
+      selector: "[data-bs-toggle='tooltip']",
+    });
+  },
+};
+</script>

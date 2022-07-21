@@ -341,7 +341,7 @@ export default {
               columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
             },
             attr: {
-              "data-toggle": "tooltip",
+              "data-bs-toggle": "tooltip",
               title: "Download PDF",
             },
           },
@@ -354,7 +354,7 @@ export default {
               columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
             },
             attr: {
-              "data-toggle": "tooltip",
+              "data-bs-toggle": "tooltip",
               title: "Download Excel",
             },
           },
@@ -366,7 +366,7 @@ export default {
               columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
             },
             attr: {
-              "data-toggle": "tooltip",
+              "data-bs-toggle": "tooltip",
               title: "Download CSV",
             },
           },
@@ -414,7 +414,7 @@ export default {
               columns: [2, 3, 4, 5, 6, 7],
             },
             attr: {
-              "data-toggle": "tooltip",
+              "data-bs-toggle": "tooltip",
               title: "Copy to clipboard",
             },
           },
