@@ -59,13 +59,18 @@
 </style>
 <script>
 /* eslint-disable */
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import admin from "@/mixins/admin.js";
 import { inject } from "vue";
+import { useStore } from "vuex";
 export default {
   components: {},
   /* eslint-disable */
   setup() {
+    const store = useStore();
+    let units = computed(function () {
+      return store.state.units;
+    });
     const emitter = inject("emitter"); // Inject `emitter`
     const controller_delete = ref({});
     // notify
@@ -74,19 +79,20 @@ export default {
       notifyApiResponse,
       notifyCatchResponse,
       axiosAsyncCallReturnData,
+      axiosAsyncStoreReturnBool
     } = admin();
     return {
       notifyDefault,
       notifyApiResponse,
       notifyCatchResponse,
       axiosAsyncCallReturnData,
+      axiosAsyncStoreReturnBool,
       emitter,
       controller_delete,
+      units,
     };
   },
-  methods: {
-    getAdjustInfo() {},
-  },
+  methods: {},
   mounted() {
     var self = this;
     $(function () {
@@ -393,7 +399,7 @@ export default {
       });
       $("#datatable tbody").on(
         "click",
-        "td:not(:first-child):not(:last-child),#details",
+        "td:not(:first-child):not(:last-child):not(:nth-child(4n)),#details",
         function () {
           //let row = self.table.row($(this).parents("tr")).data(); // row data
           window.UNIT_INFO_MODAL.show();
@@ -407,6 +413,15 @@ export default {
           data: row,
           emit: "refreshUnitDataTable",
           type: "primary",
+        });
+      });
+      $("#datatable tbody").on("click", "#newsub", function () {
+        let row = self.table.row($(this).parents("tr")).data();
+        self.emitter.emit("newUnitModal", {
+          title: "New Sub Unit",
+          base: row,
+          emit: "refreshUnitDataTable",
+          type: "success",
         });
       });
       $("#datatable tbody").on("click", "#info", function () {
@@ -481,6 +496,14 @@ export default {
     self.emitter.on("refreshUnitDataTable", (data) => {
       self.table.ajax.reload();
     });
+    //
+    if (!this.units) {
+      // if not found on store
+      this.axiosAsyncStoreReturnBool("storeUnits", "product", {
+        action: "create",
+        dropdown: "base_units",
+      }); // get units
+    }
   },
   beforeUnmount() {
     var self = this;

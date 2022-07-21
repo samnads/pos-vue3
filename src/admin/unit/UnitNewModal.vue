@@ -26,6 +26,46 @@
           <div class="modal-body">
             <div class="row">
               <div class="col">
+                <label for="" class="form-label">Base Unit<i>*</i></label>
+                <div class="input-group is-invalid">
+                  <select
+                    class="form-select"
+                    name="unit"
+                    :disabled="!units"
+                    v-model="unit"
+                    v-bind:class="[
+                      units && errorUnit
+                        ? 'is-invalid'
+                        : units && unit
+                        ? 'is-valid'
+                        : '',
+                    ]"
+                  >
+                    <option
+                      :value="formValues.unit"
+                      v-if="units == undefined"
+                      selected
+                    >
+                      Loading...
+                    </option>
+                    <option :value="null" selected>
+                      {{ units == false ? "Updating..." : "-- Select --" }}
+                    </option>
+                    <option v-for="u in units" :key="u.id" :value="u.id">
+                      {{ u.name }}
+                    </option>
+                  </select>
+                  <span
+                    class="input-group-text text-info"
+                    role="button"
+                    @click="newUnit"
+                    v-if="units"
+                    ><i class="fa-solid fa-plus"></i
+                  ></span>
+                </div>
+                <div class="invalid-feedback">{{ units ? errorUnit : "" }}</div>
+              </div>
+              <div class="col">
                 <label class="form-label">Name<i>*</i></label>
                 <input
                   type="text"
@@ -307,7 +347,7 @@ export default {
       backdrop: true,
       show: true,
     });
-    //window.UNIT_NEW_MODAL.show();
+    window.UNIT_NEW_MODAL.show();
   },
   beforeUnmount() {
     var self = this;
