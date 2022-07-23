@@ -408,9 +408,9 @@ CREATE TABLE `product` (
   CONSTRAINT `product-brand` FOREIGN KEY (`brand`) REFERENCES `brand` (`id`),
   CONSTRAINT `product-product_type` FOREIGN KEY (`type`) REFERENCES `product_type` (`id`),
   CONSTRAINT `product-tax_rate` FOREIGN KEY (`tax_rate`) REFERENCES `tax_rate` (`id`),
-  CONSTRAINT `product-unit` FOREIGN KEY (`unit`) REFERENCES `unit` (`id`),
-  CONSTRAINT `product-unit_bulk1` FOREIGN KEY (`p_unit`) REFERENCES `unit_bulk` (`id`),
-  CONSTRAINT `product-unit_bulk2` FOREIGN KEY (`s_unit`) REFERENCES `unit_bulk` (`id`),
+  CONSTRAINT `product-unit` FOREIGN KEY (`unit`) REFERENCES `unit_delete` (`id`),
+  CONSTRAINT `product-unit_bulk1` FOREIGN KEY (`p_unit`) REFERENCES `unit_bulk_delete` (`id`),
+  CONSTRAINT `product-unit_bulk2` FOREIGN KEY (`s_unit`) REFERENCES `unit_bulk_delete` (`id`),
   CONSTRAINT `product_ibfk_4` FOREIGN KEY (`symbology`) REFERENCES `barcode_symbology` (`id`),
   CONSTRAINT `product_ibfk_5` FOREIGN KEY (`category`) REFERENCES `category` (`id`),
   CONSTRAINT `price_check` CHECK (`price` <= `mrp`),
@@ -946,29 +946,40 @@ INSERT INTO `tax_rate` (`id`, `code`, `name`, `rate`, `type`, `description`, `ed
 DROP TABLE IF EXISTS `unit`;
 CREATE TABLE `unit` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `code` varchar(10) NOT NULL,
-  `name` varchar(15) NOT NULL,
-  `description` varchar(30) DEFAULT NULL,
-  `added_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `base` int(11) DEFAULT NULL,
+  `code` varchar(15) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `step` int(10) DEFAULT NULL,
+  `operator` varchar(2) DEFAULT NULL,
+  `allow_decimal` tinyint(4) DEFAULT NULL COMMENT 'use NULL for allow',
+  `description` text DEFAULT NULL,
   `editable` tinyint(1) DEFAULT NULL,
   `deletable` tinyint(1) DEFAULT NULL,
+  `added_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`),
   UNIQUE KEY `code` (`code`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=166 DEFAULT CHARSET=utf8mb4;
+  UNIQUE KEY `base_step_operator` (`base`,`step`,`operator`),
+  KEY `base` (`base`),
+  CONSTRAINT `unit_ibfk_1` FOREIGN KEY (`base`) REFERENCES `unit` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `unit` (`id`, `code`, `name`, `description`, `added_at`, `editable`, `deletable`, `updated_at`, `deleted_at`) VALUES
-(1,	'PC',	'Piece',	'Piece',	'2021-01-24 06:02:13',	NULL,	NULL,	'2022-07-09 16:49:33',	NULL),
-(38,	'MTR',	'Meter',	'Meter',	'2021-04-18 19:00:13',	NULL,	NULL,	'2022-07-09 16:49:45',	NULL),
-(39,	'KG',	'Kilo Gram',	'Kilo Gram',	'2021-04-18 19:09:37',	NULL,	NULL,	'2022-07-09 16:50:00',	NULL),
-(40,	'DZ',	'Dozen',	'Dozen',	'2021-04-18 19:10:12',	NULL,	NULL,	'2022-07-09 16:50:19',	NULL),
-(41,	'BO10',	'Box of 10',	'Box of 10 pieces',	'2021-04-18 19:10:40',	NULL,	NULL,	'2022-07-09 16:57:51',	NULL),
-(42,	'BO-100',	'Box of 100',	'Box of 100 pieces',	'2021-04-18 19:11:26',	NULL,	NULL,	'2022-07-09 16:59:29',	NULL);
+INSERT INTO `unit` (`id`, `base`, `code`, `name`, `step`, `operator`, `allow_decimal`, `description`, `editable`, `deletable`, `added_at`, `updated_at`, `deleted_at`) VALUES
+(1,	NULL,	'PC',	'Piece',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	'2022-07-20 14:13:31',	'2022-07-22 17:32:14',	NULL),
+(2,	1,	'5PC',	'5 Piece',	5,	'*',	1,	NULL,	NULL,	NULL,	'2022-07-20 14:14:10',	'2022-07-22 17:32:14',	NULL),
+(3,	1,	'10 PC',	'10 Piece',	10,	'*',	1,	NULL,	NULL,	NULL,	'2022-07-20 14:15:25',	'2022-07-22 17:32:14',	NULL),
+(5,	NULL,	'GM',	'Gram',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	'2022-07-20 14:21:17',	'2022-07-22 17:32:14',	NULL),
+(6,	NULL,	'KG',	'Kilo Gram',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	'2022-07-20 14:21:49',	'2022-07-22 17:32:14',	NULL),
+(7,	6,	'1/2 KG /',	'Half KG /',	2,	'/',	1,	NULL,	NULL,	NULL,	'2022-07-20 15:13:35',	'2022-07-22 17:32:14',	NULL),
+(8,	5,	'1/2 KG *',	'Half KG *',	500,	'*',	0,	NULL,	NULL,	NULL,	'2022-07-20 15:18:12',	'2022-07-23 15:56:20',	NULL),
+(9,	NULL,	'MTR',	'Meter',	NULL,	NULL,	0,	NULL,	NULL,	NULL,	'2022-07-20 15:23:18',	'2022-07-23 15:59:45',	NULL),
+(31,	NULL,	';l;l;',	';l;l',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	'2022-07-23 15:59:27',	NULL,	NULL),
+(32,	9,	'6t75757',	'jkm,jkj',	3,	'*',	0,	'676767',	NULL,	NULL,	'2022-07-23 15:59:58',	'2022-07-23 16:03:19',	NULL);
 
-DROP TABLE IF EXISTS `unit_bulk`;
-CREATE TABLE `unit_bulk` (
+DROP TABLE IF EXISTS `unit_bulk_delete`;
+CREATE TABLE `unit_bulk_delete` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `unit` int(11) NOT NULL,
   `value` int(11) NOT NULL,
@@ -982,10 +993,10 @@ CREATE TABLE `unit_bulk` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `unit` (`unit`) USING BTREE,
-  CONSTRAINT `unit_bulk-unit` FOREIGN KEY (`unit`) REFERENCES `unit` (`id`)
+  CONSTRAINT `unit_bulk-unit` FOREIGN KEY (`unit`) REFERENCES `unit_delete` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `unit_bulk` (`id`, `unit`, `value`, `code`, `name`, `description`, `editable`, `deletable`, `added_at`, `updated_at`, `deleted_at`) VALUES
+INSERT INTO `unit_bulk_delete` (`id`, `unit`, `value`, `code`, `name`, `description`, `editable`, `deletable`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (38,	1,	10,	'10b',	'Box of 10',	NULL,	NULL,	NULL,	'2021-04-18 15:16:00',	NULL,	NULL),
 (39,	1,	5535,	'dsf',	'dsf',	'ert',	NULL,	NULL,	'2021-04-18 18:58:09',	NULL,	NULL),
 (70,	1,	6,	'fgh',	'rrr',	NULL,	NULL,	NULL,	'2022-04-15 05:52:47',	NULL,	NULL),
@@ -993,39 +1004,30 @@ INSERT INTO `unit_bulk` (`id`, `unit`, `value`, `code`, `name`, `description`, `
 (72,	1,	34,	'aa',	'ggg',	NULL,	NULL,	NULL,	'2022-04-15 05:57:14',	NULL,	NULL),
 (73,	1,	565,	'r5',	'tyty',	NULL,	NULL,	NULL,	'2022-04-15 05:58:17',	NULL,	NULL);
 
-DROP TABLE IF EXISTS `unit_new`;
-CREATE TABLE `unit_new` (
+DROP TABLE IF EXISTS `unit_delete`;
+CREATE TABLE `unit_delete` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `base` int(11) DEFAULT NULL,
-  `code` varchar(15) NOT NULL,
-  `name` varchar(50) NOT NULL,
-  `step` int(10) DEFAULT NULL,
-  `operator` varchar(2) DEFAULT NULL,
-  `allow_decimal` tinyint(4) DEFAULT NULL,
-  `description` text DEFAULT NULL,
+  `code` varchar(10) NOT NULL,
+  `name` varchar(15) NOT NULL,
+  `description` varchar(30) DEFAULT NULL,
+  `added_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `editable` tinyint(1) DEFAULT NULL,
   `deletable` tinyint(1) DEFAULT NULL,
-  `added_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`),
   UNIQUE KEY `code` (`code`),
-  UNIQUE KEY `base_step_operator` (`base`,`step`,`operator`),
-  KEY `base` (`base`),
-  CONSTRAINT `unit_new_ibfk_1` FOREIGN KEY (`base`) REFERENCES `unit_new` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4;
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=167 DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `unit_new` (`id`, `base`, `code`, `name`, `step`, `operator`, `allow_decimal`, `description`, `editable`, `deletable`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	NULL,	'PC',	'Piece',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-20 14:13:31',	'2022-07-20 14:14:50',	NULL),
-(2,	1,	'5PC',	'5 Piece',	5,	'*',	NULL,	NULL,	NULL,	NULL,	'2022-07-20 14:14:10',	'2022-07-20 14:19:23',	NULL),
-(3,	1,	'10 PC',	'10 Piece',	10,	'*',	NULL,	NULL,	NULL,	NULL,	'2022-07-20 14:15:25',	'2022-07-20 14:19:23',	NULL),
-(5,	NULL,	'GM',	'Gram',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-20 14:21:17',	NULL,	NULL),
-(6,	NULL,	'KG',	'Kilo Gram',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-20 14:21:49',	'2022-07-20 15:16:55',	NULL),
-(7,	6,	'1/2 KG /',	'Half KG /',	2,	'/',	NULL,	NULL,	NULL,	NULL,	'2022-07-20 15:13:35',	'2022-07-20 15:43:45',	NULL),
-(8,	5,	'1/2 KG *',	'Half KG *',	500,	'*',	NULL,	NULL,	NULL,	NULL,	'2022-07-20 15:18:12',	'2022-07-20 15:43:53',	NULL),
-(9,	NULL,	'MTR',	'Meter',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-20 15:23:18',	NULL,	NULL),
-(10,	9,	'10 MTR',	'10 Meter',	10,	'*',	NULL,	NULL,	NULL,	NULL,	'2022-07-20 15:23:52',	NULL,	NULL);
+INSERT INTO `unit_delete` (`id`, `code`, `name`, `description`, `added_at`, `editable`, `deletable`, `updated_at`, `deleted_at`) VALUES
+(1,	'PC',	'Piece',	'Piece',	'2021-01-24 06:02:13',	NULL,	NULL,	'2022-07-09 16:49:33',	NULL),
+(38,	'MTR',	'Meter',	'Meter',	'2021-04-18 19:00:13',	NULL,	NULL,	'2022-07-09 16:49:45',	NULL),
+(39,	'KG',	'Kilo Gram',	'Kilo Gram',	'2021-04-18 19:09:37',	NULL,	NULL,	'2022-07-09 16:50:00',	NULL),
+(40,	'DZ',	'Dozen',	'Dozen',	'2021-04-18 19:10:12',	NULL,	NULL,	'2022-07-09 16:50:19',	NULL),
+(41,	'BO10',	'Box of 10',	'Box of 10 pieces',	'2021-04-18 19:10:40',	NULL,	NULL,	'2022-07-09 16:57:51',	NULL),
+(42,	'BO-100',	'Box of 100',	'Box of 100 pieces',	'2021-04-18 19:11:26',	NULL,	NULL,	'2022-07-09 16:59:29',	NULL),
+(166,	'10 MTR',	'10 Meter',	NULL,	'2022-07-23 09:24:30',	NULL,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
@@ -1068,7 +1070,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-07-21 13:11:20',	'2022-07-18 04:37:51',	'2021-04-20 19:22:52',	'2022-07-21 13:11:20',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-07-23 09:06:11',	'2022-07-18 04:37:51',	'2021-04-20 19:22:52',	'2022-07-23 09:06:11',	NULL),
 (30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
 (31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
@@ -1136,4 +1138,4 @@ INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country
 (31,	'WARE0031',	'jhjhgjgjhg',	'jhgjhgjhgj',	'2022-07-01',	NULL,	NULL,	NULL,	'56565656',	'fgf@dy.hjgj',	NULL,	NULL,	NULL,	NULL,	16,	'hjhj',	NULL,	NULL,	'2022-07-05 12:36:57',	NULL,	NULL),
 (32,	'WARE0032',	'uiuiui',	'uiuiuiuiu',	'2022-07-06',	NULL,	NULL,	NULL,	'4545454',	'ui@gf.ghgh',	NULL,	NULL,	NULL,	NULL,	17,	NULL,	NULL,	NULL,	'2022-07-06 17:24:34',	NULL,	NULL);
 
--- 2022-07-21 17:46:34
+-- 2022-07-23 16:23:43

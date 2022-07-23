@@ -79,7 +79,7 @@ export default {
       notifyApiResponse,
       notifyCatchResponse,
       axiosAsyncCallReturnData,
-      axiosAsyncStoreReturnBool
+      axiosAsyncStoreReturnBool,
     } = admin();
     return {
       notifyDefault,
@@ -178,6 +178,7 @@ export default {
           },
           {
             data: null,
+            orderable: false,
           },
           {
             data: "description",
@@ -409,8 +410,8 @@ export default {
         // edit from action menu
         let row = self.table.row($(this).parents("tr")).data();
         self.emitter.emit("newUnitModal", {
-          title: "Edit Unit",
-          data: row,
+          title: row.base ? "Edit Sub Unit" : "Edit Unit",
+          db: row,
           emit: "refreshUnitDataTable",
           type: "primary",
         });
@@ -418,8 +419,8 @@ export default {
       $("#datatable tbody").on("click", "#newsub", function () {
         let row = self.table.row($(this).parents("tr")).data();
         self.emitter.emit("newUnitModal", {
-          title: "New Sub Unit",
-          base: row,
+          title: "New Sub Unit of ",
+          data: row,
           emit: "refreshUnitDataTable",
           type: "success",
         });

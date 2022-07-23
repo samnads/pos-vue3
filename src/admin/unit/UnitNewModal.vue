@@ -7,10 +7,14 @@
             class="modal-header"
             :class="DATA.type ? 'bg-' + DATA.type : 'bg-primary'"
           >
-            <h5 class="modal-title">
-              <span v-if="DATA.data"><i class="fa-solid fa-pencil"></i></span>
-              <span v-else><i class="fa-solid fa-plus"></i></span
-              >{{ DATA.title }}
+            <h5 class="modal-title" v-if="DATA.data && DATA.data.db">
+              <!-- edit -->
+              <span><i class="fa-solid fa-pencil"></i></span>{{ DATA.title }}
+              <span class="badge bg-light text-dark">{{ DATA.data }}</span>
+            </h5>
+            <h5 class="modal-title" v-else>
+              <!-- new -->
+              <span><i class="fa-solid fa-plus"></i></span>{{ DATA.title }}
               <span class="badge bg-light text-dark" v-if="DATA.data">{{
                 DATA.data.name
               }}</span>
@@ -24,47 +28,64 @@
             ></button>
           </div>
           <div class="modal-body">
-            <div class="row">
-              <div class="col">
-                <label for="" class="form-label">Base Unit<i>*</i></label>
-                <div class="input-group is-invalid">
-                  <select
-                    class="form-select"
-                    name="unit"
-                    :disabled="!units"
-                    v-model="unit"
-                    v-bind:class="[
-                      units && errorUnit
-                        ? 'is-invalid'
-                        : units && unit
-                        ? 'is-valid'
-                        : '',
-                    ]"
-                  >
-                    <option
-                      :value="formValues.unit"
-                      v-if="units == undefined"
-                      selected
-                    >
-                      Loading...
-                    </option>
-                    <option :value="null" selected>
-                      {{ units == false ? "Updating..." : "-- Select --" }}
-                    </option>
-                    <option v-for="u in units" :key="u.id" :value="u.id">
-                      {{ u.name }}
-                    </option>
-                  </select>
-                  <span
-                    class="input-group-text text-info"
-                    role="button"
-                    @click="newUnit"
-                    v-if="units"
-                    ><i class="fa-solid fa-plus"></i
-                  ></span>
-                </div>
-                <div class="invalid-feedback">{{ units ? errorUnit : "" }}</div>
+            <div class="row" v-if="DATA.data || (DATA.db && DATA.db.base_name)">
+              <div class="col-6">
+                <label class="form-label">Base Unit<i>*</i></label>
+                <input
+                  type="text"
+                  name="name"
+                  :value="
+                    DATA.data
+                      ? DATA.data.name
+                      : DATA.db.base_name + ' (' + DATA.db.base_code + ')'
+                  "
+                  class="form-control"
+                  disabled
+                />
+                <div class="invalid-feedback">{{ errorName }}</div>
               </div>
+              <div class="col">
+                <label class="form-label">Operator<i>*</i></label>
+                <select
+                  class="form-select"
+                  name="operator"
+                  v-model="operator"
+                  v-bind:class="[
+                    errorOperator
+                      ? 'is-invalid'
+                      : !errorOperator && operator
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                >
+                  <option value="*">*</option>
+                  <option value="/">/</option>
+                  <option value="+">+</option>
+                  <option value="+">-</option>
+                </select>
+                <div class="invalid-feedback">{{ errorOperator }}</div>
+              </div>
+              <div class="col">
+                <label class="form-label">Step<i>*</i></label>
+                <input
+                  type="number"
+                  step="any"
+                  name="step"
+                  v-model="step"
+                  class="form-control"
+                  v-bind:class="[
+                    errorStep
+                      ? 'is-invalid'
+                      : !errorStep && step
+                      ? 'is-valid'
+                      : '',
+                  ]"
+                />
+                <div class="invalid-feedback">{{ errorStep }}</div>
+              </div>
+              <hr class="mt-4" />
+            </div>
+            <div class="row">
               <div class="col">
                 <label class="form-label">Name<i>*</i></label>
                 <input
@@ -98,6 +119,21 @@
                   ]"
                 />
                 <div class="invalid-feedback">{{ errorCode }}</div>
+              </div>
+              <div class="col">
+                <label class="form-label">Allow Decimal</label>
+                <div class="input-group">
+                  <div class="input-group-text form-control">
+                    <div class="form-check form-switch">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="allow_decimal"
+                        v-model="allow_decimal"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="row">
@@ -184,7 +220,8 @@ export default {
     const DATA = ref({});
     const { axiosAsyncCallReturnData, axiosAsyncStoreReturnBool } = admin();
     /************************************************************************* */
-    const formValues = ref({});
+    const formValues = ref({ allow_decimal: true });
+    const subForm = ref(true);
     /************************************************************************* */
     const schema = computed(() => {
       return yup.object({
@@ -202,6 +239,25 @@ export default {
           .nullable(true)
           .transform((_, val) => (val.length > 0 ? val : undefined))
           .label("Code"),
+        allow_decimal: yup.boolean().required().label("Allow Decimal"),
+        operator: yup
+          .string()
+          .nullable(true)
+          .transform((_, val) => (val.length > 0 ? val : undefined))
+          .label("Operator"),
+        step: yup
+          .number()
+          .nullable(true)
+          .transform((_, val) => (val === Number(val) ? val : null))
+          .when("test1", {
+            is: (value = subForm.value) => value == true,
+            then: yup
+              .number()
+              .nullable(true)
+              .transform((_, val) => (val === Number(val) ? val : null))
+              .required(),
+          })
+          .label("Step"),
         description: yup
           .string()
           .min(2)
@@ -229,25 +285,43 @@ export default {
     emitter.on("newUnitModal", (data) => {
       resetForm();
       DATA.value = data;
-      if (DATA.value.data) {
-        let fields = DATA.value.data;
+      if (DATA.value.db) {
+        // edit form
+        let fields = DATA.value.db;
         setFieldValue("name", fields.name);
         setFieldValue("code", fields.code);
+        setFieldValue(
+          "allow_decimal",
+          fields.allow_decimal == 1 ? true : false
+        );
+        setFieldValue("operator", fields.operator || "");
+        setFieldValue("step", fields.step);
         setFieldValue("description", fields.description || "");
+        subForm.value = DATA.value.db.base ? true : false;
       } else {
-        //
+        // new form
+        setFieldValue("operator", "*");
+        subForm.value =
+          DATA.value.data && DATA.value.data.base === null ? true : false; // for dynamic required or not schema
       }
       window.UNIT_NEW_MODAL.show();
     });
     /************************************************************************* */
     // eslint-disable-next-line
-    function onInvalidSubmit({ values, errors, results }) {}
+    function onInvalidSubmit({ values, errors, results }) {
+      console.log(errors);
+    }
     const onSubmit = handleSubmit((values, { resetForm }) => {
-      values.db = DATA.value.data;
-      let method = DATA.value.data ? "put" : "post";
-      let action = DATA.value.data ? "update" : "create";
+      let method = DATA.value.db ? "put" : "post";
+      let action = DATA.value.db ? "update" : "create";
+      if (action == "create") {
+        values.unit = DATA.value.data ? DATA.value.data.id : undefined; // for sub unit
+      } else {
+        values.id = DATA.value.db.id;
+        values.unit = DATA.value.db.base ? DATA.value.db.base : undefined; // for sub unit
+      }
       let controller;
-      if (method == "post") {
+      if (action == "create") {
         // new
         if (newController.value) {
           newController.value.abort();
@@ -279,7 +353,7 @@ export default {
           resetForm();
           window.UNIT_NEW_MODAL.hide();
           if (DATA.value.emit) {
-            emitter.emit(DATA.value.emit, {}); // do something (emit)
+            emitter.emit(DATA.value.emit, data); // do something (emit)
           }
         } else {
           // not added
@@ -301,20 +375,31 @@ export default {
       resetForm();
     }
     function customReset() {
-      if (DATA.value.data) {
+      if (DATA.value.db) {
         // edit form
-        let fields = DATA.value.data;
+        let fields = DATA.value.db;
         setFieldValue("name", fields.name);
         setFieldValue("code", fields.code);
+        setFieldValue("operator", fields.operator || "*");
+        setFieldValue("step", fields.step);
+        setFieldValue(
+          "allow_decimal",
+          fields.allow_decimal == 1 ? true : false
+        );
         setFieldValue("description", fields.description || "");
       } else {
         // new
         resetForm();
+        setFieldValue("operator", "*");
       }
     }
     /************************************************************************* */
     const { value: name, errorMessage: errorName } = useField("name");
     const { value: code, errorMessage: errorCode } = useField("code");
+    const { value: operator, errorMessage: errorOperator } =
+      useField("operator");
+    const { value: step, errorMessage: errorStep } = useField("step");
+    const { value: allow_decimal } = useField("allow_decimal");
     const { value: description, errorMessage: errorDescription } =
       useField("description");
     /*************************************** */
@@ -324,6 +409,11 @@ export default {
       errorName,
       code,
       errorCode,
+      allow_decimal,
+      operator,
+      errorOperator,
+      step,
+      errorStep,
       description,
       errorDescription,
       /*************** */
@@ -337,6 +427,7 @@ export default {
       close,
       DATA,
       emitter,
+      subForm,
     };
   },
   data() {
@@ -347,7 +438,7 @@ export default {
       backdrop: true,
       show: true,
     });
-    window.UNIT_NEW_MODAL.show();
+    //window.UNIT_NEW_MODAL.show();
   },
   beforeUnmount() {
     var self = this;

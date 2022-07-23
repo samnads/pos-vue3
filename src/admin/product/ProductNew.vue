@@ -1,6 +1,7 @@
 <template>
   <TaxNewModal />
   <BrandNewModal />
+  <UnitNewModal />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
@@ -379,7 +380,7 @@
                 <button
                   class="input-group-text text-info"
                   type="button"
-                  @click="newUnitBulk"
+                  @click="newUnit(true)"
                   v-if="unitsBulk && unit"
                 >
                   <i class="fa-solid fa-plus"></i>
@@ -422,7 +423,7 @@
                 <button
                   class="input-group-text text-info"
                   type="button"
-                  @click="newUnitBulk"
+                  @click="newUnit(true)"
                   v-if="unitsBulk && unit"
                 >
                   <i class="fa-solid fa-plus"></i>
@@ -1154,6 +1155,7 @@
 <style>
 </style>
 <script>
+/* eslint-disable */
 import {
   useForm,
   useField,
@@ -1170,11 +1172,13 @@ import { useRouter, useRoute } from "vue-router";
 import { inject } from "vue";
 import TaxNewModal from "../tax/TaxNewModal.vue";
 import BrandNewModal from "../brand/BrandNewModal.vue";
+import UnitNewModal from "../unit/UnitNewModal.vue";
 export default {
   props: {},
   components: {
     TaxNewModal,
     BrandNewModal,
+    UnitNewModal,
   },
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
@@ -1663,6 +1667,35 @@ export default {
         }
       });
     });
+    function newUnit(sub) {
+      var data;
+      if (sub) {
+        data = units.value.find((obj) => {
+          return obj.id === unit.value;
+        });
+      } else {
+        data = undefined;
+      }
+      console.log(data)
+      emitter.emit("newUnitModal", {
+        title: sub == true ? "New Sub Unit of " : "New Unit",
+        type: "success",
+        data: data,
+        emit: "refreshUnitDropdown",
+      });
+    }
+    emitter.on("refreshUnitDropdown", (data) => {
+      /*****************************************  update list and set new ***********************************/
+      unit.value = null;
+      axiosAsyncStoreUpdateReturnData("storeUnits", "product", {
+        action: "create",
+        dropdown: "base_units",
+      }).then(function (response) {
+        if (response.success == true) {
+          unit.value = data.id;
+        }
+      });
+    });
     return {
       route,
       /**************** default form sel values */
@@ -1775,6 +1808,7 @@ export default {
       hyphen_count,
       newTaxRate,
       newBrand,
+      newUnit,
       emitter,
     };
   },
@@ -2015,6 +2049,8 @@ export default {
   beforeUnmount() {
     var self = this;
     self.emitter.off("refreshTaxRateDropdown");
+    self.emitter.off("refreshBrandDropdown");
+    self.emitter.off("refreshUnitDropdown");
   },
 };
 </script>

@@ -572,7 +572,7 @@ class Product extends CI_Controller
                 echo json_encode($result);
                 break;
             case 'base_units':
-                $result['data'] = $this->Unit_model->dropdown_active();
+                $result['data'] = $this->Unit_model->dropdown_main_active();
                 $result['success'] = true;
                 echo json_encode($result);
                 break;

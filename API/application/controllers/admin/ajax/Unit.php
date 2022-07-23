@@ -17,7 +17,7 @@ class Unit extends CI_Controller
 						$order = $this->input->get('order')[0]['dir']; // order asc or desc
 						$search = $this->input->get('search')['value']; // search query
 						$offset = $this->input->get('start'); // start position
-						$results = $this->Unit_model->datatable_data_test($search, $offset, $limit, $order_by, $order);
+						$results = $this->Unit_model->datatable_data($search, $offset, $limit, $order_by, $order);
 						$data['data'] = $results;
 						$data["draw"] = $this->input->get('draw'); // unique
 						$data["recordsTotal"] = $this->Unit_model->datatable_recordsTotal();
@@ -25,32 +25,6 @@ class Unit extends CI_Controller
 						$data['success'] = true;
 						//$data = array('success' => false, 'type' => 'danger', 'error' => 'Error Test OK !');
 						echo json_encode($data);
-						break;
-					case 'datatable_sub': // get all sub unit rows
-						$data = array();
-						$limit = $this->input->get('length') <= 0 ? NULL : $this->input->get('length'); // limit
-						$order_by = $this->input->get('columns')[$this->input->get('order')[0]['column']]['data']; // order by column
-						$order = $this->input->get('order')[0]['dir']; // order asc or desc
-						$search = $this->input->get('search')['value']; // search query
-						$offset = $this->input->get('start'); // start position
-						$results = $this->Unit_model->datatable_subunits($search, $offset, $limit, $order_by, $order);
-						$data['data'] = $results;
-						$data["draw"] = $this->input->get('draw'); // unique
-						$data["recordsTotal"] = $this->Unit_model->sub_totalRows();
-						$data["recordsFiltered"] = $this->Unit_model->sub_datatable_units_count($search);
-						$data['success'] = true;
-						//$data['error'] = 'An error occured !';
-						echo json_encode($data);
-						break;
-					case 'defunit': // get default unit from settings
-						$id = $this->input->post('id');
-						$result = $this->Unit_model->getSingleUnit($id);
-						echo json_encode($result);
-						break;
-					case 'unit':
-						$id = $this->input->post('id');
-						$result = $this->Unit_model->getSingleUnit($id);
-						echo json_encode($result);
 						break;
 					default:
 						$error = array('success' => false, 'type' => 'danger', 'error' => 'Unknown Action !');
@@ -61,41 +35,52 @@ class Unit extends CI_Controller
 				$_POST = $this->input->post('data');
 				if ($this->input->post('unit')) { // NEW SUB UNIT
 					$data = array(
-						'unit'			=> $this->input->post('unit')['id'],
-						'value'			=> $this->input->post('quantity'),
-
+						'base'			=> $this->input->post('unit'), // base unit id
 						'name'			=> $this->input->post('name'),
 						'code'			=> $this->input->post('code'),
-						'description'	=> $this->input->post('description') == NULL ? NULL : $this->input->post('description')
+						'operator'			=> $this->input->post('operator') ?: NULL,
+						'step'			=> $this->input->post('step') ?: NULL,
+						'allow_decimal'	=> $this->input->post('allow_decimal') ? 1 : 0,
+						'description'	=> $this->input->post('description') ?: NULL
 					);
-					$ruleName	= 'callback_sub_name_check[' . $this->input->post('unit')['id'] . ']';
-					$ruleCode	= 'callback_sub_code_check[' . $this->input->post('unit')['id'] . ']';
+					//$ruleName	= 'callback_sub_name_check[' . $this->input->post('unit')['id'] . ']';
+					//$ruleCode	= 'callback_sub_code_check[' . $this->input->post('unit')['id'] . ']';
 					$this->form_validation->set_data($data);
 					$config = array(
 						array(
-							'field' => 'unit',
-							'label' => 'Unit ID',
+							'field' => 'base',
+							'label' => 'Base Unit ID',
 							'rules' => 'required|is_numeric|xss_clean|trim'
 						),
 						array(
 							'field' => 'name',
-							'label' => 'Unit Name',
-							'rules' => 'required|max_length[50]|' . $ruleName . '|xss_clean|trim'
+							'label' => 'Name',
+							'rules' => 'required|max_length[50]|is_unique[' . TABLE_UNIT . '.name]|xss_clean|trim'
 						),
 						array(
 							'field' => 'code',
-							'label' => 'Unit Code',
-							'rules' => 'required|max_length[10]|' . $ruleCode . '|xss_clean|trim'
+							'label' => 'Code',
+							'rules' => 'required|max_length[10]|is_unique[' . TABLE_UNIT . '.code]|xss_clean|trim'
+						),
+						array(
+							'field' => 'operator',
+							'label' => 'Operator',
+							'rules' => 'required|in_list[*,/,+,-]|xss_clean|trim'
+						),
+						array(
+							'field' => 'step',
+							'label' => 'Step',
+							'rules' => 'required|is_numeric|xss_clean|trim'
+						),
+						array(
+							'field' => 'allow_decimal',
+							'label' => 'Allow Decimal',
+							'rules' => 'required|xss_clean|trim'
 						),
 						array(
 							'field' => 'description',
-							'label' => 'Unit Description',
+							'label' => 'Description',
 							'rules' => 'max_length[100]|xss_clean|trim'
-						),
-						array(
-							'field' => 'value',
-							'label' => 'Quantity',
-							'rules' => 'required|is_numeric|xss_clean|trim'
 						)
 					);
 					$this->form_validation->set_rules($config);
@@ -103,9 +88,9 @@ class Unit extends CI_Controller
 						echo json_encode(array('success' => false, 'errors' => $this->form_validation->error_array()));
 					} else {
 						//$data['manual_error'] = 'error';
-						$this->db->insert(TABLE_UNIT_BULK, $data);
+						$this->Unit_model->insert_sub_unit($data);
 						if ($this->db->affected_rows() == 1) {
-							echo json_encode(array('success' => true, 'type' => 'success', 'id' => $this->db->insert_id(), 'message' => 'Successfully added new sub unit <strong><em>' . $data['name'] . '</em></strong> for unit ' . $this->input->post('unit')['name'] . ' !'));
+							echo json_encode(array('success' => true, 'type' => 'success', 'id' => $this->db->insert_id(), 'message' => 'Successfully added new sub unit <strong><em>' . $data['name'] . '</em></strong> !'));
 						} else {
 							$error = $this->db->error();
 							echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));
@@ -115,6 +100,7 @@ class Unit extends CI_Controller
 					$data = array(
 						'name'			=> $this->input->post('name'),
 						'code'			=> $this->input->post('code'),
+						'allow_decimal'	=> $this->input->post('allow_decimal') ? 1 : 0,
 						'description'	=> $this->input->post('description') ?: NULL
 					);
 					//$data['name'] = null;
@@ -131,8 +117,13 @@ class Unit extends CI_Controller
 							'rules' => 'required|max_length[10]|is_unique[' . TABLE_UNIT . '.code]|xss_clean|trim'
 						),
 						array(
+							'field' => 'allow_decimal',
+							'label' => 'Allow Decimal',
+							'rules' => 'required|xss_clean|trim'
+						),
+						array(
 							'field' => 'description',
-							'label' => 'Unit Description',
+							'label' => 'Description',
 							'rules' => 'max_length[100]|xss_clean|trim'
 						)
 					);
@@ -141,6 +132,8 @@ class Unit extends CI_Controller
 						echo json_encode(array('success' => false, 'errors' => $this->form_validation->error_array()));
 					} else {
 						//$data['manual_error'] = 'error';
+						$data['operator'] = NULL; // def for base unit
+						$data['step'] = NULL; // def for base unit
 						$this->Unit_model->insert_unit($data);
 						if ($this->db->affected_rows() == 1) {
 							echo json_encode(array('success' => true, 'type' => 'success', 'id' => $this->db->insert_id(), 'message' => 'Successfully added new unit <strong><em>' . $data['name'] . '</em></strong> !'));
@@ -153,70 +146,81 @@ class Unit extends CI_Controller
 				break;
 			case 'PUT': // update
 				$_POST = $this->input->post('data');
-				if ($this->input->post('sub')) { // EDIT SUB UNIT
+				if ($this->input->post('unit')) { // EDIT SUB UNIT
 					$data = array(
-						'unit'			=> $this->input->post('db')['unit_id'], // parent unit id
-						'value'			=> $this->input->post('value'),
-
+						'base'			=> $this->input->post('unit'), // base unit id
 						'name'			=> $this->input->post('name'),
 						'code'			=> $this->input->post('code'),
-						'description'	=> $this->input->post('description') == NULL ? NULL : $this->input->post('description')
+						'allow_decimal'	=> $this->input->post('allow_decimal') ? 1 : 0,
+						'description'	=> $this->input->post('description') ?: NULL,
+						'operator'		=> $this->input->post('operator') ?: NULL,
+						'step'			=> $this->input->post('step') ?: NULL
 					);
-					$ruleName	= 'callback_sub_edit_unique_name[' . $this->input->post('db')['unit_id'] . ']';
-					$ruleCode	= 'callback_sub_edit_unique_code[' . $this->input->post('db')['unit_id'] . ']';
+					$ruleName	= 'callback_edit_unique_name[' . $this->input->post('id') . ']';
+					$ruleCode	= 'callback_edit_unique_code[' . $this->input->post('id') . ']';
 					$this->form_validation->set_data($data);
 					$config = array(
 						array(
-							'field' => 'unit',
-							'label' => 'Unit ID',
+							'field' => 'base',
+							'label' => 'Base Unit ID',
 							'rules' => 'required|is_numeric|xss_clean|trim'
 						),
 						array(
 							'field' => 'name',
-							'label' => 'Unit Name',
+							'label' => 'Name',
 							'rules' => 'required|max_length[50]|' . $ruleName . '|xss_clean|trim'
 						),
 						array(
 							'field' => 'code',
-							'label' => 'Unit Code',
+							'label' => 'Code',
 							'rules' => 'required|max_length[10]|' . $ruleCode . '|xss_clean|trim'
 						),
 						array(
-							'field' => 'description',
-							'label' => 'Unit Description',
-							'rules' => 'max_length[100]|xss_clean|trim'
+							'field' => 'operator',
+							'label' => 'Operator',
+							'rules' => 'required|in_list[*,/,+,-]|xss_clean|trim'
 						),
 						array(
-							'field' => 'value',
-							'label' => 'Quantity',
+							'field' => 'step',
+							'label' => 'Step',
 							'rules' => 'required|is_numeric|xss_clean|trim'
+						),
+						array(
+							'field' => 'allow_decimal',
+							'label' => 'Allow Decimal',
+							'rules' => 'required|xss_clean|trim'
+						),
+						array(
+							'field' => 'description',
+							'label' => 'Description',
+							'rules' => 'max_length[100]|xss_clean|trim'
 						)
 					);
 					$this->form_validation->set_rules($config);
 					if ($this->form_validation->run() == FALSE) {
-						echo json_encode(array('success' => false, 'message' => $this->form_validation->error_array()));
+						echo json_encode(array('success' => false, 'errors' => $this->form_validation->error_array()));
 					} else {
 						//$data['manual_error'] = 'error';
-						$this->db->update(TABLE_UNIT_BULK, $data, array('id' => $this->input->post('db')['id']));
+						$this->Unit_model->update_sub_unit($data, array('id' => $this->input->post('id'), 'editable' => NULL, 'deleted_at' => NULL));
 						if ($this->db->affected_rows() == 1) {
-							echo json_encode(array('success' => true, 'type' => 'success', 'id' => $this->db->insert_id(), 'message' => 'Successfully updated sub unit <strong><em>' . $this->input->post('db')['name'] . '</em></strong> !'));
+							echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully updated sub unit <strong><em>' . $data['name'] . '</em></strong> !'));
 						} else if ($this->db->affected_rows() == 0) {
-							echo json_encode(array('success' => true, 'type' => 'info', 'id' => $this->input->post('db')['id'], 'message' => $this->lang->line('no_data_changed_after_query'), 'timeout' => 5000));
+							echo json_encode(array('success' => true, 'type' => 'info', 'message' => $this->lang->line('no_data_changed_after_query'), 'timeout' => 5000));
 						} else {
 							$error = $this->db->error();
 							echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));
 						}
 					}
 				} else { // EDIT PARENT UNIT
-					$id = $this->input->post('db')['id'];
 					$data = array(
 						'name'			=> $this->input->post('name'),
 						'code'			=> $this->input->post('code'),
+						'allow_decimal'	=> $this->input->post('allow_decimal') ? 1 : 0,
 						'description'	=> $this->input->post('description') ?: NULL
 					);
 					$this->form_validation->set_data($data);
-					$ruleName	= 'callback_edit_unique_name[' . $id . ']';
-					$ruleCode	= 'callback_edit_unique_code[' . $id . ']';
+					$ruleName	= 'callback_edit_unique_name[' . $this->input->post('id') . ']';
+					$ruleCode	= 'callback_edit_unique_code[' . $this->input->post('id') . ']';
 					$config = array(
 						array(
 							'field' => 'name',
@@ -229,6 +233,11 @@ class Unit extends CI_Controller
 							'rules' => 'required|max_length[10]|' . $ruleCode . '|xss_clean|trim'
 						),
 						array(
+							'field' => 'allow_decimal',
+							'label' => 'Allow Decimal',
+							'rules' => 'required|xss_clean|trim'
+						),
+						array(
 							'field' => 'description',
 							'label' => 'Description',
 							'rules' => 'max_length[100]|xss_clean|trim'
@@ -239,11 +248,11 @@ class Unit extends CI_Controller
 						echo json_encode(array('success' => false, 'message' => $this->form_validation->error_array()));
 					} else {
 						//$data['manual_error'] = 'error';
-						$this->Unit_model->update_unit($data, array('id' => $id, 'editable' => NULL));
+						$this->Unit_model->update_unit($data, array('id' => $this->input->post('id'), 'editable' => NULL, 'deleted_at' => NULL));
 						if ($this->db->affected_rows() == 1) {
-							echo json_encode(array('success' => true, 'type' => 'success', 'id' => $this->db->insert_id(), 'message' => 'Successfully updated unit <strong><em>' . $this->input->post('db')['name'] . '</em></strong> !'));
+							echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully updated unit <strong><em>' . $data['name'] . '</em></strong> !'));
 						} else if ($this->db->affected_rows() == 0) {
-							echo json_encode(array('success' => true, 'type' => 'info', 'id' => $id, 'message' => $this->lang->line('no_data_changed_after_query'), 'timeout' => 5000));
+							echo json_encode(array('success' => true, 'type' => 'info', 'message' => $this->lang->line('no_data_changed_after_query'), 'timeout' => 5000));
 						} else {
 							$error = $this->db->error();
 							echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured !")));
@@ -300,58 +309,6 @@ class Unit extends CI_Controller
 		$query = $this->db->get();
 		if ($query->num_rows() > 0) {
 			$this->form_validation->set_message('edit_unique_code', 'Already exist.');
-			return FALSE;
-		}
-		return TRUE;
-	}
-	/******************************************************************** */
-	public function sub_edit_unique_name($name, $unit)
-	{
-		$id = $this->input->post('db')['id'];
-		$this->db->select('id');
-		$this->db->from(TABLE_UNIT_BULK);
-		$this->db->where(array('name' => $name, 'unit' => $unit, 'id !=' => $id));
-		$query = $this->db->get();
-		if ($query->num_rows() > 0) {
-			$this->form_validation->set_message('sub_edit_unique_name', 'Already exist.');
-			return FALSE;
-		}
-		return TRUE;
-	}
-	public function sub_edit_unique_code($code, $unit)
-	{
-		$id = $this->input->post('db')['id'];
-		$this->db->select('id,unit');
-		$this->db->from(TABLE_UNIT_BULK);
-		$this->db->where(array('code' => $code, 'unit' => $unit, 'id !=' => $id));
-		$query = $this->db->get();
-		if ($query->num_rows() > 0) {
-			$this->form_validation->set_message('sub_edit_unique_code', 'Already exist.');
-			return FALSE;
-		}
-		return TRUE;
-	}
-	/******************************************************************** */
-	public function sub_name_check($name, $unit)
-	{ // check if new sub unit name exist in subs of parent unit
-		$this->db->select('id');
-		$this->db->from(TABLE_UNIT_BULK);
-		$this->db->where(array('unit' => $unit, 'name' => $name));
-		$query = $this->db->get();
-		if ($query->num_rows() > 0) {
-			$this->form_validation->set_message('sub_name_check', 'Already exist.');
-			return FALSE;
-		}
-		return TRUE;
-	}
-	public function sub_code_check($code, $unit)
-	{ // check if new sub unit code exist in subs of parent unit
-		$this->db->select('id');
-		$this->db->from(TABLE_UNIT_BULK);
-		$this->db->where(array('unit' => $unit, 'code' => $code));
-		$query = $this->db->get();
-		if ($query->num_rows() > 0) {
-			$this->form_validation->set_message('sub_code_check', 'Already exist.');
 			return FALSE;
 		}
 		return TRUE;
