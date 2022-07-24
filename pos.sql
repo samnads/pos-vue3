@@ -44,7 +44,7 @@ CREATE TABLE `brand` (
   UNIQUE KEY `code` (`code`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `image` (`image`)
-) ENGINE=InnoDB AUTO_INCREMENT=127 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=129 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `brand` (`id`, `code`, `name`, `image`, `description`, `deletable`, `editable`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (1,	'LX',	'Lexi',	NULL,	'Tesssssssssst.......',	0,	0,	'2021-01-24 06:01:28',	'2022-07-07 17:06:42',	NULL),
@@ -68,7 +68,9 @@ INSERT INTO `brand` (`id`, `code`, `name`, `image`, `description`, `deletable`, 
 (123,	'BRAN0123',	'fgfgfg',	NULL,	NULL,	NULL,	NULL,	'2022-07-20 13:54:22',	NULL,	NULL),
 (124,	'BRAN0124',	'EEE',	NULL,	NULL,	NULL,	NULL,	'2022-07-20 13:56:03',	NULL,	NULL),
 (125,	'BRAN0125',	'PPP',	NULL,	NULL,	NULL,	NULL,	'2022-07-20 13:56:44',	NULL,	NULL),
-(126,	'BRAN0126',	'kljkkljkl',	NULL,	NULL,	NULL,	NULL,	'2022-07-20 13:57:29',	NULL,	NULL);
+(126,	'BRAN0126',	'kljkkljkl',	NULL,	NULL,	NULL,	NULL,	'2022-07-20 13:57:29',	NULL,	NULL),
+(127,	'lkl',	'lklk',	NULL,	NULL,	NULL,	NULL,	'2022-07-23 16:26:15',	NULL,	NULL),
+(128,	'545',	'uuu',	NULL,	NULL,	NULL,	NULL,	'2022-07-24 07:20:24',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `category`;
 CREATE TABLE `category` (
@@ -935,13 +937,14 @@ CREATE TABLE `tax_rate` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `tax_rate` (`id`, `code`, `name`, `rate`, `type`, `description`, `editable`, `deletable`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (1,	'GST10',	'GST',	10.0000,	'P',	NULL,	NULL,	NULL,	'2021-03-02 14:12:44',	'2022-07-12 07:53:30',	NULL),
 (2,	'IGST2',	'IGST',	2.1300,	'F',	NULL,	NULL,	NULL,	'2021-03-02 14:12:44',	'2022-07-12 09:38:57',	NULL),
 (3,	'VAT',	'VAT',	10.5000,	'P',	NULL,	NULL,	NULL,	'2021-03-02 14:12:44',	'2022-07-12 09:38:49',	NULL),
-(5,	'gfg',	'hjhj',	5646.0000,	'P',	NULL,	NULL,	NULL,	'2022-07-12 08:42:48',	'2022-07-14 14:01:24',	'2022-07-14 14:01:24');
+(5,	'gfg',	'hjhj',	5646.0000,	'P',	NULL,	NULL,	NULL,	'2022-07-12 08:42:48',	'2022-07-14 14:01:24',	'2022-07-14 14:01:24'),
+(29,	'ds2',	'fff',	2.0000,	'P',	NULL,	NULL,	NULL,	'2022-07-24 07:21:01',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `unit`;
 CREATE TABLE `unit` (
@@ -964,7 +967,7 @@ CREATE TABLE `unit` (
   UNIQUE KEY `base_step_operator` (`base`,`step`,`operator`),
   KEY `base` (`base`),
   CONSTRAINT `unit_ibfk_1` FOREIGN KEY (`base`) REFERENCES `unit` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `unit` (`id`, `base`, `code`, `name`, `step`, `operator`, `allow_decimal`, `description`, `editable`, `deletable`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (1,	NULL,	'PC',	'Piece',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	'2022-07-20 14:13:31',	'2022-07-22 17:32:14',	NULL),
@@ -974,9 +977,7 @@ INSERT INTO `unit` (`id`, `base`, `code`, `name`, `step`, `operator`, `allow_dec
 (6,	NULL,	'KG',	'Kilo Gram',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	'2022-07-20 14:21:49',	'2022-07-22 17:32:14',	NULL),
 (7,	6,	'1/2 KG /',	'Half KG /',	2,	'/',	1,	NULL,	NULL,	NULL,	'2022-07-20 15:13:35',	'2022-07-22 17:32:14',	NULL),
 (8,	5,	'1/2 KG *',	'Half KG *',	500,	'*',	0,	NULL,	NULL,	NULL,	'2022-07-20 15:18:12',	'2022-07-23 15:56:20',	NULL),
-(9,	NULL,	'MTR',	'Meter',	NULL,	NULL,	0,	NULL,	NULL,	NULL,	'2022-07-20 15:23:18',	'2022-07-23 15:59:45',	NULL),
-(31,	NULL,	';l;l;',	';l;l',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	'2022-07-23 15:59:27',	NULL,	NULL),
-(32,	9,	'6t75757',	'jkm,jkj',	3,	'*',	0,	'676767',	NULL,	NULL,	'2022-07-23 15:59:58',	'2022-07-23 16:03:19',	NULL);
+(9,	NULL,	'MTR',	'Meter',	NULL,	NULL,	0,	NULL,	NULL,	NULL,	'2022-07-20 15:23:18',	'2022-07-23 15:59:45',	NULL);
 
 DROP TABLE IF EXISTS `unit_bulk_delete`;
 CREATE TABLE `unit_bulk_delete` (
@@ -1070,7 +1071,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-07-23 09:06:11',	'2022-07-18 04:37:51',	'2021-04-20 19:22:52',	'2022-07-23 09:06:11',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-07-24 05:57:57',	'2022-07-18 04:37:51',	'2021-04-20 19:22:52',	'2022-07-24 05:57:57',	NULL),
 (30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
 (31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
@@ -1138,4 +1139,4 @@ INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country
 (31,	'WARE0031',	'jhjhgjgjhg',	'jhgjhgjhgj',	'2022-07-01',	NULL,	NULL,	NULL,	'56565656',	'fgf@dy.hjgj',	NULL,	NULL,	NULL,	NULL,	16,	'hjhj',	NULL,	NULL,	'2022-07-05 12:36:57',	NULL,	NULL),
 (32,	'WARE0032',	'uiuiui',	'uiuiuiuiu',	'2022-07-06',	NULL,	NULL,	NULL,	'4545454',	'ui@gf.ghgh',	NULL,	NULL,	NULL,	NULL,	17,	NULL,	NULL,	NULL,	'2022-07-06 17:24:34',	NULL,	NULL);
 
--- 2022-07-23 16:23:43
+-- 2022-07-24 15:33:03
