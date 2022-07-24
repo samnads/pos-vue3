@@ -311,7 +311,7 @@
                 <select
                   class="form-select"
                   name="unit"
-                  :disabled="!units"
+                  :disabled="!units || !unitsBulk"
                   v-model="unit"
                   v-bind:class="[
                     units && errorUnit
@@ -1209,9 +1209,7 @@ export default {
     let units = computed(function () {
       return store.state.units;
     });
-    let unitsBulk = computed(function () {
-      return store.state.units_bulk;
-    });
+    const unitsBulk = ref(undefined);
     let taxes = computed(function () {
       return store.state.TAXES;
     });
@@ -1667,22 +1665,27 @@ export default {
         }
       });
     });
-    function newUnit(sub) {
-      var data;
-      if (sub) {
+    function newUnit(sub = false) {
+      var emitData;
+      var data; // used if new sub unit
+      if (sub == true) {
         data = units.value.find((obj) => {
           return obj.id === unit.value;
         });
+        emitData = {
+          title: "New Sub Unit of ",
+          type: "success",
+          data: data,
+          emit: "refreshSubUnitDropdown",
+        };
       } else {
-        data = undefined;
+        emitData = {
+          title: "New Unit",
+          type: "success",
+          emit: "refreshUnitDropdown",
+        };
       }
-      console.log(data)
-      emitter.emit("newUnitModal", {
-        title: sub == true ? "New Sub Unit of " : "New Unit",
-        type: "success",
-        data: data,
-        emit: "refreshUnitDropdown",
-      });
+      emitter.emit("newUnitModal", emitData);
     }
     emitter.on("refreshUnitDropdown", (data) => {
       /*****************************************  update list and set new ***********************************/
@@ -1693,6 +1696,33 @@ export default {
       }).then(function (response) {
         if (response.success == true) {
           unit.value = data.id;
+        }
+      });
+    });
+    emitter.on("refreshSubUnitDropdown", (data) => {
+      /*****************************************  update list and set new ***********************************/
+      unitsBulk.value = false;
+      p_unit.value = null;
+      s_unit.value = null;
+      axiosAsyncCallReturnData(
+        "get",
+        "product",
+        {
+          action: "create",
+          dropdown: "sub_units",
+          id: unit.value,
+        },
+        null,
+        {
+          showSuccessNotification: false,
+          showCatchNotification: true,
+          showProgress: true,
+        }
+      ).then(function (response) {
+        if (response.success == true) {
+          unitsBulk.value = response.data;
+          p_unit.value = data.id;
+          s_unit.value = data.id;
         }
       });
     });
@@ -1812,9 +1842,6 @@ export default {
       emitter,
     };
   },
-  data() {
-    return {};
-  },
   /* eslint-disable */
   computed: {
     // a computed getter
@@ -1874,68 +1901,35 @@ export default {
       }
       return undefined;
     },
-    loadBrandsAndSet: function (id) {
-      this.brand = null; // form data
-      let self = this;
-      this.axiosAsyncStoreUpdateReturnData("storeBrands", "brand", {
-        action: "dropdown",
-      }).then(function (data) {
-        if (data.success == true) {
-          self.brand = id;
-        }
-      });
-    },
-    loadUnits: function (id) {
-      let self = this;
-      this.unit = null; // form data
-      this.axiosAsyncStoreUpdateReturnData("storeUnits", "unit", {
-        action: "list_base",
-      }).then(function (data) {
-        if (data.success == true) {
-          self.unit = id;
-        }
-      });
-    },
-    updateTaxRates: function (id) {
-      let self = this;
-      this.tax_rate = null;
-      this.axiosAsyncStoreUpdateReturnData("storeTaxes", "tax", {
-        action: "dropdown",
-      }).then(function (data) {
-        if (data.success == true) {
-          self.tax_rate = id;
-        }
-      });
-    },
-    changePunitSunit: function (id) {
-      let self = this;
-      this.axiosAsyncStoreUpdateReturnData("storeUnitsBulk", "product", {
-        action: "create",
-        dropdown: "sub_units",
-        id: self.unit,
-      }).then(function (data) {
-        if (data.success == true) {
-          self.p_unit = self.s_unit = id;
-        }
-      });
-    },
   },
   watch: {
     unit(value) {
+      /************************************************************************* while change of unit  */
       if (value) {
-        this.axiosAsyncStoreUpdateReturnData("storeUnitsBulk", "product", {
-          action: "create",
-          dropdown: "sub_units",
-          id: value,
-        }).then(function (data) {
-          if (data.success == true) {
-            this.p_unit = null;
-            this.s_unit = null;
+        var self = this;
+        this.unitsBulk = undefined;
+        this.p_unit = this.s_unit = null;
+        this.axiosAsyncCallReturnData(
+          "get",
+          "product",
+          {
+            action: "create",
+            dropdown: "sub_units",
+            id: this.unit,
+          },
+          null,
+          {
+            showSuccessNotification: false,
+            showCatchNotification: true,
+            showProgress: true,
+          }
+        ).then(function (response) {
+          if (response.success == true) {
+            self.unitsBulk = response.data;
           }
         });
       } else {
-        this.p_unit = null;
-        this.s_unit = null;
+        this.p_unit = this.s_unit = null;
       }
     },
     cost(cost) {
@@ -1989,6 +1983,7 @@ export default {
   },
   created() {},
   mounted() {
+    var self = this;
     if (!this.productTypes) {
       // if not found on store
       this.axiosAsyncStoreReturnBool("storeProductTypes", "product", {
@@ -2018,13 +2013,6 @@ export default {
         dropdown: "brands",
       }); // get brands
     }
-    if (!this.units) {
-      // if not found on store
-      this.axiosAsyncStoreReturnBool("storeUnits", "product", {
-        action: "create",
-        dropdown: "base_units",
-      }); // get units
-    }
     if (!this.taxes) {
       // if not found on store
       this.axiosAsyncStoreReturnBool("storeTaxes", "product", {
@@ -2039,18 +2027,41 @@ export default {
         dropdown: "warehouses",
       }); // get ware houses
     }
-    this.axiosAsyncStoreReturnBool("storeUnitsBulk", "product", {
-      action: "create",
-      dropdown: "sub_units",
-      id: this.unit,
+    if (!this.units) {
+      /*****************************************  first time unit loading  */
+      // if not found on store
+      this.axiosAsyncStoreReturnBool("storeUnits", "product", {
+        action: "create",
+        dropdown: "base_units",
+      }); // get units
+    }
+    this.axiosAsyncCallReturnData(
+      /*****************************************  first time sub unit loading  */
+      "get",
+      "product",
+      {
+        action: "create",
+        dropdown: "sub_units",
+        id: self.unit,
+      },
+      null,
+      {
+        showSuccessNotification: false,
+        showCatchNotification: true,
+        showProgress: true,
+      }
+    ).then(function (response) {
+      if (response.success == true) {
+        self.unitsBulk = response.data;
+      }
     });
-    //
   },
   beforeUnmount() {
     var self = this;
     self.emitter.off("refreshTaxRateDropdown");
     self.emitter.off("refreshBrandDropdown");
     self.emitter.off("refreshUnitDropdown");
+    self.emitter.off("refreshSubUnitDropdown");
   },
 };
 </script>
