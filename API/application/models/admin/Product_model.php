@@ -55,15 +55,6 @@ class Product_model extends CI_Model
 		$query = $this->db->get();
 		return $query;
 	}
-	function datatable_recordsTotal()
-	{
-		$this->db->select('count(id)');
-		$this->db->from(TABLE_PRODUCT . ' p');
-		$this->db->where(array('p.deleted_at' => NULL)); // select only not deleted rows
-		$query = $this->db->get();
-		$cnt = $query->row_array();
-		return $cnt['count(id)'];
-	}
 	function getProduct($id)
 	{
 		$this->db->select('*, DATE_FORMAT(mfg_date,"%d-%m-%Y")	as mfg_date,
@@ -90,7 +81,6 @@ class Product_model extends CI_Model
 		$this->db->join(TABLE_PRODUCT_TYPE . '		t',	't.id=p.type',	'left');
 		$this->db->join(TABLE_BARCODE_SYMBOLOGY . '	bs',	'bs.id=p.symbology',	'left');
 		$this->db->join(TABLE_CATEGORY . '			c',	'c.id=p.category',	'left');
-		$this->db->join(TABLE_SUB_CATEGORY . '		sc',	'sc.id=p.sub_category',	'left');
 		$this->db->join(TABLE_BRAND . '				b',	'b.id=p.brand',	'left');
 		$this->db->join(TABLE_UNIT . '				u',	'u.id=p.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . '			tr',	'tr.id=p.tax_rate',	'left');
@@ -117,7 +107,6 @@ class Product_model extends CI_Model
 		$this->db->join(TABLE_PRODUCT_TYPE . '		t',	't.id=p.type',	'left');
 		$this->db->join(TABLE_BARCODE_SYMBOLOGY . '	bs',	'bs.id=p.symbology',	'left');
 		$this->db->join(TABLE_CATEGORY . '			c',	'c.id=p.category',	'left');
-		$this->db->join(TABLE_SUB_CATEGORY . '		sc',	'sc.id=p.sub_category',	'left');
 		$this->db->join(TABLE_BRAND . '				b',	'b.id=p.brand',	'left');
 		$this->db->join(TABLE_UNIT . '				u',	'u.id=p.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . '			tr',	'tr.id=p.tax_rate',	'left');
@@ -143,13 +132,21 @@ class Product_model extends CI_Model
 		$this->db->join(TABLE_PRODUCT_TYPE . '		t',	't.id=p.type',	'left');
 		$this->db->join(TABLE_BARCODE_SYMBOLOGY . '	bs',	'bs.id=p.symbology',	'left');
 		$this->db->join(TABLE_CATEGORY . '			c',	'c.id=p.category',	'left');
-		$this->db->join(TABLE_SUB_CATEGORY . '		sc',	'sc.id=p.sub_category',	'left');
 		$this->db->join(TABLE_BRAND . '				b',	'b.id=p.brand',	'left');
 		$this->db->join(TABLE_UNIT . '				u',	'u.id=p.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . '			tr',	'tr.id=p.tax_rate',	'left');
 		$this->db->where(array('p.id' => $id));
 		$query = $this->db->get();
 		return $query;
+	}
+	function datatable_recordsTotal()
+	{
+		$this->db->select('count(id)');
+		$this->db->from(TABLE_PRODUCT . ' p');
+		$this->db->where(array('p.deleted_at' => NULL)); // select only not deleted rows
+		$query = $this->db->get();
+		$cnt = $query->row_array();
+		return $cnt['count(id)'];
 	}
 	function datatable_data($search, $offset, $limit, $order_by, $order)
 	{
@@ -202,8 +199,8 @@ class Product_model extends CI_Model
 		u.code 		as unit_code,
 		u.name 		as unit_name,
 
-		ubp.id 		as p_unit,
-		ubs.id 		as s_unit,
+		p.p_unit 	as p_unit,
+		p.s_unit 	as s_unit,
 
 		tr.id		as tax_rate,
 		tr.code		as tax_code,
@@ -216,8 +213,6 @@ class Product_model extends CI_Model
 		$this->db->join(TABLE_CATEGORY . '			c',		'c.id=p.category',		'left');
 		$this->db->join(TABLE_BRAND . '				b',		'b.id=p.brand',			'left');
 		$this->db->join(TABLE_UNIT . '				u',		'u.id=p.unit',			'left');
-		$this->db->join(TABLE_UNIT_BULK . '			ubp',	'ubp.id=p.p_unit',		'left');
-		$this->db->join(TABLE_UNIT_BULK . '			ubs',	'ubs.id=p.s_unit',		'left');
 		$this->db->join(TABLE_TAX_RATE . '			tr',	'tr.id=p.tax_rate',		'left');
 		$this->db->join(TABLE_PRODUCT_STOCK . '		ps',	'ps.product=p.id',		'left');
 		$this->db->order_by($order_by, $order);

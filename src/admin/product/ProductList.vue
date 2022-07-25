@@ -72,8 +72,7 @@ import { ref } from "vue";
 import admin from "@/mixins/admin.js";
 import { inject } from "vue";
 export default {
-  components: {
-  },
+  components: {},
   /* eslint-disable */
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
@@ -94,8 +93,7 @@ export default {
       notifyCatchResponse,
     };
   },
-  methods: {
-  },
+  methods: {},
   created() {},
   mounted() {
     var self = this;
@@ -224,9 +222,7 @@ export default {
             searchable: false,
             className: "text-center",
             render: function (data, type, full, meta) {
-              return (
-                'IMG'
-              );
+              return "IMG";
             },
           },
           {
@@ -252,11 +248,14 @@ export default {
             targets: [8],
             className: "text-center",
             render: function (data, type, row, meta) {
-              return data == 0
-                ? '<i class="text-secondary small">' +
-                    parseFloat(data).toFixed(2) +
-                    "</i>"
-                : parseFloat(data).toFixed(2);
+              let stock = parseFloat(data).toFixed(2);
+              if (stock > 0) {
+                return '<span class="text-success">' + stock + "</span>";
+              } else if (stock < 0) {
+                return '<span class="text-danger">' + stock + "</span>";
+              } else {
+                return '<span class="text-info">' + stock + "</span>";
+              }
             },
           },
           {

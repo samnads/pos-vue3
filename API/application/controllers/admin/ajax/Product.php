@@ -340,7 +340,6 @@ class Product extends CI_Controller
                         'slug' => $this->input->post('slug'),
                         'weight' => $this->input->post('weight') ?: NULL,
                         'category' => $this->input->post('category'),
-                        'sub_category' => $this->input->post('sub_category') ?: NULL,
                         'brand' => $this->input->post('brand') ?: NULL,
                         'mrp' => $this->input->post('mrp') ?: NULL,
                         'unit' => $this->input->post('unit'),

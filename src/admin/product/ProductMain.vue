@@ -25,8 +25,6 @@ export default {
   },
   data() {
     return {
-      product: {},
-      hello: " - Some Dynamic Data",
     };
   },
   mounted() {},
