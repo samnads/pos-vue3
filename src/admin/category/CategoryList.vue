@@ -213,33 +213,35 @@ export default {
           },
           {
             targets: [2],
+            className: "align-middle fw-bold",
             render: function (data, type, row, meta) {
-              return data == null
-                ? '<i class="text-muted small">NIL</i>'
-                : data;
+              return row["allow_sub"] == 0
+                ? '<div class="d-flex justify-content-between"><div><span class="">' +
+                    data +
+                    '</span></div><span class="btn-sm btn-warning" data-bs-toggle="tooltip" data-bs-placement="left" title="Level Locked"><i class="fa-solid fa-lock"></i></span></div></div>'
+                : "<span>" + data + "</span>";
             },
           },
           {
             targets: [3],
+            className: "align-middle fw-bold",
           },
           {
             targets: [4],
+            className: "align-middle fw-semibold",
             render: function (data, type, row, meta) {
               let is_parent =
                 data == null
-                  ? '<span class="btn-sm btn-success" data-bs-toggle="tooltip" data-bs-placement="left" title="Top Level"><i class="fa-solid fa-minimize"></i></span>'
-                  : "";
-              let is_allow_sub =
-                row["allow_sub"] === 0
-                  ? '&nbsp;<span class="btn-sm btn-success" data-bs-toggle="tooltip" data-bs-placement="left" title="Level Locked"><i class="fa-solid fa-lock"></i></span>'
+                  ? '<span class="btn-sm btn-info" data-bs-toggle="tooltip" data-bs-placement="left" title="Top Level"><i class="fa-solid fa-minimize"></i></span>'
                   : "";
               return data == null
-                ? is_parent + is_allow_sub
+                ? is_parent
                 : data + " [ " + row["parent_code"] + " ]";
             },
           },
           {
             targets: [5],
+             className: "align-middle",
             render: function (data, type, row, meta) {
               return data == null
                 ? '<i class="text-muted small">NIL</i>'
@@ -248,6 +250,7 @@ export default {
           },
           {
             targets: [6],
+            className: "align-middle",
             render: function (data, type, row, meta) {
               return data == null
                 ? '<i class="text-muted small">NIL</i>'
@@ -256,6 +259,7 @@ export default {
           },
           {
             targets: [7],
+            className: "align-middle",
             width: "1%",
             render: function (data, type, row, meta) {
               return (
@@ -267,6 +271,7 @@ export default {
           },
           {
             targets: [8],
+            className: "align-middle",
             width: "1%",
             render: function (data, type, row, meta) {
               return (
@@ -278,7 +283,7 @@ export default {
           },
           {
             targets: [9],
-            className: "text-center",
+            className: "align-middle text-center",
             orderable: false,
             searchable: false,
             width: "1%",
@@ -312,7 +317,7 @@ export default {
                   ? 'data-bs-toggle="tooltip" data-bs-placement="left" title="New Sub Category"  id="addsubcat" '
                   : 'data-bs-toggle="tooltip" data-bs-placement="left" title="Level Locked"') +
                 (row["allow_sub"] === 0
-                  ? " ><i class='fa-solid fa-lock'></i>"
+                  ? " disabled><i class='fa-solid fa-lock'></i>"
                   : "><i class='fa-solid fa-plus'></i>") +
                 "</button> ";
               return (
@@ -383,6 +388,7 @@ export default {
               self.table.ajax.reload();
             },
             attr: {
+              "data-bs-toggle": "tooltip",
               title: "Refresh",
               id: "refresh",
             },
@@ -445,7 +451,7 @@ export default {
             },
             attr: {
               "data-bs-toggle": "tooltip",
-              title: "Add New",
+              title: "Add New Top Level ",
               id: "new",
             },
             key: {

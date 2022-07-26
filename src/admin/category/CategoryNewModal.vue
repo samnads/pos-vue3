@@ -158,7 +158,7 @@
                     id="allow_sub"
                   />
                   <label class="form-check-label" for="allow_sub">
-                    Allow Sub Categories
+                    Allow New Sub Categories
                   </label>
                 </div>
               </div>
@@ -363,6 +363,7 @@ export default {
     /************************************************************************* NEW or EDIT Supplier */
     emitter.on("newCategoryModal", (data) => {
       resetForm();
+      console.log(data)
       DATA.value = data;
       if (DATA.value.db) {
         // edit
@@ -401,9 +402,6 @@ export default {
       DATA,
       emitter,
     };
-  },
-  data() {
-    return {};
   },
   mounted() {
     window.CATEGORY_NEW_MODAL = new Modal($("#categoryNewModal"), {

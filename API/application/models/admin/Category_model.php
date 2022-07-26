@@ -31,6 +31,7 @@ class Category_model extends CI_Model
                         c.name as name,
 						c.code as code,
 						c.slug as slug,
+						c.description as description,
                         c1.name  as parent_name,
 						c1.code  as parent_code,
 						c.allow_sub  as allow_sub,
@@ -95,6 +96,9 @@ class Category_model extends CI_Model
 		$query = $this->db->update(TABLE_CATEGORY);
 		return $query;
 	}
+
+
+
 	function insert_main_category($data)
 	{
 		$query = $this->db->insert(TABLE_CATEGORY, $data);
@@ -103,6 +107,16 @@ class Category_model extends CI_Model
 	function insert_sub_category($data)
 	{
 		$query = $this->db->insert(TABLE_CATEGORY, $data);
+		return $query;
+	}
+	function update_main_category($data, $where)
+	{
+		$query = $this->db->update(TABLE_CATEGORY, $data, $where);
+		return $query;
+	}
+	function update_sub_category($data, $where)
+	{
+		$query = $this->db->update(TABLE_CATEGORY, $data, $where);
 		return $query;
 	}
 }
