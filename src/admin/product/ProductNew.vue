@@ -332,7 +332,7 @@
                     {{ units == false ? "Updating..." : "-- Select --" }}
                   </option>
                   <option v-for="u in units" :key="u.id" :value="u.id">
-                    {{ u.name }}
+                    {{ u.name }} [{{ u.code }}]
                   </option>
                 </select>
                 <span
@@ -366,7 +366,7 @@
                   </option>
                   <option selected :value="null" v-if="unitsBulk">
                     {{
-                      unit
+                      unit && units
                         ? units.find((obj) => {
                             return obj.id === unit;
                           })["name"]
@@ -374,7 +374,7 @@
                     }}
                   </option>
                   <option v-for="u in unitsBulk" :key="u.id" :value="u.id">
-                    {{ u.name }}
+                    {{ u.name }} [{{ u.code }}]
                   </option>
                 </select>
                 <button
@@ -409,7 +409,7 @@
                   </option>
                   <option selected :value="null" v-if="unitsBulk">
                     {{
-                      unit
+                      unit && units
                         ? units.find((obj) => {
                             return obj.id === unit;
                           })["name"]
@@ -417,7 +417,7 @@
                     }}
                   </option>
                   <option v-for="u in unitsBulk" :key="u.id" :value="u.id">
-                    {{ u.name }}
+                    {{ u.name }} [{{ u.code }}]
                   </option>
                 </select>
                 <button
@@ -563,7 +563,7 @@
                     <select
                       class="form-select"
                       name="tax_rate"
-                      :disabled="!taxes"
+                      :disabled="!taxes || !cost"
                       v-model="tax_rate"
                       id="taxrate"
                       v-bind:class="[
@@ -623,6 +623,7 @@
                           ? 'is-valid'
                           : '',
                       ]"
+                      :disabled="!cost"
                     >
                       <option value="I">Inclusive</option>
                       <option value="E">Exclusive</option>
@@ -670,6 +671,7 @@
                           ? 'is-valid'
                           : '',
                       ]"
+                      :readonly="!cost"
                     />
                     <span class="input-group-text"
                       ><i class="fa-solid fa-percent"></i
@@ -695,6 +697,7 @@
                           ? 'is-valid'
                           : '',
                       ]"
+                      :readonly="!cost"
                     />
                     <span class="input-group-text">₹</span>
                   </div>
@@ -719,6 +722,7 @@
                           ? 'is-valid'
                           : '',
                       ]"
+                      :readonly="!cost"
                     />
                     <div class="input-group-text">
                       <input
@@ -727,6 +731,7 @@
                         name="auto_disc_type"
                         v-model="auto_disc_type"
                         value="P"
+                        :disabled="!cost"
                       />&nbsp;<strong>%</strong>
                     </div>
                     <div class="input-group-text">
@@ -736,6 +741,7 @@
                         name="auto_disc_type"
                         v-model="auto_disc_type"
                         value="F"
+                        :disabled="!cost"
                       />&nbsp;<strong>₹</strong>
                     </div>
                   </div>
@@ -853,18 +859,18 @@
                   >
                   <div class="input-group is-invalid">
                     <input type="number" class="form-control" :value="1" />
-                    <span class="input-group-text" v-if="unitsBulk"
-                      ><!--{{
-                      unitsBulk && unit && s_unit == null
+                    <span class="input-group-text" v-if="units"
+                      >{{
+                      units && unit && s_unit == null
                         ? units.find((obj) => {
                             return obj.id === unit;
                           })["code"]
-                        : unitsBulk && s_unit > 0
+                        : (unitsBulk && s_unit > 0)
                         ? unitsBulk.find((obj) => {
                             return obj.id === s_unit;
                           })["code"]
                         : "?"
-                    }}--></span
+                    }}</span
                     >
                   </div>
                   <div class="invalid-feedback">{{ errorRefNo }}</div>
@@ -873,18 +879,18 @@
                   <label class="form-label">Maximum Sale Quantity</label>
                   <div class="input-group is-invalid">
                     <input type="number" class="form-control" />
-                    <span class="input-group-text" v-if="unitsBulk"
-                      ><!--{{
-                      unitsBulk && unit && s_unit == null
+                    <span class="input-group-text" v-if="units"
+                      >{{
+                      units && unit && s_unit == null
                         ? units.find((obj) => {
                             return obj.id === unit;
                           })["code"]
-                        : unitsBulk && s_unit > 0
+                        : (unitsBulk && s_unit > 0)
                         ? unitsBulk.find((obj) => {
                             return obj.id === s_unit;
                           })["code"]
                         : "?"
-                    }}--></span
+                    }}</span
                     >
                   </div>
                   <div class="invalid-feedback">{{ errorRefNo }}</div>
@@ -1936,18 +1942,18 @@ export default {
       if (cost) {
         let markup = this.markup ? this.markup : 0;
         let auto_discount = this.auto_discount ? this.auto_discount : 0;
-        this.tag_price = cost + (markup / 100) * cost;
-        this.price = this.tag_price - auto_discount;
+        this.tag_price = Number(cost + (markup / 100) * cost).toFixed(2);
+        this.price = Number(this.tag_price - auto_discount).toFixed(2);
       }
     },
     markup(markup) {
-      if (this.cost) {
+      /*if (this.cost) {
         this.tag_price = Number(
           this.x_percentage_of_y(markup, this.cost) + this.cost
         ).toFixed(2);
       } else {
         this.tag_price = null;
-      }
+      }*/
     },
     auto_discount(auto_discount) {
       if (this.auto_disc_type == "F") {
@@ -1966,13 +1972,14 @@ export default {
       );
     },
     tag_price(tag_price) {
-      if (this.cost) {
-        //let profit = this.tag_price - this.cost;
-        //this.markup = null;
+      /* if (this.cost) {
+        let profit = this.tag_price - this.cost;
+        let test = (profit / this.cost) * 100;
+        this.markup = test;
       } else {
         //this.markup = null;
       }
-      this.price = Number(tag_price - this.auto_discount).toFixed(2);
+      this.price = Number(tag_price - this.auto_discount).toFixed(2);*/
     },
     tax_method() {},
     tax_rate(rate) {

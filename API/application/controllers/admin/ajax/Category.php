@@ -84,42 +84,40 @@ class Category extends CI_Controller
 				$_POST = $this->input->post('data');
 				$data = array(
 					'name'			=> $this->input->post('name'),
-					'code'			=> $this->input->post('code'),
-					'slug'			=> $this->input->post('slug'),
-					'description'	=> $this->input->post('description')
+					'code'			=> $this->input->post('code') ?: NULL,
+					'slug'			=> $this->input->post('slug') ?: NULL,
+					'allow_sub'	=> $this->input->post('allow_sub') ? NULL : 0,
+					'description'	=> $this->input->post('description') ?: NULL
 				);
 				//$data['error'] = "error";
+				$table		= TABLE_CATEGORY;
 				if ($this->input->post('category')) { // if sub category
-					$data['category'] = $this->input->post('category'); // parent category field name (if sub cat)
-					$table		= TABLE_SUB_CATEGORY;
-					$ruleName	= 'callback_sub_name_check[' . $data['category'] . ']';
-					$ruleCode	= 'callback_sub_code_check[' . $data['category'] . ']';
-				} else { // main category
-					$table		= TABLE_CATEGORY;
-					$ruleName	= 'is_unique[' . $table . '.name]';
-					$ruleCode	= 'is_unique[' . $table . '.code]';
+					$data['parent'] = $this->input->post('category'); // parent category field name (if sub cat)
+					$ruleName	= 'callback_sub_name_check[' . $this->input->post('category') . ']|callback_allow_sub_check[' . $this->input->post('category') . ']';
+				} else { // new main category
+					$ruleName	= 'callback_main_name_check[]';
 				}
 				//$data['name'] = null;
 				$this->form_validation->set_data($data);
 				$config = array(
 					array(
 						'field' => 'name',
-						'label' => 'Category Name',
+						'label' => 'Name',
 						'rules' => 'required|min_length[3]|max_length[50]|' . $ruleName . '|xss_clean|trim|regex_match[/^[a-zA-Z0-9-& ]+$/]'
 					),
 					array(
 						'field' => 'slug',
-						'label' => 'Category Slug',
+						'label' => 'Slug',
 						'rules' => 'required|min_length[3]|max_length[50]|is_unique[' . $table . '.slug]|xss_clean|trim|regex_match[/^[a-z0-9-]+$/]'
 					),
 					array(
 						'field' => 'code',
-						'label' => 'Category Code',
-						'rules' => 'required|min_length[1]|max_length[5]|' . $ruleCode . '|xss_clean|trim|regex_match[/^[a-zA-Z0-9]+$/]'
+						'label' => 'Code',
+						'rules' => 'required|min_length[3]|max_length[10]|is_unique[' . $table . '.code]|xss_clean|trim|regex_match[/^[a-zA-Z0-9]+$/]'
 					),
 					array(
 						'field' => 'description',
-						'label' => 'Category Description',
+						'label' => 'Description',
 						'rules' => 'max_length[100]|is_unique[' . $table . '.description]xss_clean|trim'
 					)
 				);
@@ -127,9 +125,13 @@ class Category extends CI_Controller
 				if ($this->form_validation->run() == FALSE) {
 					echo json_encode(array('success' => false, 'errors' => $this->form_validation->error_array()));
 				} else {
-					$this->db->insert($table, $data);
+					if ($this->input->post('category')) { // if sub category
+						$this->Category_model->insert_sub_category($data);
+					} else { // new main category
+						$this->Category_model->insert_main_category($data);
+					}
 					if ($this->db->affected_rows() == 1) {
-						echo json_encode(array('success' => true, 'type' => 'success', 'id' => $this->db->insert_id(), 'message' => 'Successfully added new ' . (isset($data['category']) ? 'sub' : '') . 'category <strong><em>' . $data['name'] . '</em></strong> !'));
+						echo json_encode(array('success' => true, 'type' => 'success', 'id' => $this->db->insert_id(), 'message' => 'Successfully added new ' . ($this->input->post('category') ? 'sub' : '') . 'category <strong><em>' . $data['name'] . '</em></strong> !'));
 					} else {
 						$error = $this->db->error();
 						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
@@ -226,26 +228,39 @@ class Category extends CI_Controller
 		}
 	}
 	/* +++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-	public function sub_name_check($name, $category)
+	public function sub_name_check($name, $parent)
 	{
 		$this->db->select('id');
-		$this->db->from(TABLE_SUB_CATEGORY);
-		$this->db->where(array('category' => $category, 'name' => $name));
+		$this->db->from(TABLE_CATEGORY);
+		$this->db->where(array('parent' => $parent, 'name' => $name));
 		$query = $this->db->get();
 		if ($query->num_rows() > 0) {
-			$this->form_validation->set_message('sub_name_check', $this->lang->line('form_validation_is_unique'));
+			$this->form_validation->set_message('sub_name_check', $this->lang->line('form_validation_is_unique') . ' [ same level ]');
 			return FALSE;
 		}
 		return TRUE;
 	}
-	public function sub_code_check($code, $category)
+	public function allow_sub_check($name, $parent)
+	{
+		$this->db->select('allow_sub');
+		$this->db->from(TABLE_CATEGORY);
+		$this->db->where(array('id' => $parent));
+		$query = $this->db->get();
+		$row	= $query->row_array();
+		if ($query->num_rows() > 0 && $row['allow_sub'] === 0) {
+			$this->form_validation->set_message('allow_sub_check', 'You can\'t create category under this level ! [ Level Locked ]');
+			return FALSE;
+		}
+		return TRUE;
+	}
+	public function main_name_check($name)
 	{
 		$this->db->select('id');
-		$this->db->from(TABLE_SUB_CATEGORY);
-		$this->db->where(array('category' => $category, 'code' => $code));
+		$this->db->from(TABLE_CATEGORY);
+		$this->db->where(array('parent' => NULL, 'name' => $name));
 		$query = $this->db->get();
 		if ($query->num_rows() > 0) {
-			$this->form_validation->set_message('sub_code_check', $this->lang->line('form_validation_is_unique'));
+			$this->form_validation->set_message('main_name_check', $this->lang->line('form_validation_is_unique') . ' [ top level ]');
 			return FALSE;
 		}
 		return TRUE;

@@ -33,7 +33,6 @@
                 <label class="form-label">Base Unit<i>*</i></label>
                 <input
                   type="text"
-                  name="name"
                   :value="
                     DATA.data
                       ? DATA.data.name

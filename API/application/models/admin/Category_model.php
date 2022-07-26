@@ -26,23 +26,24 @@ class Category_model extends CI_Model
 	{
 		$search = trim($search);
 		$this->db->select('
-		c.id as id,
-		c.parent as parent,
-		c.code as code,
-		c.name as name,
-		c.slug as slug,
-		c.image as image,
-		c.description as description,
-        DATE_FORMAT(c.added_at,"%d/%b/%Y") 		as added_at,
-		DATE_FORMAT(c.updated_at,"%d/%b/%Y") 	as updated_at,
-		count(DISTINCT p.id) as p_count,
-		count(DISTINCT b.id) as b_count');
+                        c.id as id,
+                        c.parent as parent,
+                        c.name as name,
+						c.code as code,
+						c.slug as slug,
+                        c1.name  as parent_name,
+						c1.code  as parent_code,
+						c.allow_sub  as allow_sub,
+                        count(DISTINCT p.id) as p_count,
+                        count(DISTINCT b.id) as b_count');
 		$this->db->from(TABLE_CATEGORY . ' c');
-		$this->db->join(TABLE_PRODUCT . ' p',	'p.category = c.id', 'left');
-		$this->db->join(TABLE_BRAND . ' b',	'b.id = p.brand', 'left');
+		$this->db->join(TABLE_CATEGORY . ' c1',    'c1.id=c.parent', 'left');
+		$this->db->join(TABLE_PRODUCT . ' p',    'p.category = c.id', 'left');
+		$this->db->join(TABLE_BRAND . ' b',    'b.id = p.brand', 'left');
 		$this->db->group_start();
 		$this->db->or_like('c.code', $search);
 		$this->db->or_like('c.name', $search);
+		$this->db->or_like('c1.name', $search);
 		$this->db->or_like('c.slug', $search);
 		$this->db->or_like('c.description', $search);
 		$this->db->group_end();
@@ -92,6 +93,16 @@ class Category_model extends CI_Model
 		$this->db->set($data);
 		$this->db->where($where);
 		$query = $this->db->update(TABLE_CATEGORY);
+		return $query;
+	}
+	function insert_main_category($data)
+	{
+		$query = $this->db->insert(TABLE_CATEGORY, $data);
+		return $query;
+	}
+	function insert_sub_category($data)
+	{
+		$query = $this->db->insert(TABLE_CATEGORY, $data);
 		return $query;
 	}
 }

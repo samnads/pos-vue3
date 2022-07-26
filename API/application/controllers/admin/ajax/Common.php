@@ -57,11 +57,17 @@ class Common extends CI_Controller
                         break;
                     case 'test_query':
                         $this->db->select('
-        c.id as id,
-        c.parent as parent,
-        c.name as name');
-                        $this->db->from(TABLE_CATEGORY_NEW . ' c');
-                        $this->db->where('c.parent !=', NULL);
+                        c.id as id,
+                        c.parent as parent,
+                        c.name as name,
+                        c1.name  as parent_name,
+                        count(DISTINCT p.id) as p_count,
+                        count(DISTINCT b.id) as b_count');
+                        $this->db->from(TABLE_CATEGORY . ' c');
+                        $this->db->join(TABLE_CATEGORY . ' c1',    'c1.id=c.parent', 'left');
+                        $this->db->join(TABLE_PRODUCT . ' p',    'p.category = c.id', 'left');
+                        $this->db->join(TABLE_BRAND . ' b',    'b.id = p.brand', 'left');
+                        $this->db->group_by('c.id');
                         $query = $this->db->get();
                         //die($this->db->last_query());
                         echo json_encode(array('success' => true, 'type' => 'success', 'data' => $query->result_array()));

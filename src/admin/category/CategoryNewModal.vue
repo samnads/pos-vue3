@@ -1,18 +1,35 @@
 <template>
-  <div class="modal" id="supplierNewModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+  <div class="modal" id="categoryNewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
       <div class="modal-content">
         <form @submit="onSubmit" class="needs-validation">
           <div
             class="modal-header"
             :class="DATA.type ? 'bg-' + DATA.type : 'bg-primary'"
           >
-            <h5 class="modal-title">
-              <span v-if="DATA.data"><i class="fa-solid fa-pencil"></i></span>
-              <span v-else><i class="fa-solid fa-plus"></i></span>{{ DATA.title
-              }}<span class="badge bg-light text-dark" v-if="DATA.data">{{
-                DATA.data.code
-              }}</span>
+            <!-- NEW -->
+            <h5 class="modal-title" v-if="!DATA.db">
+              <span><i class="fa-solid fa-plus"></i></span>{{ DATA.title
+              }}<span v-if="DATA.data">
+                of
+                <span class="badge bg-light text-dark">{{
+                  DATA.data.name
+                }}</span></span
+              >
+            </h5>
+            <!-- EDIT -->
+            <h5 class="modal-title" v-else>
+              <span><i class="fa-solid fa-pencil"></i></span>
+              {{ DATA.title }}&nbsp;<span>
+                <span class="badge bg-light text-dark">
+                  {{ DATA.db.name }}</span
+                ></span
+              ><span v-if="DATA.db.parent_name">
+                of
+                <span class="badge bg-light text-dark">{{
+                  DATA.db.parent_name
+                }}</span></span
+              >
             </h5>
             <button
               type="button"
@@ -23,14 +40,27 @@
             ></button>
           </div>
           <div class="modal-body">
+            <div class="row" v-if="DATA.data">
+              <div class="col">
+                <label class="form-label">Parent Category<i>*</i></label>
+                <input
+                  type="text"
+                  :value="DATA.data.name"
+                  class="form-control"
+                  disabled
+                />
+                <div class="invalid-feedback">{{ errorName }}</div>
+              </div>
+            </div>
             <div class="row">
               <div class="col">
-                <label class="form-label">Supplier Name<i>*</i></label>
+                <label for="" class="form-label">Name<i>*</i></label>
                 <input
                   type="text"
                   name="name"
                   v-model="name"
                   class="form-control"
+                  @input="handleChangeName"
                   v-bind:class="[
                     errorName
                       ? 'is-invalid'
@@ -42,150 +72,64 @@
                 <div class="invalid-feedback">{{ errorName }}</div>
               </div>
               <div class="col">
-                <label class="form-label">Place<i>*</i></label>
+                <label for="" class="form-label">Code<i>*</i></label>
                 <input
                   type="text"
-                  name="place"
-                  v-model="place"
+                  name="code"
+                  v-model="code"
                   class="form-control"
+                  @input="handleChangeCode"
                   v-bind:class="[
-                    errorPlace
+                    errorCode
                       ? 'is-invalid'
-                      : !errorPlace && place
+                      : !errorCode && code
                       ? 'is-valid'
                       : '',
                   ]"
                 />
-                <div class="invalid-feedback">{{ errorPlace }}</div>
+                <div class="invalid-feedback">{{ errorCode }}</div>
               </div>
             </div>
             <div class="row">
               <div class="col">
-                <label class="form-label">Phone<i>*</i></label>
+                <label for="" class="form-label">URL Slug<i>*</i></label>
                 <input
                   type="text"
-                  name="phone"
-                  v-model="phone"
+                  name="slug"
+                  v-model="slug"
                   class="form-control"
+                  @input="handleChangeSlug"
                   v-bind:class="[
-                    errorPhone
+                    errorSlug
                       ? 'is-invalid'
-                      : !errorPhone && phone
+                      : !errorSlug && slug
                       ? 'is-valid'
                       : '',
                   ]"
                 />
-                <div class="invalid-feedback">{{ errorPhone }}</div>
+                <div class="invalid-feedback">{{ errorSlug }}</div>
               </div>
               <div class="col">
-                <label class="form-label">City</label>
+                <label for="" class="form-label">Image</label>
                 <input
                   type="text"
-                  name="city"
-                  v-model="city"
+                  name="image"
+                  v-model="image"
                   class="form-control"
                   v-bind:class="[
-                    errorCity
+                    errorImage
                       ? 'is-invalid'
-                      : !errorCity && city
+                      : !errorImage && image
                       ? 'is-valid'
                       : '',
                   ]"
                 />
-                <div class="invalid-feedback">{{ errorCity }}</div>
-              </div>
-              <div class="col">
-                <label class="form-label">PIN Code</label>
-                <input
-                  type="text"
-                  name="pin"
-                  v-model="pin"
-                  class="form-control"
-                  v-bind:class="[
-                    errorPin
-                      ? 'is-invalid'
-                      : !errorPin && pin
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                />
-                <div class="invalid-feedback">{{ errorPin }}</div>
+                <div class="invalid-feedback">{{ errorImage }}</div>
               </div>
             </div>
             <div class="row">
               <div class="col">
-                <label class="form-label">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  v-model="email"
-                  class="form-control"
-                  v-bind:class="[
-                    errorEmail
-                      ? 'is-invalid'
-                      : !errorEmail && email
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                />
-                <div class="invalid-feedback">{{ errorEmail }}</div>
-              </div>
-              <div class="col">
-                <label class="form-label">GST No.</label>
-                <input
-                  type="text"
-                  name="gst"
-                  v-model="gst"
-                  class="form-control"
-                  v-bind:class="[
-                    errorGst
-                      ? 'is-invalid'
-                      : !errorGst && gst
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                />
-                <div class="invalid-feedback">{{ errorGst }}</div>
-              </div>
-              <div class="col">
-                <label class="form-label">Tax No.</label>
-                <input
-                  type="text"
-                  name="tax"
-                  v-model="tax"
-                  class="form-control"
-                  v-bind:class="[
-                    errorTax
-                      ? 'is-invalid'
-                      : !errorTax && tax
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                />
-                <div class="invalid-feedback">{{ errorTax }}</div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <label class="form-label">Address</label>
-                <textarea
-                  rows="3"
-                  type="text"
-                  name="address"
-                  v-model="address"
-                  class="form-control"
-                  v-bind:class="[
-                    errorAddress
-                      ? 'is-invalid'
-                      : !errorAddress && address
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                ></textarea>
-                <div class="invalid-feedback">{{ errorAddress }}</div>
-              </div>
-              <div class="col">
-                <label class="form-label">Description</label>
+                <label for="" class="form-label">Description</label>
                 <textarea
                   rows="3"
                   type="text"
@@ -201,6 +145,22 @@
                   ]"
                 ></textarea>
                 <div class="invalid-feedback">{{ errorDescription }}</div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    name="allow_sub"
+                    v-model="allow_sub"
+                    id="allow_sub"
+                  />
+                  <label class="form-check-label" for="allow_sub">
+                    Allow Sub Categories
+                  </label>
+                </div>
               </div>
             </div>
           </div>
@@ -262,18 +222,11 @@ import * as yup from "yup";
 import { ref, computed } from "vue";
 import admin from "@/mixins/admin.js";
 export default {
-  props: {
-    propUpdateTaxRates: Function,
-  },
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
     const DATA = ref({});
-    const phoneRegExp =
-      /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
     const { axiosAsyncCallReturnData } = admin();
-    /************************************************************************* */
-    const formValues = ref({});
-    /************************************************************************* */
+    const formValues = ref({ allow_sub: true });
     const schema = computed(() => {
       return yup.object({
         name: yup
@@ -282,95 +235,30 @@ export default {
           .min(3)
           .max(100)
           .nullable(true)
-          .transform((_, val) =>
-            val != null && val.length > 0 ? val : undefined
-          )
+          .transform((_, val) => (val.length > 0 ? val : undefined))
           .label("Name"),
-        place: yup
+        code: yup
+          .string()
+          .required()
+          .min(3)
+          .max(10)
+          .nullable(true)
+          .transform((_, val) => (val.length > 0 ? val : undefined))
+          .label("Code"),
+        slug: yup
           .string()
           .required()
           .min(3)
           .max(100)
           .nullable(true)
-          .transform((_, val) =>
-            val != null && val.length > 0 ? val : undefined
-          )
-          .label("Place"),
-        phone: yup
-          .string()
+          .transform((_, val) => (val.length > 0 ? val : undefined))
+          .label("Slug"),
+        allow_sub: yup
+          .boolean()
           .required()
-          .matches(phoneRegExp, "Phone Number is not valid")
-          .min(3)
-          .max(100)
-          .nullable(true)
-          .transform((_, val) =>
-            val != null && val.length > 0 ? val : undefined
-          )
-          .label("Phone Number"),
-        city: yup
-          .string()
-          .min(3)
-          .max(100)
-          .nullable(true)
-          .transform((_, val) =>
-            val != null && val.length > 0 ? val : undefined
-          )
-          .label("City"),
-        pin: yup
-          .string()
-          .min(3)
-          .max(100)
-          .nullable(true)
-          .transform((_, val) =>
-            val != null && val.length > 0 ? val : undefined
-          )
-          .label("PIN"),
-        email: yup
-          .string()
-          .email()
-          .min(5)
-          .max(100)
-          .nullable(true)
-          .transform((_, val) =>
-            val != null && val.length > 0 ? val : undefined
-          )
-          .label("Email"),
-        gst: yup
-          .string()
-          .min(3)
-          .max(100)
-          .nullable(true)
-          .transform((_, val) =>
-            val != null && val.length > 0 ? val : undefined
-          )
-          .label("GST No."),
-        tax: yup
-          .string()
-          .min(3)
-          .max(100)
-          .nullable(true)
-          .transform((_, val) =>
-            val != null && val.length > 0 ? val : undefined
-          )
-          .label("TAX No."),
-        address: yup
-          .string()
-          .min(3)
-          .max(100)
-          .nullable(true)
-          .transform((_, val) =>
-            val != null && val.length > 0 ? val : undefined
-          )
-          .label("Address"),
-        description: yup
-          .string()
-          .min(3)
-          .max(100)
-          .nullable(true)
-          .transform((_, val) =>
-            val != null && val.length > 0 ? val : undefined
-          )
-          .label("Description"),
+          .label("Allow Sub Category Creation"),
+        image: yup.number().min(0).max(10).nullable(true).label("Image"),
+        description: yup.string().nullable(true).label("Description"),
       });
     });
     /************************************************************************* */
@@ -388,36 +276,16 @@ export default {
     const isValid = useIsFormValid();
     const editController = ref(null);
     const newController = ref(null);
-    /************************************************************************* NEW or EDIT Supplier */
-    emitter.on("newSupplierModal", (data) => {
-      resetForm();
-      DATA.value = data;
-      if (DATA.value.data) {
-        let fields = DATA.value.data;
-        setFieldValue("name", fields.name);
-        setFieldValue("place", fields.place);
-        setFieldValue("phone", fields.phone);
-        setFieldValue("city", fields.city);
-        setFieldValue("pin", fields.pin_code);
-        setFieldValue("email", fields.email);
-        setFieldValue("gst", fields.gst_no);
-        setFieldValue("tax", fields.tax_no);
-        setFieldValue("address", fields.address);
-        setFieldValue("description", fields.description);
-      } else {
-        formValues.value = {};
-      }
-      window.SUPPLIER_NEW_MODAL.show();
-    });
     /************************************************************************* */
     // eslint-disable-next-line
     function onInvalidSubmit({ values, errors, results }) {}
     const onSubmit = handleSubmit((values, { resetForm }) => {
-      values.db = DATA.value.data;
-      let method = DATA.value.data ? "put" : "post";
-      let action = DATA.value.data ? "update" : "create";
+      values.db = DATA.value.db;
+      let method = DATA.value.db ? "PUT" : "POST";
+      let action = DATA.value.db ? "update" : "create";
+      if (DATA.value.data) values.category = DATA.value.data.id; // for new sub category only
       let controller;
-      if (method == "post") {
+      if (action == "create") {
         // new
         if (newController.value) {
           newController.value.abort();
@@ -432,7 +300,7 @@ export default {
       }
       return axiosAsyncCallReturnData(
         method,
-        "supplier",
+        "category",
         {
           data: values,
           action: action,
@@ -447,7 +315,7 @@ export default {
         if (data.success == true) {
           // added
           resetForm();
-          window.window.SUPPLIER_NEW_MODAL.hide();
+          window.window.CATEGORY_NEW_MODAL.hide();
           if (DATA.value.emit) {
             emitter.emit(DATA.value.emit, {}); // do something (emit)
           }
@@ -471,19 +339,14 @@ export default {
       resetForm();
     }
     function customReset() {
-      if (DATA.value.data) {
-        // edit form
-        let fields = DATA.value.data;
+      if (DATA.value.db) {
+        // edit
+        let fields = DATA.value.db;
         setFieldValue("name", fields.name);
-        setFieldValue("place", fields.place);
-        setFieldValue("phone", fields.phone);
-        setFieldValue("city", fields.city);
-        setFieldValue("pin", fields.pin_code);
-        setFieldValue("email", fields.email);
-        setFieldValue("gst", fields.gst_no);
-        setFieldValue("tax", fields.tax_no);
-        setFieldValue("address", fields.address);
-        setFieldValue("description", fields.description);
+        setFieldValue("code", fields.code || "");
+        setFieldValue("slug", fields.slug || "");
+        setFieldValue("allow_sub", fields.allow_sub === 0 ? false : true);
+        setFieldValue("description", fields.description || "");
       } else {
         // new
         resetForm();
@@ -491,37 +354,41 @@ export default {
     }
     /************************************************************************* */
     const { value: name, errorMessage: errorName } = useField("name");
-    const { value: place, errorMessage: errorPlace } = useField("place");
-    const { value: phone, errorMessage: errorPhone } = useField("phone");
-    const { value: city, errorMessage: errorCity } = useField("city");
-    const { value: pin, errorMessage: errorPin } = useField("pin");
-    const { value: email, errorMessage: errorEmail } = useField("email");
-    const { value: gst, errorMessage: errorGst } = useField("gst");
-    const { value: tax, errorMessage: errorTax } = useField("tax");
-    const { value: address, errorMessage: errorAddress } = useField("address");
+    const { value: code, errorMessage: errorCode } = useField("code");
+    const { value: slug, errorMessage: errorSlug } = useField("slug");
+    const { value: allow_sub } = useField("allow_sub");
+    const { value: image, errorMessage: errorImage } = useField("image");
     const { value: description, errorMessage: errorDescription } =
       useField("description");
+    /************************************************************************* NEW or EDIT Supplier */
+    emitter.on("newCategoryModal", (data) => {
+      resetForm();
+      DATA.value = data;
+      if (DATA.value.db) {
+        // edit
+        let fields = DATA.value.db;
+        setFieldValue("name", fields.name);
+        setFieldValue("code", fields.code || "");
+        setFieldValue("slug", fields.slug || "");
+        setFieldValue("allow_sub", fields.allow_sub === 0 ? false : true);
+        setFieldValue("description", fields.description || "");
+      } else {
+        //new
+      }
+      window.CATEGORY_NEW_MODAL.show();
+    });
     /*************************************** */
     return {
       /******* form fields   */
       name,
       errorName,
-      place,
-      errorPlace,
-      phone,
-      errorPhone,
-      city,
-      errorCity,
-      pin,
-      errorPin,
-      email,
-      errorEmail,
-      gst,
-      errorGst,
-      tax,
-      errorTax,
-      address,
-      errorAddress,
+      code,
+      errorCode,
+      slug,
+      errorSlug,
+      allow_sub,
+      image,
+      errorImage,
       description,
       errorDescription,
       /*************** */
@@ -539,14 +406,14 @@ export default {
     return {};
   },
   mounted() {
-    window.SUPPLIER_NEW_MODAL = new Modal($("#supplierNewModal"), {
+    window.CATEGORY_NEW_MODAL = new Modal($("#categoryNewModal"), {
       backdrop: true,
       show: true,
     });
   },
   beforeUnmount() {
     var self = this;
-    self.emitter.off("newSupplierModal");
+    self.emitter.off("newCategoryModal");
     // turn off for duplicate calling
     // because its called multiple times when page loaded multiple times
   },

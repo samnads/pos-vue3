@@ -48,6 +48,7 @@
           <th scope="col" class="d-none">ID</th>
           <th scope="col">Code</th>
           <th scope="col">Name</th>
+          <th scope="col">Parent</th>
           <th scope="col">URL Slug (SEO)</th>
           <th scope="col">Description</th>
           <th scope="col">Products</th>
@@ -117,7 +118,7 @@ export default {
           fixedColumnsLeft: 1,
           fixedColumnsRight: 1,
         },
-        order: [[1, "desc"]],
+        order: [[7, "desc"]],
         ajax: {
           method: "GET",
           url: process.env.VUE_APP_API_ROOT + "admin/ajax/category",
@@ -178,6 +179,9 @@ export default {
             data: "name",
           },
           {
+            data: "parent_name",
+          },
+          {
             data: "slug",
           },
           {
@@ -209,7 +213,7 @@ export default {
           },
           {
             targets: [2],
-             render: function (data, type, row, meta) {
+            render: function (data, type, row, meta) {
               return data == null
                 ? '<i class="text-muted small">NIL</i>'
                 : data;
@@ -220,10 +224,18 @@ export default {
           },
           {
             targets: [4],
-             render: function (data, type, row, meta) {
+            render: function (data, type, row, meta) {
+              let is_parent =
+                data == null
+                  ? '<span class="btn-sm btn-success" data-bs-toggle="tooltip" data-bs-placement="left" title="Top Level"><i class="fa-solid fa-minimize"></i></span>'
+                  : "";
+              let is_allow_sub =
+                row["allow_sub"] === 0
+                  ? '&nbsp;<span class="btn-sm btn-success" data-bs-toggle="tooltip" data-bs-placement="left" title="Level Locked"><i class="fa-solid fa-lock"></i></span>'
+                  : "";
               return data == null
-                ? '<i class="text-muted small">NIL</i>'
-                : data;
+                ? is_parent + is_allow_sub
+                : data + " [ " + row["parent_code"] + " ]";
             },
           },
           {
@@ -236,13 +248,10 @@ export default {
           },
           {
             targets: [6],
-            width: "1%",
             render: function (data, type, row, meta) {
-              return (
-                '<span class="badge bg-secondary w-100 fs-6">' +
-                data +
-                "</span>"
-              );
+              return data == null
+                ? '<i class="text-muted small">NIL</i>'
+                : data;
             },
           },
           {
@@ -258,6 +267,17 @@ export default {
           },
           {
             targets: [8],
+            width: "1%",
+            render: function (data, type, row, meta) {
+              return (
+                '<span class="badge bg-secondary w-100 fs-6">' +
+                data +
+                "</span>"
+              );
+            },
+          },
+          {
+            targets: [9],
             className: "text-center",
             orderable: false,
             searchable: false,
@@ -284,9 +304,21 @@ export default {
                   : "") +
                 (row["deletable"] === 0 ? "disabled" : "") +
                 '><i class="fas fa-trash"></i></button>';
+              let addBtn =
+                '<button type="button" class="btn btn-' +
+                (row["allow_sub"] !== 0 ? "info" : "secondary") +
+                '"' +
+                (row["allow_sub"] !== 0
+                  ? 'data-bs-toggle="tooltip" data-bs-placement="left" title="New Sub Category"  id="addsubcat" '
+                  : 'data-bs-toggle="tooltip" data-bs-placement="left" title="Level Locked"') +
+                (row["allow_sub"] === 0
+                  ? " ><i class='fa-solid fa-lock'></i>"
+                  : "><i class='fa-solid fa-plus'></i>") +
+                "</button> ";
               return (
                 '<div class="btn-group btn-group-sm" role="group">' +
                 editBtn +
+                addBtn +
                 infoBtn +
                 delBtn +
                 "</div>"
@@ -375,7 +407,7 @@ export default {
                     : " <b>" + rows[0].name + "</b> (" + rows[0].name + ")") +
                   " ?",
                 data: self.table.rows(".selected").data().toArray(),
-                emit: "confirmDeleteSupplier",
+                emit: "confirmDeleteCategory",
                 hide: true,
                 type: "danger",
               });
@@ -405,10 +437,10 @@ export default {
             text: '<i class="fa-solid fa-plus"></i>',
             className: "btn-light",
             action: function () {
-              self.emitter.emit("newSupplierModal", {
-                title: "New Supplier",
+              self.emitter.emit("newCategoryModal", {
+                title: "New Top Level Category",
                 type: "success",
-                emit: "refreshSupplierDataTable",
+                emit: "refreshCategoryDataTable",
               });
             },
             attr: {
@@ -449,10 +481,12 @@ export default {
       $("#datatable tbody").on("click", "#edit", function () {
         // edit from action menu
         let row = self.table.row($(this).parents("tr")).data();
-        self.emitter.emit("newSupplierModal", {
-          title: "Edit Supplier",
-          data: row,
-          emit: "refreshSupplierDataTable",
+        self.emitter.emit("newCategoryModal", {
+          title:
+            "Edit " +
+            (row.parent == null ? "Top Level Category" : "Sub Category"),
+          db: row,
+          emit: "refreshCategoryDataTable",
           type: "primary",
         });
       });
@@ -461,19 +495,24 @@ export default {
         self.row = self.table.row($(this).parents("tr")).data();
         window.SUPPLIER_INFO_MODAL.show();
       });
+      $("#datatable tbody").on("click", "#addsubcat", function () {
+        // info from action menu
+        let row = self.table.row($(this).parents("tr")).data();
+        self.emitter.emit("newCategoryModal", {
+          title: "New Sub Category",
+          type: "info",
+          data: row,
+          emit: "refreshCategoryDataTable",
+        });
+      });
       $("#datatable tbody").on("click", "#delete", function () {
         // delete from action menu
         let row = self.table.row($(this).parents("tr")).data();
         self.emitter.emit("deleteConfirmModal", {
           title: null,
-          body:
-            "Delete supplier with name <b>" +
-            row.name +
-            "</b> (" +
-            row.place +
-            ")?",
+          body: "Delete category with name <b>" + row.name + " ?",
           data: row,
-          emit: "confirmDeleteSupplier",
+          emit: "confirmDeleteCategory",
           hide: true,
           type: "danger",
         });
@@ -514,7 +553,7 @@ export default {
           self.table.search("").draw();
         });
     });
-    self.emitter.on("confirmDeleteSupplier", (data) => {
+    self.emitter.on("confirmDeleteCategory", (data) => {
       // delete selected supplier stuff here
       if (self.controller_delete.value) {
         self.controller_delete.value.abort();
@@ -552,14 +591,14 @@ export default {
           }
         });
     });
-    self.emitter.on("refreshSupplierDataTable", (data) => {
+    self.emitter.on("refreshCategoryDataTable", (data) => {
       self.table.ajax.reload();
     });
   },
   beforeUnmount() {
     var self = this;
-    self.emitter.off("confirmDeleteSupplier");
-    self.emitter.off("refreshSupplierDataTable");
+    self.emitter.off("confirmDeleteCategory");
+    self.emitter.off("refreshCategoryDataTable");
     // turn off for duplicate calling
     // because its called multiple times when page loaded multiple times
   },
