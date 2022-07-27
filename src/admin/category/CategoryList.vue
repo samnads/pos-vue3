@@ -118,7 +118,7 @@ export default {
           fixedColumnsLeft: 1,
           fixedColumnsRight: 1,
         },
-        order: [[7, "desc"]],
+        order: [[1, "desc"]],
         ajax: {
           method: "GET",
           url: process.env.VUE_APP_API_ROOT + "admin/ajax/category",

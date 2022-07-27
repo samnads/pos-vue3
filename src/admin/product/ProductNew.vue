@@ -2,6 +2,7 @@
   <TaxNewModal />
   <BrandNewModal />
   <UnitNewModal />
+  <CategoryNewModal />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
@@ -225,13 +226,28 @@
                     {{ c.name }}
                   </option>
                 </select>
-                <span
-                  class="input-group-text text-primary"
-                  role="button"
-                  @click="newCategory"
-                  v-if="computed_categories"
-                  ><i class="fa-solid fa-plus"></i
-                ></span>
+                <button
+                  type="button"
+                  class="input-group-text text-info"
+                  @click="newCategory(category)"
+                  v-if="categories"
+                  :disabled="
+                    category &&
+                    categories.find((obj) => {
+                      return obj.id === category;
+                    })['allow_sub'] == 0
+                  "
+                >
+                  <span
+                    v-if="
+                      categories.find((obj) => {
+                        return obj.id === category;
+                      })['allow_sub'] == 0
+                    "
+                    data-bs-toggle="tooltip" data-bs-placement="left" title="Level Locked"><i class="fa-solid fa-lock text-dark"></i
+                  ></span>
+                  <span v-else><i class="fa-solid fa-plus"></i></span>
+                </button>
               </div>
               <div class="invalid-feedback">{{ errorCategory }}</div>
             </div>
@@ -859,19 +875,17 @@
                   >
                   <div class="input-group is-invalid">
                     <input type="number" class="form-control" :value="1" />
-                    <span class="input-group-text" v-if="units"
-                      >{{
+                    <span class="input-group-text" v-if="units">{{
                       units && unit && s_unit == null
                         ? units.find((obj) => {
                             return obj.id === unit;
                           })["code"]
-                        : (unitsBulk && s_unit > 0)
+                        : unitsBulk && s_unit > 0
                         ? unitsBulk.find((obj) => {
                             return obj.id === s_unit;
                           })["code"]
                         : "?"
-                    }}</span
-                    >
+                    }}</span>
                   </div>
                   <div class="invalid-feedback">{{ errorRefNo }}</div>
                 </div>
@@ -879,19 +893,17 @@
                   <label class="form-label">Maximum Sale Quantity</label>
                   <div class="input-group is-invalid">
                     <input type="number" class="form-control" />
-                    <span class="input-group-text" v-if="units"
-                      >{{
+                    <span class="input-group-text" v-if="units">{{
                       units && unit && s_unit == null
                         ? units.find((obj) => {
                             return obj.id === unit;
                           })["code"]
-                        : (unitsBulk && s_unit > 0)
+                        : unitsBulk && s_unit > 0
                         ? unitsBulk.find((obj) => {
                             return obj.id === s_unit;
                           })["code"]
                         : "?"
-                    }}</span
-                    >
+                    }}</span>
                   </div>
                   <div class="invalid-feedback">{{ errorRefNo }}</div>
                 </div>
@@ -1179,12 +1191,14 @@ import { inject } from "vue";
 import TaxNewModal from "../tax/TaxNewModal.vue";
 import BrandNewModal from "../brand/BrandNewModal.vue";
 import UnitNewModal from "../unit/UnitNewModal.vue";
+import CategoryNewModal from "../category/CategoryNewModal.vue";
 export default {
   props: {},
   components: {
     TaxNewModal,
     BrandNewModal,
     UnitNewModal,
+    CategoryNewModal,
   },
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
@@ -1671,6 +1685,41 @@ export default {
         }
       });
     });
+    function newCategory(data) {
+      var emitData;
+      if (data != null) {
+        // sub
+        let row = categories.value.find((obj) => {
+          return obj.id === data;
+        });
+        emitData = {
+          title: "New Sub Category",
+          data: row,
+          type: "success",
+          emit: "refreshCategoryDropdown",
+        };
+      } else {
+        // top
+        emitData = {
+          title: "New Top Level Category",
+          type: "success",
+          emit: "refreshCategoryDropdown",
+        };
+      }
+      emitter.emit("newCategoryModal", emitData);
+    }
+    emitter.on("refreshCategoryDropdown", (data) => {
+      /*****************************************  update list and set new ***********************************/
+      category.value = null;
+      axiosAsyncStoreUpdateReturnData("storeCategories", "product", {
+        action: "create",
+        dropdown: "categories",
+      }).then(function (response) {
+        if (response.success == true) {
+          category.value = data.id;
+        }
+      });
+    });
     function newUnit(sub = false) {
       var emitData;
       var data; // used if new sub unit
@@ -1844,6 +1893,7 @@ export default {
       hyphen_count,
       newTaxRate,
       newBrand,
+      newCategory,
       newUnit,
       emitter,
     };
@@ -2069,6 +2119,7 @@ export default {
     self.emitter.off("refreshBrandDropdown");
     self.emitter.off("refreshUnitDropdown");
     self.emitter.off("refreshSubUnitDropdown");
+    self.emitter.off("refreshCategoryDropdown");
   },
 };
 </script>

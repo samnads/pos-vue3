@@ -82,12 +82,17 @@ class Category extends CI_Controller
 				break;
 			case 'POST': // create
 				$_POST = $this->input->post('data');
+				$auto_id = $this->Category_model->get_AUTO_INCREMENT();
+				if (!$auto_id) {
+					$error = $this->db->error();
+					die(json_encode(array('success' => false, 'type' => 'danger', 'error' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unexpected error occured (AUTO_INCREMENT) !"))));
+				}
 				$data = array(
-					'name'			=> $this->input->post('name'),
-					'code'			=> $this->input->post('code') ?: NULL,
-					'slug'			=> $this->input->post('slug') ?: NULL,
-					'allow_sub'	=> $this->input->post('allow_sub') ? NULL : 0,
-					'description'	=> $this->input->post('description') ?: NULL
+					'name'			=> trim(reduce_multiples($this->input->post('name'), " ")),
+					'code'			=> trim(reduce_multiples($this->input->post('code') ?: sprintf("CAT%04s", $auto_id), " ")),
+					'slug'			=> trim(reduce_multiples($this->input->post('slug') ?: NULL, " ")),
+					'allow_sub'		=> $this->input->post('allow_sub') ? NULL : 0,
+					'description'	=> trim(reduce_multiples($this->input->post('description') ?: NULL, " "))
 				);
 				//$data['error'] = "error";
 				$table		= TABLE_CATEGORY;
@@ -103,22 +108,22 @@ class Category extends CI_Controller
 					array(
 						'field' => 'name',
 						'label' => 'Name',
-						'rules' => 'required|min_length[3]|max_length[50]|' . $ruleName . '|xss_clean|trim|regex_match[/^[a-zA-Z0-9-& ]+$/]'
+						'rules' => 'required|min_length[3]|max_length[50]|' . $ruleName . '|xss_clean|regex_match[/^[a-zA-Z0-9-& ]+$/]'
 					),
 					array(
 						'field' => 'slug',
 						'label' => 'Slug',
-						'rules' => 'required|min_length[3]|max_length[50]|is_unique[' . $table . '.slug]|xss_clean|trim|regex_match[/^[a-z0-9-]+$/]'
+						'rules' => 'required|min_length[3]|max_length[50]|is_unique[' . $table . '.slug]|xss_clean|regex_match[/^[a-z0-9-]+$/]'
 					),
 					array(
 						'field' => 'code',
 						'label' => 'Code',
-						'rules' => 'required|min_length[3]|max_length[10]|is_unique[' . $table . '.code]|xss_clean|trim|regex_match[/^[a-zA-Z0-9]+$/]'
+						'rules' => 'required|min_length[3]|max_length[10]|is_unique[' . $table . '.code]|xss_clean|regex_match[/^[a-zA-Z0-9]+$/]'
 					),
 					array(
 						'field' => 'description',
 						'label' => 'Description',
-						'rules' => 'max_length[100]|is_unique[' . $table . '.description]xss_clean|trim'
+						'rules' => 'max_length[100]|is_unique[' . $table . '.description]xss_clean'
 					)
 				);
 				$this->form_validation->set_rules($config);
@@ -141,11 +146,11 @@ class Category extends CI_Controller
 			case 'PUT': // update
 				$_POST = $this->input->post('data');
 				$data = array(
-					'name'			=> $this->input->post('name'),
-					'code'			=> $this->input->post('code') ?: NULL,
-					'slug'			=> $this->input->post('slug') ?: NULL,
+					'name'			=> trim(reduce_multiples($this->input->post('name'), " ")),
+					'code'			=> trim(reduce_multiples($this->input->post('code') ?: NULL, " ")),
+					'slug'			=> trim(reduce_multiples($this->input->post('slug') ?: NULL, " ")),
 					'allow_sub'		=> $this->input->post('allow_sub') ? NULL : 0,
-					'description'	=> $this->input->post('description') ?: NULL
+					'description'	=> trim(reduce_multiples($this->input->post('description') ?: NULL, " "))
 				);
 				//$data['error'] = "error";
 				$id = $this->input->post('db')['id'];
@@ -272,7 +277,7 @@ class Category extends CI_Controller
 		$this->db->where(array('name' => $name, 'parent' => $this->input->post('db')['parent'], 'id !=' => $id));
 		$query = $this->db->get();
 		if ($query->num_rows() > 0) {
-			$this->form_validation->set_message('edit_sub_name_check', $this->lang->line('form_validation_is_unique').'[ same level ]');
+			$this->form_validation->set_message('edit_sub_name_check', $this->lang->line('form_validation_is_unique') . '[ same level ]');
 			return FALSE;
 		}
 		return TRUE;
@@ -281,7 +286,7 @@ class Category extends CI_Controller
 	{
 		$this->db->select('id');
 		$this->db->from(TABLE_CATEGORY);
-		$this->db->where(array('code' => $code,'id !=' => $id));
+		$this->db->where(array('code' => $code, 'id !=' => $id));
 		$query = $this->db->get();
 		if ($query->num_rows() > 0) {
 			$this->form_validation->set_message('edit_sub_code_check', $this->lang->line('form_validation_is_unique'));

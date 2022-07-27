@@ -72,7 +72,7 @@
                 <div class="invalid-feedback">{{ errorName }}</div>
               </div>
               <div class="col">
-                <label for="" class="form-label">Code<i>*</i></label>
+                <label for="" class="form-label">Code</label>
                 <input
                   type="text"
                   name="code"
@@ -239,7 +239,6 @@ export default {
           .label("Name"),
         code: yup
           .string()
-          .required()
           .min(3)
           .max(10)
           .nullable(true)
@@ -317,7 +316,7 @@ export default {
           resetForm();
           window.window.CATEGORY_NEW_MODAL.hide();
           if (DATA.value.emit) {
-            emitter.emit(DATA.value.emit, {}); // do something (emit)
+            emitter.emit(DATA.value.emit, data); // do something (emit)
           }
         } else {
           // not added
@@ -363,7 +362,6 @@ export default {
     /************************************************************************* NEW or EDIT Supplier */
     emitter.on("newCategoryModal", (data) => {
       resetForm();
-      console.log(data)
       DATA.value = data;
       if (DATA.value.db) {
         // edit

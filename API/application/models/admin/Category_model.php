@@ -12,7 +12,8 @@ class Category_model extends CI_Model
 		$this->db->select('
         c.id as id,
         c.parent as parent,
-        c.name as name');
+        c.name as name,
+		c.allow_sub as allow_sub');
 		$this->db->from(TABLE_CATEGORY . ' c');
 		$query = $this->db->get();
 		return $query->result();
@@ -21,6 +22,15 @@ class Category_model extends CI_Model
 	{
 		$query = $this->db->get_where(TABLE_CATEGORY, array($cnmae => $value));
 		return $query;
+	}
+	function get_AUTO_INCREMENT()
+	{
+		$this->db->select('AUTO_INCREMENT');
+		$this->db->from('INFORMATION_SCHEMA.TABLES');
+		$this->db->where(array('TABLE_NAME' => TABLE_CATEGORY, 'TABLE_SCHEMA' => $this->db->database));
+		$query = $this->db->get();
+		$cnt = $query->row_array();
+		return $cnt['AUTO_INCREMENT'];
 	}
 	function datatable_data($search, $offset, $limit, $order_by, $order)
 	{
