@@ -186,17 +186,27 @@
     :max="general.max"
     :closeOnClick="general.closeOnClick"
   />
-  <footer class="footer mt-auto py-3 bg-light">
+  <footer class="footer mt-auto py-3 bg-light fixed-bottom">
     <div class="container text-center">
-      <span class="text-muted">&copy; CyberLikes</span>
+      <span class="text-muted">&copy; CyberLikes 2022</span>
     </div>
   </footer>
 </template>
 <style>
 #content {
   margin-top: 56px;
+  margin-bottom: 56px;
   min-height: calc(100vh - 112px) !important;
 }
+/********************************* HIDE SCROLL  */
+body {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+}
+body::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}
+/*********************************/
 a {
   text-decoration: none !important;
 }
@@ -435,7 +445,7 @@ export default {
         )
         .then(function (data) {
           if (data.success == true) {
-            console.log(data)
+            console.log(data);
             // ok
           } else {
             if (data.success == false) {

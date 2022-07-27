@@ -104,7 +104,7 @@ export default {
       self.table = $("#datatable").DataTable({
         searching: true, // remove default search box
         bLengthChange: false, // remove default length change menu
-        pageLength: 5,
+        pageLength: 15,
         searchDelay: 750,
         processing: true,
         serverSide: true,

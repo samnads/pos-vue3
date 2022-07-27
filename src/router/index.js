@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 // admin pages
@@ -280,13 +281,18 @@ const routes = [
     ],
   },
 ]
+import { Tooltip } from "bootstrap";
 const router = createRouter({
   history: createWebHistory(),
   routes
 })
 router.beforeEach((to, from, next) => {
-  //console.log(`Navigating to: ${to.name}`);
+  // bug fix - tooltip not hiding because of v-if (route show or hide based on if condition)
+  const stickedTooltips = document.querySelectorAll('.tooltip');
+  for (const tooltip of stickedTooltips) { tooltip.remove(); }
   next();
+});
+router.afterEach((to, from, failure) => {
 });
 
 export default router

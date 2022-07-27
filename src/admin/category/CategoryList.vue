@@ -103,7 +103,7 @@ export default {
       self.table = $("#datatable").DataTable({
         searching: true, // remove default search box
         bLengthChange: false, // remove default length change menu
-        pageLength: 5,
+        pageLength: 15,
         searchDelay: 750,
         processing: true,
         serverSide: true,
@@ -218,7 +218,7 @@ export default {
               return row["allow_sub"] == 0
                 ? '<div class="d-flex justify-content-between"><div><span class="">' +
                     data +
-                    '</span></div><span class="btn-sm btn-warning" data-bs-toggle="tooltip" data-bs-placement="left" title="Level Locked"><i class="fa-solid fa-lock"></i></span></div></div>'
+                    '</span></div><span class="btn btn-sm btn-warning" data-bs-toggle="tooltip" data-bs-placement="left" title="Level Locked"><i class="fa-solid fa-lock"></i></span></div></div>'
                 : "<span>" + data + "</span>";
             },
           },
@@ -232,7 +232,7 @@ export default {
             render: function (data, type, row, meta) {
               let is_parent =
                 data == null
-                  ? '<span class="btn-sm btn-info" data-bs-toggle="tooltip" data-bs-placement="left" title="Top Level"><i class="fa-solid fa-minimize"></i></span>'
+                  ? '<span class="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="left" title="Top Level"><i class="fa-solid fa-minimize"></i></span>'
                   : "";
               return data == null
                 ? is_parent

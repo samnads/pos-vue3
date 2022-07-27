@@ -73,7 +73,7 @@ export default {
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
     const controller_delete = ref({});
-    var page_length = 25;
+    var page_length = 15;
     // notify
     const {
       notifyDefault,
