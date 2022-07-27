@@ -44,11 +44,6 @@
                   >
                 </li>
                 <li>
-                  <router-link class="dropdown-item" to="/admin/product/test"
-                    >List Test</router-link
-                  >
-                </li>
-                <li>
                   <router-link class="dropdown-item" to="/admin/product/new"
                     >Add New</router-link
                   >
@@ -63,15 +58,10 @@
                     >Add Adjustment</router-link
                   >
                 </li>
-                <li>
-                  <router-link class="dropdown-item" to="/admin/product/import"
-                    >Import via CSV</router-link
-                  >
-                </li>
                 <li><hr class="dropdown-divider" /></li>
                 <li>
                   <router-link class="dropdown-item" to="/admin/product/label"
-                    >Import via CSV</router-link
+                    >Print Labels</router-link
                   >
                 </li>
               </ul>

@@ -170,7 +170,7 @@
           </div>
           <div class="row">
             <div class="col">
-              <label for="" class="form-label">Weight</label>
+              <label for="" class="form-label">Weight (in grams)</label>
               <input
                 type="number"
                 name="weight"
@@ -1026,11 +1026,11 @@
         <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
           <div class="card">
             <h5 class="card-header bg-secondary text-light">
-              Stock Adjustment
+              Opening Stock
             </h5>
             <div class="card-body">
               <p class="card-text text-muted">
-                You can add an opening stock or adjust the current stock.
+                You can add an opening stock count.
               </p>
               <div class="row mb-1">
                 <div class="col">

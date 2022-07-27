@@ -158,7 +158,7 @@
                     id="allow_sub"
                   />
                   <label class="form-check-label" for="allow_sub">
-                    Allow New Sub Categories
+                    Allow New Sub Categories <span class="text-muted small" v-show="DATA.db"> (this is not applicable for childs  of this level)</span>
                   </label>
                 </div>
               </div>
