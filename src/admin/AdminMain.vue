@@ -141,6 +141,14 @@
             </li>
           </ul>
           <div class="d-flex align-items-center">
+            <router-link class="dropdown-item" to="/admin/pos"
+              ><span
+                type="button"
+                class="btn btn-success btn-outline-light me-5"
+              >
+                <i class="fa-solid fa-print"></i>&nbsp;&nbsp;POS
+              </span></router-link
+            >
             <div class="flex-shrink-0 dropdown">
               <a
                 href="#"
@@ -200,11 +208,11 @@
 }
 /********************************* HIDE SCROLL  */
 body {
-    -ms-overflow-style: none;  /* Internet Explorer 10+ */
-    scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
 }
-body::-webkit-scrollbar { 
-    display: none;  /* Safari and Chrome */
+body::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
 }
 /*********************************/
 a {

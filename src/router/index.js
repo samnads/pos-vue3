@@ -44,6 +44,8 @@ import AdminUnitList from '../admin/unit/UnitList.vue'
 // Tax based pages
 import AdminTaxMain from '../admin/tax/TaxMain.vue'
 import AdminTaxList from '../admin/tax/TaxList.vue'
+// Tax based pages
+import AdminPosMain from '../admin/pos/PosMain.vue'
 // TEST pages
 import AdminTestQuery from '../admin/test_query.vue'
 // error pages
@@ -264,6 +266,11 @@ const routes = [
             component: AdminRoleEdit,
           },
         ],
+      },
+      {
+        path: 'pos',
+        name: 'adminPosMain',
+        component: AdminPosMain,
       },
       {
         path: 'profile',
