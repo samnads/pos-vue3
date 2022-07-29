@@ -8,9 +8,11 @@ class Pos extends CI_Controller
         $this->load->model('admin/Pos_model');
         $this->load->model('admin/Product_model');
         $_POST = raw_input_to_post();
+        $action = $this->input->get('action') ?: $this->input->post('action');
+        $search = $this->input->get('search') ?: $this->input->post('search');
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET': // read
-                switch ($action = $this->input->get('action')) {
+                switch ($action) {
                     case 'autocomplete': // search products for add to cart
                         $type = $this->input->post('type');
                         switch ($type) {
@@ -75,6 +77,23 @@ class Pos extends CI_Controller
             default:
                 $error = array('success' => false, 'type' => 'danger', 'error' => 'Unknown Request Method !');
                 echo json_encode($error);
+        }
+        switch ($search) { // dropdown jobs
+            case 'product':
+                $query["offset"] = 0;
+                $query["limit"] = 10;
+                $query["order_by"] = 'label';
+                $query["order"] = 'asc';
+                $query["query"] = $this->input->get('query');
+                $query = $this->Pos_model->suggestProdsForPosCart($query["query"], $query["offset"], $query["limit"], $query["order_by"], $query["order"]);
+                $error = $this->db->error();
+                if ($error['code'] == 0) {
+                    echo json_encode(array('success' => true, 'type' => 'success', 'data' => $query->result()));
+                } else {
+                    echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
+                }
+                break;
+            default:
         }
     }
 
