@@ -72,7 +72,8 @@
                   <th scope="col">Product Name</th>
                   <th scope="col" class="fit">HSN</th>
                   <th scope="col" width="13%" class="text-center">Quantity</th>
-                  <th scope="col" width="10%" class="text-end">Price/Item</th>
+                  <th scope="col" width="10%" class="text-end">Unit Price</th>
+                  <th scope="col" width="8%" class="text-end">Auto Discount</th>
                   <th scope="col" width="8%" class="text-end">Discount</th>
                   <th scope="col" width="10%" class="text-end">
                     Taxable Value
@@ -87,10 +88,9 @@
                 </tr>
               </thead>
               <tbody>
-                <div class="col" v-show="products.length == 0">Empty Cart</div>
                 <tr
                   class="border border-light"
-                  v-for="(product, index) in products"
+                  v-for="(product, index) in cart.products"
                   :key="product.id"
                 >
                   <th scope="row">{{ index + 1 }}</th>
@@ -125,17 +125,25 @@
                       :value="product.price"
                     />
                   </td>
+                  <td class="text-danger text-end">
+                    {{ product.auto_discount * product.quantity || 0 }}
+                  </td>
                   <td>
                     <input
                       type="number"
-                      class="form-control form-control-sm no-arrow text-end"
-                      :value="product.discount"
-                      readonly
+                      class="
+                        form-control form-control-sm
+                        no-arrow
+                        text-danger text-end
+                      "
+                      :value="product.discount || 0"
                     />
                   </td>
-                  <td class="text-end">~</td>
-                  <td class="text-end">~</td>
-                  <td class="text-end fw-bold">~</td>
+                  <td class="text-end">{{ product.taxable_value() }}</td>
+                  <td class="text-end">{{ product.tax }}</td>
+                  <td class="text-end fw-bold">
+                    {{ product.total() }}
+                  </td>
                   <td>
                     <span
                       role="button"
@@ -200,6 +208,7 @@
                 </tr>-->
               </tbody>
             </table>
+            {{ cart }}
           </div>
         </div>
         <div class="col-3 right">
@@ -251,21 +260,29 @@
                 <tr class="border-bottom border-dark">
                   <td class="bg-secondary" width="25%">Items</td>
                   <td class="bg-primary text-end" width="25%">
-                    {{ products.length }}
+                    {{ cart.total_items() }}
                   </td>
-                  <td class="bg-secondary" width="25%">Sub Total</td>
-                  <td class="bg-info text-end" width="25%">0</td>
+                  <td class="bg-secondary" width="25%">Price Total</td>
+                  <td class="bg-info text-end" width="25%">
+                    {{ cart.total_price() }}
+                  </td>
                 </tr>
                 <tr class="border-bottom border-dark">
-                  <td class="bg-secondary">Total Quantity</td>
-                  <td class="bg-primary text-end">0</td>
-                  <td class="bg-secondary">Product Discount</td>
-                  <td class="bg-warning text-end text-dark">0</td>
+                  <td class="bg-secondary">Quantity</td>
+                  <td class="bg-primary text-end">
+                    {{ cart.total_quantity() }}
+                  </td>
+                  <td class="bg-secondary">Auto Discount</td>
+                  <td class="bg-warning text-end text-dark">
+                    {{ cart.total_auto_discount() }}
+                  </td>
                 </tr>
                 <tr class="border-bottom border-dark">
-                  <td class="bg-secondary">Tax</td>
-                  <td class="bg-primary text-end">0</td>
-                  <td class="bg-secondary">Cart Discount</td>
+                  <td class="bg-secondary">Custom Disc.</td>
+                  <td class="bg-warning text-dark text-end">
+                    {{ cart.total_custom_discount() }}
+                  </td>
+                  <td class="bg-secondary">Cart Disc.</td>
                   <td
                     class="bg-warning bg-gradient text-dark text-end"
                     role="button"
@@ -274,7 +291,7 @@
                       <div class="text-muted">
                         <i class="fa-solid fa-tag"></i>
                       </div>
-                      <div>0.00</div>
+                      <div>{{ cart.discount }}</div>
                     </div>
                   </td>
                 </tr>
@@ -289,17 +306,22 @@
                     </div>
                   </td>
                   <td class="bg-secondary">Total Discount</td>
-                  <td class="bg-warning text-end text-dark">0</td>
+                  <td class="bg-warning text-end text-dark">
+                    {{ cart.total_discount() }}
+                  </td>
                 </tr>
                 <tr class="border-bottom border-dark">
                   <td class="bg-secondary"></td>
                   <td class="bg-primary"></td>
                   <td class="bg-secondary">Taxable Value</td>
-                  <td class="bg-primary text-end">0</td>
+                  <td class="bg-primary text-end">
+                    {{ cart.total_taxable() }}
+                  </td>
                 </tr>
                 <tr class="border-bottom border-dark">
                   <td class="bg-secondary">Tax</td>
-                  <td class="bg-primary text-end">0</td>
+                  <td class="bg-primary text-end">{{ cart.tax() }}</td>
+
                   <td class="bg-secondary">Total</td>
                   <td class="bg-info text-end">0</td>
                 </tr>
@@ -313,38 +335,53 @@
                   >
                     <div class="d-flex justify-content-between">
                       <div class="text-muted">₹</div>
-                      <div>0.00</div>
+                      <div>{{ cart.total_payable() }}</div>
                     </div>
                   </td>
                 </tr>
                 <tr class="">
-                  <td class="bg-danger text-center fs-5" role="button">
-                    Cancel
+                  <td class="text-center fs-5 p-0">
+                    <button
+                      class="btn btn-danger w-100 rounded-0"
+                      type="button"
+                      :disabled="cart.products.length == 0"
+                    >
+                      Cancel
+                    </button>
                   </td>
-                  <td
-                    class="bg-warning text-center text-dark text-end fs-5"
-                    role="button"
-                  >
-                    Draft
+                  <td class="text-center fs-5 p-0">
+                    <button
+                      class="btn btn-warning w-100 rounded-0"
+                      type="button"
+                      :disabled="cart.products.length == 0"
+                    >
+                      Draft
+                    </button>
                   </td>
-                  <td
-                    rowspan="2"
-                    colspan="2"
-                    class="bg-success text-center"
-                    role="button"
-                  >
-                    <span class="fs-4"
-                      ><i class="fa-solid fa-credit-card"></i></span
-                    >&nbsp;&nbsp;&nbsp;&nbsp;<span class="fs-3">Checkout</span>
+                  <td rowspan="2" colspan="2" class="p-0 m-0">
+                    <button
+                      class="btn btn-success w-100 rounded-0"
+                      style="min-height: 78px"
+                      type="button"
+                      :disabled="cart.products.length == 0"
+                    >
+                      <span class="fs-5"
+                        ><i class="fa-solid fa-credit-card"></i></span
+                      >&nbsp;&nbsp;&nbsp;&nbsp;<span class="fs-4"
+                        >Checkout</span
+                      >
+                    </button>
                   </td>
                 </tr>
                 <tr>
-                  <td
-                    colspan="2"
-                    class="bg-info text-dark text-center fs-5"
-                    role="button"
-                  >
-                    Print
+                  <td colspan="2" class="fs-5 p-0">
+                    <button
+                      class="btn btn-info w-100 rounded-0"
+                      type="button"
+                      :disabled="cart.products.length == 0"
+                    >
+                      Print
+                    </button>
                   </td>
                 </tr>
               </tbody>
@@ -356,6 +393,14 @@
   </div>
 </template>
 <style scoped>
+.btn.my-btn {
+  right: 0;
+  top: 0;
+  height: 100%;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
 .mdb-autocomplete-wrap {
   position: absolute;
   margin-top: 38px;
@@ -417,6 +462,73 @@ export default {
     const autocompleteList = ref([]);
     const searchBox = ref(null);
     const products = ref([]);
+    const cart = ref({
+      products: [],
+      shipping_charge: 0,
+      total_items: function () {
+        return this.products.length;
+      },
+      total_quantity: function () {
+        var total_quantity = 0;
+        this.products.forEach((element, index, array) => {
+          total_quantity = total_quantity + element.quantity;
+        });
+        return total_quantity;
+      },
+      tax: function () {
+        var tax = 0;
+        this.products.forEach((element, index, array) => {
+          tax = tax + element.tax;
+        });
+        return tax;
+      },
+      total_taxable: function () {
+        var total_taxable = 0;
+        this.products.forEach((element, index, array) => {
+          total_taxable = total_taxable + element.taxable_value();
+        });
+        return total_taxable;
+      },
+      total_price: function () {
+        var total_price = 0;
+        this.products.forEach((element, index, array) => {
+          total_price = total_price + element.price * element.quantity;
+        });
+        return total_price;
+      },
+      total_auto_discount: function () {
+        var total_auto_discount = 0;
+        this.products.forEach((element, index, array) => {
+          total_auto_discount =
+            total_auto_discount + element.auto_discount * element.quantity;
+        });
+        return total_auto_discount;
+      },
+      total_custom_discount: function () {
+        var total_custom_discount = 0;
+        this.products.forEach((element, index, array) => {
+          total_custom_discount = total_custom_discount + element.discount;
+        });
+        return total_custom_discount;
+      },
+      discount: 10,
+      total_discount: function () {
+        return (
+          this.total_auto_discount() +
+          this.total_custom_discount() +
+          this.discount
+        );
+      },
+      total_payable: function () {
+        var total_payable = 0;
+        this.products.forEach((element, index, array) => {
+          total_payable = Number(
+            parseFloat(total_payable + element.total()).toFixed(2)
+          );
+        });
+        return total_payable;
+      },
+    });
     const { axiosAsyncStoreReturnBool, axiosAsyncCallReturnData } = admin();
     var search_product = null;
     function confirmDeleteShow(data) {
@@ -429,6 +541,9 @@ export default {
         type: "danger",
       });
       window.DELETE_CONFIRM_DEFAULT_MODAL.show();
+    }
+    function foo() {
+      return Math.random();
     }
     function searchProduct(query) {
       var self = this;
@@ -484,27 +599,62 @@ export default {
       }
     }
     function checkAndPush(product) {
-      if (!this.products.some((data) => data.id === product.id)) {
+      if (!this.cart.products.some((data) => data.id === product.id)) {
         // new
-        product.quantity = 1;
-        this.products.push(product);
+        /************************************** */
+        product.min_sale_qty =
+          product.min_sale_qty == null
+            ? 1
+            : Number(parseFloat(product.min_sale_qty).toFixed(2));
+        product.quantity = Number(parseFloat(product.min_sale_qty).toFixed(2));
+        product.price = Number(parseFloat(product.price).toFixed(2));
+        product.auto_discount =
+          product.auto_discount == null
+            ? 0
+            : Number(
+                parseFloat(product.auto_discount * product.quantity).toFixed(2)
+              );
+        product.discount = 0; // custom discout per item (not quantity)
+        product.taxable_value = function () {
+          return Number(
+            (
+              product.price * product.quantity -
+              product.quantity * product.auto_discount
+            ).toFixed(2)
+          );
+        };
+        product.tax = 25.253;
+        product.total = function () {
+          return Number(
+            (
+              product.price * product.quantity -
+              product.quantity * product.auto_discount -
+              product.discount +
+              product.tax
+            ).toFixed(2)
+          );
+        };
+        /************************************** */
+        this.cart.products.push(product);
       } else {
         // update
-        let index = this.products.findIndex((item) => item.id === product.id);
-        this.products[index].quantity++;
+        let index = this.cart.products.findIndex(
+          (item) => item.id === product.id
+        );
+        /************************************** */
+        this.cart.products[index].quantity++;
+        /************************************** */
       }
       this.autocompleteList = [];
       this.search_product = null;
       this.searchBox.focus();
       this.emitter.emit("playSound", { file: "add.mp3" });
     }
-    function lostProductFocus() {
-    }
+    function lostProductFocus() {}
     emitter.on("confirmDeleteProduct", (data) => {
-      var self = this;
       // delete selected product stuff here
-      let index = products.value.findIndex((item) => item.id === data.id);
-      products.value.splice(index, 1);
+      let index = cart.value.products.findIndex((item) => item.id === data.id);
+      cart.value.products.splice(index, 1);
       emitter.emit("playSound", { file: "add.mp3" });
     });
     return {
@@ -518,8 +668,10 @@ export default {
       products,
       searchBox,
       lostProductFocus,
+      cart,
     };
   },
+  methods: {},
   beforeUnmount() {
     var self = this;
     self.emitter.off("confirmDeleteProduct");
