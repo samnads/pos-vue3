@@ -22,10 +22,14 @@ nav a.router-link-exact-active {
 </style>
 <script>
 import { Tooltip } from "bootstrap";
+import { Popover } from "bootstrap";
 export default {
   mounted() {
     new Tooltip(document.body, {
       selector: "[data-bs-toggle='tooltip']",
+    });
+    new Popover(document.body, {
+      selector: "[data-bs-toggle='popover']",
     });
   },
 };

@@ -1,10 +1,11 @@
 <template>
+  <CustomerNewModal />
   <div id="posmain">
     <div class="wrap_content p-2 rounded">
       <div class="row">
         <div class="col-9 left">
           <div class="row">
-            <div class="col-9">
+            <div class="col-10">
               <div class="input-group mb-2">
                 <span
                   class="input-group-text"
@@ -46,8 +47,8 @@
                 ></span>
               </div>
             </div>
-            <div class="col-3">
-              <div class="input-group mb-2">
+            <div class="col-2">
+              <div class="input-group mb-2" v-show="cart.products.length > 0">
                 <span
                   class="input-group-text"
                   data-bs-toggle="tooltip"
@@ -59,7 +60,23 @@
                   type="text"
                   class="form-control"
                   placeholder="Scan & remove product from cart"
+                  v-model="search_remove"
+                  @input="searchProductCart(search_remove)"
                 />
+                <ul
+                  class="mdb-autocomplete-wrap list-group"
+                  style="max-height: 225px"
+                >
+                  <li
+                    @click="checkAndRemove(item)"
+                    class="list-group-item list-group-item-action"
+                    v-for="item in autocompleteCart"
+                    :key="item.id"
+                    :value="item.name"
+                  >
+                    {{ item.label }}
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -101,18 +118,33 @@
                     <div class="input-group input-group-sm is-invalid">
                       <button
                         type="button"
-                        class="btn btn-warning input-group-text"
+                        class="btn input-group-text"
+                        v-bind:class="[
+                          product.quantity == product.min_sale_qty
+                            ? 'btn-secondary'
+                            : 'btn-warning',
+                        ]"
+                        @click="quantityButton(product, '-')"
+                        :disabled="product.quantity == product.min_sale_qty"
                       >
                         <i class="fa-solid fa-minus"></i>
                       </button>
                       <input
+                        @change="changeQuantity(product, product.quantity)"
                         type="number"
                         class="form-control no-arrow text-center"
-                        :value="product.quantity"
+                        v-model="product.quantity"
                       />
                       <button
                         type="button"
-                        class="btn btn-info input-group-text"
+                        class="btn input-group-text"
+                        v-bind:class="[
+                          product.quantity == product.max_sale_qty
+                            ? 'btn-secondary'
+                            : 'btn-info',
+                        ]"
+                        @click="quantityButton(product, '+')"
+                        :disabled="product.quantity == product.max_sale_qty"
                       >
                         <i class="fa-solid fa-plus"></i>
                       </button>
@@ -122,11 +154,14 @@
                     <input
                       type="number"
                       class="form-control form-control-sm no-arrow text-end"
-                      :value="product.price"
+                      @change="changePrice(product, product.price)"
+                      v-model="product.price"
                     />
                   </td>
                   <td class="text-danger text-end">
-                    {{ product.auto_discount * product.quantity || 0 }}
+                    {{
+                      (product.auto_discount * product.quantity).toFixed(2) || 0
+                    }}
                   </td>
                   <td>
                     <input
@@ -136,7 +171,9 @@
                         no-arrow
                         text-danger text-end
                       "
-                      :value="product.discount || 0"
+                      v-model="product.discount"
+                      @change="changeDiscount(product, product.discount)"
+                      :disabled="!product.allow_custom_discount"
                     />
                   </td>
                   <td class="text-end">{{ product.taxable_value() }}</td>
@@ -249,6 +286,7 @@
                   data-bs-toggle="tooltip"
                   data-bs-placement="left"
                   title="New Customer"
+                  @click="newCustomer"
                   ><i class="fa-solid fa-plus"></i
                 ></span>
               </div>
@@ -264,23 +302,23 @@
                   </td>
                   <td class="bg-secondary" width="25%">Price Total</td>
                   <td class="bg-info text-end" width="25%">
-                    {{ cart.total_price() }}
+                    {{ cart.total_price().toFixed(2) }}
                   </td>
                 </tr>
                 <tr class="border-bottom border-dark">
                   <td class="bg-secondary">Quantity</td>
                   <td class="bg-primary text-end">
-                    {{ cart.total_quantity() }}
+                    {{ cart.total_quantity().toFixed(2) }}
                   </td>
                   <td class="bg-secondary">Auto Discount</td>
                   <td class="bg-warning text-end text-dark">
-                    {{ cart.total_auto_discount() }}
+                    {{ cart.total_auto_discount().toFixed(2) }}
                   </td>
                 </tr>
                 <tr class="border-bottom border-dark">
                   <td class="bg-secondary">Custom Disc.</td>
                   <td class="bg-warning text-dark text-end">
-                    {{ cart.total_custom_discount() }}
+                    {{ cart.total_custom_discount().toFixed(2) }}
                   </td>
                   <td class="bg-secondary">Cart Disc.</td>
                   <td
@@ -291,39 +329,54 @@
                       <div class="text-muted">
                         <i class="fa-solid fa-tag"></i>
                       </div>
-                      <div>{{ cart.discount }}</div>
+                      <div>{{ cart.discount.toFixed(2) }}</div>
                     </div>
                   </td>
                 </tr>
                 <tr class="border-bottom border-dark">
                   <td class="bg-secondary">Shipping</td>
-                  <td class="bg-primary bg-gradient" role="button">
-                    <div class="d-flex justify-content-between">
+                  <td class="bg-primary bg-gradient p-0">
+                    <div class="input-group input-group-sm">
+                      <span class="input-group-text rounded-0"
+                        ><i class="fa-solid fa-truck"></i
+                      ></span>
+                      <input
+                        type="number"
+                        step="any"
+                        class="form-control text-end rounded-0 no-arrow"
+                        v-model="cart.shipping_charge"
+                        @focus="$event.target.select()"
+                        @change="changeShippingCharge(cart.shipping_charge)"
+                      />
+                    </div>
+                    <!--<div class="d-flex justify-content-between">
                       <div class="text-black-50">
                         <i class="fa-solid fa-truck"></i>
                       </div>
                       <div>0.00</div>
-                    </div>
+                    </div>-->
                   </td>
                   <td class="bg-secondary">Total Discount</td>
                   <td class="bg-warning text-end text-dark">
-                    {{ cart.total_discount() }}
+                    {{ cart.total_discount().toFixed(2) }}
                   </td>
                 </tr>
                 <tr class="border-bottom border-dark">
-                  <td class="bg-secondary"></td>
-                  <td class="bg-primary"></td>
+                  <td class="bg-secondary">Taxable Value</td>
+                  <td class="bg-primary text-end">-</td>
                   <td class="bg-secondary">Taxable Value</td>
                   <td class="bg-primary text-end">
-                    {{ cart.total_taxable() }}
+                    {{ cart.total_taxable().toFixed(2) }}
                   </td>
                 </tr>
                 <tr class="border-bottom border-dark">
-                  <td class="bg-secondary">Tax</td>
-                  <td class="bg-primary text-end">{{ cart.tax() }}</td>
+                  <td class="bg-secondary">Packing</td>
+                  <td class="bg-primary text-end">-</td>
 
-                  <td class="bg-secondary">Total</td>
-                  <td class="bg-info text-end">0</td>
+                  <td class="bg-secondary">Tax</td>
+                  <td class="bg-info text-end">
+                    {{ cart.total_taxable().toFixed(2) }}
+                  </td>
                 </tr>
                 <tr class="border-bottom border-dark">
                   <td colspan="2" class="bg-dark bg-gradient fs-5">
@@ -335,7 +388,7 @@
                   >
                     <div class="d-flex justify-content-between">
                       <div class="text-muted">₹</div>
-                      <div>{{ cart.total_payable() }}</div>
+                      <div>{{ cart.total_payable().toFixed(2) }}</div>
                     </div>
                   </td>
                 </tr>
@@ -433,7 +486,8 @@
   width: 1%;
 }
 input:read-only,
-input:disabled {
+input:disabled,
+button:disabled {
   cursor: not-allowed;
   pointer-events: all !important;
 }
@@ -455,11 +509,15 @@ input:disabled {
 import { ref } from "vue";
 import { inject } from "vue";
 import admin from "@/mixins/admin.js";
+import CustomerNewModal from "../customer/CustomerNewModal.vue";
 export default {
-  components: {},
+  components: {
+    CustomerNewModal,
+  },
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
     const autocompleteList = ref([]);
+    const autocompleteCart = ref([]);
     const searchBox = ref(null);
     const products = ref([]);
     const cart = ref({
@@ -481,13 +539,6 @@ export default {
           tax = tax + element.tax;
         });
         return tax;
-      },
-      total_taxable: function () {
-        var total_taxable = 0;
-        this.products.forEach((element, index, array) => {
-          total_taxable = total_taxable + element.taxable_value();
-        });
-        return total_taxable;
       },
       total_price: function () {
         var total_price = 0;
@@ -511,7 +562,7 @@ export default {
         });
         return total_custom_discount;
       },
-      discount: 10,
+      discount: 0,
       total_discount: function () {
         return (
           this.total_auto_discount() +
@@ -519,18 +570,26 @@ export default {
           this.discount
         );
       },
+      total_taxable: function () {
+        var total_taxable = 0;
+        this.products.forEach((element, index, array) => {
+          total_taxable = total_taxable + element.taxable_value();
+        });
+        return total_taxable - this.discount;
+      },
       total_payable: function () {
         var total_payable = 0;
         this.products.forEach((element, index, array) => {
-          total_payable = Number(
+          total_payable += Number(
             parseFloat(total_payable + element.total()).toFixed(2)
           );
         });
-        return total_payable;
+        return total_payable + this.shipping_charge;
       },
     });
     const { axiosAsyncStoreReturnBool, axiosAsyncCallReturnData } = admin();
     var search_product = null;
+    var search_remove = null;
     function confirmDeleteShow(data) {
       emitter.emit("deleteConfirmModal", {
         title: null,
@@ -541,9 +600,6 @@ export default {
         type: "danger",
       });
       window.DELETE_CONFIRM_DEFAULT_MODAL.show();
-    }
-    function foo() {
-      return Math.random();
     }
     function searchProduct(query) {
       var self = this;
@@ -598,6 +654,50 @@ export default {
         self.autocompleteList = [];
       }
     }
+    function searchProductCart(query) {
+      query = query.toLowerCase();
+      if (query) {
+        let items = cart.value.products.filter(
+          (obj) =>
+            obj.name.toLowerCase().includes(query) ||
+            obj.code.toLowerCase().includes(query)
+        ); // match check for name and code
+        if (items.length > 1) {
+          // many product found
+          this.autocompleteCart = items;
+        } else if (items.length == 1) {
+          // One product found
+          this.checkAndRemove(items[0]);
+        } else {
+          // no product found
+          this.autocompleteCart = [];
+          this.search_remove = null;
+          this.emitter.emit("showAlert", {
+            title: "No matching product !",
+            body:
+              "No matching product found in cart for query <b>" +
+              query +
+              "</b> !",
+            type: "danger",
+            play: "danger.mp3",
+          });
+        }
+      } else {
+        this.autocompleteCart = [];
+      }
+    }
+    function checkAndRemove(product) {
+      this.autocompleteCart = [];
+      this.search_remove = null;
+      emitter.emit("deleteConfirmModal", {
+        title: null,
+        body: "Confirm delete <b>" + product.name + "</b> from cart ?",
+        data: product,
+        hide: true,
+        emit: "confirmDeleteProduct",
+        type: "danger",
+      });
+    }
     function checkAndPush(product) {
       if (!this.cart.products.some((data) => data.id === product.id)) {
         // new
@@ -606,7 +706,11 @@ export default {
           product.min_sale_qty == null
             ? 1
             : Number(parseFloat(product.min_sale_qty).toFixed(2));
-        product.quantity = Number(parseFloat(product.min_sale_qty).toFixed(2));
+        product.max_sale_qty =
+          product.max_sale_qty == null
+            ? null
+            : Number(parseFloat(product.max_sale_qty).toFixed(2));
+        product.quantity = Number(parseFloat(product.quantity).toFixed(2));
         product.price = Number(parseFloat(product.price).toFixed(2));
         product.auto_discount =
           product.auto_discount == null
@@ -623,7 +727,7 @@ export default {
             ).toFixed(2)
           );
         };
-        product.tax = 25.253;
+        product.tax = 10;
         product.total = function () {
           return Number(
             (
@@ -641,37 +745,201 @@ export default {
         let index = this.cart.products.findIndex(
           (item) => item.id === product.id
         );
+        let productElement = this.cart.products[index];
         /************************************** */
-        this.cart.products[index].quantity++;
+        if (
+          !this.cart.products[index].max_sale_qty ||
+          (this.cart.products[index].max_sale_qty &&
+            this.cart.products[index].quantity <
+              this.cart.products[index].max_sale_qty)
+        ) {
+          this.cart.products[index].quantity++;
+        } else {
+          emitter.emit("showAlert", {
+            title: "Quantity limit exceeded !",
+            body:
+              "Default maximum quantity " +
+              productElement.max_sale_qty +
+              " applied for the product <b>" +
+              productElement.name +
+              "</b>",
+            type: "danger",
+            play: "danger.mp3",
+          });
+        }
         /************************************** */
       }
       this.autocompleteList = [];
       this.search_product = null;
       this.searchBox.focus();
-      this.emitter.emit("playSound", { file: "add.mp3" });
+    }
+    function changeQuantity(product, quantity) {
+      let index = cart.value.products.findIndex(
+        (item) => item.id === product.id
+      );
+      quantity = Number(parseFloat(quantity).toFixed(2));
+      if (quantity) {
+        if (quantity < product.min_sale_qty) {
+          cart.value.products[index].quantity = product.min_sale_qty;
+          emitter.emit("showAlert", {
+            title: "Minimum quantity required !",
+            body:
+              "Default minimum quantity " +
+              product.min_sale_qty +
+              " applied for the product <b>" +
+              product.name +
+              "</b>",
+            type: "danger",
+            play: "danger.mp3",
+          });
+        } else if (product.max_sale_qty && quantity > product.max_sale_qty) {
+          cart.value.products[index].quantity = product.max_sale_qty;
+          emitter.emit("showAlert", {
+            title: "Quantity limit exceeded !",
+            body:
+              "Default maximum quantity " +
+              product.max_sale_qty +
+              " applied for the product <b>" +
+              product.name +
+              "</b>",
+            type: "danger",
+            play: "danger.mp3",
+          });
+        } else {
+          cart.value.products[index].quantity = quantity;
+          this.searchBox.focus();
+        }
+      } else {
+        cart.value.products[index].quantity = product.min_sale_qty;
+        emitter.emit("showAlert", {
+          title: "Invalid quantity !",
+          body:
+            "Default minimum quantity " +
+            product.min_sale_qty +
+            " applied for the product <b>" +
+            product.name +
+            "</b>",
+          type: "danger",
+          play: "danger.mp3",
+        });
+      }
+    }
+    function changeDiscount(product, discount) {
+      let index = cart.value.products.findIndex(
+        (item) => item.id === product.id
+      );
+      if (discount >= 0) {
+        cart.value.products[index].discount = discount == 0 ? 0 : discount;
+      } else {
+        cart.value.products[index].discount = 0;
+        emitter.emit("showAlert", {
+          title: "Invalid discount !",
+          body:
+            "Discount " +
+            0 +
+            " applied for the product <b>" +
+            product.name +
+            "</b>",
+          type: "danger",
+          play: "danger.mp3",
+        });
+      }
+    }
+    function changePrice(product, price) {
+      let index = cart.value.products.findIndex(
+        (item) => item.id === product.id
+      );
+      if (price > 0) {
+        cart.value.products[index].price = price;
+      } else {
+        cart.value.products[index].price = product.price;
+        emitter.emit("showAlert", {
+          title: "Invalid price !",
+          body:
+            "Previous Price " +
+            product.price +
+            " applied for the product <b>" +
+            product.name +
+            "</b>",
+          type: "danger",
+          play: "danger.mp3",
+        });
+      }
+    }
+    function changeShippingCharge(price) {
+      if (price > 0) {
+        price = parseFloat(price.toFixed(2));
+        cart.value.shipping_charge = price;
+      } else {
+        cart.value.shipping_charge = 0;
+      }
+    }
+    function quantityButton(product, operator) {
+      let index = cart.value.products.findIndex(
+        (item) => item.id === product.id
+      );
+      cart.value.products[index].quantity = Number(
+        cart.value.products[index].quantity
+      ); // get current quantity
+      if (operator == "+") {
+        cart.value.products[index].quantity =
+          product.max_sale_qty && product.quantity + 1 > product.max_sale_qty
+            ? product.max_sale_qty
+            : product.quantity + 1;
+      } else {
+        cart.value.products[index].quantity =
+          product.quantity - 1 < product.min_sale_qty
+            ? product.min_sale_qty
+            : product.quantity - 1;
+      }
+      this.searchBox.focus();
     }
     function lostProductFocus() {}
     emitter.on("confirmDeleteProduct", (data) => {
       // delete selected product stuff here
       let index = cart.value.products.findIndex((item) => item.id === data.id);
       cart.value.products.splice(index, 1);
-      emitter.emit("playSound", { file: "add.mp3" });
     });
+    function newCustomer() {
+      emitter.emit("newCustomerModal", {
+        title: "New Customer",
+        type: "success",
+        emit: "changeCutomer",
+      });
+    }
     return {
       emitter,
+      newCustomer,
       searchProduct,
+      searchProductCart,
       search_product,
+      search_remove,
       confirmDeleteShow,
       autocompleteList,
+      autocompleteCart,
       axiosAsyncCallReturnData,
       checkAndPush,
+      checkAndRemove,
       products,
       searchBox,
       lostProductFocus,
       cart,
+      changeQuantity,
+      quantityButton,
+      changeDiscount,
+      changePrice,
+      changeShippingCharge,
     };
   },
   methods: {},
+  watch: {
+    cart: {
+      handler() {
+        this.emitter.emit("playSound", { file: "add.mp3" });
+      },
+      deep: true,
+    },
+  },
   beforeUnmount() {
     var self = this;
     self.emitter.off("confirmDeleteProduct");

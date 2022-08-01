@@ -14,14 +14,15 @@ class Pos_model extends CI_Model
 		p.id														as id,
 		p.code														as code,
 		p.name														as name,
-		p.name														as value,
 		p.price														as price,
 		p.mrp														as mrp,
 		p.thumbnail													as thumbnail,
 		p.auto_discount												as auto_discount,
-		p.pos_min_sale_qty											as min_sale_qty,
+		IFNULL(p.pos_min_sale_qty, 1)								as min_sale_qty,
+		p.pos_max_sale_qty											as max_sale_qty,
+		p.pos_custom_discount										as allow_custom_discount,
 		p.tax_method												as tax_method,
-		1															as quantity,
+		IFNULL(p.pos_min_sale_qty, 1)								as quantity,
 		DATE_FORMAT(p.mfg_date,"%d/%b/%Y")							as mfg_date,
 		DATE_FORMAT(p.exp_date,"%d/%b/%Y")							as exp_date,
 
@@ -104,7 +105,7 @@ class Pos_model extends CI_Model
 		$this->db->join(TABLE_PRODUCT_TYPE . '		pt',	'pt.id=p.type',	'left');
 		$this->db->join(TABLE_BARCODE_SYMBOLOGY . '	bs',	'bs.id=p.symbology',	'left');
 		$this->db->join(TABLE_CATEGORY . '			c',	'c.id=p.category',	'left');
-		$this->db->join(TABLE_SUB_CATEGORY . '		sc',	'sc.id=p.sub_category',	'left');
+		$this->db->join(TABLE_CATEGORY . '		sc',	'sc.id=p.sub_category',	'left');
 		$this->db->join(TABLE_BRAND . '				b',	'b.id=p.brand',	'left');
 		$this->db->join(TABLE_UNIT . '				u',	'u.id=p.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . '			tr',	'tr.id=p.tax_rate',	'left');
