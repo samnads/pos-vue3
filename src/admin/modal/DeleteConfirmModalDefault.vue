@@ -48,7 +48,9 @@ export default {
       data.value = DATA.data;
       delete DATA.data;
       params.value = DATA;
-      emitter.emit("playSound", { file: "warning.mp3" }); // PLAY SOUND
+      emitter.emit("playSound", {
+        file: params.value.play ? params.value.play : "warning.mp3",
+      }); // PLAY SOUND
       // show modal
       window.DELETE_CONFIRM_DEFAULT_MODAL.show();
     });

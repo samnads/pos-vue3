@@ -90,13 +90,11 @@
                   <th scope="col" class="fit">HSN</th>
                   <th scope="col" width="13%" class="text-center">Quantity</th>
                   <th scope="col" width="10%" class="text-end">Unit Price</th>
-                  <th scope="col" width="8%" class="text-end">Auto Discount</th>
+                  <th scope="col" class="text-end fit">Auto Discount</th>
                   <th scope="col" width="8%" class="text-end">Discount</th>
-                  <th scope="col" width="10%" class="text-end">
-                    Taxable Value
-                  </th>
-                  <th scope="col" width="12%">Tax</th>
-                  <th scope="col">Total</th>
+                  <th scope="col" class="text-end fit">Taxable Value</th>
+                  <th scope="col" class="fit">Tax</th>
+                  <th scope="col" class="fit">Total</th>
                   <th scope="col" class="text-center fit">
                     <span role="button" class="btn-sm btn-outline-danger"
                       ><i class="fa-solid fa-trash"></i
@@ -113,7 +111,7 @@
                   <th scope="row">{{ index + 1 }}</th>
                   <td>{{ product.code }}</td>
                   <td>{{ product.name }}</td>
-                  <td>{{ product.hsn }}</td>
+                  <td>{{ product.hsn || "-" }}</td>
                   <td>
                     <div class="input-group input-group-sm is-invalid">
                       <button
@@ -159,9 +157,7 @@
                     />
                   </td>
                   <td class="text-danger text-end">
-                    {{
-                      (product.auto_discount * product.quantity).toFixed(2) || 0
-                    }}
+                    {{ product.total_auto_discount_().toFixed(2) }}
                   </td>
                   <td>
                     <input
@@ -171,15 +167,20 @@
                         no-arrow
                         text-danger text-end
                       "
+                      @focus="$event.target.select()"
                       v-model="product.discount"
                       @change="changeDiscount(product, product.discount)"
                       :disabled="!product.allow_custom_discount"
                     />
                   </td>
-                  <td class="text-end">{{ product.taxable_value() }}</td>
-                  <td class="text-end">{{ product.tax }}</td>
+                  <td class="text-end">
+                    {{ product.total_taxable_value_().toFixed(2) }}
+                  </td>
+                  <td class="text-end">
+                    {{ product.total_tax_().toFixed(2) }}
+                  </td>
                   <td class="text-end fw-bold">
-                    {{ product.total() }}
+                    {{ product.total_().toFixed(2) }}
                   </td>
                   <td>
                     <span
@@ -245,7 +246,7 @@
                 </tr>-->
               </tbody>
             </table>
-            {{ cart }}
+            {{ cartr }}
           </div>
         </div>
         <div class="col-3 right">
@@ -321,16 +322,26 @@
                     {{ cart.total_custom_discount().toFixed(2) }}
                   </td>
                   <td class="bg-secondary">Cart Disc.</td>
-                  <td
-                    class="bg-warning bg-gradient text-dark text-end"
-                    role="button"
-                  >
-                    <div class="d-flex justify-content-between">
+                  <td class="bg-warning bg-gradient text-dark text-end p-0">
+                    <div class="input-group input-group-sm">
+                      <span class="input-group-text rounded-0"
+                        ><i class="fa-solid fa-tag"></i
+                      ></span>
+                      <input
+                        type="number"
+                        step="any"
+                        class="form-control text-end rounded-0 no-arrow"
+                        v-model="cart.discount"
+                        @focus="$event.target.select()"
+                        @change="changeCartDiscount(cart.discount)"
+                      />
+                    </div>
+                    <!--<div class="d-flex justify-content-between">
                       <div class="text-muted">
                         <i class="fa-solid fa-tag"></i>
                       </div>
                       <div>{{ cart.discount.toFixed(2) }}</div>
-                    </div>
+                    </div>-->
                   </td>
                 </tr>
                 <tr class="border-bottom border-dark">
@@ -344,9 +355,9 @@
                         type="number"
                         step="any"
                         class="form-control text-end rounded-0 no-arrow"
-                        v-model="cart.shipping_charge"
+                        v-model="cart.shipping"
                         @focus="$event.target.select()"
-                        @change="changeShippingCharge(cart.shipping_charge)"
+                        @change="changeShippingCharge(cart.shipping)"
                       />
                     </div>
                     <!--<div class="d-flex justify-content-between">
@@ -362,7 +373,7 @@
                   </td>
                 </tr>
                 <tr class="border-bottom border-dark">
-                  <td class="bg-secondary">Taxable Value</td>
+                  <td class="bg-secondary">Packing</td>
                   <td class="bg-primary text-end">-</td>
                   <td class="bg-secondary">Taxable Value</td>
                   <td class="bg-primary text-end">
@@ -375,7 +386,7 @@
 
                   <td class="bg-secondary">Tax</td>
                   <td class="bg-info text-end">
-                    {{ cart.total_taxable().toFixed(2) }}
+                    {{ cart.tax().toFixed(2) }}
                   </td>
                 </tr>
                 <tr class="border-bottom border-dark">
@@ -397,6 +408,7 @@
                     <button
                       class="btn btn-danger w-100 rounded-0"
                       type="button"
+                      @click="cancelPos"
                       :disabled="cart.products.length == 0"
                     >
                       Cancel
@@ -406,6 +418,7 @@
                     <button
                       class="btn btn-warning w-100 rounded-0"
                       type="button"
+                      @click="draftPos"
                       :disabled="cart.products.length == 0"
                     >
                       Draft
@@ -416,6 +429,7 @@
                       class="btn btn-success w-100 rounded-0"
                       style="min-height: 78px"
                       type="button"
+                      @click="checkoutPos"
                       :disabled="cart.products.length == 0"
                     >
                       <span class="fs-5"
@@ -431,6 +445,7 @@
                     <button
                       class="btn btn-info w-100 rounded-0"
                       type="button"
+                      @click="printPos"
                       :disabled="cart.products.length == 0"
                     >
                       Print
@@ -522,47 +537,47 @@ export default {
     const products = ref([]);
     const cart = ref({
       products: [],
-      shipping_charge: 0,
+      packing: 0,
+      shipping: 0,
+      discount: 0,
       total_items: function () {
         return this.products.length;
       },
       total_quantity: function () {
         var total_quantity = 0;
         this.products.forEach((element, index, array) => {
-          total_quantity = total_quantity + element.quantity;
+          total_quantity += element.quantity;
         });
         return total_quantity;
       },
       tax: function () {
         var tax = 0;
         this.products.forEach((element, index, array) => {
-          tax = tax + element.tax;
+          tax += element.total_tax_();
         });
         return tax;
       },
       total_price: function () {
         var total_price = 0;
         this.products.forEach((element, index, array) => {
-          total_price = total_price + element.price * element.quantity;
+          total_price += element.total_quantity_price_();
         });
         return total_price;
       },
       total_auto_discount: function () {
         var total_auto_discount = 0;
         this.products.forEach((element, index, array) => {
-          total_auto_discount =
-            total_auto_discount + element.auto_discount * element.quantity;
+          total_auto_discount += element.total_auto_discount_();
         });
         return total_auto_discount;
       },
       total_custom_discount: function () {
         var total_custom_discount = 0;
         this.products.forEach((element, index, array) => {
-          total_custom_discount = total_custom_discount + element.discount;
+          total_custom_discount += element.discount;
         });
         return total_custom_discount;
       },
-      discount: 0,
       total_discount: function () {
         return (
           this.total_auto_discount() +
@@ -573,18 +588,16 @@ export default {
       total_taxable: function () {
         var total_taxable = 0;
         this.products.forEach((element, index, array) => {
-          total_taxable = total_taxable + element.taxable_value();
+          total_taxable += element.total_taxable_value_();
         });
-        return total_taxable - this.discount;
+        return total_taxable;
       },
       total_payable: function () {
         var total_payable = 0;
         this.products.forEach((element, index, array) => {
-          total_payable += Number(
-            parseFloat(total_payable + element.total()).toFixed(2)
-          );
+          total_payable += Number(parseFloat(element.total_()).toFixed(2));
         });
-        return total_payable + this.shipping_charge;
+        return total_payable - this.discount + this.shipping;
       },
     });
     const { axiosAsyncStoreReturnBool, axiosAsyncCallReturnData } = admin();
@@ -715,26 +728,44 @@ export default {
         product.auto_discount =
           product.auto_discount == null
             ? 0
-            : Number(
-                parseFloat(product.auto_discount * product.quantity).toFixed(2)
-              );
-        product.discount = 0; // custom discout per item (not quantity)
-        product.taxable_value = function () {
+            : Number(parseFloat(product.auto_discount).toFixed(2));
+        product.discount = 0; // custom discout per item (not per quantity)
+        product.taxable_value = Number(
+          (
+            product.price * product.quantity -
+            product.quantity * product.auto_discount
+          ).toFixed(2)
+        );
+        product.tax = 20;
+        product.total_quantity_price_ = function () {
+          return Number(
+            parseFloat(product.price * product.quantity).toFixed(2)
+          );
+        };
+        product.total_auto_discount_ = function () {
+          return Number(
+            parseFloat(product.auto_discount * product.quantity).toFixed(2)
+          );
+        };
+        product.total_taxable_value_ = function () {
           return Number(
             (
-              product.price * product.quantity -
-              product.quantity * product.auto_discount
+              product.total_quantity_price_() -
+              product.total_auto_discount_() -
+              product.discount
             ).toFixed(2)
           );
         };
-        product.tax = 10;
-        product.total = function () {
+        product.total_tax_ = function () {
+          return 20;
+        };
+        product.total_ = function () {
           return Number(
             (
-              product.price * product.quantity -
-              product.quantity * product.auto_discount -
+              product.total_quantity_price_() -
+              product.total_auto_discount_() -
               product.discount +
-              product.tax
+              product.total_tax_()
             ).toFixed(2)
           );
         };
@@ -869,9 +900,17 @@ export default {
     function changeShippingCharge(price) {
       if (price > 0) {
         price = parseFloat(price.toFixed(2));
-        cart.value.shipping_charge = price;
+        cart.value.shipping = price;
       } else {
-        cart.value.shipping_charge = 0;
+        cart.value.shipping = 0;
+      }
+    }
+    function changeCartDiscount(discount) {
+      if (discount > 0) {
+        discount = parseFloat(discount.toFixed(2));
+        cart.value.discount = discount;
+      } else {
+        cart.value.discount = 0;
       }
     }
     function quantityButton(product, operator) {
@@ -900,6 +939,31 @@ export default {
       let index = cart.value.products.findIndex((item) => item.id === data.id);
       cart.value.products.splice(index, 1);
     });
+    function cancelPos() {
+      emitter.emit("deleteConfirmModal", {
+        title: "Cancel Sale ?",
+        body: "Cancel current sale ?",
+        hide: true,
+        emit: "confirmCancelSale",
+        type: "danger",
+        play: "pos cancel sale.mp3",
+      });
+    }
+    emitter.on("confirmCancelSale", (data) => {
+      cart.value.products = [];
+      cart.value.packing = cart.value.shipping = cart.value.discount = 0;
+    });
+    function draftPos() {
+      alert("draftPos");
+    }
+    function printPos() {
+      alert("printPos");
+    }
+    function checkoutPos() {
+      emitter.emit("playSound", {
+        file: "pos checkout.mp3",
+      });
+    }
     function newCustomer() {
       emitter.emit("newCustomerModal", {
         title: "New Customer",
@@ -929,6 +993,11 @@ export default {
       changeDiscount,
       changePrice,
       changeShippingCharge,
+      changeCartDiscount,
+      cancelPos,
+      draftPos,
+      printPos,
+      checkoutPos,
     };
   },
   methods: {},
