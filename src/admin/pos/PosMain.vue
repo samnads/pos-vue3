@@ -1,11 +1,196 @@
 <template>
   <CustomerNewModal />
+  <!-- Button trigger modal -->
+  <button
+    type="button"
+    class="btn btn-primary"
+    data-bs-toggle="modal"
+    data-bs-target="#exampleModal"
+  >
+    Launch demo modal
+  </button>
+
+  <!-- Modal -->
+  <div
+    class="modal fade"
+    id="exampleModal"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div
+      class="
+        modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable
+      "
+    >
+      <div class="modal-content">
+        <div class="modal-header bg-success">
+          <h5 class="modal-title" id="exampleModalLabel">Checkout Sale</h5>
+        </div>
+        <div class="modal-body">
+          <div class="card mb-2">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-6">
+                  <label class="form-label">Customer</label> : Walk-in Customer
+                </div>
+                <div class="col-6 text-end">
+                  <label class="form-label"> Customer ID</label> : CUS7116
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6">
+                  <label class="form-label">Total Items</label> :
+                  {{ cart.products.length }} ({{ cart.total_quantity() }})
+                </div>
+                <div class="col-6 text-end">
+                  <label class="form-label"> Customer Group</label> : CUS7116
+                </div>
+              </div>
+              <hr class="m-0" />
+              <div class="row">
+                <div class="col-6">
+                  <label class="form-label">Total Payable</label> :
+                  <span class="fs-4 text-danger">{{
+                    cart.total_payable_round().toFixed(2)
+                  }}</span>
+                </div>
+                <div class="col-6 text-end">
+                  <label class="form-label">Due Amount</label> :
+                  <span class="fs-4 text-danger">{{
+                    cart.total_payable_round().toFixed(2)
+                  }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="background-color: #fafafa">
+            <div class="card-body">
+              <h5 class="card-title">Payment Details</h5>
+              <ul class="list-group">
+                <li class="list-group-item">
+                  <div class="row">
+                    <div class="col">
+                      <label class="form-label">Amount<i>*</i></label>
+                      <input type="number" step="any" class="form-control" />
+                    </div>
+                    <div class="col">
+                      <label class="form-label">Payment Method<i>*</i></label>
+                      <select
+                        class="form-select"
+                        aria-label="Default select example"
+                      >
+                        <option selected>Cash</option>
+                        <option value="1">Debit Card</option>
+                        <option value="2">Credit Card</option>
+                        <option value="2">G-Pay</option>
+                        <option value="2">Phonepe</option>
+                        <option value="2">Amazon Pay</option>
+                        <option value="3">Other UPI</option>
+                      </select>
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item">
+                  <div class="row">
+                    <div class="col-10 p-0">
+                      <span class="ms-2 text-muted"
+                        >can pay using multiple methods by clicking the +
+                        button.</span
+                      >
+                    </div>
+                    <div class="col-2 text-end p-0">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-secondary"
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="left"
+                        data-bs-title="Add New Payment"
+                      >
+                        <i class="fa-solid fa-plus"></i>
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            <i class="fa-solid fa-angle-left"></i>Back
+          </button>
+          <button type="button" class="btn btn-success">
+            Confirm&nbsp;<i class="fa-solid fa-check"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div id="posmain">
     <div class="wrap_content p-2 rounded">
       <div class="row">
         <div class="col-9 left">
           <div class="row">
             <div class="col-10">
+              <div class="input-group mb-2">
+                <span
+                  class="input-group-text"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="right"
+                  title="Scan & Add Product"
+                  ><i class="fa-solid fa-barcode"></i
+                ></span>
+                <!--<input
+                  type="text"
+                  class="form-control"
+                  placeholder="Scan code or type product name..."
+                  ref="searchBox"
+                  v-model="search_product"
+                  @input="searchProduct(search_product)"
+                  v-on:blur="lostProductFocus()"
+                />-->
+
+                <AutoComplete
+                  type="text"
+                  class="form-control"
+                  placeholder="Scan code or type product name..."
+                  ref="searchBox"
+                  v-model="search_product"
+                  @input="searchProduct(search_product)"
+                  :results="autocompleteList"
+                  @onSelect="checkAndPush"
+                ></AutoComplete>
+
+                <!--<ul
+                  class="mdb-autocomplete-wrap list-group"
+                  style="max-height: 225px"
+                >
+                  <li
+                    @click="checkAndPush(item)"
+                    class="list-group-item list-group-item-action"
+                    v-for="item in autocompleteList"
+                    :key="item.id"
+                    :value="item.name"
+                  >
+                    {{ item.label }}
+                  </li>
+                </ul>-->
+                <span
+                  class="input-group-text bg-info"
+                  role="button"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="left"
+                  title="New Product"
+                  ><i class="fa-solid fa-plus"></i
+                ></span>
+              </div>
+            </div>
+            <!--<div class="col-10">
               <div class="input-group mb-2">
                 <span
                   class="input-group-text"
@@ -46,7 +231,7 @@
                   ><i class="fa-solid fa-plus"></i
                 ></span>
               </div>
-            </div>
+            </div>-->
             <div class="col-2">
               <div class="input-group mb-2" v-show="cart.products.length > 0">
                 <span
@@ -96,7 +281,7 @@
                   <th scope="col" class="fit">Tax</th>
                   <th scope="col" class="fit">Total</th>
                   <th scope="col" class="text-center fit">
-                    <span role="button" class="btn-sm btn-outline-danger"
+                    <span class="btn-sm btn-outline-danger"
                       ><i class="fa-solid fa-trash"></i
                     ></span>
                   </th>
@@ -246,7 +431,8 @@
                 </tr>-->
               </tbody>
             </table>
-            {{ cartr }}
+
+            {{ cart }}
           </div>
         </div>
         <div class="col-3 right">
@@ -374,15 +560,29 @@
                 </tr>
                 <tr class="border-bottom border-dark">
                   <td class="bg-secondary">Packing</td>
-                  <td class="bg-primary text-end">-</td>
+                  <td class="bg-primary text-end p-0">
+                    <div class="input-group input-group-sm">
+                      <span class="input-group-text rounded-0"
+                        ><i class="fa-solid fa-gift"></i
+                      ></span>
+                      <input
+                        type="number"
+                        step="any"
+                        class="form-control text-end rounded-0 no-arrow"
+                        v-model="cart.packing"
+                        @focus="$event.target.select()"
+                        @change="changePackingCharge(cart.packing)"
+                      />
+                    </div>
+                  </td>
                   <td class="bg-secondary">Taxable Value</td>
                   <td class="bg-primary text-end">
                     {{ cart.total_taxable().toFixed(2) }}
                   </td>
                 </tr>
                 <tr class="border-bottom border-dark">
-                  <td class="bg-secondary">Packing</td>
-                  <td class="bg-primary text-end">-</td>
+                  <td class="bg-secondary">Round off</td>
+                  <td class="bg-primary text-end">{{ cart.round_off() }}</td>
 
                   <td class="bg-secondary">Tax</td>
                   <td class="bg-info text-end">
@@ -399,7 +599,7 @@
                   >
                     <div class="d-flex justify-content-between">
                       <div class="text-muted">₹</div>
-                      <div>{{ cart.total_payable().toFixed(2) }}</div>
+                      <div>{{ cart.total_payable_round().toFixed(2) }}</div>
                     </div>
                   </td>
                 </tr>
@@ -597,7 +797,26 @@ export default {
         this.products.forEach((element, index, array) => {
           total_payable += Number(parseFloat(element.total_()).toFixed(2));
         });
-        return total_payable - this.discount + this.shipping;
+        total_payable =
+          total_payable - this.discount + this.shipping + this.packing;
+        return total_payable;
+      },
+      total_payable_round: function () {
+        var total_payable = 0;
+        this.products.forEach((element, index, array) => {
+          total_payable += Number(parseFloat(element.total_()).toFixed(2));
+        });
+        total_payable =
+          total_payable - this.discount + this.shipping + this.packing;
+        var round_off = total_payable - Math.floor(total_payable);
+        return total_payable - round_off;
+      },
+      round_off: function () {
+        return Number(
+          parseFloat(this.total_payable_round() - this.total_payable()).toFixed(
+            2
+          )
+        );
       },
     });
     const { axiosAsyncStoreReturnBool, axiosAsyncCallReturnData } = admin();
@@ -905,6 +1124,14 @@ export default {
         cart.value.shipping = 0;
       }
     }
+    function changePackingCharge(price) {
+      if (price > 0) {
+        price = parseFloat(price.toFixed(2));
+        cart.value.packing = price;
+      } else {
+        cart.value.packing = 0;
+      }
+    }
     function changeCartDiscount(discount) {
       if (discount > 0) {
         discount = parseFloat(discount.toFixed(2));
@@ -993,6 +1220,7 @@ export default {
       changeDiscount,
       changePrice,
       changeShippingCharge,
+      changePackingCharge,
       changeCartDiscount,
       cancelPos,
       draftPos,

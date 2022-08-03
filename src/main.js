@@ -11,6 +11,10 @@ import "bootstrap" // js
 // fontawesome
 import "@fortawesome/fontawesome-free/css/all.min.css" // css
 import "@fortawesome/fontawesome-free/js/all.min" // js
+// vue autocomplete
+import AutoComplete from 'vue3-autocomplete'
+// Optional: Import default CSS
+import 'vue3-autocomplete/dist/vue3-autocomplete.css'
 //
 import Notifications from '@kyvg/vue3-notification'
 // global components
@@ -34,4 +38,5 @@ app.use(VueProgressBar, options);
 app.use(Notifications);
 app.provide('emitter',emitter);
 app.mount('#app');
+app.component('AutoComplete', AutoComplete)
 app.component("AdminLoadingSpinnerDiv", AdminLoadingSpinnerDiv); // global registration - can be used anywhere
