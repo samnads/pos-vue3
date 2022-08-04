@@ -57,6 +57,10 @@
                   v-for="p in cart.payments"
                   :key="p.id"
                 >
+                <span class="position-absolute top-0 start-100 translate-middle p-2 bg-light border border-light">
+                  <i class="fa-solid fa-xmark"></i>
+    <span class="visually-hidden">New alerts</span>
+  </span>
                   <div class="row">
                     <div class="col">
                       <label class="form-label">Amount<i>*</i></label>
@@ -65,14 +69,14 @@
                         step="any"
                         class="form-control"
                         v-model="p.amount"
-                         @focus="$event.target.select()"
+                        @focus="$event.target.select()"
                       />
                     </div>
                     <div class="col">
                       <label class="form-label">Payment Method<i>*</i></label>
                       <select
                         class="form-select"
-                        name="type"
+                        v-model="p.method"
                         :disabled="!paymentModes"
                       >
                         <option selected :value="null" v-if="!paymentModes">
@@ -88,6 +92,7 @@
                       </select>
                     </div>
                   </div>
+                  <span class="badge bg-primary rounded-pill">14</span>
                 </li>
                 <li class="list-group-item">
                   <div class="row">
@@ -98,15 +103,31 @@
                       >
                     </div>
                     <div class="col-2 text-end p-0">
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-secondary"
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="left"
-                        data-bs-title="Add New Payment"
-                      >
-                        <i class="fa-solid fa-plus"></i>
-                      </button>
+                      <div class="btn-group dropstart">
+                        <button
+                          class="btn btn-sm btn-secondary rounded"
+                          type="button"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                          :disabled="!paymentModes"
+                        >
+                          <i class="fa-solid fa-plus"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li
+                            v-for="m in paymentModes"
+                            :key="m.id"
+                            :value="m.id"
+                            @click="addNewPayment(m.id)"
+                          >
+                            <a class="dropdown-item" href="#"
+                              ><i class="fa-solid fa-plus"></i>&nbsp;{{
+                                m.name
+                              }}</a
+                            >
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </li>
@@ -1188,6 +1209,10 @@ export default {
         emit: "changeCutomer",
       });
     }
+    function addNewPayment(method) {
+      let payMethod = { amount: 0, method: method };
+      cart.value.payments.push(payMethod);
+    }
     return {
       emitter,
       newCustomer,
@@ -1218,6 +1243,7 @@ export default {
       printPos,
       checkoutPos,
       paymentModes,
+      addNewPayment,
     };
   },
   methods: {},
