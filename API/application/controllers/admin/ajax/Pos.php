@@ -10,6 +10,7 @@ class Pos extends CI_Controller
         $_POST = raw_input_to_post();
         $action = $this->input->get('action') ?: $this->input->post('action');
         $search = $this->input->get('search') ?: $this->input->post('search');
+        $dropdown = $this->input->get('dropdown') ?: $this->input->post('dropdown');
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET': // read
                 switch ($action) {
@@ -86,6 +87,18 @@ class Pos extends CI_Controller
                 $query["order"] = 'asc';
                 $query["query"] = $this->input->get('query');
                 $query = $this->Pos_model->suggestProdsForPosCart($query["query"], $query["offset"], $query["limit"], $query["order_by"], $query["order"]);
+                $error = $this->db->error();
+                if ($error['code'] == 0) {
+                    echo json_encode(array('success' => true, 'type' => 'success', 'data' => $query->result()));
+                } else {
+                    echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
+                }
+                break;
+            default:
+        }
+        switch ($dropdown) { // dropdown jobs
+            case 'payment_modes':
+                $query = $this->Pos_model->getPaymentModes(null,null);
                 $error = $this->db->error();
                 if ($error['code'] == 0) {
                     echo json_encode(array('success' => true, 'type' => 'success', 'data' => $query->result()));

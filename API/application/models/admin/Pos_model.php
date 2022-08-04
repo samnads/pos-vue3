@@ -123,4 +123,15 @@ class Pos_model extends CI_Model
 		$query = $this->db->get();
 		return $query;
 	}
+	function getPaymentModes($columns, $where)
+	{
+		$columns ? $this->db->select($columns) : $this->db->select('
+		pm.id as id,
+        pm.name as name,
+		pm.description as description');
+		$this->db->from(TABLE_PAYMENT_MODE . ' pm');
+		$where ? $this->db->where($where) : null;
+		$query = $this->db->get();
+		return $query;
+	}
 }

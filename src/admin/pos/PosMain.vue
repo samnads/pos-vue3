@@ -1,23 +1,7 @@
 <template>
   <CustomerNewModal />
-  <!-- Button trigger modal -->
-  <button
-    type="button"
-    class="btn btn-primary"
-    data-bs-toggle="modal"
-    data-bs-target="#exampleModal"
-  >
-    Launch demo modal
-  </button>
-
-  <!-- Modal -->
-  <div
-    class="modal fade"
-    id="exampleModal"
-    tabindex="-1"
-    aria-labelledby="exampleModalLabel"
-    aria-hidden="true"
-  >
+  <!-- Checkout Modal -->
+  <div class="modal" id="checkoutFinalModal" tabindex="-1" aria-hidden="true">
     <div
       class="
         modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable
@@ -25,7 +9,7 @@
     >
       <div class="modal-content">
         <div class="modal-header bg-success">
-          <h5 class="modal-title" id="exampleModalLabel">Checkout Sale</h5>
+          <h5 class="modal-title">Checkout Sale</h5>
         </div>
         <div class="modal-body">
           <div class="card mb-2">
@@ -56,7 +40,7 @@
                   }}</span>
                 </div>
                 <div class="col-6 text-end">
-                  <label class="form-label">Due Amount</label> :
+                  <label class="form-label">Total Previous Due Amount</label> :
                   <span class="fs-4 text-danger">{{
                     cart.total_payable_round().toFixed(2)
                   }}</span>
@@ -68,25 +52,39 @@
             <div class="card-body">
               <h5 class="card-title">Payment Details</h5>
               <ul class="list-group">
-                <li class="list-group-item">
+                <li
+                  class="list-group-item"
+                  v-for="p in cart.payments"
+                  :key="p.id"
+                >
                   <div class="row">
                     <div class="col">
                       <label class="form-label">Amount<i>*</i></label>
-                      <input type="number" step="any" class="form-control" />
+                      <input
+                        type="number"
+                        step="any"
+                        class="form-control"
+                        v-model="p.amount"
+                         @focus="$event.target.select()"
+                      />
                     </div>
                     <div class="col">
                       <label class="form-label">Payment Method<i>*</i></label>
                       <select
                         class="form-select"
-                        aria-label="Default select example"
+                        name="type"
+                        :disabled="!paymentModes"
                       >
-                        <option selected>Cash</option>
-                        <option value="1">Debit Card</option>
-                        <option value="2">Credit Card</option>
-                        <option value="2">G-Pay</option>
-                        <option value="2">Phonepe</option>
-                        <option value="2">Amazon Pay</option>
-                        <option value="3">Other UPI</option>
+                        <option selected :value="null" v-if="!paymentModes">
+                          Loading...
+                        </option>
+                        <option
+                          v-for="m in paymentModes"
+                          :key="m.id"
+                          :value="m.id"
+                        >
+                          {{ m.name }}
+                        </option>
                       </select>
                     </div>
                   </div>
@@ -95,7 +93,7 @@
                   <div class="row">
                     <div class="col-10 p-0">
                       <span class="ms-2 text-muted"
-                        >can pay using multiple methods by clicking the +
+                        >You can pay using multiple methods by clicking the +
                         button.</span
                       >
                     </div>
@@ -145,7 +143,7 @@
                   title="Scan & Add Product"
                   ><i class="fa-solid fa-barcode"></i
                 ></span>
-                <!--<input
+                <input
                   type="text"
                   class="form-control"
                   placeholder="Scan code or type product name..."
@@ -153,25 +151,15 @@
                   v-model="search_product"
                   @input="searchProduct(search_product)"
                   v-on:blur="lostProductFocus()"
-                />-->
-
-                <AutoComplete
-                  type="text"
-                  class="form-control"
-                  placeholder="Scan code or type product name..."
-                  ref="searchBox"
-                  v-model="search_product"
-                  @input="searchProduct(search_product)"
-                  :results="autocompleteList"
-                  @onSelect="checkAndPush"
-                ></AutoComplete>
-
-                <!--<ul
-                  class="mdb-autocomplete-wrap list-group"
+                />
+                <ul
+                  id="search-product-list"
+                  class="autocomplete-wrap list-group"
                   style="max-height: 225px"
                 >
                   <li
                     @click="checkAndPush(item)"
+                    role="button"
                     class="list-group-item list-group-item-action"
                     v-for="item in autocompleteList"
                     :key="item.id"
@@ -179,7 +167,7 @@
                   >
                     {{ item.label }}
                   </li>
-                </ul>-->
+                </ul>
                 <span
                   class="input-group-text bg-info"
                   role="button"
@@ -209,7 +197,7 @@
                   v-on:blur="lostProductFocus()"
                 />
                 <ul
-                  class="mdb-autocomplete-wrap list-group"
+                  class="autocomplete-wrap list-group"
                   style="max-height: 225px"
                 >
                   <li
@@ -233,7 +221,7 @@
               </div>
             </div>-->
             <div class="col-2">
-              <div class="input-group mb-2" v-show="cart.products.length > 0">
+              <div class="input-group mb-2">
                 <span
                   class="input-group-text"
                   data-bs-toggle="tooltip"
@@ -247,9 +235,10 @@
                   placeholder="Scan & remove product from cart"
                   v-model="search_remove"
                   @input="searchProductCart(search_remove)"
+                  :disabled="cart.products.length == 0"
                 />
                 <ul
-                  class="mdb-autocomplete-wrap list-group"
+                  class="autocomplete-wrap list-group"
                   style="max-height: 225px"
                 >
                   <li
@@ -258,6 +247,7 @@
                     v-for="item in autocompleteCart"
                     :key="item.id"
                     :value="item.name"
+                    role="button"
                   >
                     {{ item.label }}
                   </li>
@@ -630,7 +620,7 @@
                       style="min-height: 78px"
                       type="button"
                       @click="checkoutPos"
-                      :disabled="cart.products.length == 0"
+                      :disable="cart.products.length == 0"
                     >
                       <span class="fs-5"
                         ><i class="fa-solid fa-credit-card"></i></span
@@ -661,15 +651,7 @@
   </div>
 </template>
 <style scoped>
-.btn.my-btn {
-  right: 0;
-  top: 0;
-  height: 100%;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-.mdb-autocomplete-wrap {
+.autocomplete-wrap {
   position: absolute;
   margin-top: 38px;
   right: 0;
@@ -721,9 +703,11 @@ button:disabled {
 </style>
 <script>
 /* eslint-disable */
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { inject } from "vue";
 import admin from "@/mixins/admin.js";
+import { Modal } from "bootstrap";
+import { useStore } from "vuex";
 import CustomerNewModal from "../customer/CustomerNewModal.vue";
 export default {
   components: {
@@ -735,8 +719,13 @@ export default {
     const autocompleteCart = ref([]);
     const searchBox = ref(null);
     const products = ref([]);
+    const store = useStore();
+    let paymentModes = computed(function () {
+      return store.state.PAYMENT_MODES;
+    });
     const cart = ref({
       products: [],
+      payments: [{ amount: 0, method: 2 }],
       packing: 0,
       shipping: 0,
       discount: 0,
@@ -1187,9 +1176,10 @@ export default {
       alert("printPos");
     }
     function checkoutPos() {
-      emitter.emit("playSound", {
+      /*emitter.emit("playSound", {
         file: "pos checkout.mp3",
-      });
+      });*/
+      window.CHECKOUT_FINAL_MODAL.show();
     }
     function newCustomer() {
       emitter.emit("newCustomerModal", {
@@ -1208,6 +1198,7 @@ export default {
       confirmDeleteShow,
       autocompleteList,
       autocompleteCart,
+      axiosAsyncStoreReturnBool,
       axiosAsyncCallReturnData,
       checkAndPush,
       checkAndRemove,
@@ -1226,6 +1217,7 @@ export default {
       draftPos,
       printPos,
       checkoutPos,
+      paymentModes,
     };
   },
   methods: {},
@@ -1236,6 +1228,28 @@ export default {
       },
       deep: true,
     },
+  },
+  mounted() {
+    var self = this;
+    window.CHECKOUT_FINAL_MODAL = new Modal($("#checkoutFinalModal"), {
+      backdrop: true,
+      show: true,
+    });
+    if (!this.paymentModes) {
+      // if not found on store
+      this.axiosAsyncStoreReturnBool("storePaymentModes", "pos", {
+        action: "create",
+        dropdown: "payment_modes",
+      });
+      // get product types
+    }
+    document.onclick = function () {
+      // hide dropdowns and reset search
+      self.autocompleteList = [];
+      self.autocompleteCart = [];
+      self.search_product = null;
+      self.search_remove = null;
+    };
   },
   beforeUnmount() {
     var self = this;

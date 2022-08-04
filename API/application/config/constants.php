@@ -118,3 +118,4 @@ defined('TABLE_ROLE_PERMISSION')    or define('TABLE_ROLE_PERMISSION', 'role_per
 defined('TABLE_STOCK_ADJUSTMENT')   or define('TABLE_STOCK_ADJUSTMENT', 'stock_adjustment');
 defined('TABLE_STOCK_ADJUSTMENT_PRODUCT')    or define('TABLE_STOCK_ADJUSTMENT_PRODUCT', 'stock_adjustment_product');
 defined('TABLE_GENDER')             or define('TABLE_GENDER', 'gender');
+defined('TABLE_PAYMENT_MODE')       or define('TABLE_PAYMENT_MODE', 'payment_mode');

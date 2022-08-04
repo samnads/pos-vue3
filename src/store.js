@@ -14,7 +14,8 @@ export default createStore({
         COMMON_GENDERS: undefined,
         COMMON_ROLES: undefined,
         COMMON_ROLE_STATUSES: undefined,
-        COMMON_WAREHOUSE_STATUSES: undefined
+        COMMON_WAREHOUSE_STATUSES: undefined,
+        PAYMENT_MODES: undefined
     },
     mutations: {
         storeProductTypes(state, item) {
@@ -55,6 +56,9 @@ export default createStore({
         },
         storeCommonWarehouseStatuses(state, item) {
             state.COMMON_WAREHOUSE_STATUSES = item;
+        },
+        storePaymentModes(state, item) {
+            state.PAYMENT_MODES = item;
         }
     }
 });
