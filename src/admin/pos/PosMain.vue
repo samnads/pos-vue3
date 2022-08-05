@@ -4,7 +4,7 @@
   <div class="modal" id="checkoutFinalModal" tabindex="-1" aria-hidden="true">
     <div
       class="
-        modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable
+        modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable
       "
     >
       <div class="modal-content">
@@ -12,57 +12,52 @@
           <h5 class="modal-title">Checkout Sale</h5>
         </div>
         <div class="modal-body">
-          <div class="card mb-2">
-            <div class="card-body">
-              <div class="row">
-                <div class="col-6">
-                  <label class="form-label">Customer</label> : Walk-in Customer
-                </div>
-                <div class="col-6 text-end">
-                  <label class="form-label"> Customer ID</label> : CUS7116
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-6">
-                  <label class="form-label">Total Items</label> :
-                  {{ cart.products.length }} ({{ cart.total_quantity() }})
-                </div>
-                <div class="col-6 text-end">
-                  <label class="form-label"> Customer Group</label> : CUS7116
-                </div>
-              </div>
-              <hr class="m-0" />
-              <div class="row">
-                <div class="col-6">
-                  <label class="form-label">Total Payable</label> :
-                  <span class="fs-4 text-danger">{{
-                    cart.total_payable_round().toFixed(2)
-                  }}</span>
-                </div>
-                <div class="col-6 text-end">
-                  <label class="form-label">Total Previous Due Amount</label> :
-                  <span class="fs-4 text-danger">{{
-                    cart.total_payable_round().toFixed(2)
-                  }}</span>
+          <div class="row">
+            <div class="col-9">
+              <div class="card mb-2">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-6">
+                      <label class="form-label">Customer</label> : Walk-in
+                      Customer
+                    </div>
+                    <div class="col-6 text-end">
+                      <label class="form-label"> Customer ID</label> : CUS7116
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-6">
+                      <label class="form-label">Total Items</label> :
+                      {{ cart.products.length }} ({{ cart.total_quantity() }})
+                    </div>
+                    <div class="col-6 text-end">
+                      <label class="form-label">Group</label> : CUS7116
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-          <div class="card" style="background-color: #fafafa">
-            <div class="card-body">
-              <h5 class="card-title">Payment Details</h5>
               <ul class="list-group">
+                <li class="list-group-item fs-5">Payment Details</li>
                 <li
                   class="list-group-item"
                   v-for="p in cart.payments"
                   :key="p.id"
                 >
-                <span class="position-absolute top-0 start-100 translate-middle p-2 bg-light border border-light">
-                  <i class="fa-solid fa-xmark"></i>
-    <span class="visually-hidden">New alerts</span>
-  </span>
+                  <button
+                    type="button"
+                    class="
+                      border
+                      bg-light
+                      btn btn-sm btn-close
+                      position-sticky
+                      start-100
+                      m-0
+                    "
+                    v-if="cart.payments.length > 1"
+                    @click="removePayment(p)"
+                  ></button>
                   <div class="row">
-                    <div class="col">
+                    <div class="col-6">
                       <label class="form-label">Amount<i>*</i></label>
                       <input
                         type="number"
@@ -72,7 +67,7 @@
                         @focus="$event.target.select()"
                       />
                     </div>
-                    <div class="col">
+                    <div class="col-6">
                       <label class="form-label">Payment Method<i>*</i></label>
                       <select
                         class="form-select"
@@ -91,8 +86,23 @@
                         </option>
                       </select>
                     </div>
+                    <div class="col-6">
+                      <label class="form-label">Transaction ID</label>
+                      <input type="text" step="any" class="form-control" />
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label">Reference No.</label>
+                      <input type="text" step="any" class="form-control" />
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label">Note</label>
+                      <textarea
+                        type="text"
+                        rows="1"
+                        class="form-control"
+                      ></textarea>
+                    </div>
                   </div>
-                  <span class="badge bg-primary rounded-pill">14</span>
                 </li>
                 <li class="list-group-item">
                   <div class="row">
@@ -114,6 +124,10 @@
                           <i class="fa-solid fa-plus"></i>
                         </button>
                         <ul class="dropdown-menu">
+                          <li>
+                            <a class="dropdown-item disabled">Select Method</a>
+                          </li>
+                          <li><hr class="dropdown-divider" /></li>
                           <li
                             v-for="m in paymentModes"
                             :key="m.id"
@@ -121,7 +135,7 @@
                             @click="addNewPayment(m.id)"
                           >
                             <a class="dropdown-item" href="#"
-                              ><i class="fa-solid fa-plus"></i>&nbsp;{{
+                              ><i class="fa-solid fa-plus"></i>&nbsp;&nbsp;{{
                                 m.name
                               }}</a
                             >
@@ -132,6 +146,57 @@
                   </div>
                 </li>
               </ul>
+            </div>
+            <div class="col-3">
+              <div
+                class="card rounded-0 rounded-top text-light"
+                v-bind:class="[
+                  cart.balance() > 0
+                    ? 'bg-danger'
+                    : cart.balance() == 0
+                    ? 'bg-success'
+                    : 'bg-info',
+                ]"
+              >
+                <div class="card-body">
+                  <div class="row text-end">
+                    <div class="col-12 fs-4">Previous Due</div>
+                    <div class="col-12 fs-4">
+                      <span class="badge bg-light text-dark">{{
+                        cart.total_payable_round().toFixed(2)
+                      }}</span>
+                    </div>
+                    <hr class="m-1" />
+                    <div class="col-12 fs-4">Current Payable</div>
+                    <div class="col-12 fs-4">
+                      <span class="badge bg-light text-dark">{{
+                        cart.total_payable_round().toFixed(2)
+                      }}</span>
+                    </div>
+                    <hr class="m-1" />
+                    <div class="col-12 fs-4">
+                      Balance {{ cart.balance() >= 0 ? "" : "Return" }}
+                    </div>
+                    <div class="col-12 fs-4">
+                      <span class="badge bg-light text-dark">{{
+                        cart.balance().toFixed(2)
+                      }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card rounded-0 rounded-bottom">
+                <div class="card-body">
+                  <div class="col">
+                    <label class="form-label">Sale Note</label>
+                    <input type="text" step="any" class="form-control" />
+                  </div>
+                  <div class="col">
+                    <label class="form-label">Staff Note</label>
+                    <input type="text" step="any" class="form-control" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -746,7 +811,14 @@ export default {
     });
     const cart = ref({
       products: [],
-      payments: [{ amount: 0, method: 2 }],
+      payments: [{ id: Date.now(), amount: 0, method: 2 }],
+      balance: function () {
+        var totalPaying = 0;
+        this.payments.forEach((element, index, array) => {
+          totalPaying += element.amount;
+        });
+        return this.total_payable_round() - totalPaying;
+      },
       packing: 0,
       shipping: 0,
       discount: 0,
@@ -1189,6 +1261,7 @@ export default {
     emitter.on("confirmCancelSale", (data) => {
       cart.value.products = [];
       cart.value.packing = cart.value.shipping = cart.value.discount = 0;
+      cart.value.payments = [{ id: Date.now(), amount: 0, method: 1 }];
     });
     function draftPos() {
       alert("draftPos");
@@ -1210,8 +1283,14 @@ export default {
       });
     }
     function addNewPayment(method) {
-      let payMethod = { amount: 0, method: method };
+      let payMethod = { id: Date.now(), amount: 0, method: method };
       cart.value.payments.push(payMethod);
+    }
+    function removePayment(payment) {
+      let index = cart.value.payments.findIndex(
+        (item) => item.id === payment.id
+      );
+      cart.value.payments.splice(index, 1);
     }
     return {
       emitter,
@@ -1244,6 +1323,7 @@ export default {
       checkoutPos,
       paymentModes,
       addNewPayment,
+      removePayment,
     };
   },
   methods: {},
