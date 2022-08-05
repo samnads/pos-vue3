@@ -6,7 +6,9 @@ class Customer extends CI_Controller
 	{
 		header('Content-Type: application/json; charset=utf-8');
 		$this->load->model('admin/Customer_model');
+		$this->load->model('admin/Cutomer_group_model');
 		$_POST = raw_input_to_post();
+		$dropdown = $this->input->get('dropdown') ?: $this->input->post('dropdown');
 		switch ($_SERVER['REQUEST_METHOD']) {
 			case 'GET': // read
 				switch ($this->input->get('action')) {
@@ -28,8 +30,6 @@ class Customer extends CI_Controller
 								}
 								break;
 							default:
-								echo json_encode(array('success' => false, 'type' => 'warning', 'message' => 'Suggest Action Not Exist !'));
-								break;
 						}
 						break;
 					case 'datatable': // for customers datatble in admin panel
@@ -49,7 +49,6 @@ class Customer extends CI_Controller
 						echo json_encode($data);
 						break;
 					default:
-						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Unknown GET Action !'));
 				}
 				break;
 			case 'POST': // create
@@ -270,7 +269,14 @@ class Customer extends CI_Controller
 				}
 				break;
 			default:
-				echo json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Unknown Request Method !'));
+		}
+		switch ($dropdown) { // dropdown jobs
+			case 'customer_group':
+				$result['data'] = $this->Cutomer_group_model->dropdown_customer_group();
+				$result['success'] = true;
+				echo json_encode($result);
+				break;
+			default:
 		}
 	}
 	public function same_name_place_check($name, $place)

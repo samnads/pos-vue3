@@ -50,7 +50,7 @@ class Classname
                 }
                 //$row = $this->CI->Permission_model->get_role_module_permission($this->CI->session->role, $module, $_SERVER['REQUEST_METHOD']);
                 $row = $this->CI->Permission_model->get_role_module_permission($this->CI->session->role, $module, $action);
-                if ($row['allow'] !== 1 && $module != "common") {
+                if (isset($row['allow']) && $row['allow'] !== 1) {
                     die(json_encode(array('success' => false, 'type' => 'danger', 'error' => 'You don\'t have the right to perform [' . $module . ' - ' . $action . '] action !')));
                 }
             }

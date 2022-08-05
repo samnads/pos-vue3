@@ -7,7 +7,7 @@ class Warehouse extends CI_Controller
 		header('Content-Type: application/json; charset=utf-8');
 		$this->load->model('admin/Warehouse_model');
 		$_POST = raw_input_to_post();
-
+		$dropdown = $this->input->get('dropdown') ?: $this->input->post('dropdown');
 		switch ($_SERVER['REQUEST_METHOD']) {
 			case 'GET': // read
 				switch ($this->input->get('action')) {
@@ -27,7 +27,6 @@ class Warehouse extends CI_Controller
 						echo json_encode($data);
 						break;
 					default:
-						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Unknown Action !'));
 				}
 				break;
 			case 'POST': // create
@@ -247,7 +246,14 @@ class Warehouse extends CI_Controller
 				}
 				break;
 			default:
-				echo json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Unknown Request Method Found !'));
+		}
+		switch ($dropdown) { // dropdown jobs
+			case 'status':
+				$result['data'] = $this->Warehouse_model->dropdown_status();
+				$result['success'] = true;
+				echo json_encode($result);
+				break;
+			default:
 		}
 	}
 	public function edit_unique_name($name, $id)

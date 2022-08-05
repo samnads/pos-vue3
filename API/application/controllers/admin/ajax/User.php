@@ -7,6 +7,7 @@ class User extends CI_Controller
 		header('Content-Type: application/json; charset=utf-8');
 		$this->load->model('admin/User_model');
 		$_POST = raw_input_to_post();
+		$dropdown = $this->input->get('dropdown') ?: $this->input->post('dropdown');
 		switch ($_SERVER['REQUEST_METHOD']) {
 			case 'GET': // read
 				switch ($this->input->get('action')) {
@@ -26,7 +27,6 @@ class User extends CI_Controller
 						echo json_encode($data);
 						break;
 					default:
-						echo json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Unknown Action !'));
 				}
 				break;
 			case 'POST': // create
@@ -365,7 +365,24 @@ class User extends CI_Controller
 				}
 				break;
 			default:
-				echo json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Unknown Request Method Found !'));
+		}
+		switch ($dropdown) { // dropdown jobs
+			case 'gender':
+				$result['data'] = $this->User_model->dropdown_gender();
+				$result['success'] = true;
+				echo json_encode($result);
+				break;
+			case 'role':
+				$result['data'] = $this->User_model->dropdown_role();
+				$result['success'] = true;
+				echo json_encode($result);
+				break;
+			case 'user_status':
+				$result['data'] = $this->User_model->dropdown_user_status();
+				$result['success'] = true;
+				echo json_encode($result);
+				break;
+			default:
 		}
 	}
 	public function update_same_username_check($value, $id)

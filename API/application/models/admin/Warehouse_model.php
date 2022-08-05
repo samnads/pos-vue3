@@ -14,6 +14,16 @@ class Warehouse_model extends CI_Model
         $query = $this->db->get();
         return $query->result();
     }
+    function dropdown_status($columns = false)
+    {
+        $columns ? $this->db->select('*') : $this->db->select('
+		s.id as id,
+        s.name as name');
+        $this->db->from(TABLE_STATUS . ' s');
+        $this->db->where(array('s.warehouse_status' => 1));
+        $query = $this->db->get();
+        return $query->result_array();
+    }
     function datatable_data($search, $offset, $limit, $order_by, $order, $columns = null)
     {
         $search = trim($search);

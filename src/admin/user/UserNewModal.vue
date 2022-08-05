@@ -193,7 +193,10 @@
             <div class="row">
               <div class="col">
                 <label class="form-label"
-                  ><span v-if="DATA.data">New </span>Password<i v-if="!DATA.data">*</i></label
+                  ><span v-if="DATA.data">New </span>Password<i
+                    v-if="!DATA.data"
+                    >*</i
+                  ></label
                 >
                 <input
                   type="password"
@@ -213,7 +216,10 @@
               </div>
               <div class="col">
                 <label class="form-label"
-                  >Confirm <span v-if="DATA.data">New </span>Password<i v-if="!DATA.data">*</i></label
+                  >Confirm <span v-if="DATA.data">New </span>Password<i
+                    v-if="!DATA.data"
+                    >*</i
+                  ></label
                 >
                 <input
                   type="password"
@@ -502,7 +508,10 @@ export default {
         status: yup.number().required().min(1).nullable(true).label("Status"),
         password: yup
           .string()
-          .matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$","Password must contain at least one uppercase, one lowercase, one number and one special character.")
+          .matches(
+            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
+            "Password must contain at least one uppercase, one lowercase, one number and one special character."
+          )
           .min(8)
           .max(50)
           .nullable(true)
@@ -869,21 +878,23 @@ export default {
     });
     if (!this.storedGenders) {
       // if not found on store
-      this.axiosAsyncStoreReturnBool("storeCommonGenders", "common", {
-        action: "gender",
+      this.axiosAsyncStoreReturnBool("storeCommonGenders", "user", {
+        action: "create",
+        dropdown: "gender",
       });
     }
     if (!this.storedRoles) {
       // if not found on store
-      this.axiosAsyncStoreReturnBool("storeCommonRoles", "common", {
-        action: "role",
+      this.axiosAsyncStoreReturnBool("storeCommonRoles", "user", {
+        action: "create",
+        dropdown: "role",
       });
     }
     if (!this.storedRoleStatuses) {
       // if not found on store
-      this.axiosAsyncStoreReturnBool("storeCommonRoleStatuses", "common", {
-        action: "status",
-        type: "user_status",
+      this.axiosAsyncStoreReturnBool("storeCommonRoleStatuses", "user", {
+        action: "create",
+        dropdown: "user_status",
       });
     }
     //window.USER_NEW_MODAL.show();

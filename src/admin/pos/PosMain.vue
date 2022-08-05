@@ -27,8 +27,8 @@
                   </div>
                   <div class="row">
                     <div class="col-6">
-                      <label class="form-label">Total Items</label> :
-                      {{ cart.products.length }} ({{ cart.total_quantity() }})
+                      <label class="form-label">Bonus Points</label> :
+                      N/A
                     </div>
                     <div class="col-6 text-end">
                       <label class="form-label">Group</label> : CUS7116
@@ -208,7 +208,7 @@
           >
             <i class="fa-solid fa-angle-left"></i>Back
           </button>
-          <button type="button" class="btn btn-success">
+          <button type="button" class="btn btn-success" @click="submitForm()">
             Confirm&nbsp;<i class="fa-solid fa-check"></i>
           </button>
         </div>
@@ -1292,6 +1292,11 @@ export default {
       );
       cart.value.payments.splice(index, 1);
     }
+    function submitForm() {
+      var data = {};
+      data.products = cart.value.payments;
+      console.log(data);
+    }
     return {
       emitter,
       newCustomer,
@@ -1324,6 +1329,7 @@ export default {
       paymentModes,
       addNewPayment,
       removePayment,
+      submitForm
     };
   },
   methods: {},

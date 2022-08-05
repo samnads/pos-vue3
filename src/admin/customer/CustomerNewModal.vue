@@ -526,8 +526,9 @@ export default {
     });
     if (!this.customerGroups) {
       // if not found on store
-      this.axiosAsyncStoreReturnBool("storeCustomerGroups", "customer_group", {
-        action: "dropdown",
+      this.axiosAsyncStoreReturnBool("storeCustomerGroups", "customer", {
+        action: "create",
+        dropdown: "customer_group",
       });
       // get customer groups
     }

@@ -213,4 +213,32 @@ class User_model extends CI_Model
         $query = $this->db->update(TABLE_USER, $data, $where);
         return $query;
     }
+    function dropdown_gender($columns = null)
+    {
+        $columns == null ? $this->db->select('
+		g.id as id,
+        g.name as name') : $this->db->select($columns);
+        $this->db->from(TABLE_GENDER . ' g');
+        $query = $this->db->get();
+        return  $query->result_array();
+    }
+    function dropdown_role($columns = null)
+    {
+        $columns == null ? $this->db->select('
+		r.id as id,
+        r.name as name') : $this->db->select($columns);
+        $this->db->from(TABLE_ROLE . ' r');
+        $query = $this->db->get();
+        return  $query->result_array();
+    }
+    function dropdown_user_status($columns = null)
+    {
+        $columns == null ? $this->db->select('
+		s.id as id,
+        s.name as name') : $this->db->select($columns);
+        $this->db->from(TABLE_STATUS . ' s');
+        $this->db->where('user_status',1);
+        $query = $this->db->get();
+        return  $query->result_array();
+    }
 }

@@ -624,9 +624,9 @@ export default {
     });
     if (!this.storedWarehouseStatuses) {
       // if not found on store
-      this.axiosAsyncStoreReturnBool("storeCommonWarehouseStatuses", "common", {
-        action: "status",
-        type: "warehouse_status",
+      this.axiosAsyncStoreReturnBool("storeCommonWarehouseStatuses", "warehouse", {
+        action: "create",
+        dropdown: "status",
       });
     }
     //window.WAREHOUSE_NEW_MODAL.show();
