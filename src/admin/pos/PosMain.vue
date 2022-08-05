@@ -188,11 +188,11 @@
               <div class="card rounded-0 rounded-bottom">
                 <div class="card-body">
                   <div class="col">
-                    <label class="form-label">Sale Note</label>
+                    <label class="form-label">Payment Note</label>
                     <input type="text" step="any" class="form-control" />
                   </div>
                   <div class="col">
-                    <label class="form-label">Staff Note</label>
+                    <label class="form-label">Sale Note</label>
                     <input type="text" step="any" class="form-control" />
                   </div>
                 </div>
