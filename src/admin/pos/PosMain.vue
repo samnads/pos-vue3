@@ -27,8 +27,7 @@
                   </div>
                   <div class="row">
                     <div class="col-6">
-                      <label class="form-label">Bonus Points</label> :
-                      N/A
+                      <label class="form-label">Bonus Points</label> : N/A
                     </div>
                     <div class="col-6 text-end">
                       <label class="form-label">Group</label> : CUS7116
@@ -38,11 +37,7 @@
               </div>
               <ul class="list-group">
                 <li class="list-group-item fs-5">Payment Details</li>
-                <li
-                  class="list-group-item"
-                  v-for="p in cart.payments"
-                  :key="p.id"
-                >
+                <li class="list-group-item" v-for="p in payments" :key="p.id">
                   <button
                     type="button"
                     class="
@@ -53,7 +48,7 @@
                       start-100
                       m-0
                     "
-                    v-if="cart.payments.length > 1"
+                    v-if="payments.length > 1"
                     @click="removePayment(p)"
                   ></button>
                   <div class="row">
@@ -151,9 +146,9 @@
               <div
                 class="card rounded-0 rounded-top text-light"
                 v-bind:class="[
-                  cart.balance() > 0
+                  calc.balance() > 0
                     ? 'bg-danger'
-                    : cart.balance() == 0
+                    : calc.balance() == 0
                     ? 'bg-success'
                     : 'bg-info',
                 ]"
@@ -163,23 +158,23 @@
                     <div class="col-12 fs-4">Previous Due</div>
                     <div class="col-12 fs-4">
                       <span class="badge bg-light text-dark">{{
-                        cart.total_payable_round().toFixed(2)
+                        calc.total_payable_round().toFixed(2)
                       }}</span>
                     </div>
                     <hr class="m-1" />
                     <div class="col-12 fs-4">Current Payable</div>
                     <div class="col-12 fs-4">
                       <span class="badge bg-light text-dark">{{
-                        cart.total_payable_round().toFixed(2)
+                        calc.total_payable_round().toFixed(2)
                       }}</span>
                     </div>
                     <hr class="m-1" />
                     <div class="col-12 fs-4">
-                      Balance {{ cart.balance() >= 0 ? "" : "Return" }}
+                      Balance {{ calc.balance() >= 0 ? "" : "Return" }}
                     </div>
                     <div class="col-12 fs-4">
                       <span class="badge bg-light text-dark">{{
-                        cart.balance().toFixed(2)
+                        calc.balance().toFixed(2)
                       }}</span>
                     </div>
                   </div>
@@ -321,7 +316,7 @@
                   placeholder="Scan & remove product from cart"
                   v-model="search_remove"
                   @input="searchProductCart(search_remove)"
-                  :disabled="cart.products.length == 0"
+                  :disabled="products.length == 0"
                 />
                 <ul
                   class="autocomplete-wrap list-group"
@@ -366,7 +361,7 @@
               <tbody>
                 <tr
                   class="border border-light"
-                  v-for="(product, index) in cart.products"
+                  v-for="(product, index) in products"
                   :key="product.id"
                 >
                   <th scope="row">{{ index + 1 }}</th>
@@ -507,8 +502,11 @@
                 </tr>-->
               </tbody>
             </table>
-
-            {{ cart }}
+            <p>{{ products }}</p>
+            <p>{{ payments }}</p>
+            <p>{{ packing }}</p>
+            <p>{{ shipping }}</p>
+            <p>{{ discount }}</p>
           </div>
         </div>
         <div class="col-3 right">
@@ -561,27 +559,27 @@
                 <tr class="border-bottom border-dark">
                   <td class="bg-secondary" width="25%">Items</td>
                   <td class="bg-primary text-end" width="25%">
-                    {{ cart.total_items() }}
+                    {{ calc.total_items() }}
                   </td>
                   <td class="bg-secondary" width="25%">Price Total</td>
                   <td class="bg-info text-end" width="25%">
-                    {{ cart.total_price().toFixed(2) }}
+                    {{ calc.total_price().toFixed(2) }}
                   </td>
                 </tr>
                 <tr class="border-bottom border-dark">
                   <td class="bg-secondary">Quantity</td>
                   <td class="bg-primary text-end">
-                    {{ cart.total_quantity().toFixed(2) }}
+                    {{ calc.total_quantity().toFixed(2) }}
                   </td>
                   <td class="bg-secondary">Auto Discount</td>
                   <td class="bg-warning text-end text-dark">
-                    {{ cart.total_auto_discount().toFixed(2) }}
+                    {{ calc.total_auto_discount().toFixed(2) }}
                   </td>
                 </tr>
                 <tr class="border-bottom border-dark">
                   <td class="bg-secondary">Custom Disc.</td>
                   <td class="bg-warning text-dark text-end">
-                    {{ cart.total_custom_discount().toFixed(2) }}
+                    {{ calc.total_custom_discount().toFixed(2) }}
                   </td>
                   <td class="bg-secondary">Cart Disc.</td>
                   <td class="bg-warning bg-gradient text-dark text-end p-0">
@@ -593,16 +591,16 @@
                         type="number"
                         step="any"
                         class="form-control text-end rounded-0 no-arrow"
-                        v-model="cart.discount"
+                        v-model="discount"
                         @focus="$event.target.select()"
-                        @change="changeCartDiscount(cart.discount)"
+                        @change="changeCartDiscount(discount)"
                       />
                     </div>
                     <!--<div class="d-flex justify-content-between">
                       <div class="text-muted">
                         <i class="fa-solid fa-tag"></i>
                       </div>
-                      <div>{{ cart.discount.toFixed(2) }}</div>
+                      <div>{{ discount.toFixed(2) }}</div>
                     </div>-->
                   </td>
                 </tr>
@@ -617,9 +615,9 @@
                         type="number"
                         step="any"
                         class="form-control text-end rounded-0 no-arrow"
-                        v-model="cart.shipping"
+                        v-model="shipping"
                         @focus="$event.target.select()"
-                        @change="changeShippingCharge(cart.shipping)"
+                        @change="changeShippingCharge(shipping)"
                       />
                     </div>
                     <!--<div class="d-flex justify-content-between">
@@ -631,7 +629,7 @@
                   </td>
                   <td class="bg-secondary">Total Discount</td>
                   <td class="bg-warning text-end text-dark">
-                    {{ cart.total_discount().toFixed(2) }}
+                    {{ calc.total_discount() }}
                   </td>
                 </tr>
                 <tr class="border-bottom border-dark">
@@ -645,24 +643,24 @@
                         type="number"
                         step="any"
                         class="form-control text-end rounded-0 no-arrow"
-                        v-model="cart.packing"
+                        v-model="packing"
                         @focus="$event.target.select()"
-                        @change="changePackingCharge(cart.packing)"
+                        @change="changePackingCharge(packing)"
                       />
                     </div>
                   </td>
                   <td class="bg-secondary">Taxable Value</td>
                   <td class="bg-primary text-end">
-                    {{ cart.total_taxable().toFixed(2) }}
+                    {{ calc.total_taxable().toFixed(2) }}
                   </td>
                 </tr>
                 <tr class="border-bottom border-dark">
                   <td class="bg-secondary">Round off</td>
-                  <td class="bg-primary text-end">{{ cart.round_off() }}</td>
+                  <td class="bg-primary text-end">{{ calc.round_off() }}</td>
 
                   <td class="bg-secondary">Tax</td>
                   <td class="bg-info text-end">
-                    {{ cart.tax().toFixed(2) }}
+                    {{ calc.tax().toFixed(2) }}
                   </td>
                 </tr>
                 <tr class="border-bottom border-dark">
@@ -675,7 +673,7 @@
                   >
                     <div class="d-flex justify-content-between">
                       <div class="text-muted">₹</div>
-                      <div>{{ cart.total_payable_round().toFixed(2) }}</div>
+                      <div>{{ calc.total_payable_round().toFixed(2) }}</div>
                     </div>
                   </td>
                 </tr>
@@ -685,7 +683,7 @@
                       class="btn btn-danger w-100 rounded-0"
                       type="button"
                       @click="cancelPos"
-                      :disabled="cart.products.length == 0"
+                      :disabled="products.length == 0"
                     >
                       Cancel
                     </button>
@@ -695,7 +693,7 @@
                       class="btn btn-warning w-100 rounded-0"
                       type="button"
                       @click="draftPos"
-                      :disabled="cart.products.length == 0"
+                      :disabled="products.length == 0"
                     >
                       Draft
                     </button>
@@ -705,8 +703,8 @@
                       class="btn btn-success w-100 rounded-0"
                       style="min-height: 78px"
                       type="button"
-                      @click="checkoutPos"
-                      :disable="cart.products.length == 0"
+                      @click="onSubmit"
+                      :disable="products.length == 0"
                     >
                       <span class="fs-5"
                         ><i class="fa-solid fa-credit-card"></i></span
@@ -722,7 +720,7 @@
                       class="btn btn-info w-100 rounded-0"
                       type="button"
                       @click="printPos"
-                      :disabled="cart.products.length == 0"
+                      :disabled="products.length == 0"
                     >
                       Print
                     </button>
@@ -794,68 +792,86 @@ import { inject } from "vue";
 import admin from "@/mixins/admin.js";
 import { Modal } from "bootstrap";
 import { useStore } from "vuex";
+import {
+  useForm,
+  useField,
+  useIsFormDirty,
+  useIsFormValid,
+} from "vee-validate";
+import * as yup from "yup";
 import CustomerNewModal from "../customer/CustomerNewModal.vue";
 export default {
   components: {
     CustomerNewModal,
   },
   setup() {
-    const emitter = inject("emitter"); // Inject `emitter`
-    const autocompleteList = ref([]);
-    const autocompleteCart = ref([]);
-    const searchBox = ref(null);
-    const products = ref([]);
-    const store = useStore();
-    let paymentModes = computed(function () {
-      return store.state.PAYMENT_MODES;
+    const schema = computed(() => {
+      return yup.object({
+        products: yup.array().required().nullable(true).label("Products"),
+        payments: yup.array().required().nullable(true).label("Payments"),
+        packing: yup.number().required().nullable(true).label("Packing"),
+        shipping: yup.number().required().nullable(true).label("Shipping"),
+        discount: yup.number().required().nullable(true).label("Discount"),
+      });
     });
-    const cart = ref({
+    var formValues = {
       products: [],
       payments: [{ id: Date.now(), amount: 0, method: 2 }],
-      balance: function () {
-        var totalPaying = 0;
-        this.payments.forEach((element, index, array) => {
-          totalPaying += element.amount;
-        });
-        return this.total_payable_round() - totalPaying;
-      },
       packing: 0,
       shipping: 0,
       discount: 0,
+    }; // pre form values
+    const {
+      setFieldValue,
+      handleSubmit,
+      setFieldError,
+      isSubmitting,
+      resetForm,
+    } = useForm({
+      validationSchema: schema,
+      initialValues: formValues,
+      initialErrors: {},
+    });
+    const { value: products } = useField("products");
+    const { value: payments } = useField("payments");
+    const { value: packing } = useField("packing");
+    const { value: shipping } = useField("shipping");
+    const { value: discount } = useField("discount");
+    const calc = {
       total_items: function () {
-        return this.products.length;
+        return products.value.length;
       },
       total_quantity: function () {
         var total_quantity = 0;
-        this.products.forEach((element, index, array) => {
+        products.value.forEach((element, index, array) => {
           total_quantity += element.quantity;
         });
         return total_quantity;
       },
       tax: function () {
         var tax = 0;
-        this.products.forEach((element, index, array) => {
+        products.value.forEach((element, index, array) => {
           tax += element.total_tax_();
         });
         return tax;
       },
       total_price: function () {
         var total_price = 0;
-        this.products.forEach((element, index, array) => {
+        products.value.forEach((element, index, array) => {
           total_price += element.total_quantity_price_();
         });
         return total_price;
       },
       total_auto_discount: function () {
         var total_auto_discount = 0;
-        this.products.forEach((element, index, array) => {
+        products.value.forEach((element, index, array) => {
           total_auto_discount += element.total_auto_discount_();
         });
         return total_auto_discount;
       },
       total_custom_discount: function () {
         var total_custom_discount = 0;
-        this.products.forEach((element, index, array) => {
+        products.value.forEach((element, index, array) => {
           total_custom_discount += element.discount;
         });
         return total_custom_discount;
@@ -864,32 +880,32 @@ export default {
         return (
           this.total_auto_discount() +
           this.total_custom_discount() +
-          this.discount
+          discount.value
         );
       },
       total_taxable: function () {
         var total_taxable = 0;
-        this.products.forEach((element, index, array) => {
+        products.value.forEach((element, index, array) => {
           total_taxable += element.total_taxable_value_();
         });
         return total_taxable;
       },
       total_payable: function () {
         var total_payable = 0;
-        this.products.forEach((element, index, array) => {
+        products.value.forEach((element, index, array) => {
           total_payable += Number(parseFloat(element.total_()).toFixed(2));
         });
         total_payable =
-          total_payable - this.discount + this.shipping + this.packing;
+          total_payable - discount.value + shipping.value + packing.value;
         return total_payable;
       },
       total_payable_round: function () {
         var total_payable = 0;
-        this.products.forEach((element, index, array) => {
+        products.value.forEach((element, index, array) => {
           total_payable += Number(parseFloat(element.total_()).toFixed(2));
         });
         total_payable =
-          total_payable - this.discount + this.shipping + this.packing;
+          total_payable - discount.value + shipping.value + packing.value;
         var round_off = total_payable - Math.floor(total_payable);
         return total_payable - round_off;
       },
@@ -900,6 +916,28 @@ export default {
           )
         );
       },
+      balance: function () {
+        var totalPaying = 0;
+        payments.value.forEach((element, index, array) => {
+          totalPaying += element.amount;
+        });
+        return this.total_payable_round() - totalPaying;
+      },
+    };
+    function onInvalidSubmit({ values }) {
+      console.log("Form field errors found !");
+      console.log(values);
+    }
+    const onSubmit = handleSubmit((values) => {
+      console.log(values);
+    }, onInvalidSubmit);
+    const emitter = inject("emitter"); // Inject `emitter`
+    const autocompleteList = ref([]);
+    const autocompleteCart = ref([]);
+    const searchBox = ref(null);
+    const store = useStore();
+    let paymentModes = computed(function () {
+      return store.state.PAYMENT_MODES;
     });
     const { axiosAsyncStoreReturnBool, axiosAsyncCallReturnData } = admin();
     var search_product = null;
@@ -971,7 +1009,7 @@ export default {
     function searchProductCart(query) {
       query = query.toLowerCase();
       if (query) {
-        let items = cart.value.products.filter(
+        let items = products.value.filter(
           (obj) =>
             obj.name.toLowerCase().includes(query) ||
             obj.code.toLowerCase().includes(query)
@@ -1013,7 +1051,7 @@ export default {
       });
     }
     function checkAndPush(product) {
-      if (!this.cart.products.some((data) => data.id === product.id)) {
+      if (!products.value.some((data) => data.id === product.id)) {
         // new
         /************************************** */
         product.min_sale_qty =
@@ -1071,21 +1109,19 @@ export default {
           );
         };
         /************************************** */
-        this.cart.products.push(product);
+        //products.value.push(product);
+        products.value.push(product);
       } else {
         // update
-        let index = this.cart.products.findIndex(
-          (item) => item.id === product.id
-        );
-        let productElement = this.cart.products[index];
+        let index = products.value.findIndex((item) => item.id === product.id);
+        let productElement = products.value[index];
         /************************************** */
         if (
-          !this.cart.products[index].max_sale_qty ||
-          (this.cart.products[index].max_sale_qty &&
-            this.cart.products[index].quantity <
-              this.cart.products[index].max_sale_qty)
+          !products.value[index].max_sale_qty ||
+          (products.value[index].max_sale_qty &&
+            products.value[index].quantity < products.value[index].max_sale_qty)
         ) {
-          this.cart.products[index].quantity++;
+          products.value[index].quantity++;
         } else {
           emitter.emit("showAlert", {
             title: "Quantity limit exceeded !",
@@ -1106,13 +1142,11 @@ export default {
       this.searchBox.focus();
     }
     function changeQuantity(product, quantity) {
-      let index = cart.value.products.findIndex(
-        (item) => item.id === product.id
-      );
+      let index = products.value.findIndex((item) => item.id === product.id);
       quantity = Number(parseFloat(quantity).toFixed(2));
       if (quantity) {
         if (quantity < product.min_sale_qty) {
-          cart.value.products[index].quantity = product.min_sale_qty;
+          products.value[index].quantity = product.min_sale_qty;
           emitter.emit("showAlert", {
             title: "Minimum quantity required !",
             body:
@@ -1125,7 +1159,7 @@ export default {
             play: "danger.mp3",
           });
         } else if (product.max_sale_qty && quantity > product.max_sale_qty) {
-          cart.value.products[index].quantity = product.max_sale_qty;
+          products.value[index].quantity = product.max_sale_qty;
           emitter.emit("showAlert", {
             title: "Quantity limit exceeded !",
             body:
@@ -1138,11 +1172,11 @@ export default {
             play: "danger.mp3",
           });
         } else {
-          cart.value.products[index].quantity = quantity;
+          products.value[index].quantity = quantity;
           this.searchBox.focus();
         }
       } else {
-        cart.value.products[index].quantity = product.min_sale_qty;
+        products.value[index].quantity = product.min_sale_qty;
         emitter.emit("showAlert", {
           title: "Invalid quantity !",
           body:
@@ -1156,14 +1190,12 @@ export default {
         });
       }
     }
-    function changeDiscount(product, discount) {
-      let index = cart.value.products.findIndex(
-        (item) => item.id === product.id
-      );
-      if (discount >= 0) {
-        cart.value.products[index].discount = discount == 0 ? 0 : discount;
+    function changeDiscount(product, disc) {
+      let index = products.value.findIndex((item) => item.id === product.id);
+      if (disc >= 0) {
+        products.value[index].discount = disc == 0 ? 0 : disc;
       } else {
-        cart.value.products[index].discount = 0;
+        products.value[index].discount = 0;
         emitter.emit("showAlert", {
           title: "Invalid discount !",
           body:
@@ -1178,13 +1210,11 @@ export default {
       }
     }
     function changePrice(product, price) {
-      let index = cart.value.products.findIndex(
-        (item) => item.id === product.id
-      );
+      let index = products.value.findIndex((item) => item.id === product.id);
       if (price > 0) {
-        cart.value.products[index].price = price;
+        products.value[index].price = price;
       } else {
-        cart.value.products[index].price = product.price;
+        products.value[index].price = product.price;
         emitter.emit("showAlert", {
           title: "Invalid price !",
           body:
@@ -1201,41 +1231,37 @@ export default {
     function changeShippingCharge(price) {
       if (price > 0) {
         price = parseFloat(price.toFixed(2));
-        cart.value.shipping = price;
+        shipping.value = price;
       } else {
-        cart.value.shipping = 0;
+        shipping.value = 0;
       }
     }
     function changePackingCharge(price) {
       if (price > 0) {
         price = parseFloat(price.toFixed(2));
-        cart.value.packing = price;
+        packing.value = price;
       } else {
-        cart.value.packing = 0;
+        packing.value = 0;
       }
     }
-    function changeCartDiscount(discount) {
-      if (discount > 0) {
-        discount = parseFloat(discount.toFixed(2));
-        cart.value.discount = discount;
+    function changeCartDiscount(disc) {
+      if (disc > 0) {
+        disc = parseFloat(disc.toFixed(2));
+        discount.value = disc;
       } else {
-        cart.value.discount = 0;
+        discount.value = 0;
       }
     }
     function quantityButton(product, operator) {
-      let index = cart.value.products.findIndex(
-        (item) => item.id === product.id
-      );
-      cart.value.products[index].quantity = Number(
-        cart.value.products[index].quantity
-      ); // get current quantity
+      let index = products.value.findIndex((item) => item.id === product.id);
+      products.value[index].quantity = Number(products.value[index].quantity); // get current quantity
       if (operator == "+") {
-        cart.value.products[index].quantity =
+        products.value[index].quantity =
           product.max_sale_qty && product.quantity + 1 > product.max_sale_qty
             ? product.max_sale_qty
             : product.quantity + 1;
       } else {
-        cart.value.products[index].quantity =
+        products.value[index].quantity =
           product.quantity - 1 < product.min_sale_qty
             ? product.min_sale_qty
             : product.quantity - 1;
@@ -1245,8 +1271,8 @@ export default {
     function lostProductFocus() {}
     emitter.on("confirmDeleteProduct", (data) => {
       // delete selected product stuff here
-      let index = cart.value.products.findIndex((item) => item.id === data.id);
-      cart.value.products.splice(index, 1);
+      let index = products.value.findIndex((item) => item.id === data.id);
+      products.value.splice(index, 1);
     });
     function cancelPos() {
       emitter.emit("deleteConfirmModal", {
@@ -1259,9 +1285,9 @@ export default {
       });
     }
     emitter.on("confirmCancelSale", (data) => {
-      cart.value.products = [];
-      cart.value.packing = cart.value.shipping = cart.value.discount = 0;
-      cart.value.payments = [{ id: Date.now(), amount: 0, method: 1 }];
+      products.value = [];
+      packing.value = shipping.value = discount.value = 0;
+      payments.value = [{ id: Date.now(), amount: 0, method: 1 }];
     });
     function draftPos() {
       alert("draftPos");
@@ -1284,20 +1310,20 @@ export default {
     }
     function addNewPayment(method) {
       let payMethod = { id: Date.now(), amount: 0, method: method };
-      cart.value.payments.push(payMethod);
+      payments.value.push(payMethod);
     }
     function removePayment(payment) {
-      let index = cart.value.payments.findIndex(
-        (item) => item.id === payment.id
-      );
-      cart.value.payments.splice(index, 1);
+      let index = payments.value.findIndex((item) => item.id === payment.id);
+      payments.value.splice(index, 1);
     }
-    function submitForm() {
-      var data = {};
-      data.products = cart.value.payments;
-      console.log(data);
-    }
+    function submitForm() {}
     return {
+      payments,
+      packing,
+      shipping,
+      discount,
+      calc,
+      onSubmit,
       emitter,
       newCustomer,
       searchProduct,
@@ -1314,7 +1340,6 @@ export default {
       products,
       searchBox,
       lostProductFocus,
-      cart,
       changeQuantity,
       quantityButton,
       changeDiscount,
@@ -1329,7 +1354,7 @@ export default {
       paymentModes,
       addNewPayment,
       removePayment,
-      submitForm
+      submitForm,
     };
   },
   methods: {},
