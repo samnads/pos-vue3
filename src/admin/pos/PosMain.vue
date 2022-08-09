@@ -1,5 +1,6 @@
 <template>
   <CustomerNewModal />
+  <CustomerInfoModal />
   <!-- Checkout Modal -->
   <div class="modal" id="checkoutFinalModal" tabindex="-1" aria-hidden="true">
     <div
@@ -203,7 +204,7 @@
           >
             <i class="fa-solid fa-angle-left"></i>Back
           </button>
-          <button type="button" class="btn btn-success" @click="submitForm()">
+          <button type="button" class="btn btn-success" @click="onSubmit()">
             Confirm&nbsp;<i class="fa-solid fa-check"></i>
           </button>
         </div>
@@ -384,10 +385,10 @@
                         <i class="fa-solid fa-minus"></i>
                       </button>
                       <input
-                        @change="changeQuantity(product, product.quantity)"
+                        @change="changeQuantity(product, $event.target.value)"
                         type="number"
                         class="form-control no-arrow text-center"
-                        v-model="product.quantity"
+                        :value="product.quantity"
                       />
                       <button
                         type="button"
@@ -408,8 +409,8 @@
                     <input
                       type="number"
                       class="form-control form-control-sm no-arrow text-end"
-                      @change="changePrice(product, product.price)"
-                      v-model="product.price"
+                      @change="changePrice(product, $event.target.value)"
+                      :value="product.price"
                     />
                   </td>
                   <td class="text-danger text-end">
@@ -424,8 +425,8 @@
                         text-danger text-end
                       "
                       @focus="$event.target.select()"
-                      v-model="product.discount"
-                      @change="changeDiscount(product, product.discount)"
+                      :value="product.discount"
+                      @change="changeDiscount(product, $event.target.value)"
                       :disabled="!product.allow_custom_discount"
                     />
                   </td>
@@ -502,11 +503,12 @@
                 </tr>-->
               </tbody>
             </table>
-            <p>{{ products }}</p>
-            <p>{{ payments }}</p>
-            <p>{{ packing }}</p>
-            <p>{{ shipping }}</p>
-            <p>{{ discount }}</p>
+            <!--<p>Products : {{ products }}</p>
+            <p>Payments : {{ payments }}</p>
+            <p>Customer : {{ customer }}</p>
+            <p>Packing : {{ packing }}</p>
+            <p>Shipping : {{ shipping }}</p>
+            <p>Discount : {{ discount }}</p>-->
           </div>
         </div>
         <div class="col-3 right">
@@ -523,24 +525,48 @@
                 <input
                   type="text"
                   class="form-control"
-                  placeholder="Walk-in Customer"
+                  :placeholder="customer ? customer.name : 'Customer name...'"
+                  ref="searchCustomerBox"
+                  v-model="search_customer"
+                  @input="searchCustomer($event.target.value)"
+                  :disabled="customer_readonly"
                 />
+                <ul
+                  id="search-product-list"
+                  class="autocomplete-wrap list-group"
+                  style="max-height: 225px"
+                >
+                  <li
+                    @click="changeCustomer(c)"
+                    role="button"
+                    class="list-group-item list-group-item-action"
+                    v-for="c in autocompleteCustomerList"
+                    :key="c.id"
+                    :value="c.name"
+                  >
+                    {{ c.name }}
+                  </li>
+                </ul>
                 <span
                   class="input-group-text"
                   role="button"
+                  v-show="customer_readonly"
                   data-bs-toggle="tooltip"
                   data-bs-placement="left"
-                  title="Unlock"
-                  ><i class="fa-solid fa-lock"></i
+                  @click="toggleCustomer"
+                  ><span v-if="customer_readonly"
+                    ><i class="fa-solid fa-lock"></i></span
                 ></span>
-                <span
+                <button
                   class="input-group-text bg-secondary text-light"
-                  role="button"
                   data-bs-toggle="tooltip"
                   data-bs-placement="left"
                   title="Customer Details"
-                  ><i class="fa-solid fa-binoculars"></i
-                ></span>
+                  v-show="customer"
+                  @click="showCustomerInfo"
+                >
+                  <i class="fa-solid fa-binoculars"></i>
+                </button>
                 <span
                   class="input-group-text"
                   role="button"
@@ -683,7 +709,7 @@
                       class="btn btn-danger w-100 rounded-0"
                       type="button"
                       @click="cancelPos"
-                      :disabled="products.length == 0"
+                      :disabled="!isDirty"
                     >
                       Cancel
                     </button>
@@ -693,7 +719,7 @@
                       class="btn btn-warning w-100 rounded-0"
                       type="button"
                       @click="draftPos"
-                      :disabled="products.length == 0"
+                      :disabled="!isValid"
                     >
                       Draft
                     </button>
@@ -704,7 +730,7 @@
                       style="min-height: 78px"
                       type="button"
                       @click="onSubmit"
-                      :disable="products.length == 0"
+                      :disable="!isValid"
                     >
                       <span class="fs-5"
                         ><i class="fa-solid fa-credit-card"></i></span
@@ -720,7 +746,7 @@
                       class="btn btn-info w-100 rounded-0"
                       type="button"
                       @click="printPos"
-                      :disabled="products.length == 0"
+                      :disabled="!isValid"
                     >
                       Print
                     </button>
@@ -787,7 +813,7 @@ button:disabled {
 </style>
 <script>
 /* eslint-disable */
-import { ref, computed } from "vue";
+import { watch, ref, computed } from "vue";
 import { inject } from "vue";
 import admin from "@/mixins/admin.js";
 import { Modal } from "bootstrap";
@@ -800,18 +826,43 @@ import {
 } from "vee-validate";
 import * as yup from "yup";
 import CustomerNewModal from "../customer/CustomerNewModal.vue";
+import CustomerInfoModal from "../customer//CustomerInfoModal.vue";
 export default {
   components: {
     CustomerNewModal,
+    CustomerInfoModal,
   },
   setup() {
+    const emitter = inject("emitter"); // Inject `emitter`
+    const autocompleteList = ref([]);
+    const autocompleteCart = ref([]);
+    const autocompleteCustomerList = ref([]);
+    var search_product = null;
+    var search_remove = null;
+    var search_customer = null;
+    const customer_readonly = ref(false);
+    const searchBox = ref(null);
+    const searchCustomerBox = ref(null);
+    const store = useStore();
+    let paymentModes = computed(function () {
+      return store.state.PAYMENT_MODES;
+    });
     const schema = computed(() => {
       return yup.object({
-        products: yup.array().required().nullable(true).label("Products"),
-        payments: yup.array().required().nullable(true).label("Payments"),
-        packing: yup.number().required().nullable(true).label("Packing"),
-        shipping: yup.number().required().nullable(true).label("Shipping"),
-        discount: yup.number().required().nullable(true).label("Discount"),
+        customer: yup
+          .object()
+          .required("Please add customer details !")
+          .label("Customer"),
+        products: yup
+          .array()
+          .required()
+          .min(1, "Please add some products !")
+          .label("Products"),
+        payments: yup.array().required().min(1).label("Payments"),
+        packing: yup.number().required().min(0).label("Packing"),
+        shipping: yup.number().required().min(0).label("Shipping"),
+        discount: yup.number().required().min(0).label("Discount"),
+        roundoff: yup.number().required().label("Round off"),
       });
     });
     var formValues = {
@@ -820,6 +871,7 @@ export default {
       packing: 0,
       shipping: 0,
       discount: 0,
+      roundoff: 0,
     }; // pre form values
     const {
       setFieldValue,
@@ -832,11 +884,15 @@ export default {
       initialValues: formValues,
       initialErrors: {},
     });
+    const { value: customer } = useField("customer");
     const { value: products } = useField("products");
     const { value: payments } = useField("payments");
     const { value: packing } = useField("packing");
     const { value: shipping } = useField("shipping");
     const { value: discount } = useField("discount");
+    const { value: roundoff } = useField("roundoff");
+    const isDirty = useIsFormDirty();
+    const isValid = useIsFormValid();
     const calc = {
       total_items: function () {
         return products.value.length;
@@ -924,24 +980,37 @@ export default {
         return this.total_payable_round() - totalPaying;
       },
     };
-    function onInvalidSubmit({ values }) {
+    function onInvalidSubmit({ values, errors }) {
       console.log("Form field errors found !");
-      console.log(values);
+      for (var key in errors) {
+        notifyDefault({ message: errors[key] });
+      }
     }
     const onSubmit = handleSubmit((values) => {
-      console.log(values);
+      return axiosAsyncCallReturnData("POST", "pos", {
+        action: "create",
+        data: values,
+      }).then(function (data) {
+        if (data.success == true) {
+          console.log("POS added !");
+        } else if (data.success == false) {
+          console.log("POS not added !");
+          // valid error
+          if (data.errors) {
+            for (var key in data.errors) {
+              notifyDefault({ message: data.errors[key] });
+            }
+          }
+        } else {
+          // other error
+        }
+      });
     }, onInvalidSubmit);
-    const emitter = inject("emitter"); // Inject `emitter`
-    const autocompleteList = ref([]);
-    const autocompleteCart = ref([]);
-    const searchBox = ref(null);
-    const store = useStore();
-    let paymentModes = computed(function () {
-      return store.state.PAYMENT_MODES;
-    });
-    const { axiosAsyncStoreReturnBool, axiosAsyncCallReturnData } = admin();
-    var search_product = null;
-    var search_remove = null;
+    const {
+      notifyDefault,
+      axiosAsyncStoreReturnBool,
+      axiosAsyncCallReturnData,
+    } = admin();
     function confirmDeleteShow(data) {
       emitter.emit("deleteConfirmModal", {
         title: null,
@@ -951,12 +1020,11 @@ export default {
         emit: "confirmDeleteProduct",
         type: "danger",
       });
-      window.DELETE_CONFIRM_DEFAULT_MODAL.show();
     }
     function searchProduct(query) {
       var self = this;
+      self.autocompleteList = [];
       if (query) {
-        self.autocompleteList = [];
         if (self.controller) {
           self.controller.abort();
         }
@@ -983,10 +1051,10 @@ export default {
               self.autocompleteList = items;
             } else if (items.length == 1) {
               // One product found
+              self.search_product = null;
               self.checkAndPush(items[0]);
             } else {
               // no product found
-              self.autocompleteList = [];
               self.search_product = null;
               self.emitter.emit("showAlert", {
                 title: "No search result found !",
@@ -998,16 +1066,62 @@ export default {
                 play: "danger.mp3",
               });
             }
-          } else {
-            // network error or cancelled duplicate call
           }
         });
-      } else {
-        self.autocompleteList = [];
+      }
+    }
+    function searchCustomer(query) {
+      var self = this;
+      this.autocompleteCustomerList = [];
+      if (query) {
+        if (self.controller) {
+          self.controller.abort();
+        }
+        self.controller = new AbortController();
+        this.axiosAsyncCallReturnData(
+          "get",
+          "pos",
+          {
+            action: "create",
+            search: "customer",
+            query: query,
+          },
+          self.controller,
+          {
+            showSuccessNotification: false,
+            showCatchNotification: true,
+            showProgress: true,
+          }
+        ).then(function (data) {
+          if (data.success == true) {
+            let items = data.data;
+            if (items.length > 1) {
+              // many cus found
+              self.autocompleteCustomerList = items;
+            } else if (items.length == 1) {
+              // One cus found
+              self.search_customer = null;
+              changeCustomer(items[0]);
+            } else {
+              // no cus found
+              self.search_customer = null;
+              self.emitter.emit("showAlert", {
+                title: "No search result found !",
+                body:
+                  "No customer found for your search query <b>" +
+                  query +
+                  "</b> !",
+                type: "danger",
+                play: "danger.mp3",
+              });
+            }
+          }
+        });
       }
     }
     function searchProductCart(query) {
       query = query.toLowerCase();
+      this.autocompleteCart = [];
       if (query) {
         let items = products.value.filter(
           (obj) =>
@@ -1022,7 +1136,6 @@ export default {
           this.checkAndRemove(items[0]);
         } else {
           // no product found
-          this.autocompleteCart = [];
           this.search_remove = null;
           this.emitter.emit("showAlert", {
             title: "No matching product !",
@@ -1034,8 +1147,6 @@ export default {
             play: "danger.mp3",
           });
         }
-      } else {
-        this.autocompleteCart = [];
       }
     }
     function checkAndRemove(product) {
@@ -1049,6 +1160,13 @@ export default {
         emit: "confirmDeleteProduct",
         type: "danger",
       });
+    }
+    function changeCustomer(data) {
+      setFieldValue("customer", data);
+    }
+    function toggleCustomer() {
+      customer_readonly.value = customer_readonly.value == true ? false : true;
+      this.searchCustomerBox.focus();
     }
     function checkAndPush(product) {
       if (!products.value.some((data) => data.id === product.id)) {
@@ -1109,7 +1227,6 @@ export default {
           );
         };
         /************************************** */
-        //products.value.push(product);
         products.value.push(product);
       } else {
         // update
@@ -1137,8 +1254,6 @@ export default {
         }
         /************************************** */
       }
-      this.autocompleteList = [];
-      this.search_product = null;
       this.searchBox.focus();
     }
     function changeQuantity(product, quantity) {
@@ -1192,8 +1307,9 @@ export default {
     }
     function changeDiscount(product, disc) {
       let index = products.value.findIndex((item) => item.id === product.id);
+      disc = Number(parseFloat(disc).toFixed(2));
       if (disc >= 0) {
-        products.value[index].discount = disc == 0 ? 0 : disc;
+        products.value[index].discount = disc;
       } else {
         products.value[index].discount = 0;
         emitter.emit("showAlert", {
@@ -1211,6 +1327,7 @@ export default {
     }
     function changePrice(product, price) {
       let index = products.value.findIndex((item) => item.id === product.id);
+      price = Number(parseFloat(price).toFixed(2));
       if (price > 0) {
         products.value[index].price = price;
       } else {
@@ -1229,28 +1346,13 @@ export default {
       }
     }
     function changeShippingCharge(price) {
-      if (price > 0) {
-        price = parseFloat(price.toFixed(2));
-        shipping.value = price;
-      } else {
-        shipping.value = 0;
-      }
+      setFieldValue("shipping", price > 0 ? parseFloat(price.toFixed(2)) : 0);
     }
     function changePackingCharge(price) {
-      if (price > 0) {
-        price = parseFloat(price.toFixed(2));
-        packing.value = price;
-      } else {
-        packing.value = 0;
-      }
+      setFieldValue("packing", price > 0 ? parseFloat(price.toFixed(2)) : 0);
     }
-    function changeCartDiscount(disc) {
-      if (disc > 0) {
-        disc = parseFloat(disc.toFixed(2));
-        discount.value = disc;
-      } else {
-        discount.value = 0;
-      }
+    function changeCartDiscount(price) {
+      setFieldValue("discount", price > 0 ? parseFloat(price.toFixed(2)) : 0);
     }
     function quantityButton(product, operator) {
       let index = products.value.findIndex((item) => item.id === product.id);
@@ -1285,9 +1387,10 @@ export default {
       });
     }
     emitter.on("confirmCancelSale", (data) => {
-      products.value = [];
-      packing.value = shipping.value = discount.value = 0;
-      payments.value = [{ id: Date.now(), amount: 0, method: 1 }];
+      //products.value = [];
+      //packing.value = shipping.value = discount.value = roundoff.value = 0;
+      //payments.value = [{ id: Date.now(), amount: 0, method: 1 }];
+      resetForm();
     });
     function draftPos() {
       alert("draftPos");
@@ -1308,6 +1411,13 @@ export default {
         emit: "changeCutomer",
       });
     }
+    function showCustomerInfo() {
+      emitter.emit("showCustomerInfoModal", {
+        title: "",
+        type: "",
+        emit: "",
+      });
+    }
     function addNewPayment(method) {
       let payMethod = { id: Date.now(), amount: 0, method: method };
       payments.value.push(payMethod);
@@ -1317,28 +1427,47 @@ export default {
       payments.value.splice(index, 1);
     }
     function submitForm() {}
+    watch(
+      [customer, products, discount, packing, shipping],
+      () => {
+        customer_readonly.value = customer.value ? true : false;
+        emitter.emit("playSound", { file: "add.mp3" });
+      },
+      { deep: true }
+    );
     return {
+      customer,
       payments,
       packing,
       shipping,
       discount,
+      roundoff,
       calc,
       onSubmit,
       emitter,
       newCustomer,
       searchProduct,
+      search_customer,
+      customer_readonly,
+      toggleCustomer,
       searchProductCart,
+      searchCustomer,
+      showCustomerInfo,
       search_product,
       search_remove,
       confirmDeleteShow,
       autocompleteList,
       autocompleteCart,
+      autocompleteCustomerList,
+      notifyDefault,
       axiosAsyncStoreReturnBool,
       axiosAsyncCallReturnData,
       checkAndPush,
       checkAndRemove,
+      changeCustomer,
       products,
       searchBox,
+      searchCustomerBox,
       lostProductFocus,
       changeQuantity,
       quantityButton,
@@ -1355,17 +1484,12 @@ export default {
       addNewPayment,
       removePayment,
       submitForm,
+      isDirty,
+      isValid,
+      setFieldValue,
     };
   },
   methods: {},
-  watch: {
-    cart: {
-      handler() {
-        this.emitter.emit("playSound", { file: "add.mp3" });
-      },
-      deep: true,
-    },
-  },
   mounted() {
     var self = this;
     window.CHECKOUT_FINAL_MODAL = new Modal($("#checkoutFinalModal"), {
@@ -1384,8 +1508,10 @@ export default {
       // hide dropdowns and reset search
       self.autocompleteList = [];
       self.autocompleteCart = [];
+      self.autocompleteCustomerList = [];
       self.search_product = null;
       self.search_remove = null;
+      self.search_customer = null;
     };
   },
   beforeUnmount() {

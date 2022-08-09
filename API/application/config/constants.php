@@ -119,3 +119,5 @@ defined('TABLE_STOCK_ADJUSTMENT')   or define('TABLE_STOCK_ADJUSTMENT', 'stock_a
 defined('TABLE_STOCK_ADJUSTMENT_PRODUCT')    or define('TABLE_STOCK_ADJUSTMENT_PRODUCT', 'stock_adjustment_product');
 defined('TABLE_GENDER')             or define('TABLE_GENDER', 'gender');
 defined('TABLE_PAYMENT_MODE')       or define('TABLE_PAYMENT_MODE', 'payment_mode');
+defined('TABLE_POS_SALE')           or define('TABLE_POS_SALE', 'pos_sale');
+defined('TABLE_POS_SALE_PRODUCT')   or define('TABLE_POS_SALE_PRODUCT', 'pos_sale_product');

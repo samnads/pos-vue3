@@ -7,6 +7,7 @@ class Pos extends CI_Controller
         header('Content-Type: application/json; charset=utf-8');
         $this->load->model('admin/Pos_model');
         $this->load->model('admin/Product_model');
+        $this->load->model('admin/Customer_model');
         $_POST = raw_input_to_post();
         $action = $this->input->get('action') ?: $this->input->post('action');
         $search = $this->input->get('search') ?: $this->input->post('search');
@@ -17,6 +18,35 @@ class Pos extends CI_Controller
             case 'POST': // create
                 switch ($action) {
                     case 'create': // search products for add to cart
+                        $_POST = $this->input->post('data');
+                        $customer = $this->input->post('customer');
+                        $products = $this->input->post('products');
+                        $payments = $this->input->post('payments');
+                        /************************************************************ */
+                        $this->db->trans_begin();
+                        $data = array(
+                            'status' => 20,
+                            'date_time' => '',
+                            'warehouse' => 20,
+                            'customer' => $customer['id'],
+                            'created_by' => $this->session->id,
+                            'cart_discount' => $this->input->post('discount'),
+                            'shipping_charge' => $this->input->post('shipping'),
+                            'packing_charge' => $this->input->post('packing'),
+                            'round_off' => $this->input->post('roundoff'),
+                        );
+                        $this->Pos_model->create_pos_sale($data);
+                        if ($this->db->affected_rows() == 1) {
+                            $pos_sale_id = $this->db->insert_id();
+                            $this->db->trans_commit();
+                            echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Pos Sale Added !'));
+                        } else {
+                            $error = $this->db->error();
+                            $this->db->trans_rollback();
+                            echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
+                        }
+                        /************************************************************ */
+                        //die(json_encode(array('success' => true, 'type' => 'success', 'message' => 'Success !')));
                         break;
                     default:
                         die(json_encode(array('success' => false, 'type' => 'danger', 'error' => 'Unknown Action !')));
@@ -40,6 +70,20 @@ class Pos extends CI_Controller
                 $error = $this->db->error();
                 if ($error['code'] == 0) {
                     echo json_encode(array('success' => true, 'type' => 'success', 'data' => $query->result()));
+                } else {
+                    echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
+                }
+                break;
+            case 'customer':
+                $query["offset"] = 0;
+                $query["limit"] = 10;
+                $query["order_by"] = 'id';
+                $query["order"] = 'asc';
+                $query["search"] = $this->input->get('query');
+                $query = $this->Customer_model->suggestCustomerForPos($query["search"], $query["offset"], $query["limit"], $query["order_by"], $query["order"]);
+                $error = $this->db->error();
+                if ($error['code'] == 0) {
+                    echo json_encode(array('success' => true, 'type' => 'success', 'data' => $query->result_array()));
                 } else {
                     echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
                 }

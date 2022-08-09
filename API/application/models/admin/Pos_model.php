@@ -134,4 +134,9 @@ class Pos_model extends CI_Model
 		$query = $this->db->get();
 		return $query;
 	}
+	function create_pos_sale($data)
+	{
+		$query = $this->db->insert(TABLE_POS_SALE, $data);
+		return $query;
+	}
 }

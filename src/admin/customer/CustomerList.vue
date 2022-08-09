@@ -444,7 +444,11 @@ export default {
         "td:not(:first-child):not(:last-child),#details",
         function () {
           //let row = self.table.row($(this).parents("tr")).data(); // row data
-          window.CUSTOMER_INFO_MODAL.show();
+          self.emitter.emit("showCustomerInfoModal", {
+            title: "",
+            type: "",
+            emit: "",
+          });
         }
       );
       $("#datatable tbody").on("click", "#edit", function () {
@@ -460,7 +464,6 @@ export default {
       $("#datatable tbody").on("click", "#info", function () {
         // info from action menu
         //let row = self.table.row($(this).parents("tr")).data();
-        window.CUSTOMER_INFO_MODAL.show();
       });
       $("#datatable tbody").on("click", "#delete", function () {
         // delete from action menu

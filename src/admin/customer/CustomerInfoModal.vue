@@ -1,5 +1,5 @@
 <template>
-  <div class="modal" id="supplierInfoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal" id="customerInfoModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <form @submit="onSubmit" class="needs-validation">
@@ -68,12 +68,14 @@ import {
 import { Modal } from "bootstrap";
 import * as yup from "yup";
 import {computed } from "vue";
+import { inject } from "vue";
 import admin from "@/mixins/admin.js";
 export default {
   props: {
     propUpdateTaxRates: Function,
   },
-  setup(props) {
+  setup() {
+    const emitter = inject("emitter"); // Inject `emitter`
     // data retrieve
     const {
       notifyDefault,
@@ -165,7 +167,11 @@ export default {
     const { value: description, errorMessage: errorDescription } =
       useField("description");
     /*************************************** */
+    emitter.on("showCustomerInfoModal", (data) => {
+      window.CUSTOMER_INFO_MODAL.show();
+    });
     return {
+      emitter,
       /******* fields   */
       name,
       errorName,
@@ -192,10 +198,16 @@ export default {
   methods: {},
   created() {},
   mounted() {
-    window.CUSTOMER_INFO_MODAL = new Modal($("#supplierInfoModal"), {
+    window.CUSTOMER_INFO_MODAL = new Modal($("#customerInfoModal"), {
       backdrop: true,
       show: true,
     });
+  },
+  beforeUnmount() {
+    var self = this;
+    self.emitter.off("showCustomerInfoModal");
+    // turn off for duplicate calling
+    // because its called multiple times when page loaded multiple times
   },
 };
 </script>
