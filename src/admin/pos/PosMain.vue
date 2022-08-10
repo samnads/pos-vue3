@@ -67,7 +67,7 @@
                       <label class="form-label">Payment Method<i>*</i></label>
                       <select
                         class="form-select"
-                        v-model="p.method"
+                        v-model="p.mode"
                         :disabled="!paymentModes"
                       >
                         <option selected :value="null" v-if="!paymentModes">
@@ -104,7 +104,7 @@
                   <div class="row">
                     <div class="col-10 p-0">
                       <span class="ms-2 text-muted"
-                        >You can pay using multiple methods by clicking the +
+                        >You can pay using multiple modes by clicking the +
                         button.</span
                       >
                     </div>
@@ -201,10 +201,11 @@
             type="button"
             class="btn btn-secondary"
             data-bs-dismiss="modal"
+            :disabled="isSubmitting"
           >
             <i class="fa-solid fa-angle-left"></i>Back
           </button>
-          <button type="button" class="btn btn-success" @click="onSubmit()">
+          <button type="button" class="btn btn-success" @click="onSubmit()" :disabled="isSubmitting">
             Confirm&nbsp;<i class="fa-solid fa-check"></i>
           </button>
         </div>
@@ -729,7 +730,7 @@
                       class="btn btn-success w-100 rounded-0"
                       style="min-height: 78px"
                       type="button"
-                      @click="onSubmit"
+                      @click="checkoutPos"
                       :disable="!isValid"
                     >
                       <span class="fs-5"
@@ -858,7 +859,16 @@ export default {
           .required()
           .min(1, "Please add some products !")
           .label("Products"),
-        payments: yup.array().required().min(1).label("Payments"),
+        payments: yup
+          .array(
+            yup.object().shape({
+              id: yup.number().required().label("Payment ID"),
+              amount: yup.number().required().moreThan(0).label("Amount"),
+              mode: yup.number().required().label("Mode"),
+            })
+          )
+          .required()
+          .label("Payments"),
         packing: yup.number().required().min(0).label("Packing"),
         shipping: yup.number().required().min(0).label("Shipping"),
         discount: yup.number().required().min(0).label("Discount"),
@@ -867,7 +877,7 @@ export default {
     });
     var formValues = {
       products: [],
-      payments: [{ id: Date.now(), amount: 0, method: 2 }],
+      payments: [{ id: Date.now(), amount: 0, mode: 2 }],
       packing: 0,
       shipping: 0,
       discount: 0,
@@ -982,6 +992,7 @@ export default {
     };
     function onInvalidSubmit({ values, errors }) {
       console.log("Form field errors found !");
+      console.log(errors);
       for (var key in errors) {
         notifyDefault({ message: errors[key] });
       }
@@ -1390,7 +1401,7 @@ export default {
     emitter.on("confirmCancelSale", (data) => {
       //products.value = [];
       //packing.value = shipping.value = discount.value = roundoff.value = 0;
-      //payments.value = [{ id: Date.now(), amount: 0, method: 1 }];
+      //payments.value = [{ id: Date.now(), amount: 0, mod: 1 }];
       resetForm();
     });
     function draftPos() {
@@ -1419,8 +1430,8 @@ export default {
         emit: "",
       });
     }
-    function addNewPayment(method) {
-      let payMethod = { id: Date.now(), amount: 0, method: method };
+    function addNewPayment(mode) {
+      let payMethod = { id: Date.now(), amount: 0, mode: mode };
       payments.value.push(payMethod);
     }
     function removePayment(payment) {
@@ -1488,6 +1499,7 @@ export default {
       isDirty,
       isValid,
       setFieldValue,
+      isSubmitting,
     };
   },
   methods: {},

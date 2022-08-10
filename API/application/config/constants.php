@@ -121,3 +121,4 @@ defined('TABLE_GENDER')             or define('TABLE_GENDER', 'gender');
 defined('TABLE_PAYMENT_MODE')       or define('TABLE_PAYMENT_MODE', 'payment_mode');
 defined('TABLE_POS_SALE')           or define('TABLE_POS_SALE', 'pos_sale');
 defined('TABLE_POS_SALE_PRODUCT')   or define('TABLE_POS_SALE_PRODUCT', 'pos_sale_product');
+defined('TABLE_POS_SALE_PAYMENT')   or define('TABLE_POS_SALE_PAYMENT', 'pos_sale_payment');

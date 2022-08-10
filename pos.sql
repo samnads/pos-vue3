@@ -418,8 +418,20 @@ CREATE TABLE `pos_sale` (
   CONSTRAINT `pos_sale_ibfk_4` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`),
   CONSTRAINT `pos_sale_ibfk_5` FOREIGN KEY (`return_id`) REFERENCES `pos_sale` (`id`),
   CONSTRAINT `pos_sale_ibfk_6` FOREIGN KEY (`status`) REFERENCES `status` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8mb4;
 
+INSERT INTO `pos_sale` (`id`, `status`, `return_id`, `warehouse`, `customer`, `created_by`, `updated_by`, `cart_discount`, `shipping_charge`, `packing_charge`, `round_off`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(53,	20,	NULL,	20,	1,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.5000,	'2022-08-10 23:29:01',	NULL,	NULL),
+(54,	20,	NULL,	20,	1,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.5000,	'2022-08-10 23:29:42',	NULL,	NULL),
+(55,	20,	NULL,	20,	44,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	'2022-08-10 23:40:36',	NULL,	NULL),
+(56,	20,	NULL,	20,	44,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	'2022-08-10 23:51:00',	NULL,	NULL),
+(57,	20,	NULL,	20,	44,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	'2022-08-10 23:58:51',	NULL,	NULL),
+(58,	20,	NULL,	20,	44,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	'2022-08-11 00:00:36',	NULL,	NULL),
+(59,	20,	NULL,	20,	44,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	'2022-08-11 00:00:43',	NULL,	NULL),
+(62,	20,	NULL,	20,	44,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	'2022-08-11 00:01:46',	NULL,	NULL),
+(65,	20,	NULL,	20,	44,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	'2022-08-11 00:02:16',	NULL,	NULL),
+(66,	20,	NULL,	20,	44,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	'2022-08-11 00:02:40',	NULL,	NULL),
+(67,	20,	NULL,	20,	44,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	'2022-08-11 00:02:53',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `pos_sale_payment`;
 CREATE TABLE `pos_sale_payment` (
@@ -433,6 +445,22 @@ CREATE TABLE `pos_sale_payment` (
   CONSTRAINT `pos_sale_payment_ibfk_3` FOREIGN KEY (`payment_mode`) REFERENCES `payment_mode` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+INSERT INTO `pos_sale_payment` (`pos_sale`, `payment_mode`, `amount`) VALUES
+(53,	2,	2000.0000),
+(53,	4,	3422.0000),
+(54,	2,	2000.0000),
+(54,	4,	3422.0000),
+(54,	6,	0.0000),
+(54,	2,	0.0000),
+(55,	2,	0.0000),
+(56,	2,	44.0000),
+(57,	2,	44.0000),
+(58,	2,	545.0000),
+(59,	2,	545.0000),
+(62,	2,	545.0000),
+(65,	2,	545.0000),
+(66,	2,	0.0000),
+(67,	2,	545.0000);
 
 DROP TABLE IF EXISTS `pos_sale_product`;
 CREATE TABLE `pos_sale_product` (
@@ -452,6 +480,28 @@ CREATE TABLE `pos_sale_product` (
   CONSTRAINT `pos_sale_product_ibfk_3` FOREIGN KEY (`tax_id`) REFERENCES `tax_rate` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+INSERT INTO `pos_sale_product` (`pos_sale`, `product`, `quantity`, `unit_price`, `auto_discount`, `discount`, `tax_id`) VALUES
+(53,	5,	1.0000,	200.0000,	10.0000,	0.0000,	2),
+(53,	6,	10.0000,	570.0000,	170.2500,	0.0000,	2),
+(53,	10,	1.0000,	1000.0000,	250.0000,	0.0000,	2),
+(53,	173,	1.0000,	75.0000,	0.0000,	0.0000,	1),
+(53,	180,	1.0000,	10.0000,	0.0000,	0.0000,	1),
+(53,	186,	2.0000,	150.0000,	10.0000,	0.0000,	NULL),
+(54,	5,	1.0000,	200.0000,	10.0000,	0.0000,	2),
+(54,	6,	10.0000,	570.0000,	170.2500,	0.0000,	2),
+(54,	10,	1.0000,	1000.0000,	250.0000,	0.0000,	2),
+(54,	173,	1.0000,	75.0000,	0.0000,	0.0000,	1),
+(54,	180,	1.0000,	10.0000,	0.0000,	0.0000,	1),
+(54,	186,	2.0000,	150.0000,	10.0000,	0.0000,	NULL),
+(55,	173,	1.0000,	75.0000,	0.0000,	0.0000,	1),
+(56,	186,	1.0000,	150.0000,	10.0000,	0.0000,	NULL),
+(57,	186,	1.0000,	150.0000,	10.0000,	0.0000,	NULL),
+(58,	5,	1.0000,	200.0000,	10.0000,	0.0000,	2),
+(59,	5,	1.0000,	200.0000,	10.0000,	0.0000,	2),
+(62,	5,	1.0000,	200.0000,	10.0000,	0.0000,	2),
+(65,	5,	1.0000,	200.0000,	10.0000,	0.0000,	2),
+(66,	5,	1.0000,	200.0000,	10.0000,	0.0000,	2),
+(67,	5,	1.0000,	200.0000,	10.0000,	0.0000,	2);
 
 DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product` (
@@ -1263,4 +1313,4 @@ INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country
 (31,	'WARE0031',	'jhjhgjgjhg',	'jhgjhgjhgj',	'2022-07-01',	NULL,	NULL,	NULL,	'56565656',	'fgf@dy.hjgj',	NULL,	NULL,	NULL,	NULL,	16,	'hjhj',	NULL,	NULL,	'2022-07-05 12:36:57',	NULL,	NULL),
 (32,	'WARE0032',	'uiuiui',	'uiuiuiuiu',	'2022-07-06',	NULL,	NULL,	NULL,	'4545454',	'ui@gf.ghgh',	NULL,	NULL,	NULL,	NULL,	17,	NULL,	NULL,	NULL,	'2022-07-06 17:24:34',	NULL,	NULL);
 
--- 2022-08-10 16:52:11
+-- 2022-08-10 18:41:53

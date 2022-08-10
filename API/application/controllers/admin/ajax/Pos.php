@@ -37,7 +37,7 @@ class Pos extends CI_Controller
                         $this->Pos_model->create_pos_sale($data);
                         if ($this->db->affected_rows() == 1) {
                             $pos_sale_id = $this->db->insert_id();
-                            foreach ($products as $product) { // group roles by modules
+                            foreach ($products as $product) { // add products
                                 $data = array(
                                     'pos_sale' => $pos_sale_id,
                                     'product' => $product['id'],
@@ -48,6 +48,19 @@ class Pos extends CI_Controller
                                     'tax_id' => $product['tax_id'] ?: null,
                                 );
                                 $this->Pos_model->create_pos_sale_product($data);
+                                if ($this->db->affected_rows() != 1) {
+                                    $error = $this->db->error();
+                                    $this->db->trans_rollback();
+                                    die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                                }
+                            }
+                            foreach ($payments as $payment) { // add payments
+                                $data = array(
+                                    'pos_sale' => $pos_sale_id,
+                                    'payment_mode' => $payment['mode'],
+                                    'amount' =>  $payment['amount']
+                                );
+                                $this->Pos_model->create_pos_sale_payment($data);
                                 if ($this->db->affected_rows() != 1) {
                                     $error = $this->db->error();
                                     $this->db->trans_rollback();
