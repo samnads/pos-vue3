@@ -394,7 +394,6 @@ CREATE TABLE `pos_sale` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `status` int(11) NOT NULL,
   `return_id` int(11) DEFAULT NULL,
-  `date_time` datetime NOT NULL,
   `warehouse` int(11) NOT NULL,
   `customer` int(11) NOT NULL,
   `created_by` int(11) NOT NULL,
@@ -403,6 +402,9 @@ CREATE TABLE `pos_sale` (
   `shipping_charge` decimal(15,4) DEFAULT NULL,
   `packing_charge` decimal(15,4) DEFAULT NULL,
   `round_off` decimal(6,4) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `created_by` (`created_by`),
   KEY `updated_by` (`updated_by`),
@@ -416,7 +418,20 @@ CREATE TABLE `pos_sale` (
   CONSTRAINT `pos_sale_ibfk_4` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`),
   CONSTRAINT `pos_sale_ibfk_5` FOREIGN KEY (`return_id`) REFERENCES `pos_sale` (`id`),
   CONSTRAINT `pos_sale_ibfk_6` FOREIGN KEY (`status`) REFERENCES `status` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4;
+
+
+DROP TABLE IF EXISTS `pos_sale_payment`;
+CREATE TABLE `pos_sale_payment` (
+  `pos_sale` int(11) NOT NULL,
+  `payment_mode` int(11) NOT NULL,
+  `amount` decimal(15,4) NOT NULL,
+  KEY `pos_sale` (`pos_sale`),
+  KEY `payment_mode` (`payment_mode`),
+  CONSTRAINT `pos_sale_payment_ibfk_1` FOREIGN KEY (`pos_sale`) REFERENCES `pos_sale` (`id`),
+  CONSTRAINT `pos_sale_payment_ibfk_2` FOREIGN KEY (`pos_sale`) REFERENCES `pos_sale` (`id`),
+  CONSTRAINT `pos_sale_payment_ibfk_3` FOREIGN KEY (`payment_mode`) REFERENCES `payment_mode` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 DROP TABLE IF EXISTS `pos_sale_product`;
@@ -427,13 +442,14 @@ CREATE TABLE `pos_sale_product` (
   `unit_price` decimal(15,4) NOT NULL,
   `auto_discount` decimal(15,4) DEFAULT NULL,
   `discount` decimal(15,4) DEFAULT NULL,
-  `tax_rate` int(11) DEFAULT NULL,
+  `tax_id` int(11) DEFAULT NULL,
+  UNIQUE KEY `pos_sale_product` (`pos_sale`,`product`),
   KEY `pos_sale` (`pos_sale`),
   KEY `product` (`product`),
-  KEY `tax_rate` (`tax_rate`),
+  KEY `tax_rate` (`tax_id`),
   CONSTRAINT `pos_sale_product_ibfk_1` FOREIGN KEY (`pos_sale`) REFERENCES `pos_sale` (`id`),
   CONSTRAINT `pos_sale_product_ibfk_2` FOREIGN KEY (`product`) REFERENCES `product` (`id`),
-  CONSTRAINT `pos_sale_product_ibfk_3` FOREIGN KEY (`tax_rate`) REFERENCES `tax_rate` (`id`)
+  CONSTRAINT `pos_sale_product_ibfk_3` FOREIGN KEY (`tax_id`) REFERENCES `tax_rate` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
@@ -996,6 +1012,25 @@ INSERT INTO `supplier` (`id`, `code`, `name`, `place`, `address`, `pin_code`, `c
 (103,	'SUPP0103',	'aaa',	'bbb',	NULL,	NULL,	NULL,	'111111',	NULL,	NULL,	NULL,	'dfdt',	NULL,	NULL,	'ACTIVE',	'2022-06-30 05:55:00',	'2022-07-01 14:14:59',	'2022-07-01 14:14:59'),
 (104,	'SUPP0104',	'aaa',	'bbb',	NULL,	NULL,	NULL,	'1111111',	NULL,	NULL,	NULL,	'aaaa',	NULL,	NULL,	'ACTIVE',	'2022-06-30 06:01:54',	'2022-07-06 16:56:31',	'2022-07-06 16:56:31');
 
+DROP TABLE IF EXISTS `symbology`;
+CREATE TABLE `symbology` (
+  `id` int(11) NOT NULL,
+  `code` varchar(10) CHARACTER SET utf8 NOT NULL,
+  `name` text CHARACTER SET utf8 NOT NULL,
+  `desc` text CHARACTER SET utf8 DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `symbology` (`id`, `code`, `name`, `desc`, `deleted_at`) VALUES
+(1,	'CODE128',	'CODE128 (auto and force mode)',	NULL,	NULL),
+(2,	'CODE39',	'CODE39',	NULL,	NULL),
+(3,	'EAN / UPC',	'EAN-13, EAN-8, EAN-5, EAN-2, UPC (A)',	NULL,	NULL),
+(4,	'ITF-14',	'ITF-14',	NULL,	NULL),
+(5,	'ITF',	'ITF',	NULL,	NULL),
+(6,	'MSI',	'MSI',	NULL,	NULL),
+(7,	'Pharmacode',	'Pharmacode',	NULL,	NULL);
+
 DROP TABLE IF EXISTS `tax_group`;
 CREATE TABLE `tax_group` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -1087,6 +1122,38 @@ INSERT INTO `unit` (`id`, `base`, `code`, `name`, `step`, `operator`, `allow_dec
 (86,	1,	'uku',	'jkk,jik',	2,	'*',	1,	'6yuyuyu',	NULL,	NULL,	'2022-07-25 05:18:16',	NULL,	NULL),
 (87,	6,	'tytyt',	'nvbn',	3,	'*',	1,	NULL,	NULL,	NULL,	'2022-07-25 08:46:03',	NULL,	NULL);
 
+DROP TABLE IF EXISTS `unit_bulk`;
+CREATE TABLE `unit_bulk` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `unit` int(11) NOT NULL,
+  `value` int(11) NOT NULL,
+  `code` varchar(10) NOT NULL,
+  `name` varchar(15) NOT NULL,
+  `description` varchar(30) DEFAULT NULL,
+  `added_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `unit` (`unit`) USING BTREE,
+  CONSTRAINT `unit_bulk-unit` FOREIGN KEY (`unit`) REFERENCES `unit` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `unit_bulk` (`id`, `unit`, `value`, `code`, `name`, `description`, `added_at`, `updated_at`, `deleted_at`) VALUES
+(38,	1,	10,	'10b',	'Box of 10',	NULL,	'2021-04-18 15:16:00',	NULL,	NULL),
+(39,	1,	5535,	'dsf',	'dsf',	'ert',	'2021-04-18 18:58:09',	NULL,	NULL),
+(70,	1,	6,	'fgh',	'rrr',	NULL,	'2022-04-15 05:52:47',	NULL,	NULL),
+(71,	1,	6,	'fc',	'ttt',	NULL,	'2022-04-15 05:55:13',	NULL,	NULL),
+(72,	1,	34,	'aa',	'ggg',	NULL,	'2022-04-15 05:57:14',	NULL,	NULL),
+(73,	1,	565,	'r5',	'tyty',	NULL,	'2022-04-15 05:58:17',	NULL,	NULL),
+(74,	1,	4,	'qq',	'qqq',	NULL,	'2022-04-15 06:06:01',	NULL,	NULL),
+(75,	1,	5,	'ss',	'sss',	NULL,	'2022-04-15 06:06:34',	NULL,	NULL),
+(76,	1,	5,	'jjj',	'jjj',	NULL,	'2022-04-15 06:07:38',	NULL,	NULL),
+(77,	1,	4,	'gfdfg',	'gdfg',	NULL,	'2022-04-15 06:10:56',	NULL,	NULL),
+(78,	1,	4545,	'efg',	'kkk',	NULL,	'2022-04-15 06:19:22',	NULL,	NULL),
+(79,	1,	5,	'ggg4',	'ddd',	NULL,	'2022-04-15 06:19:49',	NULL,	NULL),
+(80,	1,	45,	'fhgf',	'yyy',	NULL,	'2022-04-15 11:40:55',	NULL,	NULL),
+(81,	1,	554545,	'ghghgh',	'etttrt',	NULL,	'2022-04-15 11:45:34',	NULL,	NULL);
+
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -1128,7 +1195,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-08-09 16:57:29',	'2022-08-05 12:51:09',	'2021-04-20 19:22:52',	'2022-08-09 16:57:29',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-08-10 15:46:47',	'2022-08-05 12:51:09',	'2021-04-20 19:22:52',	'2022-08-10 15:46:47',	NULL),
 (30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
 (31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
@@ -1196,4 +1263,4 @@ INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country
 (31,	'WARE0031',	'jhjhgjgjhg',	'jhgjhgjhgj',	'2022-07-01',	NULL,	NULL,	NULL,	'56565656',	'fgf@dy.hjgj',	NULL,	NULL,	NULL,	NULL,	16,	'hjhj',	NULL,	NULL,	'2022-07-05 12:36:57',	NULL,	NULL),
 (32,	'WARE0032',	'uiuiui',	'uiuiuiuiu',	'2022-07-06',	NULL,	NULL,	NULL,	'4545454',	'ui@gf.ghgh',	NULL,	NULL,	NULL,	NULL,	17,	NULL,	NULL,	NULL,	'2022-07-06 17:24:34',	NULL,	NULL);
 
--- 2022-08-09 17:50:32
+-- 2022-08-10 16:52:11

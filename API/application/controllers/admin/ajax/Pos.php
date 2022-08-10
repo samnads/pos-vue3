@@ -26,8 +26,6 @@ class Pos extends CI_Controller
                         $this->db->trans_begin();
                         $data = array(
                             'status' => 20, //20 - completed, 21 - returned
-                            'start_time' => '',
-                            'end_time' => '',
                             'warehouse' => 20,
                             'customer' => $customer['id'],
                             'created_by' => $this->session->id,
@@ -39,6 +37,23 @@ class Pos extends CI_Controller
                         $this->Pos_model->create_pos_sale($data);
                         if ($this->db->affected_rows() == 1) {
                             $pos_sale_id = $this->db->insert_id();
+                            foreach ($products as $product) { // group roles by modules
+                                $data = array(
+                                    'pos_sale' => $pos_sale_id,
+                                    'product' => $product['id'],
+                                    'quantity' =>  $product['quantity'],
+                                    'unit_price' => $product['price'],
+                                    'auto_discount' => $product['auto_discount'],
+                                    'discount' => $product['discount'],
+                                    'tax_id' => $product['tax_id'] ?: null,
+                                );
+                                $this->Pos_model->create_pos_sale_product($data);
+                                if ($this->db->affected_rows() != 1) {
+                                    $error = $this->db->error();
+                                    $this->db->trans_rollback();
+                                    die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                                }
+                            }
                             $this->db->trans_commit();
                             echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Pos Sale Added !'));
                         } else {

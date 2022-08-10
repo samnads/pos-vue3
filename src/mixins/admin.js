@@ -117,7 +117,7 @@ export default function () {
             speed: notSpeed
         });
     }
-    async function axiosAsyncStoreReturnBool(mutation, url, data, method = "get") {
+    async function axiosAsyncStoreReturnBool(mutation, url, data, method = "get", options = { showSuccessNotification: false, showCatchNotification: true, showProgress: true }) {
         try {
             let res = await axios({
                 url: endpoint + url,
@@ -129,11 +129,27 @@ export default function () {
                     'Content-Type': 'application/json',
                 }
             })
-            let response = res.data;
-            if (response.success == true) {
-                store.commit(mutation, response.data);
+            /******************************* */ // common things for all response
+            let resData = res.data;
+            if (resData.success == false) {
+                options.showProgress && internalInstance.appContext.config.globalProperties.$Progress.fail();
+                if (resData.location) { // redirect found
+                    notifyApiResponse(resData);
+                    router.push({ path: "/" + resData.location }).catch((e) => {
+                        console.log(e);
+                    });
+                }
+                else {
+                    notifyApiResponse(resData);
+                }
+            }
+            else if (resData.success == true) {
+                options.showSuccessNotification == true ? notifyApiResponse(resData) : undefined; // show success notify
+                options.showProgress && internalInstance.appContext.config.globalProperties.$Progress.finish(); // finish progress
+                store.commit(mutation, resData.data);
                 return true;
             }
+            /******************************* */
             return false;
         }
         catch (error) {
