@@ -25,8 +25,9 @@ class Pos extends CI_Controller
                         /************************************************************ */
                         $this->db->trans_begin();
                         $data = array(
-                            'status' => 20,
-                            'date_time' => '',
+                            'status' => 20, //20 - completed, 21 - returned
+                            'start_time' => '',
+                            'end_time' => '',
                             'warehouse' => 20,
                             'customer' => $customer['id'],
                             'created_by' => $this->session->id,

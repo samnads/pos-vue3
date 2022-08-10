@@ -987,6 +987,7 @@ export default {
       }
     }
     const onSubmit = handleSubmit((values) => {
+      values.roundoff = calc.round_off();
       return axiosAsyncCallReturnData("POST", "pos", {
         action: "create",
         data: values,
