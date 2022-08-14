@@ -68,7 +68,7 @@ class Pos extends CI_Controller
                                 }
                             }
                             $this->db->trans_commit();
-                            echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Pos Sale Added !'));
+                            echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully Added POS Sale !'));
                         } else {
                             $error = $this->db->error();
                             $this->db->trans_rollback();

@@ -15,7 +15,7 @@
         <div class="modal-body">
           <div class="row">
             <div class="col-9">
-              <div class="card mb-2">
+              <div class="card border-info mb-2">
                 <div class="card-body">
                   <div class="row">
                     <div class="col-6">
@@ -37,8 +37,8 @@
                 </div>
               </div>
               <ul class="list-group">
-                <li class="list-group-item fs-5">Payment Details</li>
-                <li class="list-group-item" v-for="p in payments" :key="p.id">
+                <li class="list-group-item bg-secondary text-light fs-5">Payment Details</li>
+                <li class="list-group-item border-secondary" v-for="p in payments" :key="p.id" style="background:lightblue;">
                   <button
                     type="button"
                     class="
@@ -100,7 +100,7 @@
                     </div>
                   </div>
                 </li>
-                <li class="list-group-item">
+                <li class="list-group-item border-secondary">
                   <div class="row">
                     <div class="col-10 p-0">
                       <span class="ms-2 text-muted"
@@ -145,7 +145,7 @@
             </div>
             <div class="col-3">
               <div
-                class="card rounded-0 rounded-top text-light"
+                class="card rounded-0 rounded-top text-light order border-primary"
                 v-bind:class="[
                   calc.balance() > 0
                     ? 'bg-danger'
@@ -181,7 +181,7 @@
                   </div>
                 </div>
               </div>
-              <div class="card rounded-0 rounded-bottom">
+              <div class="card rounded-0 rounded-bottom border border-primary">
                 <div class="card-body">
                   <div class="col">
                     <label class="form-label">Payment Note</label>
@@ -205,7 +205,12 @@
           >
             <i class="fa-solid fa-angle-left"></i>Back
           </button>
-          <button type="button" class="btn btn-success" @click="onSubmit()" :disabled="isSubmitting">
+          <button
+            type="button"
+            class="btn btn-success"
+            @click="onSubmit()"
+            :disabled="isSubmitting"
+          >
             Confirm&nbsp;<i class="fa-solid fa-check"></i>
           </button>
         </div>
@@ -1005,6 +1010,8 @@ export default {
       }).then(function (data) {
         if (data.success == true) {
           console.log("POS added !");
+          resetForm();
+          window.CHECKOUT_FINAL_MODAL.hide();
         } else if (data.success == false) {
           console.log("POS not added !");
           // valid error
@@ -1506,7 +1513,7 @@ export default {
   mounted() {
     var self = this;
     window.CHECKOUT_FINAL_MODAL = new Modal($("#checkoutFinalModal"), {
-      backdrop: true,
+      backdrop: 'static',
       show: true,
     });
     if (!this.paymentModes) {

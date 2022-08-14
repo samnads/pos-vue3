@@ -418,7 +418,7 @@ CREATE TABLE `pos_sale` (
   CONSTRAINT `pos_sale_ibfk_4` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`),
   CONSTRAINT `pos_sale_ibfk_5` FOREIGN KEY (`return_id`) REFERENCES `pos_sale` (`id`),
   CONSTRAINT `pos_sale_ibfk_6` FOREIGN KEY (`status`) REFERENCES `status` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `pos_sale` (`id`, `status`, `return_id`, `warehouse`, `customer`, `created_by`, `updated_by`, `cart_discount`, `shipping_charge`, `packing_charge`, `round_off`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (53,	20,	NULL,	20,	1,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.5000,	'2022-08-10 23:29:01',	NULL,	NULL),
@@ -431,7 +431,13 @@ INSERT INTO `pos_sale` (`id`, `status`, `return_id`, `warehouse`, `customer`, `c
 (62,	20,	NULL,	20,	44,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	'2022-08-11 00:01:46',	NULL,	NULL),
 (65,	20,	NULL,	20,	44,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	'2022-08-11 00:02:16',	NULL,	NULL),
 (66,	20,	NULL,	20,	44,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	'2022-08-11 00:02:40',	NULL,	NULL),
-(67,	20,	NULL,	20,	44,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	'2022-08-11 00:02:53',	NULL,	NULL);
+(67,	20,	NULL,	20,	44,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	'2022-08-11 00:02:53',	NULL,	NULL),
+(68,	20,	NULL,	20,	44,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	'2022-08-14 16:22:27',	NULL,	NULL),
+(69,	20,	NULL,	20,	44,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	'2022-08-14 16:49:32',	NULL,	NULL),
+(70,	20,	NULL,	20,	44,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	'2022-08-14 16:49:53',	NULL,	NULL),
+(71,	20,	NULL,	20,	48,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	'2022-08-14 16:50:57',	NULL,	NULL),
+(72,	20,	NULL,	20,	48,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	'2022-08-14 16:51:45',	NULL,	NULL),
+(73,	20,	NULL,	20,	53,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	'2022-08-14 16:52:28',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `pos_sale_payment`;
 CREATE TABLE `pos_sale_payment` (
@@ -460,7 +466,13 @@ INSERT INTO `pos_sale_payment` (`pos_sale`, `payment_mode`, `amount`) VALUES
 (62,	2,	545.0000),
 (65,	2,	545.0000),
 (66,	2,	0.0000),
-(67,	2,	545.0000);
+(67,	2,	545.0000),
+(68,	2,	95.0000),
+(69,	2,	160.0000),
+(70,	2,	160.0000),
+(71,	2,	160.0000),
+(72,	2,	95.0000),
+(73,	2,	94545.0000);
 
 DROP TABLE IF EXISTS `pos_sale_product`;
 CREATE TABLE `pos_sale_product` (
@@ -501,7 +513,13 @@ INSERT INTO `pos_sale_product` (`pos_sale`, `product`, `quantity`, `unit_price`,
 (62,	5,	1.0000,	200.0000,	10.0000,	0.0000,	2),
 (65,	5,	1.0000,	200.0000,	10.0000,	0.0000,	2),
 (66,	5,	1.0000,	200.0000,	10.0000,	0.0000,	2),
-(67,	5,	1.0000,	200.0000,	10.0000,	0.0000,	2);
+(67,	5,	1.0000,	200.0000,	10.0000,	0.0000,	2),
+(68,	152,	1.0000,	75.0000,	0.0000,	0.0000,	1),
+(69,	186,	1.0000,	150.0000,	10.0000,	0.0000,	NULL),
+(70,	186,	1.0000,	150.0000,	10.0000,	0.0000,	NULL),
+(71,	186,	1.0000,	150.0000,	10.0000,	0.0000,	NULL),
+(72,	150,	1.0000,	75.0000,	0.0000,	0.0000,	1),
+(73,	150,	1.0000,	75.0000,	0.0000,	0.0000,	1);
 
 DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product` (
@@ -1245,7 +1263,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-08-10 15:46:47',	'2022-08-05 12:51:09',	'2021-04-20 19:22:52',	'2022-08-10 15:46:47',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-08-14 15:40:00',	'2022-08-05 12:51:09',	'2021-04-20 19:22:52',	'2022-08-14 15:40:00',	NULL),
 (30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
 (31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
@@ -1313,4 +1331,4 @@ INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country
 (31,	'WARE0031',	'jhjhgjgjhg',	'jhgjhgjhgj',	'2022-07-01',	NULL,	NULL,	NULL,	'56565656',	'fgf@dy.hjgj',	NULL,	NULL,	NULL,	NULL,	16,	'hjhj',	NULL,	NULL,	'2022-07-05 12:36:57',	NULL,	NULL),
 (32,	'WARE0032',	'uiuiui',	'uiuiuiuiu',	'2022-07-06',	NULL,	NULL,	NULL,	'4545454',	'ui@gf.ghgh',	NULL,	NULL,	NULL,	NULL,	17,	NULL,	NULL,	NULL,	'2022-07-06 17:24:34',	NULL,	NULL);
 
--- 2022-08-10 18:41:53
+-- 2022-08-14 16:23:00
