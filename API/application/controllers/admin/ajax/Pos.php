@@ -33,6 +33,8 @@ class Pos extends CI_Controller
                             'shipping_charge' => $this->input->post('shipping'),
                             'packing_charge' => $this->input->post('packing'),
                             'round_off' => $this->input->post('roundoff'),
+                            'payment_note' => trim($this->input->post('payment_note')) ?: NULL,
+                            'sale_note' => trim($this->input->post('sale_note')) ?: NULL,
                         );
                         $this->Pos_model->create_pos_sale($data);
                         if ($this->db->affected_rows() == 1) {
@@ -58,8 +60,40 @@ class Pos extends CI_Controller
                                 $data = array(
                                     'pos_sale' => $pos_sale_id,
                                     'payment_mode' => $payment['mode'],
-                                    'amount' =>  $payment['amount']
+                                    'amount' =>  $payment['amount'],
+                                    'transaction_id' =>  $payment['transaction_id'] ? trim($payment['transaction_id']) : NULL,
+                                    'reference_no' =>  $payment['reference_no'] ? trim($payment['reference_no']) : NULL,
+                                    'note' =>  $payment['note'] ? trim($payment['note']) : NULL
                                 );
+                                /***************************/ // validate each payment methods
+                                $this->form_validation->set_data($data);
+                                $config = array(
+                                    array(
+                                        'field' => 'amount',
+                                        'label' => 'Amount',
+                                        'rules' => 'trim|numeric|greater_than[0]'
+                                    ),
+                                    array(
+                                        'field' => 'transaction_id',
+                                        'label' => 'Transaction ID',
+                                        'rules' => 'trim'
+                                    ),
+                                    array(
+                                        'field' => 'reference_no',
+                                        'label' => 'Reference No.',
+                                        'rules' => 'trim'
+                                    ),
+                                    array(
+                                        'field' => 'note',
+                                        'label' => 'Note',
+                                        'rules' => 'trim'
+                                    )
+                                );
+                                $this->form_validation->set_rules($config);
+                                if ($this->form_validation->run() == FALSE) {
+                                    die(json_encode(array('success' => false, 'errors' => $this->form_validation->error_array())));
+                                }
+                                /***************************/
                                 $this->Pos_model->create_pos_sale_payment($data);
                                 if ($this->db->affected_rows() != 1) {
                                     $error = $this->db->error();

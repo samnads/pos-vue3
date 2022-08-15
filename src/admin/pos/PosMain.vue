@@ -10,7 +10,9 @@
     >
       <div class="modal-content">
         <div class="modal-header bg-success">
-          <h5 class="modal-title">Checkout Sale</h5>
+          <h5 class="modal-title">
+            <i class="fa-solid fa-cart-shopping"></i>Checkout Sale
+          </h5>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -37,8 +39,22 @@
                 </div>
               </div>
               <ul class="list-group">
-                <li class="list-group-item bg-secondary text-light fs-5">Payment Details</li>
-                <li class="list-group-item border-secondary" v-for="p in payments" :key="p.id" style="background:lightblue;">
+                <li class="list-group-item bg-secondary text-light fs-5">
+                  Payment Details
+                </li>
+                <li
+                  class="list-group-item bg-danger text-light"
+                  v-if="!payments.length"
+                >
+                  This pos sale payment will be treated as Due, because of No
+                  payment method added !
+                </li>
+                <li
+                  class="list-group-item border-secondary"
+                  v-for="p in payments"
+                  :key="p.id"
+                  style="background: lightblue"
+                >
                   <button
                     type="button"
                     class="
@@ -49,7 +65,7 @@
                       start-100
                       m-0
                     "
-                    v-if="payments.length > 1"
+                    v-if="payments.length > 0"
                     @click="removePayment(p)"
                   ></button>
                   <div class="row">
@@ -84,17 +100,26 @@
                     </div>
                     <div class="col-6">
                       <label class="form-label">Transaction ID</label>
-                      <input type="text" step="any" class="form-control" />
+                      <input
+                        type="text"
+                        v-model="p.transaction_id"
+                        class="form-control"
+                      />
                     </div>
                     <div class="col-6">
                       <label class="form-label">Reference No.</label>
-                      <input type="text" step="any" class="form-control" />
+                      <input
+                        type="text"
+                        v-model="p.reference_no"
+                        class="form-control"
+                      />
                     </div>
                     <div class="col-12">
                       <label class="form-label">Note</label>
                       <textarea
                         type="text"
                         rows="1"
+                        v-model="p.note"
                         class="form-control"
                       ></textarea>
                     </div>
@@ -144,52 +169,70 @@
               </ul>
             </div>
             <div class="col-3">
-              <div
-                class="card rounded-0 rounded-top text-light order border-primary"
-                v-bind:class="[
-                  calc.balance() > 0
-                    ? 'bg-danger'
-                    : calc.balance() == 0
-                    ? 'bg-success'
-                    : 'bg-info',
-                ]"
-              >
-                <div class="card-body">
-                  <div class="row text-end">
-                    <div class="col-12 fs-4">Previous Due</div>
-                    <div class="col-12 fs-4">
-                      <span class="badge bg-light text-dark">{{
-                        calc.total_payable_round().toFixed(2)
-                      }}</span>
-                    </div>
-                    <hr class="m-1" />
-                    <div class="col-12 fs-4">Current Payable</div>
-                    <div class="col-12 fs-4">
-                      <span class="badge bg-light text-dark">{{
-                        calc.total_payable_round().toFixed(2)
-                      }}</span>
-                    </div>
-                    <hr class="m-1" />
-                    <div class="col-12 fs-4">
-                      Balance {{ calc.balance() >= 0 ? "" : "Return" }}
-                    </div>
-                    <div class="col-12 fs-4">
-                      <span class="badge bg-light text-dark">{{
-                        calc.balance().toFixed(2)
-                      }}</span>
+              <div class="sticky-top">
+                <div
+                  class="
+                    card
+                    rounded-0 rounded-top
+                    text-light
+                    order
+                    border-primary
+                  "
+                  v-bind:class="[
+                    calc.balance() > 0
+                      ? 'bg-danger'
+                      : calc.balance() == 0
+                      ? 'bg-success'
+                      : 'bg-info',
+                  ]"
+                >
+                  <div class="card-body">
+                    <div class="row text-end">
+                      <div class="col-12 fs-4">Previous Due</div>
+                      <div class="col-12 fs-4">
+                        <span class="badge bg-light text-dark">{{
+                          calc.total_payable_round().toFixed(2)
+                        }}</span>
+                      </div>
+                      <hr class="m-1" />
+                      <div class="col-12 fs-4">Current Payable</div>
+                      <div class="col-12 fs-4">
+                        <span class="badge bg-light text-dark">{{
+                          calc.total_payable_round().toFixed(2)
+                        }}</span>
+                      </div>
+                      <hr class="m-1" />
+                      <div class="col-12 fs-4">
+                        Balance {{ calc.balance() >= 0 ? "" : "Return" }}
+                      </div>
+                      <div class="col-12 fs-4">
+                        <span class="badge bg-light text-dark">{{
+                          calc.balance().toFixed(2)
+                        }}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div class="card rounded-0 rounded-bottom border border-primary">
-                <div class="card-body">
-                  <div class="col">
-                    <label class="form-label">Payment Note</label>
-                    <input type="text" step="any" class="form-control" />
-                  </div>
-                  <div class="col">
-                    <label class="form-label">Sale Note</label>
-                    <input type="text" step="any" class="form-control" />
+                <div
+                  class="card rounded-0 rounded-bottom border border-primary"
+                >
+                  <div class="card-body">
+                    <div class="col">
+                      <label class="form-label">Payment Note</label>
+                      <input
+                        type="text"
+                        v-model="payment_note"
+                        class="form-control"
+                      />
+                    </div>
+                    <div class="col">
+                      <label class="form-label">Sale Note</label>
+                      <input
+                        type="text"
+                        v-model="sale_note"
+                        class="form-control"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -373,7 +416,14 @@
                 >
                   <th scope="row">{{ index + 1 }}</th>
                   <td>{{ product.code }}</td>
-                  <td>{{ product.name }}</td>
+                  <td>
+                    <div class="d-flex justify-content-between">
+                      {{ product.name }}
+                      <div>
+                        <i class="fa-solid fa-pencil" role="button"></i>
+                      </div>
+                    </div>
+                  </td>
                   <td>{{ product.hsn || "-" }}</td>
                   <td>
                     <div class="input-group input-group-sm is-invalid">
@@ -870,6 +920,9 @@ export default {
               id: yup.number().required().label("Payment ID"),
               amount: yup.number().required().moreThan(0).label("Amount"),
               mode: yup.number().required().label("Mode"),
+              transaction_id: yup.string().nullable().label("Trans. ID"),
+              reference_no: yup.string().nullable().label("Ref. No."),
+              note: yup.string().nullable().label("Note"),
             })
           )
           .required()
@@ -878,11 +931,22 @@ export default {
         shipping: yup.number().required().min(0).label("Shipping"),
         discount: yup.number().required().min(0).label("Discount"),
         roundoff: yup.number().required().label("Round off"),
+        payment_note: yup.string().nullable().label("Payment Note"),
+        sale_note: yup.string().nullable().label("Sale Note"),
       });
     });
     var formValues = {
       products: [],
-      payments: [{ id: Date.now(), amount: 0, mode: 2 }],
+      payments: [
+        {
+          id: Date.now(),
+          amount: 0,
+          mode: 2,
+          transaction_id: null,
+          reference_no: null,
+          note: null,
+        },
+      ],
       packing: 0,
       shipping: 0,
       discount: 0,
@@ -906,6 +970,8 @@ export default {
     const { value: shipping } = useField("shipping");
     const { value: discount } = useField("discount");
     const { value: roundoff } = useField("roundoff");
+    const { value: payment_note } = useField("payment_note");
+    const { value: sale_note } = useField("sale_note");
     const isDirty = useIsFormDirty();
     const isValid = useIsFormValid();
     const calc = {
@@ -1438,7 +1504,14 @@ export default {
       });
     }
     function addNewPayment(mode) {
-      let payMethod = { id: Date.now(), amount: 0, mode: mode };
+      let payMethod = {
+        id: Date.now(),
+        amount: 0,
+        mode: mode,
+        transaction_id: null,
+        reference_no: null,
+        note: null,
+      };
       payments.value.push(payMethod);
     }
     function removePayment(payment) {
@@ -1447,7 +1520,7 @@ export default {
     }
     function submitForm() {}
     watch(
-      [customer, products, discount, packing, shipping],
+      [customer, products, discount, packing, shipping, payments],
       () => {
         customer_readonly.value = customer.value ? true : false;
         emitter.emit("playSound", { file: "add.mp3" });
@@ -1461,6 +1534,8 @@ export default {
       shipping,
       discount,
       roundoff,
+      payment_note,
+      sale_note,
       calc,
       onSubmit,
       emitter,
@@ -1513,7 +1588,7 @@ export default {
   mounted() {
     var self = this;
     window.CHECKOUT_FINAL_MODAL = new Modal($("#checkoutFinalModal"), {
-      backdrop: 'static',
+      backdrop: "static",
       show: true,
     });
     if (!this.paymentModes) {
