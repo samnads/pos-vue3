@@ -13,7 +13,26 @@ class Pos extends CI_Controller
         $search = $this->input->get('search') ?: $this->input->post('search');
         $dropdown = $this->input->get('dropdown') ?: $this->input->post('dropdown');
         switch ($_SERVER['REQUEST_METHOD']) {
-            case 'GET': // read
+            case 'GET':
+                switch ($action) {
+                    case 'datatable':
+                        $data = array();
+                        $limit = $this->input->get('length') <= 0 ? NULL : $this->input->get('length'); // limit
+                        $order_by = $this->input->get('columns')[$this->input->get('order')[0]['column']]['data']; // order by column
+                        $order = $this->input->get('order')[0]['dir']; // order asc or desc
+                        $search = $this->input->get('search')['value']; // search query
+                        $offset = $this->input->get('start'); // start position
+                        $query = $this->Pos_model->datatable_data($search, $offset, $limit, $order_by, $order);
+                        $data['data'] = $query->result();
+                        $data["draw"] = $this->input->get('draw'); // unique
+                        $data["recordsTotal"] = 0;
+                        $data["recordsFiltered"] = 0;
+                        $data["success"] = true;
+                        //$data[ 'error' ] = '';
+                        echo json_encode($data);
+                        break;
+                    default:
+                }
                 break;
             case 'POST': // create
                 switch ($action) {

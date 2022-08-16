@@ -399,6 +399,7 @@
                   <th scope="col" class="text-end fit">Auto Discount</th>
                   <th scope="col" width="8%" class="text-end">Discount</th>
                   <th scope="col" class="text-end fit">Taxable Value</th>
+                  <th scope="col" class="text-end fit">Rate %</th>
                   <th scope="col" class="fit">Tax</th>
                   <th scope="col" class="fit">Total</th>
                   <th scope="col" class="text-center fit">
@@ -488,6 +489,9 @@
                   </td>
                   <td class="text-end">
                     {{ product.total_taxable_value_().toFixed(2) }}
+                  </td>
+                  <td class="text-end">
+                    {{ product.tax_rate.toFixed(2) }}
                   </td>
                   <td class="text-end">
                     {{ product.total_tax_().toFixed(2) }}
@@ -918,7 +922,12 @@ export default {
           .array(
             yup.object().shape({
               id: yup.number().required().label("Payment ID"),
-              amount: yup.number().required().moreThan(0).label("Amount"),
+              amount: yup
+                .number()
+                .typeError("Amount must be a number")
+                .required()
+                .moreThan(0)
+                .label("Amount"),
               mode: yup.number().required().label("Mode"),
               transaction_id: yup.string().nullable().label("Trans. ID"),
               reference_no: yup.string().nullable().label("Ref. No."),
@@ -1095,6 +1104,7 @@ export default {
       notifyDefault,
       axiosAsyncStoreReturnBool,
       axiosAsyncCallReturnData,
+      x_percentage_of_y
     } = admin();
     function confirmDeleteShow(data) {
       emitter.emit("deleteConfirmModal", {
@@ -1279,6 +1289,7 @@ export default {
           ).toFixed(2)
         );
         product.tax = 20;
+        product.tax_rate = Number(parseFloat(product.tax_rate).toFixed(2));
         product.total_quantity_price_ = function () {
           return Number(
             parseFloat(product.price * product.quantity).toFixed(2)
@@ -1299,7 +1310,7 @@ export default {
           );
         };
         product.total_tax_ = function () {
-          return 20;
+          return x_percentage_of_y(product.tax_rate,product.total_taxable_value_());
         };
         product.total_ = function () {
           return Number(
@@ -1556,6 +1567,7 @@ export default {
       notifyDefault,
       axiosAsyncStoreReturnBool,
       axiosAsyncCallReturnData,
+      x_percentage_of_y,
       checkAndPush,
       checkAndRemove,
       changeCustomer,

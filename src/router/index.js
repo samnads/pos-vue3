@@ -11,6 +11,9 @@ import AdminProductMain from '../admin/product/ProductMain.vue'
 import AdminProductList from '../admin/product/ProductList.vue'
 import AdminProductNew from '../admin/product/ProductNew.vue'
 import AdminProductListTest from '../admin/product/TestProductList.vue'
+// Sale Based Pages
+import AdminSaleMain from '../admin/sale/SaleMain.vue'
+import AdminSalePosList from '../admin/sale/SalePosList.vue'
 // Product Adjustment Based Pages
 import AdjustmentMain from '../admin/adjustment/AdjustmentMain.vue'
 import AdjustmentList from '../admin/adjustment/AdjustmentList.vue'
@@ -109,6 +112,19 @@ const routes = [
             path: 'copy/:id',
             name: 'adminProductCopy',
             component: AdminProductNew,
+          },
+        ],
+      },
+      {
+        path: 'sale',
+        name: 'adminSaleMain',
+        component: AdminSaleMain,
+        redirect: '/admin/sale/pos',
+        children: [
+          {
+            path: 'pos',
+            name: 'adminSalePosList',
+            component: AdminSalePosList,
           },
         ],
       },

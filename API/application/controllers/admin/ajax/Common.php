@@ -56,18 +56,40 @@ class Common extends CI_Controller
                         echo json_encode(array('success' => true, 'type' => 'success', 'data' => $new));
                         break;
                     case 'test_query':
+                        $this->db->select('*,SUM(amount) as total_paid')->from(TABLE_POS_SALE_PAYMENT)->group_by('pos_sale');
+                        $subquery_payment = $this->db->get_compiled_select();
+                        $this->db->reset_query();
+
+
+
+                        $this->db->select('*,(unit_price * quantity)-(auto_discount * quantity) as total_test')->from(TABLE_POS_SALE_PRODUCT)->group_by('pos_sale')->group_by('product');
+                        $subquery_product = $this->db->get_compiled_select();
+                        $this->db->reset_query();
+
+
                         $this->db->select('
-                        c.id as id,
-                        c.parent as parent,
-                        c.name as name,
-                        c1.name  as parent_name,
-                        count(DISTINCT p.id) as p_count,
-                        count(DISTINCT b.id) as b_count');
-                        $this->db->from(TABLE_CATEGORY . ' c');
-                        $this->db->join(TABLE_CATEGORY . ' c1',    'c1.id=c.parent', 'left');
-                        $this->db->join(TABLE_PRODUCT . ' p',    'p.category = c.id', 'left');
-                        $this->db->join(TABLE_BRAND . ' b',    'b.id = p.brand', 'left');
-                        $this->db->group_by('c.id');
+                        ps.id as id,
+                        ps.created_at as created_at,
+                        CONCAT(u.first_name," ",u.last_name) as created_by_name,
+                        c.name as customer_name,
+                        ps.return_id as return,
+                        w.name as warehouse_name,
+                        s.name as status,
+						s.css_class as css_class,
+                        pspy.total_paid as total_paid,
+						COUNT(case when psp.product then psp.product end) as product_count,
+						SUM(psp.total_test)-ps.cart_discount as total_payable,
+                        ps.updated_at as updated_at,
+                        ps.deleted_at as deleted_at');
+                        $this->db->from(TABLE_POS_SALE . ' ps');
+                        //$this->db->join(TABLE_POS_SALE_PRODUCT . ' psp',    'psp.pos_sale=ps.id', 'left');
+                        $this->db->join(TABLE_CUSTOMER . ' c',    'c.id = ps.customer', 'left');
+                        $this->db->join(TABLE_USER . ' u',    'u.id = ps.created_by', 'left');
+                        $this->db->join(TABLE_STATUS . ' s',    's.id = ps.status', 'left');
+                        $this->db->join(TABLE_WAREHOUSE . ' w',    'w.id = ps.warehouse', 'left');
+                        $this->db->join('(' . $subquery_payment . ')  pspy', 'pspy.pos_sale = ps.id', 'left');
+                        $this->db->join('(' . $subquery_product . ')  psp', 'psp.pos_sale = ps.id', 'left');
+                        $this->db->group_by('ps.id');
                         $query = $this->db->get();
                         //die($this->db->last_query());
                         echo json_encode(array('success' => true, 'type' => 'success', 'data' => $query->result_array()));
