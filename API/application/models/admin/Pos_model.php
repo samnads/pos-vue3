@@ -14,34 +14,34 @@ class Pos_model extends CI_Model
 		$subquery_payment = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		/******************************************************/ // calculate each product_total excluding tax rate
-		$this->db->select('*,(unit_price * quantity)-(auto_discount * quantity)-discount as product_total_without_tax')->from(TABLE_POS_SALE_PRODUCT)->group_by('pos_sale')->group_by('product');
+		$this->db->select('*,(unit_price * quantity)-(auto_discount * quantity)-discount as product_total_without_tax')->from(TABLE_POS_SALE_PRODUCT)->group_by(array('pos_sale', 'product'))->group_by('product');
 		$subquery_product = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		/******************************************************/ // calculate each product total tax
 		$this->db->select('*,
-		(IFNULL(tr.rate, 0) / 100) * (psp.unit_price * psp.quantity - psp.discount - psp.auto_discount) as product_total_tax');
+		(IFNULL(tr.rate, 0) / 100) * (psp.quantity * (psp.unit_price - psp.auto_discount - psp.discount)) as product_total_tax');
 		$this->db->from(TABLE_POS_SALE_PRODUCT . ' psp');
 		$this->db->join(TABLE_TAX_RATE . ' tr',    'tr.id = psp.tax_id', 'left');
 		$this->db->group_by(array('psp.pos_sale', 'psp.product'));
 		$product_total_tax = $this->db->get_compiled_select();
 		$this->db->reset_query();
-		//die($product_total_tax);
+		/******************************************************/
 		$this->db->select('
-                        ps.id as id,
-                        ps.created_at as created_at,
-                        CONCAT(u.first_name," ",u.last_name) as created_by_name,
-                        c.name as customer_name,
-                        ps.return_id as return,
-                        w.name as warehouse_name,
-                        s.name as status,
-						s.css_class as css_class,
-                        IFNULL(pspy.total_paid, 0) as total_paid,
-						COUNT(case when psp.product then psp.product end) as product_count,
-						SUM(psp.product_total_without_tax) + SUM(ptt.product_total_tax) + ps.round_off as total_payable,
-						SUM(psp.product_total_without_tax) + SUM(ptt.product_total_tax) + ps.round_off as due,
-						SUM(psp.product_total_without_tax) + SUM(ptt.product_total_tax) + ps.round_off - IFNULL(pspy.total_paid, 0) as balance_return,
-                        ps.updated_at as updated_at,
-                        ps.deleted_at as deleted_at');
+        ps.id as id,
+        ps.created_at as created_at,
+        CONCAT(u.first_name," ",u.last_name) as created_by_name,
+        c.name as customer_name,
+        ps.return_id as return,
+        w.name as warehouse_name,
+        s.name as status,
+		s.css_class as css_class,
+		COUNT(case when psp.product then psp.product end) as product_count,
+		ROUND(SUM(psp.product_total_without_tax) + SUM(ptt.product_total_tax) + ps.shipping_charge + ps.packing_charge - ps.cart_discount + ps.round_off) as total_payable,
+		ROUND(IFNULL(pspy.total_paid, 0)) as total_paid,
+		ROUND(SUM(psp.product_total_without_tax) + SUM(ptt.product_total_tax) + ps.shipping_charge + ps.packing_charge - ps.cart_discount + ps.round_off - IFNULL(pspy.total_paid, 0)) as balance_return,
+		ROUND(SUM(psp.product_total_without_tax) + SUM(ptt.product_total_tax) + ps.shipping_charge + ps.packing_charge - ps.cart_discount + ps.round_off - IFNULL(pspy.total_paid, 0)) as due,
+        ps.updated_at as updated_at,
+        ps.deleted_at as deleted_at');
 		$this->db->from(TABLE_POS_SALE . ' ps');
 		$this->db->join(TABLE_CUSTOMER . ' c',    'c.id = ps.customer', 'left');
 		$this->db->join(TABLE_USER . ' u',    'u.id = ps.created_by', 'left');
@@ -50,7 +50,6 @@ class Pos_model extends CI_Model
 		$this->db->join('(' . $subquery_payment . ')  pspy', 'pspy.pos_sale = ps.id', 'left');
 		$this->db->join('(' . $subquery_product . ')  psp', 'psp.pos_sale = ps.id', 'left');
 		$this->db->join('(' . $product_total_tax . ')  ptt', 'ptt.pos_sale = ps.id AND ptt.product = psp.product', 'left');
-		$this->db->join(TABLE_TAX_RATE . ' tr',    'tr.id = psp.tax_id', 'left');
 		$this->db->order_by($order_by, $order);
 		$this->db->group_by('ps.id');
 		$this->db->where(array('ps.deleted_at' => NULL)); // select only not deleted rows

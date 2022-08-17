@@ -31,7 +31,7 @@
   </div>
   <div class="wrap_content" id="wrap_content">
     <table
-      class="table table-bordered table-striped w-auto"
+      class="table table-bordered table-striped align-middle w-auto"
       id="datatable"
       v-once
     >
@@ -45,7 +45,7 @@
           <th scope="col">Warehouse</th>
           <th scope="col">Products</th>
           <th scope="col">Status</th>
-          <th scope="col">Total</th>
+          <th scope="col">Payable</th>
           <th scope="col">Paid</th>
           <th scope="col">Return</th>
           <th scope="col">Due</th>
@@ -243,14 +243,14 @@ export default {
           {
             targets: [9],
             render: function (data, type, row, meta) {
-              if (data) {
+              if (data > 0) {
                 return (
                   '<span class="text-success fw-bold">' +
                   parseFloat(data).toFixed(2) +
                   "</span>"
                 );
               }
-              return '-';
+              return '<span class="text-muted small">-</span>';
             },
           },
           {
@@ -260,10 +260,10 @@ export default {
                 return (
                   '<span class="text-info fw-bold">' +
                   parseFloat(data).toFixed(2) +
-                  "</span>"
+                  '</span>'
                 );
               }
-              return '-';
+              return '<span class="text-muted small">-</span>';
             },
           },
           {
@@ -276,7 +276,7 @@ export default {
                   "</span>"
                 );
               }
-              return '-';
+               return '<span class="text-muted small">-</span>';
             },
           },
           {
