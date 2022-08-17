@@ -235,7 +235,7 @@ export default {
             render: function (data, type, row, meta) {
               return (
                 '<span class="text-primary fw-bold">' +
-                parseFloat(data).toFixed(2) +
+                parseFloat(data || 0).toFixed(2) +
                 "</span>"
               );
             },
@@ -256,7 +256,7 @@ export default {
           {
             targets: [10],
             render: function (data, type, row, meta) {
-              if (data < 0) {
+              if (parseFloat(data).toFixed(2) < 0) {
                 return (
                   '<span class="text-info fw-bold">' +
                   parseFloat(data).toFixed(2) +
@@ -269,7 +269,7 @@ export default {
           {
             targets: [11],
             render: function (data, type, row, meta) {
-              if (data > 0) {
+              if (parseFloat(data).toFixed(2) > 0) {
                 return (
                   '<span class="text-danger fw-bold">' +
                   parseFloat(data).toFixed(2) +

@@ -1289,7 +1289,7 @@ export default {
           ).toFixed(2)
         );
         product.tax = 20;
-        product.tax_rate = Number(parseFloat(product.tax_rate).toFixed(2));
+        product.tax_rate = Number(parseFloat(product.tax_rate || 0).toFixed(2));
         product.total_quantity_price_ = function () {
           return Number(
             parseFloat(product.price * product.quantity).toFixed(2)
