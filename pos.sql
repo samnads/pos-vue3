@@ -92,7 +92,7 @@ CREATE TABLE `category` (
   UNIQUE KEY `code` (`code`),
   UNIQUE KEY `slug` (`slug`),
   CONSTRAINT `category_ibfk_1` FOREIGN KEY (`parent`) REFERENCES `category` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `category` (`id`, `parent`, `code`, `image`, `name`, `description`, `slug`, `allow_sub`, `editable`, `deletable`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (1,	NULL,	'CAT003',	NULL,	'Miscellaneous',	'to898',	'fhfghfgh',	0,	NULL,	NULL,	'2022-07-17 16:19:16',	'2022-07-27 05:08:35',	NULL),
@@ -125,7 +125,11 @@ INSERT INTO `category` (`id`, `parent`, `code`, `image`, `name`, `description`, 
 (28,	4,	'tuy',	NULL,	'King Pink',	'',	'klj',	NULL,	NULL,	NULL,	'2022-07-18 05:11:52',	'2022-07-27 15:49:49',	NULL),
 (29,	26,	NULL,	NULL,	'I Phone 11 - 16 GB Red V1',	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-18 15:20:51',	NULL,	NULL),
 (30,	29,	NULL,	NULL,	'I Phone 11 - 16 GB Red V1 - 1',	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-18 15:20:51',	NULL,	NULL),
-(31,	NULL,	NULL,	NULL,	'Empty',	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-18 15:52:27',	NULL,	NULL);
+(31,	NULL,	NULL,	NULL,	'Empty',	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-18 15:52:27',	NULL,	NULL),
+(73,	NULL,	'cccv',	NULL,	'Baby',	'',	'cvcv',	NULL,	NULL,	NULL,	'2022-08-18 13:25:17',	NULL,	NULL),
+(74,	NULL,	'fghfghfgh',	NULL,	'ghgh',	'',	'ghfghfgh',	NULL,	NULL,	NULL,	'2022-08-18 13:28:45',	NULL,	NULL),
+(75,	NULL,	'bnbvn',	NULL,	'vbnvn',	'',	'bnnm',	NULL,	NULL,	NULL,	'2022-08-18 13:29:16',	NULL,	NULL),
+(76,	NULL,	'CAT0076',	NULL,	'dfdfdf',	'',	'dfdfdf',	NULL,	NULL,	NULL,	'2022-08-18 13:46:49',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `currency`;
 CREATE TABLE `currency` (
@@ -421,14 +425,20 @@ CREATE TABLE `pos_sale` (
   CONSTRAINT `pos_sale_ibfk_4` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`),
   CONSTRAINT `pos_sale_ibfk_5` FOREIGN KEY (`return_id`) REFERENCES `pos_sale` (`id`),
   CONSTRAINT `pos_sale_ibfk_6` FOREIGN KEY (`status`) REFERENCES `status` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=134 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=140 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `pos_sale` (`id`, `status`, `return_id`, `warehouse`, `customer`, `created_by`, `updated_by`, `cart_discount`, `shipping_charge`, `packing_charge`, `round_off`, `payment_note`, `sale_note`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (129,	20,	NULL,	20,	53,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.5300,	NULL,	NULL,	'2022-08-17 23:55:36',	NULL,	NULL),
 (130,	20,	NULL,	20,	42,	1,	NULL,	25.0000,	100.0000,	1000.0000,	-0.9400,	NULL,	NULL,	'2022-08-18 00:01:36',	NULL,	NULL),
 (131,	20,	NULL,	20,	1,	1,	NULL,	11.0000,	55.0000,	25.0000,	-0.8300,	NULL,	NULL,	'2022-08-18 00:04:27',	NULL,	NULL),
 (132,	20,	NULL,	20,	51,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.5000,	NULL,	NULL,	'2022-08-18 00:10:03',	NULL,	NULL),
-(133,	20,	NULL,	20,	48,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.9800,	NULL,	NULL,	'2022-08-18 00:11:58',	NULL,	NULL);
+(133,	20,	NULL,	20,	48,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.9800,	NULL,	NULL,	'2022-08-10 00:11:58',	'2022-08-18 06:44:20',	NULL),
+(134,	20,	NULL,	20,	1,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.7200,	NULL,	NULL,	'2022-08-18 12:36:05',	NULL,	NULL),
+(135,	20,	NULL,	20,	1,	1,	NULL,	50.0000,	2.0000,	2.0000,	-0.2300,	NULL,	NULL,	'2022-08-18 14:58:37',	NULL,	NULL),
+(136,	20,	NULL,	20,	44,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.2600,	NULL,	NULL,	'2022-08-18 15:06:33',	NULL,	NULL),
+(137,	20,	NULL,	20,	1,	1,	NULL,	2.3300,	0.0000,	0.0000,	-0.3300,	NULL,	NULL,	'2022-08-18 15:30:56',	NULL,	NULL),
+(138,	20,	NULL,	20,	1,	1,	NULL,	9.0000,	10.0000,	5.0000,	-0.5200,	NULL,	NULL,	'2022-08-18 18:53:15',	NULL,	NULL),
+(139,	20,	NULL,	20,	1,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.2600,	NULL,	NULL,	'2022-08-18 18:53:55',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `pos_sale_payment`;
 CREATE TABLE `pos_sale_payment` (
@@ -453,7 +463,14 @@ INSERT INTO `pos_sale_payment` (`pos_sale`, `payment_mode`, `amount`, `transacti
 (131,	4,	1000.0000,	NULL,	NULL,	NULL),
 (131,	1,	20.0000,	NULL,	NULL,	NULL),
 (133,	2,	700.0000,	NULL,	NULL,	NULL),
-(133,	6,	65.0000,	NULL,	NULL,	NULL);
+(133,	6,	65.0000,	NULL,	NULL,	NULL),
+(134,	2,	25.0000,	NULL,	NULL,	NULL),
+(135,	2,	1022.0000,	NULL,	NULL,	NULL),
+(136,	6,	500.0000,	NULL,	NULL,	NULL),
+(137,	2,	1851.0000,	NULL,	NULL,	NULL),
+(138,	1,	100.0000,	NULL,	NULL,	NULL),
+(138,	4,	1200.0000,	NULL,	NULL,	NULL),
+(139,	2,	200.0000,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `pos_sale_product`;
 CREATE TABLE `pos_sale_product` (
@@ -495,7 +512,21 @@ INSERT INTO `pos_sale_product` (`pos_sale`, `product`, `quantity`, `unit_price`,
 (131,	173,	1.0000,	75.0000,	0.0000,	2.2500,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
 (131,	207,	1.0000,	84.0000,	5.0000,	34.4600,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
 (132,	149,	1.0000,	75.0000,	0.0000,	0.0000,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(133,	10,	1.0000,	1000.0000,	250.0000,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL);
+(133,	10,	1.0000,	1000.0000,	250.0000,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(134,	6,	4.4500,	570.0000,	170.2500,	2.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(134,	10,	1.0000,	1000.0000,	250.0000,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(135,	6,	2.0000,	570.0000,	170.2500,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(135,	151,	1.0000,	75.0000,	0.0000,	0.0000,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(135,	180,	2.2000,	10.0000,	0.0000,	0.0000,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(135,	186,	1.0000,	150.0000,	10.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(135,	214,	1.0000,	5.0000,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(136,	6,	1.0000,	570.0000,	170.2500,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(137,	5,	1.2000,	200.0000,	10.0000,	11.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(137,	6,	4.0000,	570.0000,	170.2500,	1.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(138,	5,	2.0000,	200.0000,	10.0000,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(138,	6,	2.0000,	570.0000,	170.2500,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(138,	180,	1.0000,	10.0000,	0.0000,	1.0000,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(139,	6,	1.0000,	570.0000,	170.2500,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product` (
@@ -565,7 +596,7 @@ CREATE TABLE `product` (
   CONSTRAINT `product_ibfk_8` FOREIGN KEY (`s_unit`) REFERENCES `unit` (`id`),
   CONSTRAINT `price_check` CHECK (`price` <= `mrp`),
   CONSTRAINT `pos_max_sale_qty_check` CHECK (`pos_max_sale_qty` >= `pos_min_sale_qty`)
-) ENGINE=InnoDB AUTO_INCREMENT=214 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=215 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `product` (`id`, `type`, `code`, `symbology`, `name`, `slug`, `thumbnail`, `weight`, `category`, `brand`, `unit`, `p_unit`, `s_unit`, `is_auto_cost`, `cost`, `mrp`, `markup`, `price`, `auto_discount`, `mfg_date`, `exp_date`, `tax_method`, `tax_rate`, `quantity`, `alert`, `alert_quantity`, `pos_sale`, `custom_discount`, `pos_min_sale_qty`, `pos_max_sale_qty`, `pos_sale_note`, `pos_custom_discount`, `pos_custom_tax`, `pos_data_field_1`, `pos_data_field_2`, `pos_data_field_3`, `pos_data_field_4`, `pos_data_field_5`, `pos_data_field_6`, `added_at`, `updated_at`, `editable`, `deletable`, `deleted_at`) VALUES
 (1,	1,	'37519985',	1,	'King Book',	'king-book',	'https://www.escoffier.edu/wp-content/uploads/reading-is-a-great-way-to-continue-your-growth-as-a-chef_1028_40137340_1_14130186_500.jpg',	NULL,	1,	3,	1,	NULL,	NULL,	'1',	NULL,	35.0000,	0.0000,	30.0000,	NULL,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:14:30',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
@@ -605,7 +636,8 @@ INSERT INTO `product` (`id`, `type`, `code`, `symbology`, `name`, `slug`, `thumb
 (207,	1,	'27398738',	1,	'uiiuy',	'uiiuy',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	56.0000,	NULL,	50.0000,	84.0000,	5.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-20 18:25:01',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
 (211,	1,	'32427445',	1,	'3434',	'3434',	NULL,	NULL,	2,	NULL,	1,	3,	NULL,	'1',	543.0000,	NULL,	NULL,	814.5000,	5.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-25 10:10:28',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
 (212,	1,	'78734177',	1,	'fghfghfgh',	'fghfghfgh',	NULL,	NULL,	21,	NULL,	1,	NULL,	NULL,	'1',	5.0000,	NULL,	NULL,	7.5000,	3.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	5,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	'Color',	't',	'e',	'w',	'q',	'2022-07-25 10:23:17',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(213,	1,	'78031178',	1,	'gfhfgh',	'gfhfgh',	NULL,	NULL,	3,	NULL,	1,	NULL,	NULL,	'1',	10.0000,	100.0000,	10.0000,	11.0000,	5.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-27 20:12:10',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL);
+(213,	1,	'78031178',	1,	'gfhfgh',	'gfhfgh',	NULL,	NULL,	3,	NULL,	1,	NULL,	NULL,	'1',	10.0000,	100.0000,	10.0000,	11.0000,	5.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-27 20:12:10',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
+(214,	1,	'92153632',	1,	'Thread',	'thread',	NULL,	NULL,	2,	NULL,	9,	NULL,	NULL,	'1',	1.0000,	NULL,	50.0000,	5.0000,	0.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	3,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-08-18 12:40:16',	NULL,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `product_gallery`;
 CREATE TABLE `product_gallery` (
@@ -914,10 +946,10 @@ INSERT INTO `stock_adjustment` (`id`, `warehouse`, `added_by`, `date`, `time`, `
 (192,	20,	1,	'2022-07-20',	'02:50:55',	NULL,	NULL,	'2022-07-20 12:20:56',	NULL,	NULL),
 (193,	28,	1,	'2022-07-20',	'17:51:18',	NULL,	NULL,	'2022-07-20 12:21:18',	NULL,	NULL),
 (194,	20,	1,	'2022-07-20',	'18:24:03',	'gg',	'trtr',	'2022-07-20 12:54:15',	NULL,	NULL),
-(195,	20,	1,	'2022-07-20',	'18:25:01',	NULL,	NULL,	'2022-07-20 12:55:01',	NULL,	NULL),
+(195,	20,	1,	'2022-07-20',	'18:25:01',	NULL,	NULL,	'2022-07-20 12:55:01',	'2022-08-18 16:15:22',	NULL),
 (196,	20,	1,	'2022-07-25',	'10:23:17',	NULL,	NULL,	'2022-07-25 04:53:17',	NULL,	NULL),
 (197,	20,	1,	'2022-07-27',	'19:13:27',	NULL,	NULL,	'2022-07-27 13:43:29',	'2022-07-27 13:43:45',	NULL),
-(198,	20,	1,	'2022-07-27',	'20:12:10',	NULL,	NULL,	'2022-07-27 14:42:10',	NULL,	NULL);
+(198,	20,	1,	'2022-07-27',	'20:12:10',	NULL,	NULL,	'2022-07-27 14:42:10',	'2022-08-18 16:15:39',	NULL);
 
 DROP TABLE IF EXISTS `stock_adjustment_product`;
 CREATE TABLE `stock_adjustment_product` (
@@ -998,12 +1030,12 @@ INSERT INTO `stock_adjustment_product` (`id`, `stock_adjustment`, `product`, `no
 (323,	192,	173,	NULL,	1.0000),
 (324,	193,	206,	NULL,	54.0000),
 (325,	194,	180,	NULL,	1.0000),
-(326,	195,	207,	NULL,	64.0000),
+(326,	195,	207,	NULL,	65.0000),
 (327,	196,	212,	NULL,	-50.0000),
 (328,	197,	5,	'c',	1.0000),
 (329,	197,	161,	'7',	1.0000),
 (330,	197,	6,	'w',	-2.0000),
-(331,	198,	213,	NULL,	2.0000);
+(331,	198,	213,	NULL,	-1.0000);
 
 DROP TABLE IF EXISTS `supplier`;
 CREATE TABLE `supplier` (
@@ -1230,7 +1262,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-08-17 12:19:49',	'2022-08-05 12:51:09',	'2021-04-20 19:22:52',	'2022-08-17 12:19:49',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-08-18 16:03:36',	'2022-08-05 12:51:09',	'2021-04-20 19:22:52',	'2022-08-18 16:03:36',	NULL),
 (30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
 (31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
@@ -1298,4 +1330,4 @@ INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country
 (31,	'WARE0031',	'jhjhgjgjhg',	'jhgjhgjhgj',	'2022-07-01',	NULL,	NULL,	NULL,	'56565656',	'fgf@dy.hjgj',	NULL,	NULL,	NULL,	NULL,	16,	'hjhj',	NULL,	NULL,	'2022-07-05 12:36:57',	NULL,	NULL),
 (32,	'WARE0032',	'uiuiui',	'uiuiuiuiu',	'2022-07-06',	NULL,	NULL,	NULL,	'4545454',	'ui@gf.ghgh',	NULL,	NULL,	NULL,	NULL,	17,	NULL,	NULL,	NULL,	'2022-07-06 17:24:34',	NULL,	NULL);
 
--- 2022-08-17 18:46:31
+-- 2022-08-18 16:47:08

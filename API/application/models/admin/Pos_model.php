@@ -100,6 +100,7 @@ class Pos_model extends CI_Model
 		u.id														as unit_id,
 		u.name														as unit_name,
 		u.code														as unit_code,
+		u.allow_decimal												as unit_allow_decimal,
 
 		tr.id														as tax_id,
 		tr.code														as tax_code,

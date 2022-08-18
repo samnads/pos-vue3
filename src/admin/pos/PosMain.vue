@@ -445,6 +445,7 @@
                         @change="changeQuantity(product, $event.target.value)"
                         type="number"
                         class="form-control no-arrow text-center"
+                        @focus="$event.target.select()"
                         :value="product.quantity"
                       />
                       <button
@@ -1104,7 +1105,7 @@ export default {
       notifyDefault,
       axiosAsyncStoreReturnBool,
       axiosAsyncCallReturnData,
-      x_percentage_of_y
+      x_percentage_of_y,
     } = admin();
     function confirmDeleteShow(data) {
       emitter.emit("deleteConfirmModal", {
@@ -1310,7 +1311,10 @@ export default {
           );
         };
         product.total_tax_ = function () {
-          return x_percentage_of_y(product.tax_rate,product.total_taxable_value_());
+          return x_percentage_of_y(
+            product.tax_rate,
+            product.total_taxable_value_()
+          );
         };
         product.total_ = function () {
           return Number(
@@ -1356,7 +1360,22 @@ export default {
       let index = products.value.findIndex((item) => item.id === product.id);
       quantity = Number(parseFloat(quantity).toFixed(2));
       if (quantity) {
-        if (quantity < product.min_sale_qty) {
+        if (product.unit_allow_decimal == 0 && quantity % 1 != 0) {
+          // check if unit allow decimal number
+          products.value[index].quantity = product.min_sale_qty;
+          emitter.emit("showAlert", {
+            title: "Decimal Not Allowed !",
+            body:
+              "Default minimum quantity " +
+              product.min_sale_qty +
+              " applied for the product <b>" +
+              product.name +
+              "</b>",
+            type: "danger",
+            play: "danger.mp3",
+          });
+        } else if (quantity < product.min_sale_qty) {
+          // check if quantity less than min quanitity
           products.value[index].quantity = product.min_sale_qty;
           emitter.emit("showAlert", {
             title: "Minimum quantity required !",
@@ -1370,6 +1389,7 @@ export default {
             play: "danger.mp3",
           });
         } else if (product.max_sale_qty && quantity > product.max_sale_qty) {
+          // check if quantity greater than max quanitity
           products.value[index].quantity = product.max_sale_qty;
           emitter.emit("showAlert", {
             title: "Quantity limit exceeded !",
@@ -1383,11 +1403,13 @@ export default {
             play: "danger.mp3",
           });
         } else {
+          // no error found - then change quantity
           products.value[index].quantity = quantity;
           this.searchBox.focus();
         }
       } else {
-        products.value[index].quantity = product.min_sale_qty;
+        // invalid quantity number
+        products.value[index].quantity = product.min_sale_qty; // set minimum quantity
         emitter.emit("showAlert", {
           title: "Invalid quantity !",
           body:
@@ -1404,18 +1426,30 @@ export default {
     function changeDiscount(product, disc) {
       let index = products.value.findIndex((item) => item.id === product.id);
       disc = Number(parseFloat(disc).toFixed(2));
-      if (disc >= 0) {
-        products.value[index].discount = disc;
+      if (product.allow_custom_discount == 1) {
+        if (disc >= 0) {
+          products.value[index].discount = disc;
+        } else {
+          products.value[index].discount = 0;
+          emitter.emit("showAlert", {
+            title: "Invalid discount !",
+            body:
+              "Discount " +
+              0 +
+              " applied for the product <b>" +
+              product.name +
+              "</b>",
+            type: "danger",
+            play: "danger.mp3",
+          });
+        }
       } else {
         products.value[index].discount = 0;
         emitter.emit("showAlert", {
-          title: "Invalid discount !",
+          title: "Discount Denied !",
           body:
-            "Discount " +
-            0 +
-            " applied for the product <b>" +
-            product.name +
-            "</b>",
+            "Custom discount not allowed for the product <b>" +
+            products.value[index].name+"</b> !",
           type: "danger",
           play: "danger.mp3",
         });

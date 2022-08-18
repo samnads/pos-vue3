@@ -31,7 +31,7 @@
   </div>
   <div class="wrap_content" id="wrap_content">
     <table
-      class="table table-bordered table-striped align-middle w-auto"
+      class="table table-sm table-bordered table-striped align-middle w-auto"
       id="datatable"
       v-once
     >

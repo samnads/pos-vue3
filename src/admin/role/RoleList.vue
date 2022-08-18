@@ -34,7 +34,7 @@
   </div>
   <div class="wrap_content" id="wrap_content">
     <table
-      class="table table-bordered table-striped w-auto"
+      class="table table-sm table-bordered table-striped w-auto"
       id="datatable"
       v-once
     >
