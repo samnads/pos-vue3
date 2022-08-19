@@ -15,13 +15,18 @@ class Product_model extends CI_Model
 	function getInfo($id)
 	{
 		/******************************************************/ // calc quantity using stock adjustments
-		$this->db->select('sap.id as sap_id,sap.product as sap_product,SUM(sap.quantity) as total_sap_quantity');
+		$this->db->select('sap.id as sap_id,sap.product as sap_product,wh.name as sap_warehouse_name,SUM(sap.quantity) as total_sap_quantity');
 		$this->db->from(TABLE_STOCK_ADJUSTMENT_PRODUCT . ' as sap');
 		$this->db->join(TABLE_STOCK_ADJUSTMENT . ' as sa',    'sa.id = sap.stock_adjustment', 'left');
 		$this->db->join(TABLE_PRODUCT . ' as p',    'p.id = sap.product', 'left');
-		$this->db->where(array('sa.deleted_at' => NULL)); // select only not deleted rows
-		$this->db->group_by('sap.product');
+		$this->db->join(TABLE_WAREHOUSE . ' as wh',	'wh.id=sa.warehouse',	'left');
+		$this->db->where('p.id',	$id);
+		$this->db->where('sa.deleted_at', NULL); // select only not deleted rows
+		$this->db->group_by(array('sap.product', 'sa.warehouse'));
 		$query_stock_adj_product = $this->db->get_compiled_select();
+		$this->db->reset_query();
+		$stock = $this->db->query($query_stock_adj_product);
+		$stock = $stock->result_array();
 		$this->db->reset_query();
 		//die($query_stock_adj_product);
 		/******************************************************/
@@ -55,7 +60,7 @@ class Product_model extends CI_Model
 		tr.code		as tax_code,
 		tr.name		as tax_name,
 		tr.rate		as tax_rate,
-		IFNULL(qsap.total_sap_quantity, 0) as total_stock');
+		SUM(IFNULL(qsap.total_sap_quantity, 0)) as total_stock');
 		$this->db->from(TABLE_PRODUCT . ' as p');
 		$this->db->join(TABLE_PRODUCT_TYPE . ' as t',	't.id=p.type',	'left');
 		$this->db->join(TABLE_BARCODE_SYMBOLOGY . ' as bs',	'bs.id=p.symbology',	'left');
@@ -65,8 +70,10 @@ class Product_model extends CI_Model
 		$this->db->join(TABLE_TAX_RATE . ' as tr',	'tr.id=p.tax_rate',	'left');
 		$this->db->join('(' . $query_stock_adj_product . ') as qsap', 'qsap.sap_product = p.id', 'left');
 		$this->db->where('p.id',	$id);
-		$query = $this->db->get();
-		return $query;
+		$data = $this->db->get();
+		$data = $data->row();
+		$data->stock = $stock;
+		return $data;
 	}
 	function getProduct($id)
 	{
@@ -168,7 +175,8 @@ class Product_model extends CI_Model
 		$this->db->from(TABLE_STOCK_ADJUSTMENT_PRODUCT . ' as sap');
 		$this->db->join(TABLE_STOCK_ADJUSTMENT . ' as sa',    'sa.id = sap.stock_adjustment', 'left');
 		$this->db->join(TABLE_PRODUCT . ' as p',    'p.id = sap.product', 'left');
-		$this->db->where(array('sa.deleted_at' => NULL)); // select only not deleted rows
+		$this->db->where('sa.deleted_at', NULL); // select only not deleted rows
+		//$this->db->where('sa.warehouse', 27); // change this for warehouse based stock, remove for all warehouse
 		$this->db->group_by('sap.product');
 		$query_stock_adj_product = $this->db->get_compiled_select();
 		$this->db->reset_query();
@@ -359,7 +367,7 @@ class Product_model extends CI_Model
 		$query = $this->db->update(TABLE_PRODUCT);
 		return $query;
 	}
-	function multi_set_deleted_at($ids,$where) // mark as deleted
+	function multi_set_deleted_at($ids, $where) // mark as deleted
 	{
 		$this->db->where_in('id', $ids);
 		$this->db->where($where);

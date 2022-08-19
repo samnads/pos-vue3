@@ -40,8 +40,7 @@ class Product extends CI_Controller
                             echo json_encode($data);
                             break;
                         case 'details':
-                            $query = $this->Product_model->getInfo($this->input->get('id'));
-                            $data['data'] = $query->row();
+                            $data['data'] = $this->Product_model->getInfo($this->input->get('id'));
                             $data['success'] = true;
                             echo json_encode($data);
                             break;
