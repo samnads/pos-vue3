@@ -425,20 +425,8 @@ CREATE TABLE `pos_sale` (
   CONSTRAINT `pos_sale_ibfk_4` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`),
   CONSTRAINT `pos_sale_ibfk_5` FOREIGN KEY (`return_id`) REFERENCES `pos_sale` (`id`),
   CONSTRAINT `pos_sale_ibfk_6` FOREIGN KEY (`status`) REFERENCES `status` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=140 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=141 DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `pos_sale` (`id`, `status`, `return_id`, `warehouse`, `customer`, `created_by`, `updated_by`, `cart_discount`, `shipping_charge`, `packing_charge`, `round_off`, `payment_note`, `sale_note`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(129,	20,	NULL,	20,	53,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.5300,	NULL,	NULL,	'2022-08-17 23:55:36',	NULL,	NULL),
-(130,	20,	NULL,	20,	42,	1,	NULL,	25.0000,	100.0000,	1000.0000,	-0.9400,	NULL,	NULL,	'2022-08-18 00:01:36',	NULL,	NULL),
-(131,	20,	NULL,	20,	1,	1,	NULL,	11.0000,	55.0000,	25.0000,	-0.8300,	NULL,	NULL,	'2022-08-18 00:04:27',	NULL,	NULL),
-(132,	20,	NULL,	20,	51,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.5000,	NULL,	NULL,	'2022-08-18 00:10:03',	NULL,	NULL),
-(133,	20,	NULL,	20,	48,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.9800,	NULL,	NULL,	'2022-08-10 00:11:58',	'2022-08-18 06:44:20',	NULL),
-(134,	20,	NULL,	20,	1,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.7200,	NULL,	NULL,	'2022-08-18 12:36:05',	NULL,	NULL),
-(135,	20,	NULL,	20,	1,	1,	NULL,	50.0000,	2.0000,	2.0000,	-0.2300,	NULL,	NULL,	'2022-08-18 14:58:37',	NULL,	NULL),
-(136,	20,	NULL,	20,	44,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.2600,	NULL,	NULL,	'2022-08-18 15:06:33',	NULL,	NULL),
-(137,	20,	NULL,	20,	1,	1,	NULL,	2.3300,	0.0000,	0.0000,	-0.3300,	NULL,	NULL,	'2022-08-18 15:30:56',	NULL,	NULL),
-(138,	20,	NULL,	20,	1,	1,	NULL,	9.0000,	10.0000,	5.0000,	-0.5200,	NULL,	NULL,	'2022-08-18 18:53:15',	NULL,	NULL),
-(139,	20,	NULL,	20,	1,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.2600,	NULL,	NULL,	'2022-08-18 18:53:55',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `pos_sale_payment`;
 CREATE TABLE `pos_sale_payment` (
@@ -455,22 +443,6 @@ CREATE TABLE `pos_sale_payment` (
   CONSTRAINT `pos_sale_payment_ibfk_3` FOREIGN KEY (`payment_mode`) REFERENCES `payment_mode` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `pos_sale_payment` (`pos_sale`, `payment_mode`, `amount`, `transaction_id`, `reference_no`, `note`) VALUES
-(129,	2,	2416.0000,	NULL,	NULL,	NULL),
-(130,	2,	7316.0000,	NULL,	NULL,	NULL),
-(131,	2,	2000.0000,	NULL,	NULL,	NULL),
-(131,	5,	100.0000,	NULL,	NULL,	NULL),
-(131,	4,	1000.0000,	NULL,	NULL,	NULL),
-(131,	1,	20.0000,	NULL,	NULL,	NULL),
-(133,	2,	700.0000,	NULL,	NULL,	NULL),
-(133,	6,	65.0000,	NULL,	NULL,	NULL),
-(134,	2,	25.0000,	NULL,	NULL,	NULL),
-(135,	2,	1022.0000,	NULL,	NULL,	NULL),
-(136,	6,	500.0000,	NULL,	NULL,	NULL),
-(137,	2,	1851.0000,	NULL,	NULL,	NULL),
-(138,	1,	100.0000,	NULL,	NULL,	NULL),
-(138,	4,	1200.0000,	NULL,	NULL,	NULL),
-(139,	2,	200.0000,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `pos_sale_product`;
 CREATE TABLE `pos_sale_product` (
@@ -496,37 +468,6 @@ CREATE TABLE `pos_sale_product` (
   CONSTRAINT `pos_sale_product_ibfk_3` FOREIGN KEY (`tax_id`) REFERENCES `tax_rate` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `pos_sale_product` (`pos_sale`, `product`, `quantity`, `unit_price`, `auto_discount`, `discount`, `tax_id`, `data_value_1`, `data_value_2`, `data_value_3`, `data_value_4`, `data_value_5`, `data_value_6`) VALUES
-(129,	5,	2.0000,	200.0000,	10.0000,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(129,	10,	2.2500,	1000.0000,	250.0000,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(129,	173,	2.0000,	75.0000,	0.0000,	0.0000,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(129,	180,	1.0000,	10.0000,	0.0000,	10.0000,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(129,	186,	1.0000,	150.0000,	10.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(130,	5,	11.4500,	200.0000,	10.0000,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(130,	6,	9.4500,	570.0000,	170.2500,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(130,	180,	2.0000,	10.0000,	0.0000,	0.0000,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(130,	186,	1.0000,	150.0000,	10.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(131,	5,	1.0000,	200.0000,	10.0000,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(131,	6,	3.0000,	570.0000,	170.2500,	3.4600,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(131,	10,	2.0000,	1000.0000,	250.0000,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(131,	173,	1.0000,	75.0000,	0.0000,	2.2500,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(131,	207,	1.0000,	84.0000,	5.0000,	34.4600,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(132,	149,	1.0000,	75.0000,	0.0000,	0.0000,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(133,	10,	1.0000,	1000.0000,	250.0000,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(134,	6,	4.4500,	570.0000,	170.2500,	2.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(134,	10,	1.0000,	1000.0000,	250.0000,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(135,	6,	2.0000,	570.0000,	170.2500,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(135,	151,	1.0000,	75.0000,	0.0000,	0.0000,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(135,	180,	2.2000,	10.0000,	0.0000,	0.0000,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(135,	186,	1.0000,	150.0000,	10.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(135,	214,	1.0000,	5.0000,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(136,	6,	1.0000,	570.0000,	170.2500,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(137,	5,	1.2000,	200.0000,	10.0000,	11.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(137,	6,	4.0000,	570.0000,	170.2500,	1.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(138,	5,	2.0000,	200.0000,	10.0000,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(138,	6,	2.0000,	570.0000,	170.2500,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(138,	180,	1.0000,	10.0000,	0.0000,	1.0000,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(139,	6,	1.0000,	570.0000,	170.2500,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product` (
@@ -596,7 +537,7 @@ CREATE TABLE `product` (
   CONSTRAINT `product_ibfk_8` FOREIGN KEY (`s_unit`) REFERENCES `unit` (`id`),
   CONSTRAINT `price_check` CHECK (`price` <= `mrp`),
   CONSTRAINT `pos_max_sale_qty_check` CHECK (`pos_max_sale_qty` >= `pos_min_sale_qty`)
-) ENGINE=InnoDB AUTO_INCREMENT=215 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=216 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `product` (`id`, `type`, `code`, `symbology`, `name`, `slug`, `thumbnail`, `weight`, `category`, `brand`, `unit`, `p_unit`, `s_unit`, `is_auto_cost`, `cost`, `mrp`, `markup`, `price`, `auto_discount`, `mfg_date`, `exp_date`, `tax_method`, `tax_rate`, `quantity`, `alert`, `alert_quantity`, `pos_sale`, `custom_discount`, `pos_min_sale_qty`, `pos_max_sale_qty`, `pos_sale_note`, `pos_custom_discount`, `pos_custom_tax`, `pos_data_field_1`, `pos_data_field_2`, `pos_data_field_3`, `pos_data_field_4`, `pos_data_field_5`, `pos_data_field_6`, `added_at`, `updated_at`, `editable`, `deletable`, `deleted_at`) VALUES
 (1,	1,	'37519985',	1,	'King Book',	'king-book',	'https://www.escoffier.edu/wp-content/uploads/reading-is-a-great-way-to-continue-your-growth-as-a-chef_1028_40137340_1_14130186_500.jpg',	NULL,	1,	3,	1,	NULL,	NULL,	'1',	NULL,	35.0000,	0.0000,	30.0000,	NULL,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:14:30',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
@@ -611,33 +552,7 @@ INSERT INTO `product` (`id`, `type`, `code`, `symbology`, `name`, `slug`, `thumb
 (151,	1,	'78154768',	1,	'tyur',	'urutyutyuytu',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-10-24 02:14:50',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
 (152,	1,	'86112495',	1,	'ertert',	'rreyryryy',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-10-25 00:30:23',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
 (161,	1,	'63886634',	1,	'78768',	'6787688',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-04-11 16:55:30',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(165,	1,	'27144759',	1,	'dffsfsf',	'dffsfsf',	NULL,	NULL,	16,	NULL,	1,	NULL,	NULL,	'1',	5.0000,	NULL,	NULL,	5.0000,	0.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	0,	NULL,	NULL,	NULL,	0,	0,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-04-12 17:31:44',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(173,	1,	'48386886',	1,	'AAA',	'aaa',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	NULL,	75.0000,	0.0000,	'2022-06-23',	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-04-14 17:00:06',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(174,	1,	'33267747',	1,	'etertet',	'etertet',	NULL,	NULL,	1,	NULL,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	NULL,	50.0000,	0.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	'Serial No.',	'Serial No.',	NULL,	NULL,	NULL,	NULL,	'2022-04-14 17:00:29',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(176,	1,	'23556049',	1,	'Dell Monotor',	'dell-monotor',	NULL,	NULL,	1,	NULL,	1,	NULL,	NULL,	'1',	400.0000,	NULL,	NULL,	400.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	10,	1,	NULL,	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-04-18 13:03:23',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(180,	1,	'54805482',	1,	'Name 1',	'name-1',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	10.0000,	500.0000,	NULL,	10.0000,	0.0000,	NULL,	NULL,	'I',	1,	0.0000,	'1',	20,	1,	NULL,	NULL,	NULL,	1,	1,	1,	'Serial No.',	'Color',	NULL,	NULL,	NULL,	'6',	'2022-04-26 16:14:34',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(186,	1,	'96213555',	2,	'have data field 1 - 2',	'have-data-field-1---2',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	100.0000,	500.0000,	NULL,	150.0000,	10.0000,	'2022-05-30',	'2022-06-06',	'I',	NULL,	0.0000,	'1',	12,	1,	NULL,	NULL,	NULL,	1,	1,	1,	'IMEI No.',	'IMEI No.',	'IMEI No. 2 :',	'b',	'c',	'4454',	'2022-04-28 16:42:25',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(187,	1,	'24366313',	1,	'yuiyui',	'yuiyui',	NULL,	NULL,	1,	NULL,	1,	NULL,	NULL,	'1',	10.0000,	NULL,	NULL,	15.0000,	0.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	1,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-06-27 20:42:52',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(188,	1,	'98141630',	1,	'tytytytyty',	'tytytytyty',	NULL,	NULL,	1,	NULL,	1,	NULL,	NULL,	'1',	65.0000,	NULL,	50.0000,	97.5000,	5.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	5,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-05 17:37:03',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(189,	1,	'39857931',	1,	'jklkjl',	'jklkjl',	NULL,	NULL,	1,	NULL,	1,	NULL,	NULL,	'1',	6767.0000,	NULL,	50.0000,	10150.5000,	66.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	45,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-16 19:49:34',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(190,	1,	'60706432',	1,	'yuyuuyu',	'yuyuuyu',	NULL,	NULL,	1,	3,	1,	NULL,	NULL,	'1',	434.0000,	NULL,	NULL,	651.0000,	34.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-16 20:08:52',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(191,	1,	'11544316',	1,	'ghfghfghgfh',	'ghfghfghgfh',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	34.0000,	NULL,	50.0000,	51.0000,	34.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	4,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-20 15:55:22',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(196,	1,	'52495533',	1,	'jhkjkhjkjh',	'jhkjkhjkjh',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	54545.0000,	NULL,	50.0000,	81817.5000,	454545.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-20 17:23:47',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(197,	1,	'26769461',	1,	'gfhfghfgh',	'gfhfghfgh',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	4466.0000,	NULL,	50.0000,	6699.0000,	46466.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	545,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-20 17:28:06',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(198,	1,	'95381111',	1,	'sdasd',	'sdasd',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	34343.0000,	NULL,	50.0000,	51514.5000,	343434.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	343434,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-20 17:29:34',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(199,	1,	'27765677',	1,	'dfdfdsf',	'dfdfdsf',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	544.0000,	NULL,	50.0000,	816.0000,	45.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	3434,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-20 17:32:21',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(200,	1,	'36337226',	1,	'fdf',	'fdf',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	45.0000,	NULL,	50.0000,	67.5000,	45.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	54545,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-20 17:36:47',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(201,	1,	'86615677',	1,	'dfdfdf',	'dfdfdf',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	53454.0000,	NULL,	50.0000,	80181.0000,	4.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-20 17:38:02',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(202,	1,	'28200048',	1,	'sdsdsd',	'sdsdsd',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	3.0000,	NULL,	50.0000,	4.5000,	4234.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-20 17:39:23',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(203,	1,	'94141452',	1,	'dfsdfsdf',	'dfsdfsdf',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	43.0000,	NULL,	50.0000,	64.5000,	3.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-20 17:40:52',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(204,	1,	'58088666',	1,	'rtrt',	'rtrt',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	453.0000,	NULL,	50.0000,	679.5000,	43.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-20 17:41:46',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(205,	1,	'16779764',	1,	'jyuytu',	'jyuytu',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	3.0000,	NULL,	50.0000,	4.5000,	34.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-20 17:43:04',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(206,	1,	'77746751',	1,	'54545',	'54545',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	3.0000,	NULL,	50.0000,	4.5000,	3.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-20 17:51:18',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(207,	1,	'27398738',	1,	'uiiuy',	'uiiuy',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	56.0000,	NULL,	50.0000,	84.0000,	5.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-20 18:25:01',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(211,	1,	'32427445',	1,	'3434',	'3434',	NULL,	NULL,	2,	NULL,	1,	3,	NULL,	'1',	543.0000,	NULL,	NULL,	814.5000,	5.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-25 10:10:28',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(212,	1,	'78734177',	1,	'fghfghfgh',	'fghfghfgh',	NULL,	NULL,	21,	NULL,	1,	NULL,	NULL,	'1',	5.0000,	NULL,	NULL,	7.5000,	3.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	5,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	'Color',	't',	'e',	'w',	'q',	'2022-07-25 10:23:17',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(213,	1,	'78031178',	1,	'gfhfgh',	'gfhfgh',	NULL,	NULL,	3,	NULL,	1,	NULL,	NULL,	'1',	10.0000,	100.0000,	10.0000,	11.0000,	5.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-27 20:12:10',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(214,	1,	'92153632',	1,	'Thread',	'thread',	NULL,	NULL,	2,	NULL,	9,	NULL,	NULL,	'1',	1.0000,	NULL,	50.0000,	5.0000,	0.0000,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	3,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-08-18 12:40:16',	NULL,	NULL,	NULL,	NULL);
+(215,	1,	'74587136',	1,	'RRRRRRRRRRR',	'rrrrrrrrrrr',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	445.0000,	NULL,	50.0000,	667.5000,	NULL,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-08-19 12:18:28',	NULL,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `product_gallery`;
 CREATE TABLE `product_gallery` (
@@ -684,24 +599,10 @@ CREATE TABLE `product_stock` (
   KEY `warehouse` (`warehouse`),
   CONSTRAINT `product_stock_ibfk_1` FOREIGN KEY (`product`) REFERENCES `product` (`id`),
   CONSTRAINT `product_stock_ibfk_2` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `product_stock` (`id`, `product`, `warehouse`, `quantity`, `added_at`, `updated_at`) VALUES
-(30,	190,	20,	33.0000,	'2022-07-16 14:38:52',	NULL),
-(31,	196,	28,	54355.0000,	'2022-07-20 11:53:47',	NULL),
-(32,	197,	28,	454545.0000,	'2022-07-20 11:58:06',	NULL),
-(33,	198,	28,	3434.0000,	'2022-07-20 11:59:34',	NULL),
-(34,	199,	20,	5.0000,	'2022-07-20 12:02:21',	NULL),
-(35,	200,	20,	5345.0000,	'2022-07-20 12:06:47',	NULL),
-(36,	201,	20,	3434.0000,	'2022-07-20 12:08:02',	NULL),
-(37,	202,	20,	332.0000,	'2022-07-20 12:09:23',	NULL),
-(38,	203,	28,	434.0000,	'2022-07-20 12:10:52',	NULL),
-(39,	204,	20,	4.0000,	'2022-07-20 12:11:46',	NULL),
-(40,	205,	20,	343.0000,	'2022-07-20 12:13:04',	NULL),
-(41,	206,	28,	54.0000,	'2022-07-20 12:21:18',	NULL),
-(42,	207,	20,	64.0000,	'2022-07-20 12:55:01',	NULL),
-(43,	212,	20,	-50.0000,	'2022-07-25 04:53:17',	NULL),
-(44,	213,	20,	2.0000,	'2022-07-27 14:42:10',	NULL);
+(45,	215,	20,	100.0000,	'2022-08-19 06:48:28',	NULL);
 
 DROP TABLE IF EXISTS `product_type`;
 CREATE TABLE `product_type` (
@@ -831,7 +732,8 @@ CREATE TABLE `status` (
   `user_status` tinyint(1) DEFAULT NULL,
   `warehouse_status` tinyint(1) DEFAULT NULL,
   `pos_sale_status` tinyint(1) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `status` (`id`, `name`, `css_class`, `css_color`, `online_status`, `payment_status`, `order_status`, `role_status`, `user_status`, `warehouse_status`, `pos_sale_status`) VALUES
@@ -845,7 +747,7 @@ INSERT INTO `status` (`id`, `name`, `css_class`, `css_color`, `online_status`, `
 (8,	'ordered',	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL),
 (9,	'packed',	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL),
 (10,	'shipped',	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL),
-(11,	'returned',	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL),
+(11,	'returned',	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	1),
 (12,	'partially paid',	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL),
 (13,	'expired',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
 (14,	'away',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
@@ -855,7 +757,7 @@ INSERT INTO `status` (`id`, `name`, `css_class`, `css_color`, `online_status`, `
 (18,	'permanently closed',	'bg-danger',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1,	NULL),
 (19,	'temperorily closed',	'bg-info text-dark',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1,	NULL),
 (20,	'completed',	'bg-success',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1),
-(21,	'returned',	'bg-warning text-dark',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1);
+(21,	'due',	'bg-danger',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `stock_adjustment`;
 CREATE TABLE `stock_adjustment` (
@@ -875,81 +777,14 @@ CREATE TABLE `stock_adjustment` (
   KEY `added_by` (`added_by`),
   CONSTRAINT `stock_adjustment_ibfk_2` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`),
   CONSTRAINT `stock_adjustment_ibfk_3` FOREIGN KEY (`added_by`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=199 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=204 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `stock_adjustment` (`id`, `warehouse`, `added_by`, `date`, `time`, `reference_no`, `note`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(104,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2021-10-30 18:52:14',	'2022-06-24 10:44:46',	NULL),
-(105,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-04-11 11:25:30',	NULL,	NULL),
-(106,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-04-14 11:30:06',	NULL,	NULL),
-(107,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-04-14 11:30:29',	NULL,	NULL),
-(108,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-04-18 07:33:23',	NULL,	NULL),
-(109,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-04-26 10:44:34',	NULL,	NULL),
-(110,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:05:16',	NULL,	NULL),
-(111,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:15:35',	NULL,	NULL),
-(112,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:18:13',	NULL,	NULL),
-(113,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:18:17',	NULL,	NULL),
-(114,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:18:53',	NULL,	NULL),
-(115,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:18:58',	NULL,	NULL),
-(116,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:20:28',	NULL,	NULL),
-(117,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	'gh',	'2022-06-20 11:20:38',	NULL,	NULL),
-(118,	20,	1,	'2022-06-24',	'00:00:00',	'54',	'gh',	'2022-06-20 11:20:55',	NULL,	NULL),
-(119,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:21:54',	NULL,	NULL),
-(120,	20,	1,	'2022-06-24',	'00:00:00',	'5754',	'4545',	'2022-06-20 11:22:16',	NULL,	NULL),
-(121,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:26:05',	NULL,	NULL),
-(122,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:26:07',	NULL,	NULL),
-(123,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:28:10',	NULL,	NULL),
-(124,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:33:02',	NULL,	NULL),
-(125,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:33:40',	NULL,	NULL),
-(126,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:35:06',	NULL,	NULL),
-(127,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:36:39',	NULL,	NULL),
-(128,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:41:22',	NULL,	NULL),
-(129,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:41:31',	NULL,	NULL),
-(130,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:41:38',	NULL,	NULL),
-(131,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:41:42',	NULL,	NULL),
-(132,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:42:54',	NULL,	NULL),
-(133,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-20 11:45:16',	NULL,	NULL),
-(134,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-21 11:16:50',	NULL,	NULL),
-(135,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-21 11:33:46',	NULL,	NULL),
-(136,	20,	1,	'2022-06-24',	'00:00:00',	'564',	'With held',	'2022-06-21 11:34:50',	NULL,	NULL),
-(137,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-21 16:26:43',	NULL,	NULL),
-(138,	20,	1,	'2022-06-24',	'00:00:00',	'zdsf',	'fe2',	'2022-06-22 14:40:49',	NULL,	NULL),
-(139,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-23 05:40:05',	NULL,	NULL),
-(140,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-23 05:41:02',	NULL,	NULL),
-(141,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-23 06:48:41',	NULL,	NULL),
-(142,	20,	1,	'2022-06-24',	'00:00:00',	'lll',	NULL,	'2022-06-23 06:49:13',	'2022-06-24 05:52:22',	NULL),
-(143,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-23 06:50:24',	'2022-06-24 05:51:35',	NULL),
-(144,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-23 06:53:37',	'2022-06-24 05:51:24',	NULL),
-(163,	20,	1,	'2022-06-24',	'00:00:00',	'gh',	NULL,	'2022-06-23 11:44:11',	'2022-06-24 06:01:36',	NULL),
-(165,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-06-24 05:54:01',	'2022-06-24 06:32:18',	NULL),
-(166,	27,	1,	'2022-06-24',	'19:05:06',	NULL,	NULL,	'2022-06-24 06:25:49',	'2022-07-05 12:29:07',	NULL),
-(167,	20,	1,	'2022-06-24',	'12:40:07',	'ref',	'not',	'2022-06-24 07:07:33',	'2022-06-26 16:26:09',	NULL),
-(168,	20,	1,	'2022-06-10',	'12:00:50',	NULL,	NULL,	'2022-06-24 07:08:00',	'2022-06-27 07:44:10',	NULL),
-(169,	20,	1,	'2022-06-24',	'16:06:17',	'ref 231',	'Not 79',	'2022-06-24 10:36:39',	'2022-06-28 07:41:50',	NULL),
-(170,	27,	1,	'2022-06-26',	'19:58:12',	NULL,	NULL,	'2022-06-26 14:28:15',	'2022-07-07 07:53:53',	NULL),
-(171,	20,	1,	'2022-06-28',	'13:12:18',	'ee',	NULL,	'2022-06-28 07:42:21',	'2022-07-07 13:16:27',	NULL),
-(172,	20,	1,	'2022-06-09',	'17:53:51',	NULL,	NULL,	'2022-06-28 12:23:54',	'2022-07-06 17:49:51',	NULL),
-(173,	20,	1,	'0000-00-00',	'00:00:00',	NULL,	NULL,	'2022-07-05 12:07:03',	'2022-07-07 08:05:53',	NULL),
-(174,	28,	1,	'2022-07-07',	'13:35:33',	NULL,	NULL,	'2022-07-07 08:05:42',	'2022-07-07 08:06:55',	NULL),
-(175,	27,	1,	'2022-07-07',	'18:46:37',	NULL,	NULL,	'2022-07-07 13:16:41',	NULL,	NULL),
-(176,	20,	1,	'0000-00-00',	'00:00:00',	NULL,	NULL,	'2022-07-16 14:38:52',	NULL,	NULL),
-(181,	28,	1,	'2022-07-20',	'17:22:46',	NULL,	NULL,	'2022-07-20 11:52:52',	NULL,	NULL),
-(182,	28,	1,	'0000-00-00',	'00:00:00',	NULL,	NULL,	'2022-07-20 11:53:47',	NULL,	NULL),
-(183,	28,	1,	'0000-00-00',	'00:00:00',	NULL,	NULL,	'2022-07-20 11:58:06',	NULL,	NULL),
-(184,	28,	1,	'0000-00-00',	'00:00:00',	NULL,	NULL,	'2022-07-20 11:59:34',	NULL,	NULL),
-(185,	20,	1,	'2022-06-24',	'00:00:00',	NULL,	NULL,	'2022-07-20 12:02:21',	NULL,	NULL),
-(186,	20,	1,	'0000-00-00',	'00:00:00',	NULL,	NULL,	'2022-07-20 12:06:47',	NULL,	NULL),
-(187,	20,	1,	'0000-00-00',	'00:00:00',	NULL,	NULL,	'2022-07-20 12:08:02',	NULL,	NULL),
-(188,	20,	1,	'0000-00-00',	'00:00:00',	NULL,	NULL,	'2022-07-20 12:09:23',	NULL,	NULL),
-(189,	28,	1,	'0000-00-00',	'00:00:00',	NULL,	NULL,	'2022-07-20 12:10:52',	NULL,	NULL),
-(190,	20,	1,	'0000-00-00',	'00:00:00',	NULL,	NULL,	'2022-07-20 12:11:46',	NULL,	NULL),
-(191,	20,	1,	'2022-07-20',	'17:43:00',	NULL,	NULL,	'2022-07-20 12:13:04',	'2022-07-20 12:14:11',	NULL),
-(192,	20,	1,	'2022-07-20',	'02:50:55',	NULL,	NULL,	'2022-07-20 12:20:56',	NULL,	NULL),
-(193,	28,	1,	'2022-07-20',	'17:51:18',	NULL,	NULL,	'2022-07-20 12:21:18',	NULL,	NULL),
-(194,	20,	1,	'2022-07-20',	'18:24:03',	'gg',	'trtr',	'2022-07-20 12:54:15',	NULL,	NULL),
-(195,	20,	1,	'2022-07-20',	'18:25:01',	NULL,	NULL,	'2022-07-20 12:55:01',	'2022-08-18 16:15:22',	NULL),
-(196,	20,	1,	'2022-07-25',	'10:23:17',	NULL,	NULL,	'2022-07-25 04:53:17',	NULL,	NULL),
-(197,	20,	1,	'2022-07-27',	'19:13:27',	NULL,	NULL,	'2022-07-27 13:43:29',	'2022-07-27 13:43:45',	NULL),
-(198,	20,	1,	'2022-07-27',	'20:12:10',	NULL,	NULL,	'2022-07-27 14:42:10',	'2022-08-18 16:15:39',	NULL);
+(199,	20,	1,	'2022-08-19',	'12:18:28',	NULL,	NULL,	'2022-08-19 06:48:28',	NULL,	NULL),
+(200,	20,	1,	'2022-08-19',	'20:31:49',	NULL,	NULL,	'2022-08-19 15:01:53',	'2022-08-19 18:13:06',	NULL),
+(201,	27,	1,	'2022-08-19',	'20:46:01',	NULL,	NULL,	'2022-08-19 15:16:11',	NULL,	NULL),
+(202,	27,	1,	'2022-08-19',	'20:46:24',	NULL,	NULL,	'2022-08-19 15:16:35',	NULL,	NULL),
+(203,	20,	1,	'2022-08-19',	'23:20:19',	NULL,	NULL,	'2022-08-19 17:50:21',	'2022-08-19 18:11:27',	NULL);
 
 DROP TABLE IF EXISTS `stock_adjustment_product`;
 CREATE TABLE `stock_adjustment_product` (
@@ -964,78 +799,15 @@ CREATE TABLE `stock_adjustment_product` (
   KEY `product_id` (`product`),
   CONSTRAINT `stock_adjustment_product_ibfk_1` FOREIGN KEY (`stock_adjustment`) REFERENCES `stock_adjustment` (`id`),
   CONSTRAINT `stock_adjustment_product_ibfk_2` FOREIGN KEY (`product`) REFERENCES `product` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=332 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=339 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `stock_adjustment_product` (`id`, `stock_adjustment`, `product`, `note`, `quantity`) VALUES
-(153,	134,	6,	NULL,	2.0000),
-(154,	134,	180,	NULL,	-5.0000),
-(155,	134,	10,	NULL,	2.0000),
-(156,	134,	186,	NULL,	1.0000),
-(157,	134,	5,	NULL,	1.0000),
-(158,	135,	6,	NULL,	-2.0000),
-(159,	136,	6,	NULL,	1.0000),
-(160,	136,	10,	NULL,	-1.0000),
-(161,	136,	186,	NULL,	1.0000),
-(162,	137,	186,	NULL,	1.0000),
-(163,	137,	5,	NULL,	1.0000),
-(164,	138,	180,	NULL,	1.0000),
-(259,	163,	6,	NULL,	1.0000),
-(267,	163,	151,	NULL,	1.0000),
-(268,	144,	180,	NULL,	1.0000),
-(269,	144,	10,	NULL,	1.0000),
-(270,	144,	186,	NULL,	1.0000),
-(271,	144,	5,	NULL,	1.0000),
-(273,	143,	180,	NULL,	1.0000),
-(274,	143,	10,	NULL,	1.0000),
-(275,	143,	186,	NULL,	1.0000),
-(276,	143,	5,	NULL,	1.0000),
-(277,	143,	173,	NULL,	1.0000),
-(278,	142,	173,	NULL,	1.0000),
-(279,	165,	180,	NULL,	2.0000),
-(281,	165,	186,	NULL,	1.0000),
-(283,	165,	173,	NULL,	3.0000),
-(284,	166,	165,	NULL,	1.0000),
-(285,	167,	180,	NULL,	1.0000),
-(287,	167,	186,	NULL,	1.0000),
-(288,	167,	5,	NULL,	1.0000),
-(289,	167,	173,	NULL,	1.0000),
-(291,	168,	5,	NULL,	1.0000),
-(293,	169,	186,	NULL,	8.0000),
-(294,	169,	5,	NULL,	5.0000),
-(295,	169,	173,	NULL,	4.0000),
-(296,	169,	6,	NULL,	3.0000),
-(297,	170,	186,	NULL,	-1.0000),
-(298,	170,	5,	NULL,	4.0000),
-(299,	170,	173,	NULL,	2.0000),
-(301,	171,	5,	'fdfdf',	5.0000),
-(302,	172,	5,	NULL,	1.0000),
-(303,	172,	180,	NULL,	4.0000),
-(304,	172,	186,	NULL,	2.0000),
-(305,	173,	188,	NULL,	555.0000),
-(307,	173,	173,	NULL,	1.0000),
-(309,	174,	10,	NULL,	1.0000),
-(310,	175,	10,	NULL,	1.0000),
-(311,	176,	190,	NULL,	33.0000),
-(312,	181,	5,	NULL,	1.0000),
-(313,	182,	196,	NULL,	54355.0000),
-(314,	183,	197,	NULL,	454545.0000),
-(315,	184,	198,	NULL,	3434.0000),
-(316,	185,	199,	NULL,	5.0000),
-(317,	186,	200,	NULL,	5345.0000),
-(318,	187,	201,	NULL,	3434.0000),
-(319,	188,	202,	NULL,	332.0000),
-(320,	189,	203,	NULL,	434.0000),
-(321,	190,	204,	NULL,	4.0000),
-(322,	191,	205,	NULL,	343.0000),
-(323,	192,	173,	NULL,	1.0000),
-(324,	193,	206,	NULL,	54.0000),
-(325,	194,	180,	NULL,	1.0000),
-(326,	195,	207,	NULL,	65.0000),
-(327,	196,	212,	NULL,	-50.0000),
-(328,	197,	5,	'c',	1.0000),
-(329,	197,	161,	'7',	1.0000),
-(330,	197,	6,	'w',	-2.0000),
-(331,	198,	213,	NULL,	-1.0000);
+(332,	199,	215,	NULL,	100.0000),
+(334,	201,	215,	NULL,	-1.0000),
+(335,	202,	215,	NULL,	11.0000),
+(336,	203,	161,	NULL,	-4.0000),
+(337,	200,	5,	NULL,	1.0000),
+(338,	200,	6,	NULL,	3.0000);
 
 DROP TABLE IF EXISTS `supplier`;
 CREATE TABLE `supplier` (
@@ -1262,7 +1034,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-08-18 16:03:36',	'2022-08-05 12:51:09',	'2021-04-20 19:22:52',	'2022-08-18 16:03:36',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-08-19 14:23:18',	'2022-08-05 12:51:09',	'2021-04-20 19:22:52',	'2022-08-19 14:23:18',	NULL),
 (30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
 (31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
@@ -1324,10 +1096,6 @@ CREATE TABLE `warehouse` (
 
 INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country`, `city`, `pin_code`, `phone`, `email`, `address`, `longitude`, `latitude`, `description`, `status`, `status_reason`, `editable`, `deletable`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (20,	'WARE0020',	'CyberKids',	'dsds',	'2020-02-12',	'India',	'TVM',	'695505',	'+91-9745451448',	'tewest@gmail.com',	'TVM',	NULL,	NULL,	'Desc',	16,	'Flood',	NULL,	NULL,	'2021-04-14 19:54:53',	'2022-07-27 14:52:14',	NULL),
-(27,	'WARE0027',	'Test',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	19,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-07-05 12:49:13',	NULL),
-(28,	'WARE0028',	'cvccvcx',	'ggfdgfgfg',	'2022-07-01',	NULL,	NULL,	NULL,	'646665465',	'gfgg@f.ghgh',	NULL,	NULL,	NULL,	'opopj',	19,	'fgfgfg',	NULL,	NULL,	'2022-07-05 12:31:47',	'2022-07-09 14:04:12',	'2022-07-09 14:04:12'),
-(30,	'WARE0030',	'ouioiuo',	'uiouio',	'2022-07-02',	NULL,	NULL,	NULL,	'5565656',	'ff@g.yty',	NULL,	NULL,	NULL,	NULL,	18,	'iuoiuoi',	NULL,	NULL,	'2022-07-05 12:35:29',	'2022-07-06 17:24:59',	'2022-07-06 17:24:59'),
-(31,	'WARE0031',	'jhjhgjgjhg',	'jhgjhgjhgj',	'2022-07-01',	NULL,	NULL,	NULL,	'56565656',	'fgf@dy.hjgj',	NULL,	NULL,	NULL,	NULL,	16,	'hjhj',	NULL,	NULL,	'2022-07-05 12:36:57',	NULL,	NULL),
-(32,	'WARE0032',	'uiuiui',	'uiuiuiuiu',	'2022-07-06',	NULL,	NULL,	NULL,	'4545454',	'ui@gf.ghgh',	NULL,	NULL,	NULL,	NULL,	17,	NULL,	NULL,	NULL,	'2022-07-06 17:24:34',	NULL,	NULL);
+(27,	'WARE0027',	'Test',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	19,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-07-05 12:49:13',	NULL);
 
--- 2022-08-18 16:47:08
+-- 2022-08-19 18:40:09

@@ -32,7 +32,7 @@
                     <tr>
                       <td class="text-end">
                         <span class="fw-bold">Stock Count : </span
-                        >{{ product.stock || "0" }}
+                        >{{ parseFloat(details.total_stock).toFixed(2) }}
                       </td>
                     </tr>
                     <tr>

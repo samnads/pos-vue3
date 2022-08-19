@@ -246,7 +246,7 @@ export default {
           },
           {
             targets: [8],
-            className: "text-center",
+            className: "text-center fw-bold",
             render: function (data, type, row, meta) {
               let stock = parseFloat(data).toFixed(2);
               if (stock > 0) {

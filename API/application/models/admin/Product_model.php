@@ -14,6 +14,17 @@ class Product_model extends CI_Model
 	}
 	function getInfo($id)
 	{
+		/******************************************************/ // calc quantity using stock adjustments
+		$this->db->select('sap.id as sap_id,sap.product as sap_product,SUM(sap.quantity) as total_sap_quantity');
+		$this->db->from(TABLE_STOCK_ADJUSTMENT_PRODUCT . ' as sap');
+		$this->db->join(TABLE_STOCK_ADJUSTMENT . ' as sa',    'sa.id = sap.stock_adjustment', 'left');
+		$this->db->join(TABLE_PRODUCT . ' as p',    'p.id = sap.product', 'left');
+		$this->db->where(array('sa.deleted_at' => NULL)); // select only not deleted rows
+		$this->db->group_by('sap.product');
+		$query_stock_adj_product = $this->db->get_compiled_select();
+		$this->db->reset_query();
+		//die($query_stock_adj_product);
+		/******************************************************/
 		$id = trim($id);
 		$this->db->select('
 		p.id		as id,
@@ -43,14 +54,16 @@ class Product_model extends CI_Model
 
 		tr.code		as tax_code,
 		tr.name		as tax_name,
-		tr.rate		as tax_rate');
-		$this->db->from(TABLE_PRODUCT . '				p');
-		$this->db->join(TABLE_PRODUCT_TYPE . '		t',	't.id=p.type',	'left');
-		$this->db->join(TABLE_BARCODE_SYMBOLOGY . '	bs',	'bs.id=p.symbology',	'left');
-		$this->db->join(TABLE_CATEGORY . '			c',	'c.id=p.category',	'left');
-		$this->db->join(TABLE_BRAND . '				b',	'b.id=p.brand',	'left');
-		$this->db->join(TABLE_UNIT . '				u',	'u.id=p.unit',	'left');
-		$this->db->join(TABLE_TAX_RATE . '			tr',	'tr.id=p.tax_rate',	'left');
+		tr.rate		as tax_rate,
+		IFNULL(qsap.total_sap_quantity, 0) as total_stock');
+		$this->db->from(TABLE_PRODUCT . ' as p');
+		$this->db->join(TABLE_PRODUCT_TYPE . ' as t',	't.id=p.type',	'left');
+		$this->db->join(TABLE_BARCODE_SYMBOLOGY . ' as bs',	'bs.id=p.symbology',	'left');
+		$this->db->join(TABLE_CATEGORY . ' as c',	'c.id=p.category',	'left');
+		$this->db->join(TABLE_BRAND . ' as b',	'b.id=p.brand',	'left');
+		$this->db->join(TABLE_UNIT . ' as u',	'u.id=p.unit',	'left');
+		$this->db->join(TABLE_TAX_RATE . ' as tr',	'tr.id=p.tax_rate',	'left');
+		$this->db->join('(' . $query_stock_adj_product . ') as qsap', 'qsap.sap_product = p.id', 'left');
 		$this->db->where('p.id',	$id);
 		$query = $this->db->get();
 		return $query;
@@ -150,6 +163,17 @@ class Product_model extends CI_Model
 	}
 	function datatable_data($search, $offset, $limit, $order_by, $order)
 	{
+		/******************************************************/ // calc quantity using stock adjustments
+		$this->db->select('sap.id as sap_id,sap.product as sap_product,SUM(sap.quantity) as total_sap_quantity');
+		$this->db->from(TABLE_STOCK_ADJUSTMENT_PRODUCT . ' as sap');
+		$this->db->join(TABLE_STOCK_ADJUSTMENT . ' as sa',    'sa.id = sap.stock_adjustment', 'left');
+		$this->db->join(TABLE_PRODUCT . ' as p',    'p.id = sap.product', 'left');
+		$this->db->where(array('sa.deleted_at' => NULL)); // select only not deleted rows
+		$this->db->group_by('sap.product');
+		$query_stock_adj_product = $this->db->get_compiled_select();
+		$this->db->reset_query();
+		//die($query_stock_adj_product);
+		/******************************************************/
 		$search = trim($search);
 		$this->db->select('
 		p.id		as id,
@@ -205,19 +229,17 @@ class Product_model extends CI_Model
 		tr.id		as tax_rate,
 		tr.code		as tax_code,
 		tr.name		as tax_name,
-		
-		COALESCE(SUM(ps.quantity),0)  as quantity');
-		$this->db->from(TABLE_PRODUCT . '			p');
-		$this->db->join(TABLE_PRODUCT_TYPE . '		t',		't.id=p.type',			'left');
-		$this->db->join(TABLE_BARCODE_SYMBOLOGY . '	bs',	'bs.id=p.symbology',	'left');
-		$this->db->join(TABLE_CATEGORY . '			c',		'c.id=p.category',		'left');
-		$this->db->join(TABLE_BRAND . '				b',		'b.id=p.brand',			'left');
-		$this->db->join(TABLE_UNIT . '				u',		'u.id=p.unit',			'left');
-		$this->db->join(TABLE_TAX_RATE . '			tr',	'tr.id=p.tax_rate',		'left');
-		$this->db->join(TABLE_PRODUCT_STOCK . '		ps',	'ps.product=p.id',		'left');
+		IFNULL(qsap.total_sap_quantity, 0) as quantity');
+		$this->db->from(TABLE_PRODUCT . ' as p');
+		$this->db->join(TABLE_PRODUCT_TYPE . ' as t',		't.id=p.type',			'left');
+		$this->db->join(TABLE_BARCODE_SYMBOLOGY . ' as bs',	'bs.id=p.symbology',	'left');
+		$this->db->join(TABLE_CATEGORY . ' as c',		'c.id=p.category',		'left');
+		$this->db->join(TABLE_BRAND . ' as b',		'b.id=p.brand',			'left');
+		$this->db->join(TABLE_UNIT . ' as u',		'u.id=p.unit',			'left');
+		$this->db->join(TABLE_TAX_RATE . ' as tr',	'tr.id=p.tax_rate',		'left');
+		$this->db->join('(' . $query_stock_adj_product . ') as qsap', 'qsap.sap_product = p.id', 'left');
 		$this->db->order_by($order_by, $order);
 		$this->db->group_by('p.id');
-
 		$this->db->where(array('p.deleted_at' => NULL)); // select only not deleted rows
 		$this->db->group_start();
 		$this->db->or_like('p.code',	$search);
@@ -246,13 +268,13 @@ class Product_model extends CI_Model
 	{
 		$search = trim($search);
 		$this->db->select('COUNT(*) as count');
-		$this->db->from(TABLE_PRODUCT . '				p');
-		$this->db->join(TABLE_PRODUCT_TYPE . '		t',	't.id=p.type',	'left');
-		$this->db->join(TABLE_BARCODE_SYMBOLOGY . '	bs',	'bs.id=p.symbology',	'left');
-		$this->db->join(TABLE_CATEGORY . '			c',	'c.id=p.category',	'left');
-		$this->db->join(TABLE_BRAND . '				b',	'b.id=p.brand',	'left');
-		$this->db->join(TABLE_UNIT . '				u',	'u.id=p.unit',	'left');
-		$this->db->join(TABLE_TAX_RATE . '			tr',	'tr.id=p.tax_rate',	'left');
+		$this->db->from(TABLE_PRODUCT . ' as p');
+		$this->db->join(TABLE_PRODUCT_TYPE . ' as t',		't.id=p.type',			'left');
+		$this->db->join(TABLE_BARCODE_SYMBOLOGY . ' as bs',	'bs.id=p.symbology',	'left');
+		$this->db->join(TABLE_CATEGORY . ' as c',		'c.id=p.category',		'left');
+		$this->db->join(TABLE_BRAND . ' as b',		'b.id=p.brand',			'left');
+		$this->db->join(TABLE_UNIT . ' as u',		'u.id=p.unit',			'left');
+		$this->db->join(TABLE_TAX_RATE . ' as tr',	'tr.id=p.tax_rate',		'left');
 
 		$this->db->where(array('p.deleted_at' => NULL)); // select only not deleted rows
 		$this->db->group_start();
