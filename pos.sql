@@ -425,8 +425,11 @@ CREATE TABLE `pos_sale` (
   CONSTRAINT `pos_sale_ibfk_4` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`),
   CONSTRAINT `pos_sale_ibfk_5` FOREIGN KEY (`return_id`) REFERENCES `pos_sale` (`id`),
   CONSTRAINT `pos_sale_ibfk_6` FOREIGN KEY (`status`) REFERENCES `status` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=141 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=144 DEFAULT CHARSET=utf8mb4;
 
+INSERT INTO `pos_sale` (`id`, `status`, `return_id`, `warehouse`, `customer`, `created_by`, `updated_by`, `cart_discount`, `shipping_charge`, `packing_charge`, `round_off`, `payment_note`, `sale_note`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(142,	20,	NULL,	20,	1,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	NULL,	NULL,	'2022-08-21 00:03:48',	NULL,	NULL),
+(143,	20,	NULL,	20,	42,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	NULL,	NULL,	'2022-08-21 00:21:51',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `pos_sale_payment`;
 CREATE TABLE `pos_sale_payment` (
@@ -443,6 +446,9 @@ CREATE TABLE `pos_sale_payment` (
   CONSTRAINT `pos_sale_payment_ibfk_3` FOREIGN KEY (`payment_mode`) REFERENCES `payment_mode` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+INSERT INTO `pos_sale_payment` (`pos_sale`, `payment_mode`, `amount`, `transaction_id`, `reference_no`, `note`) VALUES
+(142,	2,	6675.0000,	NULL,	NULL,	NULL),
+(143,	2,	1300.0000,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `pos_sale_product`;
 CREATE TABLE `pos_sale_product` (
@@ -468,6 +474,9 @@ CREATE TABLE `pos_sale_product` (
   CONSTRAINT `pos_sale_product_ibfk_3` FOREIGN KEY (`tax_id`) REFERENCES `tax_rate` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+INSERT INTO `pos_sale_product` (`pos_sale`, `product`, `quantity`, `unit_price`, `auto_discount`, `discount`, `tax_id`, `data_value_1`, `data_value_2`, `data_value_3`, `data_value_4`, `data_value_5`, `data_value_6`) VALUES
+(142,	215,	10.0000,	667.5000,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(143,	215,	2.0000,	667.5000,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product` (
@@ -804,17 +813,11 @@ CREATE TABLE `stock_adjustment` (
   KEY `added_by` (`added_by`),
   CONSTRAINT `stock_adjustment_ibfk_2` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`),
   CONSTRAINT `stock_adjustment_ibfk_3` FOREIGN KEY (`added_by`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=207 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=209 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `stock_adjustment` (`id`, `warehouse`, `added_by`, `date`, `time`, `reference_no`, `note`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(199,	20,	1,	'2022-08-19',	'12:18:28',	NULL,	NULL,	'2022-08-19 06:48:28',	NULL,	NULL),
-(200,	20,	1,	'2022-08-19',	'20:31:49',	NULL,	NULL,	'2022-08-19 15:01:53',	'2022-08-19 18:13:06',	NULL),
-(201,	27,	1,	'2022-08-19',	'20:46:01',	NULL,	NULL,	'2022-08-19 15:16:11',	NULL,	NULL),
-(202,	27,	1,	'2022-08-19',	'20:46:24',	NULL,	NULL,	'2022-08-19 15:16:35',	NULL,	NULL),
-(203,	20,	1,	'2022-08-19',	'23:20:19',	NULL,	NULL,	'2022-08-19 17:50:21',	'2022-08-20 11:32:26',	NULL),
-(204,	20,	1,	'2022-08-20',	'17:02:55',	NULL,	NULL,	'2022-08-20 11:32:59',	NULL,	NULL),
-(205,	20,	1,	'2022-08-20',	'17:09:53',	NULL,	NULL,	'2022-08-20 11:39:55',	'2022-08-20 13:27:12',	NULL),
-(206,	27,	1,	'2022-08-20',	'17:10:21',	NULL,	NULL,	'2022-08-20 11:40:23',	NULL,	NULL);
+(207,	20,	1,	'2022-08-21',	'00:02:55',	NULL,	NULL,	'2022-08-20 18:32:57',	NULL,	NULL),
+(208,	20,	1,	'2022-08-21',	'00:03:09',	NULL,	NULL,	'2022-08-20 18:33:20',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `stock_adjustment_product`;
 CREATE TABLE `stock_adjustment_product` (
@@ -829,20 +832,11 @@ CREATE TABLE `stock_adjustment_product` (
   KEY `product_id` (`product`),
   CONSTRAINT `stock_adjustment_product_ibfk_1` FOREIGN KEY (`stock_adjustment`) REFERENCES `stock_adjustment` (`id`),
   CONSTRAINT `stock_adjustment_product_ibfk_2` FOREIGN KEY (`product`) REFERENCES `product` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=344 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=346 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `stock_adjustment_product` (`id`, `stock_adjustment`, `product`, `note`, `quantity`) VALUES
-(332,	199,	215,	NULL,	100.0000),
-(334,	201,	215,	NULL,	-1.0000),
-(335,	202,	215,	NULL,	11.0000),
-(336,	203,	161,	NULL,	1.0000),
-(337,	200,	5,	NULL,	1.0000),
-(338,	200,	6,	NULL,	3.0000),
-(339,	204,	161,	NULL,	-1.0000),
-(340,	205,	5,	NULL,	2.0000),
-(341,	205,	10,	NULL,	-6.0000),
-(342,	206,	10,	NULL,	-25.0000),
-(343,	205,	6,	NULL,	-65.0000);
+(344,	207,	215,	NULL,	50.0000),
+(345,	208,	215,	NULL,	-10.0000);
 
 DROP TABLE IF EXISTS `supplier`;
 CREATE TABLE `supplier` (
@@ -1133,4 +1127,4 @@ INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country
 (20,	'WARE0020',	'Ware House AAA',	'dsds',	'2020-02-12',	'India',	'TVM',	'695505',	'+91-9745451448',	'tewest@gmail.com',	'TVM',	NULL,	NULL,	'Desc',	16,	'Flood',	NULL,	NULL,	'2021-04-14 19:54:53',	'2022-08-20 11:38:25',	NULL),
 (27,	'WARE0027',	'Ware House BBB',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	19,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-08-20 11:38:36',	NULL);
 
--- 2022-08-20 16:48:45
+-- 2022-08-20 19:32:53
