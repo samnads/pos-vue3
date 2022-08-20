@@ -12,47 +12,17 @@
           ></button>
         </div>
         <div class="modal-body">
-          <div class="container mb-3">
-            <div class="row pt-2">
-              <div class="col">
-                <p class="mb-1">
-                  <span class="fw-bold">Product Name : </span>{{ product.name }}
-                </p>
-                <p class="mb-1">
-                  <span class="fw-bold">Product Code : </span>{{ product.code }}
-                </p>
-                <p class="mb-1">
-                  <span class="fw-bold">Brand Name : </span
-                  >{{ product.brand_name || "-" }}
-                </p>
-              </div>
-              <div class="col">
-                <table class="table">
-                  <tbody>
-                    <tr>
-                      <td class="text-end">
-                        <span class="fw-bold">Stock Count : </span
-                        >{{ parseFloat(details.total_stock).toFixed(2) }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="text-end">
-                        <span class="fw-bold">Model : </span
-                        >{{ product.model_name || "General" }}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+          <div class="bg-secondary text-light p-2 mb-2 rounded">
+            {{ product.name }}
           </div>
           <AdminLoadingSpinnerDiv v-if="!Object.keys(details).length" />
           <div
             class="row justify-content-start"
             v-if="Object.keys(details).length"
           >
-            <hr />
-            <div class="col-4">
+            <p class="h5">Basic Details</p>
+            <hr class="border border-dark border-1 mt-0" />
+            <div class="col">
               <table class="table table-bordered border-secondary table-info">
                 <tbody>
                   <tr>
@@ -70,7 +40,7 @@
                 </tbody>
               </table>
             </div>
-            <div class="col-4">
+            <div class="col">
               <table
                 class="table table-bordered border-secondary table-warning"
               >
@@ -90,7 +60,7 @@
                 </tbody>
               </table>
             </div>
-            <div class="col-4">
+            <div class="col">
               <table
                 class="table table-bordered border-secondary table-secondary"
               >
@@ -112,6 +82,59 @@
                 </tbody>
               </table>
             </div>
+          </div>
+          <div v-if="Object.keys(details).length">
+            <p class="h5">Warehouse Stock</p>
+            <hr class="border border-dark border-1 mt-0" />
+            <table
+              class="
+                table table-sm table-bordered
+                border-dark border-opacity-25
+              "
+            >
+              <thead class="table-dark">
+                <tr>
+                  <th scope="col">Warehouse</th>
+                  <th scope="col">Rack</th>
+                  <th scope="col">Stock</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(item, index) in details.stock" :key="index">
+                  <td>{{ item.sap_warehouse_name }}</td>
+                  <td>NIL</td>
+                  <td
+                    v-bind:class="[
+                      item.total_sap_quantity <= 0
+                        ? 'text-danger'
+                        : 'text-success',
+                    ]"
+                  >
+                    {{ parseFloat(item.total_sap_quantity).toFixed(2) }}
+                  </td>
+                </tr>
+                <tr
+                  class="fw-bold"
+                  v-show="details.stock && details.stock.length"
+                >
+                  <td colspan="2" class="text-end fs-5">Total</td>
+                  <td
+                    class="fs-5"
+                    v-bind:class="[
+                      details.total_stock <= 0 ? 'text-danger' : 'text-success',
+                    ]"
+                  >
+                    {{ parseFloat(details.total_stock).toFixed(2) }}
+                  </td>
+                </tr>
+                <tr
+                  class="text-info text-center"
+                  v-show="details.stock && details.stock.length < 1"
+                >
+                  <td colspan="3">No stock data entry found !</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
         <div class="modal-footer">

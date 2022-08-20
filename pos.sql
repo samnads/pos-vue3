@@ -586,6 +586,21 @@ CREATE TABLE `product_pos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
+DROP TABLE IF EXISTS `product_rack`;
+CREATE TABLE `product_rack` (
+  `product` int(11) NOT NULL,
+  `warehouse` int(11) NOT NULL,
+  `rack` int(11) NOT NULL,
+  UNIQUE KEY `product_warehouse_rack` (`product`,`warehouse`,`rack`),
+  KEY `rack` (`rack`),
+  KEY `product` (`product`),
+  KEY `warehouse` (`warehouse`),
+  CONSTRAINT `product_rack_ibfk_1` FOREIGN KEY (`product`) REFERENCES `product` (`id`),
+  CONSTRAINT `product_rack_ibfk_2` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`),
+  CONSTRAINT `product_rack_ibfk_3` FOREIGN KEY (`rack`) REFERENCES `rack` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
 DROP TABLE IF EXISTS `product_stock`;
 CREATE TABLE `product_stock` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -621,6 +636,18 @@ INSERT INTO `product_type` (`id`, `code`, `name`, `description`, `deleted_at`) V
 (2,	'C',	'Combo Product',	'Combo Product here......',	NULL),
 (3,	'D',	'Digital',	'Digital hereeeee',	NULL),
 (4,	'SV',	'Service',	'Service hereeee',	NULL);
+
+DROP TABLE IF EXISTS `rack`;
+CREATE TABLE `rack` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `warehouse` int(11) NOT NULL,
+  `name` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `warehouse_rack_name` (`warehouse`,`name`),
+  KEY `warehouse` (`warehouse`),
+  CONSTRAINT `rack_ibfk_1` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role` (
@@ -777,14 +804,17 @@ CREATE TABLE `stock_adjustment` (
   KEY `added_by` (`added_by`),
   CONSTRAINT `stock_adjustment_ibfk_2` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`),
   CONSTRAINT `stock_adjustment_ibfk_3` FOREIGN KEY (`added_by`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=204 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=207 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `stock_adjustment` (`id`, `warehouse`, `added_by`, `date`, `time`, `reference_no`, `note`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (199,	20,	1,	'2022-08-19',	'12:18:28',	NULL,	NULL,	'2022-08-19 06:48:28',	NULL,	NULL),
 (200,	20,	1,	'2022-08-19',	'20:31:49',	NULL,	NULL,	'2022-08-19 15:01:53',	'2022-08-19 18:13:06',	NULL),
 (201,	27,	1,	'2022-08-19',	'20:46:01',	NULL,	NULL,	'2022-08-19 15:16:11',	NULL,	NULL),
 (202,	27,	1,	'2022-08-19',	'20:46:24',	NULL,	NULL,	'2022-08-19 15:16:35',	NULL,	NULL),
-(203,	20,	1,	'2022-08-19',	'23:20:19',	NULL,	NULL,	'2022-08-19 17:50:21',	'2022-08-19 18:11:27',	NULL);
+(203,	20,	1,	'2022-08-19',	'23:20:19',	NULL,	NULL,	'2022-08-19 17:50:21',	'2022-08-20 11:32:26',	NULL),
+(204,	20,	1,	'2022-08-20',	'17:02:55',	NULL,	NULL,	'2022-08-20 11:32:59',	NULL,	NULL),
+(205,	20,	1,	'2022-08-20',	'17:09:53',	NULL,	NULL,	'2022-08-20 11:39:55',	'2022-08-20 13:27:12',	NULL),
+(206,	27,	1,	'2022-08-20',	'17:10:21',	NULL,	NULL,	'2022-08-20 11:40:23',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `stock_adjustment_product`;
 CREATE TABLE `stock_adjustment_product` (
@@ -799,15 +829,20 @@ CREATE TABLE `stock_adjustment_product` (
   KEY `product_id` (`product`),
   CONSTRAINT `stock_adjustment_product_ibfk_1` FOREIGN KEY (`stock_adjustment`) REFERENCES `stock_adjustment` (`id`),
   CONSTRAINT `stock_adjustment_product_ibfk_2` FOREIGN KEY (`product`) REFERENCES `product` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=339 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=344 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `stock_adjustment_product` (`id`, `stock_adjustment`, `product`, `note`, `quantity`) VALUES
 (332,	199,	215,	NULL,	100.0000),
 (334,	201,	215,	NULL,	-1.0000),
 (335,	202,	215,	NULL,	11.0000),
-(336,	203,	161,	NULL,	-4.0000),
+(336,	203,	161,	NULL,	1.0000),
 (337,	200,	5,	NULL,	1.0000),
-(338,	200,	6,	NULL,	3.0000);
+(338,	200,	6,	NULL,	3.0000),
+(339,	204,	161,	NULL,	-1.0000),
+(340,	205,	5,	NULL,	2.0000),
+(341,	205,	10,	NULL,	-6.0000),
+(342,	206,	10,	NULL,	-25.0000),
+(343,	205,	6,	NULL,	-65.0000);
 
 DROP TABLE IF EXISTS `supplier`;
 CREATE TABLE `supplier` (
@@ -1034,7 +1069,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-08-19 14:23:18',	'2022-08-05 12:51:09',	'2021-04-20 19:22:52',	'2022-08-19 14:23:18',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-08-20 07:43:16',	'2022-08-05 12:51:09',	'2021-04-20 19:22:52',	'2022-08-20 07:43:16',	NULL),
 (30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
 (31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
@@ -1095,7 +1130,7 @@ CREATE TABLE `warehouse` (
 ) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country`, `city`, `pin_code`, `phone`, `email`, `address`, `longitude`, `latitude`, `description`, `status`, `status_reason`, `editable`, `deletable`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(20,	'WARE0020',	'CyberKids',	'dsds',	'2020-02-12',	'India',	'TVM',	'695505',	'+91-9745451448',	'tewest@gmail.com',	'TVM',	NULL,	NULL,	'Desc',	16,	'Flood',	NULL,	NULL,	'2021-04-14 19:54:53',	'2022-07-27 14:52:14',	NULL),
-(27,	'WARE0027',	'Test',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	19,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-07-05 12:49:13',	NULL);
+(20,	'WARE0020',	'Ware House AAA',	'dsds',	'2020-02-12',	'India',	'TVM',	'695505',	'+91-9745451448',	'tewest@gmail.com',	'TVM',	NULL,	NULL,	'Desc',	16,	'Flood',	NULL,	NULL,	'2021-04-14 19:54:53',	'2022-08-20 11:38:25',	NULL),
+(27,	'WARE0027',	'Ware House BBB',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	19,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-08-20 11:38:36',	NULL);
 
--- 2022-08-19 18:40:09
+-- 2022-08-20 16:48:45
