@@ -15,6 +15,14 @@ class Product_model extends CI_Model
 	function getInfo($id)
 	{
 		/********************************************************************************************/ // warehouse based stock calculation
+		/******************************************************/ // test
+		$this->db->select('p.id as p_id');
+		$this->db->from(TABLE_PRODUCT . ' as p');
+		$this->db->where('p.id', $id);
+		$this->db->where('p.deleted_at', NULL); // select only not deleted rows
+		$query_product = $this->db->get_compiled_select();
+		$this->db->reset_query();
+		//die($query_product);
 		/******************************************************/ // calc quantity using pos sales
 		$this->db->select('psp.product as psp_product,ps.warehouse as psp_warehouse,SUM(psp.quantity) as total_psp_quantity');
 		$this->db->from(TABLE_POS_SALE_PRODUCT . ' as psp');
