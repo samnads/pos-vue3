@@ -14,35 +14,38 @@ class Product_model extends CI_Model
 	}
 	function getInfo($id)
 	{
+		/********************************************************************************************/ // warehouse based stock calculation
 		/******************************************************/ // calc quantity using pos sales
-		$this->db->select('psp.product as psp_product,SUM(psp.quantity) as total_psp_quantity');
+		$this->db->select('psp.product as psp_product,ps.warehouse as psp_warehouse,SUM(psp.quantity) as total_psp_quantity');
 		$this->db->from(TABLE_POS_SALE_PRODUCT . ' as psp');
 		$this->db->join(TABLE_POS_SALE . ' as ps',    'ps.id = psp.pos_sale', 'left');
 		$this->db->join(TABLE_PRODUCT . ' as p',    'p.id = psp.product', 'left');
-		$this->db->where('ps.deleted_at', NULL); // select only not deleted rows
 		//$this->db->where('ps.warehouse', 27); // change this for warehouse based stock, remove for all warehouse
+		$this->db->where('p.id',$id);
+		$this->db->where('ps.deleted_at', NULL); // select only not deleted rows
 		$this->db->group_by('psp.product');
+		$this->db->group_by('ps.warehouse');
 		$query_pos_sale_product = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($query_pos_sale_product);
 		/******************************************************/ // calc quantity using stock adjustments
-		$this->db->select('sap.id as sap_id,sap.product as sap_product,wh.name as sap_warehouse_name,SUM(sap.quantity) as total_sap_quantity');
+		$this->db->select('sap.product as sap_product,sa.warehouse as sap_warehouse,wh.name as sap_warehouse_name,SUM(sap.quantity) as total_sap_quantity,qpsp.total_psp_quantity,SUM(sap.quantity)-qpsp.total_psp_quantity as total_wh_quantity');
 		$this->db->from(TABLE_STOCK_ADJUSTMENT_PRODUCT . ' as sap');
 		$this->db->join(TABLE_STOCK_ADJUSTMENT . ' as sa',    'sa.id = sap.stock_adjustment', 'left');
 		$this->db->join(TABLE_PRODUCT . ' as p',    'p.id = sap.product', 'left');
 		$this->db->join(TABLE_WAREHOUSE . ' as wh',	'wh.id=sa.warehouse',	'left');
-
-		$this->db->join('(' . $query_pos_sale_product . ') as qpsp', 'qpsp.psp_product = p.id', 'left');
-		$this->db->where('p.id',	$id);
+		$this->db->join('(' . $query_pos_sale_product . ') as qpsp', 'qpsp.psp_warehouse = sa.warehouse', 'left');
+		$this->db->where('sap.product',	$id);
 		$this->db->where('sa.deleted_at', NULL); // select only not deleted rows
-		$this->db->group_by(array('sap.product', 'sa.warehouse'));
+		$this->db->group_by(array('wh.id'));
 		$query_stock_adj_product = $this->db->get_compiled_select();
 		$this->db->reset_query();
+		die($query_stock_adj_product);
 		$stock = $this->db->query($query_stock_adj_product);
 		$stock = $stock->result_array();
 		$this->db->reset_query();
 		//die($query_stock_adj_product);
-		/******************************************************/
+		/********************************************************************************************/ // product more details
 		$id = trim($id);
 		$this->db->select('
 		p.id		as id,

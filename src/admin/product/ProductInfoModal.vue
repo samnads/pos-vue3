@@ -105,12 +105,12 @@
                   <td>NIL</td>
                   <td
                     v-bind:class="[
-                      item.total_sap_quantity <= 0
+                      item.total_wh_quantity <= 0
                         ? 'text-danger'
                         : 'text-success',
                     ]"
                   >
-                    {{ parseFloat(item.total_sap_quantity).toFixed(2) }}
+                    {{ parseFloat(item.total_wh_quantity).toFixed(2) }}
                   </td>
                 </tr>
                 <tr
@@ -124,7 +124,9 @@
                       details.total_stock <= 0 ? 'text-danger' : 'text-success',
                     ]"
                   >
-                    {{ parseFloat(details.total_stock).toFixed(2) }}
+                    {{
+                      details.total_stock ? parseFloat(details.stock.reduce((acc, item) => acc + parseFloat(item.total_wh_quantity), 0)).toFixed(2) : ''
+                    }}
                   </td>
                 </tr>
                 <tr
