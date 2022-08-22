@@ -101,8 +101,24 @@
               </thead>
               <tbody>
                 <tr v-for="(item, index) in details.stock" :key="index">
-                  <td>{{ item.sap_warehouse_name }}</td>
-                  <td>NIL</td>
+                  <td
+                    v-bind:class="[
+                      item.total_wh_quantity <= 0
+                        ? 'text-danger'
+                        : 'text-success',
+                    ]"
+                  >
+                    {{ item.warehouse_name }}
+                  </td>
+                  <td
+                    v-bind:class="[
+                      item.total_wh_quantity <= 0
+                        ? 'text-danger'
+                        : 'text-success',
+                    ]"
+                  >
+                    NIL
+                  </td>
                   <td
                     v-bind:class="[
                       item.total_wh_quantity <= 0
@@ -121,19 +137,30 @@
                   <td
                     class="fs-5"
                     v-bind:class="[
-                      details.total_stock <= 0 ? 'text-danger' : 'text-success',
+                      parseFloat(
+                        details.stock.reduce(
+                          (acc, item) =>
+                            acc + parseFloat(item.total_wh_quantity),
+                          0
+                        )
+                      ).toFixed(2) <= 0
+                        ? 'text-danger'
+                        : 'text-success',
                     ]"
                   >
                     {{
-                      details.total_stock ? parseFloat(details.stock.reduce((acc, item) => acc + parseFloat(item.total_wh_quantity), 0)).toFixed(2) : ''
+                      parseFloat(
+                        details.stock.reduce(
+                          (acc, item) =>
+                            acc + parseFloat(item.total_wh_quantity),
+                          0
+                        )
+                      ).toFixed(2)
                     }}
                   </td>
                 </tr>
-                <tr
-                  class="text-info text-center"
-                  v-show="details.stock && details.stock.length < 1"
-                >
-                  <td colspan="3">No stock data entry found !</td>
+                <tr class="text-center" v-show="details.stock.length == 0">
+                  <td colspan="3">No warehouse found !</td>
                 </tr>
               </tbody>
             </table>

@@ -15,44 +15,39 @@ class Product_model extends CI_Model
 	function getInfo($id)
 	{
 		/********************************************************************************************/ // warehouse based stock calculation
-		/******************************************************/ // test
-		$this->db->select('p.id as p_id');
-		$this->db->from(TABLE_PRODUCT . ' as p');
-		$this->db->where('p.id', $id);
-		$this->db->where('p.deleted_at', NULL); // select only not deleted rows
-		$query_product = $this->db->get_compiled_select();
-		$this->db->reset_query();
-		//die($query_product);
-		/******************************************************/ // calc quantity using pos sales
-		$this->db->select('psp.product as psp_product,ps.warehouse as psp_warehouse,SUM(psp.quantity) as total_psp_quantity');
-		$this->db->from(TABLE_POS_SALE_PRODUCT . ' as psp');
-		$this->db->join(TABLE_POS_SALE . ' as ps',    'ps.id = psp.pos_sale', 'left');
-		$this->db->join(TABLE_PRODUCT . ' as p',    'p.id = psp.product', 'left');
-		//$this->db->where('ps.warehouse', 27); // change this for warehouse based stock, remove for all warehouse
-		$this->db->where('p.id',$id);
-		$this->db->where('ps.deleted_at', NULL); // select only not deleted rows
-		$this->db->group_by('psp.product');
-		$this->db->group_by('ps.warehouse');
-		$query_pos_sale_product = $this->db->get_compiled_select();
-		$this->db->reset_query();
-		//die($query_pos_sale_product);
 		/******************************************************/ // calc quantity using stock adjustments
-		$this->db->select('sap.product as sap_product,sa.warehouse as sap_warehouse,wh.name as sap_warehouse_name,SUM(sap.quantity) as total_sap_quantity,qpsp.total_psp_quantity,SUM(sap.quantity)-qpsp.total_psp_quantity as total_wh_quantity');
-		$this->db->from(TABLE_STOCK_ADJUSTMENT_PRODUCT . ' as sap');
-		$this->db->join(TABLE_STOCK_ADJUSTMENT . ' as sa',    'sa.id = sap.stock_adjustment', 'left');
+		$this->db->select('p.id as p_id,sa.id as sa_id,wh.id as wh_id,wh.name as wh_name,SUM(sap.quantity) as total_sap_quantity');
+		$this->db->from(TABLE_WAREHOUSE . ' as wh');
+		$this->db->join(TABLE_STOCK_ADJUSTMENT . ' as sa',    'sa.warehouse = wh.id', 'left');
+		$this->db->join(TABLE_STOCK_ADJUSTMENT_PRODUCT . ' as sap',    'sap.stock_adjustment = sa.id', 'left');
 		$this->db->join(TABLE_PRODUCT . ' as p',    'p.id = sap.product', 'left');
-		$this->db->join(TABLE_WAREHOUSE . ' as wh',	'wh.id=sa.warehouse',	'left');
-		$this->db->join('(' . $query_pos_sale_product . ') as qpsp', 'qpsp.psp_warehouse = sa.warehouse', 'left');
-		$this->db->where('sap.product',	$id);
-		$this->db->where('sa.deleted_at', NULL); // select only not deleted rows
-		$this->db->group_by(array('wh.id'));
-		$query_stock_adj_product = $this->db->get_compiled_select();
+		$this->db->where(array('p.id' => $id));
+		$this->db->group_by('p_id');
+		$this->db->group_by('wh.id');
+		$query_sap = $this->db->get_compiled_select();
 		$this->db->reset_query();
-		die($query_stock_adj_product);
-		$stock = $this->db->query($query_stock_adj_product);
-		$stock = $stock->result_array();
+		//die($query_sap);
+		/******************************************************/ // calc quantity using pos sales
+		$this->db->select('p.id as p_id,ps.id as ps_id,wh.id as wh_id,wh.name as wh_name,SUM(psp.quantity) as total_psp_quantity');
+		$this->db->from(TABLE_WAREHOUSE . ' as wh');
+		$this->db->join(TABLE_POS_SALE . ' as ps',    'ps.warehouse = wh.id', 'left');
+		$this->db->join(TABLE_POS_SALE_PRODUCT . ' as psp',    'psp.pos_sale = ps.id', 'left');
+		$this->db->join(TABLE_PRODUCT . ' as p',    'p.id = psp.product', 'left');
+		$this->db->where(array('p.id' => $id));
+		$this->db->group_by('p_id');
+		$this->db->group_by('wh.id');
+		$query_psp = $this->db->get_compiled_select();
 		$this->db->reset_query();
-		//die($query_stock_adj_product);
+		//die($query_psp);
+		/******************************************************/ // join both
+		$this->db->select('wh.name as warehouse_name,qsap.p_id as sap_product,qpsp.p_id as psp_product,total_sap_quantity,total_psp_quantity,(IFNULL(qsap.total_sap_quantity,0)-IFNULL(qpsp.total_psp_quantity,0)) total_wh_quantity');
+		$this->db->from(TABLE_WAREHOUSE . ' as wh');
+		$this->db->join('(' . $query_sap . ') as qsap', 'qsap.wh_id = wh.id', 'left');
+		$this->db->join('(' . $query_psp . ') as qpsp', 'qpsp.wh_id = wh.id', 'left');
+		$this->db->where(array('wh.deleted_at' => NULL));
+		$query_stock = $this->db->get_compiled_select();
+		$this->db->reset_query();
+		//die($query_stock);
 		/********************************************************************************************/ // product more details
 		$id = trim($id);
 		$this->db->select('
@@ -67,7 +62,6 @@ class Product_model extends CI_Model
 		p.price 	as price,
 		p.mfg_date 	as mfg_date,
 		p.exp_date 	as exp_date,
-		p.quantity	as quantity,
 		
 		t.name 		as type_name,
 		
@@ -83,8 +77,7 @@ class Product_model extends CI_Model
 
 		tr.code		as tax_code,
 		tr.name		as tax_name,
-		tr.rate		as tax_rate,
-		qsap.total_sap_quantity - IFNULL(qpsp.total_psp_quantity,0) as total_stock');
+		tr.rate		as tax_rate');
 		$this->db->from(TABLE_PRODUCT . ' as p');
 		$this->db->join(TABLE_PRODUCT_TYPE . ' as t',	't.id=p.type',	'left');
 		$this->db->join(TABLE_BARCODE_SYMBOLOGY . ' as bs',	'bs.id=p.symbology',	'left');
@@ -92,12 +85,11 @@ class Product_model extends CI_Model
 		$this->db->join(TABLE_BRAND . ' as b',	'b.id=p.brand',	'left');
 		$this->db->join(TABLE_UNIT . ' as u',	'u.id=p.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . ' as tr',	'tr.id=p.tax_rate',	'left');
-		$this->db->join('(' . $query_stock_adj_product . ') as qsap', 'qsap.sap_product = p.id', 'left');
-		$this->db->join('(' . $query_pos_sale_product . ') as qpsp', 'qpsp.psp_product = p.id', 'left');
 		$this->db->where('p.id',	$id);
 		$data = $this->db->get();
 		$data = $data->row();
-		$data->stock = $stock;
+		$query_stock = $this->db->query($query_stock);
+		$data->stock = $query_stock->result_array();
 		return $data;
 	}
 	function getProduct($id)
@@ -274,7 +266,8 @@ class Product_model extends CI_Model
 		tr.id		as tax_rate,
 		tr.code		as tax_code,
 		tr.name		as tax_name,
-		IFNULL(qsap.total_sap_quantity, 0)+IFNULL(qpsp.total_psp_quantity, 0) as quantity');
+		IFNULL(qsap.total_sap_quantity, 0)+IFNULL(qpsp.total_psp_quantity, 0) as quantity'
+		);
 		$this->db->from(TABLE_PRODUCT . ' as p');
 		$this->db->join(TABLE_PRODUCT_TYPE . ' as t',		't.id=p.type',			'left');
 		$this->db->join(TABLE_BARCODE_SYMBOLOGY . ' as bs',	'bs.id=p.symbology',	'left');

@@ -425,11 +425,13 @@ CREATE TABLE `pos_sale` (
   CONSTRAINT `pos_sale_ibfk_4` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`),
   CONSTRAINT `pos_sale_ibfk_5` FOREIGN KEY (`return_id`) REFERENCES `pos_sale` (`id`),
   CONSTRAINT `pos_sale_ibfk_6` FOREIGN KEY (`status`) REFERENCES `status` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=144 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=155 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `pos_sale` (`id`, `status`, `return_id`, `warehouse`, `customer`, `created_by`, `updated_by`, `cart_discount`, `shipping_charge`, `packing_charge`, `round_off`, `payment_note`, `sale_note`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(142,	20,	NULL,	20,	1,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	NULL,	NULL,	'2022-08-21 00:03:48',	NULL,	NULL),
-(143,	20,	NULL,	20,	42,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	NULL,	NULL,	'2022-08-21 00:21:51',	NULL,	NULL);
+(151,	20,	NULL,	20,	1,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.5000,	NULL,	NULL,	'2022-08-22 22:28:09',	NULL,	NULL),
+(152,	20,	NULL,	20,	54,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.4700,	NULL,	NULL,	'2022-08-22 22:32:33',	NULL,	NULL),
+(153,	20,	NULL,	27,	1,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.5000,	NULL,	NULL,	'2022-08-22 23:00:18',	'2022-08-22 17:30:56',	NULL),
+(154,	20,	NULL,	20,	42,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.5000,	NULL,	NULL,	'2022-08-23 00:14:05',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `pos_sale_payment`;
 CREATE TABLE `pos_sale_payment` (
@@ -447,8 +449,7 @@ CREATE TABLE `pos_sale_payment` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `pos_sale_payment` (`pos_sale`, `payment_mode`, `amount`, `transaction_id`, `reference_no`, `note`) VALUES
-(142,	2,	6675.0000,	NULL,	NULL,	NULL),
-(143,	2,	1300.0000,	NULL,	NULL,	NULL);
+(154,	2,	82.0000,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `pos_sale_product`;
 CREATE TABLE `pos_sale_product` (
@@ -475,8 +476,10 @@ CREATE TABLE `pos_sale_product` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `pos_sale_product` (`pos_sale`, `product`, `quantity`, `unit_price`, `auto_discount`, `discount`, `tax_id`, `data_value_1`, `data_value_2`, `data_value_3`, `data_value_4`, `data_value_5`, `data_value_6`) VALUES
-(142,	215,	10.0000,	667.5000,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(143,	215,	2.0000,	667.5000,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL);
+(151,	215,	1.0000,	667.5000,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(152,	10,	421.0000,	1000.0000,	250.0000,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(153,	150,	1.0000,	75.0000,	0.0000,	0.0000,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(154,	152,	1.0000,	75.0000,	0.0000,	0.0000,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product` (
@@ -503,7 +506,6 @@ CREATE TABLE `product` (
   `exp_date` date DEFAULT NULL,
   `tax_method` enum('I','E') NOT NULL,
   `tax_rate` int(11) DEFAULT NULL,
-  `quantity` decimal(10,4) NOT NULL DEFAULT 0.0000,
   `alert` enum('0','1') NOT NULL DEFAULT '0',
   `alert_quantity` int(11) DEFAULT NULL,
   `pos_sale` tinyint(1) DEFAULT NULL,
@@ -546,22 +548,24 @@ CREATE TABLE `product` (
   CONSTRAINT `product_ibfk_8` FOREIGN KEY (`s_unit`) REFERENCES `unit` (`id`),
   CONSTRAINT `price_check` CHECK (`price` <= `mrp`),
   CONSTRAINT `pos_max_sale_qty_check` CHECK (`pos_max_sale_qty` >= `pos_min_sale_qty`)
-) ENGINE=InnoDB AUTO_INCREMENT=216 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=218 DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `product` (`id`, `type`, `code`, `symbology`, `name`, `slug`, `thumbnail`, `weight`, `category`, `brand`, `unit`, `p_unit`, `s_unit`, `is_auto_cost`, `cost`, `mrp`, `markup`, `price`, `auto_discount`, `mfg_date`, `exp_date`, `tax_method`, `tax_rate`, `quantity`, `alert`, `alert_quantity`, `pos_sale`, `custom_discount`, `pos_min_sale_qty`, `pos_max_sale_qty`, `pos_sale_note`, `pos_custom_discount`, `pos_custom_tax`, `pos_data_field_1`, `pos_data_field_2`, `pos_data_field_3`, `pos_data_field_4`, `pos_data_field_5`, `pos_data_field_6`, `added_at`, `updated_at`, `editable`, `deletable`, `deleted_at`) VALUES
-(1,	1,	'37519985',	1,	'King Book',	'king-book',	'https://www.escoffier.edu/wp-content/uploads/reading-is-a-great-way-to-continue-your-growth-as-a-chef_1028_40137340_1_14130186_500.jpg',	NULL,	1,	3,	1,	NULL,	NULL,	'1',	NULL,	35.0000,	0.0000,	30.0000,	NULL,	NULL,	NULL,	'I',	NULL,	0.0000,	'1',	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:14:30',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(2,	1,	'62305684',	1,	'Long Book',	'long-book',	'https://3ner1e34iilsjdn1qohanunu-wpengine.netdna-ssl.com/wp-content/uploads/2014/11/82175.jpg',	NULL,	1,	3,	1,	NULL,	NULL,	'1',	NULL,	50.0000,	0.0000,	45.0000,	1.0000,	NULL,	NULL,	'E',	2,	0.0000,	'1',	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:14:54',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(3,	1,	'25171014',	1,	'Pen 0.7mm',	'pen-0-7mm',	'https://www.proimprint.com/image/cache/data/KEYCHAINS-OPENERS/Promotional-Keychains-Openers/Custom-Logo-Imprinted-Plastic-Keychains/Customized-Roslin-Stylus-Pens-500x500.jpg',	NULL,	1,	1,	1,	NULL,	NULL,	'1',	NULL,	NULL,	0.0000,	5.0000,	NULL,	NULL,	'2021-01-28',	'E',	2,	0.0000,	'1',	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:15:37',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(4,	1,	'80493457',	1,	'Stylish',	'stylish',	'https://5.imimg.com/data5/GK/JK/MY-45473441/stylish-pen-500x500.jpg',	NULL,	1,	NULL,	1,	NULL,	NULL,	'1',	NULL,	5.0000,	0.0000,	5.0000,	NULL,	NULL,	'2021-01-06',	'E',	NULL,	0.0000,	'1',	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:17:04',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(5,	1,	'38644788',	1,	'Couple Photo Frame',	'couple-photo-frame',	'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7iyBDZf-tfvjCrGwONFuvg3Wj33FJ8xrsBg&usqp=CAU',	NULL,	1,	1,	1,	NULL,	NULL,	'1',	NULL,	300.0000,	0.0000,	200.0000,	10.0000,	NULL,	NULL,	'E',	2,	0.0000,	'1',	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:18:37',	'2022-08-01 15:44:26',	NULL,	NULL,	NULL),
-(6,	1,	'94426911',	1,	'Wall Clock',	'wall-clock',	'https://images-na.ssl-images-amazon.com/images/I/51VjOomhxoL._SY355_.jpg',	NULL,	1,	1,	1,	NULL,	NULL,	'0',	300.0000,	NULL,	0.0000,	570.0000,	170.2500,	NULL,	NULL,	'E',	2,	0.0000,	'1',	3,	NULL,	NULL,	1.0000,	10.0000,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:19:09',	'2022-08-16 23:24:38',	NULL,	NULL,	NULL),
-(10,	1,	'39741136',	1,	'Keyboard Mouse Combo',	'keyboard-mouse-combo',	'https://images-na.ssl-images-amazon.com/images/I/619gY3%2BheVL._SL1000_.jpg',	NULL,	1,	1,	1,	NULL,	NULL,	'1',	NULL,	4500.0000,	0.0000,	1000.0000,	250.0000,	NULL,	NULL,	'I',	2,	0.0000,	'1',	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:23:19',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(149,	1,	'56904366',	1,	'fhfgh',	'fghetrty',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-10-19 02:22:05',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(150,	1,	'65640426',	1,	'gdgserer',	'dfghfhdh',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	99999999999.1235,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-10-19 02:22:22',	'2022-08-05 16:48:59',	NULL,	NULL,	NULL),
-(151,	1,	'78154768',	1,	'tyur',	'urutyutyuytu',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-10-24 02:14:50',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(152,	1,	'86112495',	1,	'ertert',	'rreyryryy',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-10-25 00:30:23',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(161,	1,	'63886634',	1,	'78768',	'6787688',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	0.0000,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-04-11 16:55:30',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
-(215,	1,	'74587136',	1,	'RRRRRRRRRRR',	'rrrrrrrrrrr',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	445.0000,	NULL,	50.0000,	667.5000,	NULL,	NULL,	NULL,	'I',	NULL,	0.0000,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-08-19 12:18:28',	NULL,	NULL,	NULL,	NULL);
+INSERT INTO `product` (`id`, `type`, `code`, `symbology`, `name`, `slug`, `thumbnail`, `weight`, `category`, `brand`, `unit`, `p_unit`, `s_unit`, `is_auto_cost`, `cost`, `mrp`, `markup`, `price`, `auto_discount`, `mfg_date`, `exp_date`, `tax_method`, `tax_rate`, `alert`, `alert_quantity`, `pos_sale`, `custom_discount`, `pos_min_sale_qty`, `pos_max_sale_qty`, `pos_sale_note`, `pos_custom_discount`, `pos_custom_tax`, `pos_data_field_1`, `pos_data_field_2`, `pos_data_field_3`, `pos_data_field_4`, `pos_data_field_5`, `pos_data_field_6`, `added_at`, `updated_at`, `editable`, `deletable`, `deleted_at`) VALUES
+(1,	1,	'37519985',	1,	'King Book',	'king-book',	'https://www.escoffier.edu/wp-content/uploads/reading-is-a-great-way-to-continue-your-growth-as-a-chef_1028_40137340_1_14130186_500.jpg',	NULL,	1,	3,	1,	NULL,	NULL,	'1',	NULL,	35.0000,	0.0000,	30.0000,	NULL,	NULL,	NULL,	'I',	NULL,	'1',	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:14:30',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
+(2,	1,	'62305684',	1,	'Long Book',	'long-book',	'https://3ner1e34iilsjdn1qohanunu-wpengine.netdna-ssl.com/wp-content/uploads/2014/11/82175.jpg',	NULL,	1,	3,	1,	NULL,	NULL,	'1',	NULL,	50.0000,	0.0000,	45.0000,	1.0000,	NULL,	NULL,	'E',	2,	'1',	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:14:54',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
+(3,	1,	'25171014',	1,	'Pen 0.7mm',	'pen-0-7mm',	'https://www.proimprint.com/image/cache/data/KEYCHAINS-OPENERS/Promotional-Keychains-Openers/Custom-Logo-Imprinted-Plastic-Keychains/Customized-Roslin-Stylus-Pens-500x500.jpg',	NULL,	1,	1,	1,	NULL,	NULL,	'1',	NULL,	NULL,	0.0000,	5.0000,	NULL,	NULL,	'2021-01-28',	'E',	2,	'1',	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:15:37',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
+(4,	1,	'80493457',	1,	'Stylish',	'stylish',	'https://5.imimg.com/data5/GK/JK/MY-45473441/stylish-pen-500x500.jpg',	NULL,	1,	NULL,	1,	NULL,	NULL,	'1',	NULL,	5.0000,	0.0000,	5.0000,	NULL,	NULL,	'2021-01-06',	'E',	NULL,	'1',	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:17:04',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
+(5,	1,	'38644788',	1,	'Couple Photo Frame',	'couple-photo-frame',	'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7iyBDZf-tfvjCrGwONFuvg3Wj33FJ8xrsBg&usqp=CAU',	NULL,	1,	1,	1,	NULL,	NULL,	'1',	NULL,	300.0000,	0.0000,	200.0000,	10.0000,	NULL,	NULL,	'E',	2,	'1',	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:18:37',	'2022-08-01 15:44:26',	NULL,	NULL,	NULL),
+(6,	1,	'94426911',	1,	'Wall Clock',	'wall-clock',	'https://images-na.ssl-images-amazon.com/images/I/51VjOomhxoL._SY355_.jpg',	NULL,	1,	1,	1,	NULL,	NULL,	'0',	300.0000,	NULL,	0.0000,	570.0000,	170.2500,	NULL,	NULL,	'E',	2,	'1',	3,	NULL,	NULL,	1.0000,	10.0000,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:19:09',	'2022-08-16 23:24:38',	NULL,	NULL,	NULL),
+(10,	1,	'39741136',	1,	'Keyboard Mouse Combo',	'keyboard-mouse-combo',	'https://images-na.ssl-images-amazon.com/images/I/619gY3%2BheVL._SL1000_.jpg',	NULL,	1,	1,	1,	NULL,	NULL,	'1',	NULL,	4500.0000,	0.0000,	1000.0000,	250.0000,	NULL,	NULL,	'I',	2,	'1',	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:23:19',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
+(149,	1,	'56904366',	1,	'fhfgh',	'fghetrty',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-10-19 02:22:05',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
+(150,	1,	'65640426',	1,	'gdgserer',	'dfghfhdh',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	99999999999.1235,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-10-19 02:22:22',	'2022-08-05 16:48:59',	NULL,	NULL,	NULL),
+(151,	1,	'78154768',	1,	'tyur',	'urutyutyuytu',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-10-24 02:14:50',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
+(152,	1,	'86112495',	1,	'ertert',	'rreyryryy',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-10-25 00:30:23',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
+(161,	1,	'63886634',	1,	'78768',	'6787688',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-04-11 16:55:30',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
+(215,	1,	'74587136',	1,	'RRRRRRRRRRR',	'rrrrrrrrrrr',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	445.0000,	NULL,	50.0000,	667.5000,	NULL,	NULL,	NULL,	'I',	NULL,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-08-19 12:18:28',	NULL,	NULL,	NULL,	NULL),
+(216,	1,	'62006262',	1,	'jkjkjk',	'jkjkjk',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	6767.0000,	NULL,	50.0000,	10150.5000,	NULL,	NULL,	NULL,	'I',	NULL,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-08-22 23:47:18',	NULL,	NULL,	NULL,	NULL),
+(217,	1,	'70491654',	1,	'UIII',	'uiii',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	4545.0000,	NULL,	50.0000,	6817.5000,	NULL,	NULL,	NULL,	'I',	NULL,	'1',	3,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-08-22 23:54:25',	NULL,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `product_gallery`;
 CREATE TABLE `product_gallery` (
@@ -597,9 +601,11 @@ CREATE TABLE `product_pos` (
 
 DROP TABLE IF EXISTS `product_rack`;
 CREATE TABLE `product_rack` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `product` int(11) NOT NULL,
   `warehouse` int(11) NOT NULL,
   `rack` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
   UNIQUE KEY `product_warehouse_rack` (`product`,`warehouse`,`rack`),
   KEY `rack` (`rack`),
   KEY `product` (`product`),
@@ -623,10 +629,11 @@ CREATE TABLE `product_stock` (
   KEY `warehouse` (`warehouse`),
   CONSTRAINT `product_stock_ibfk_1` FOREIGN KEY (`product`) REFERENCES `product` (`id`),
   CONSTRAINT `product_stock_ibfk_2` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `product_stock` (`id`, `product`, `warehouse`, `quantity`, `added_at`, `updated_at`) VALUES
-(45,	215,	20,	100.0000,	'2022-08-19 06:48:28',	NULL);
+(45,	215,	20,	100.0000,	'2022-08-19 06:48:28',	NULL),
+(46,	217,	27,	10.0000,	'2022-08-22 18:24:25',	NULL);
 
 DROP TABLE IF EXISTS `product_type`;
 CREATE TABLE `product_type` (
@@ -645,6 +652,59 @@ INSERT INTO `product_type` (`id`, `code`, `name`, `description`, `deleted_at`) V
 (2,	'C',	'Combo Product',	'Combo Product here......',	NULL),
 (3,	'D',	'Digital',	'Digital hereeeee',	NULL),
 (4,	'SV',	'Service',	'Service hereeee',	NULL);
+
+DROP TABLE IF EXISTS `purchase`;
+CREATE TABLE `purchase` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `return_id` int(11) NOT NULL,
+  `warehouse` int(11) NOT NULL,
+  `status` int(11) NOT NULL,
+  `created_by` int(11) NOT NULL,
+  `updated_by` int(11) DEFAULT NULL,
+  `supplier` int(11) NOT NULL,
+  `date` datetime NOT NULL,
+  `discount` decimal(12,4) DEFAULT NULL,
+  `shipping_charge` decimal(12,4) DEFAULT NULL,
+  `packing_charge` decimal(12,4) DEFAULT NULL,
+  `round_off` decimal(12,4) DEFAULT NULL,
+  `payment_note` varchar(150) DEFAULT NULL,
+  `note` varchar(150) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `warehouse` (`warehouse`),
+  KEY `supplier` (`supplier`),
+  KEY `created_by` (`created_by`),
+  KEY `updated_by` (`updated_by`),
+  KEY `status` (`status`),
+  CONSTRAINT `purchase_ibfk_1` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`),
+  CONSTRAINT `purchase_ibfk_2` FOREIGN KEY (`supplier`) REFERENCES `supplier` (`id`),
+  CONSTRAINT `purchase_ibfk_3` FOREIGN KEY (`created_by`) REFERENCES `user` (`id`),
+  CONSTRAINT `purchase_ibfk_4` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`),
+  CONSTRAINT `purchase_ibfk_5` FOREIGN KEY (`status`) REFERENCES `status` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `purchase` (`id`, `return_id`, `warehouse`, `status`, `created_by`, `updated_by`, `supplier`, `date`, `discount`, `shipping_charge`, `packing_charge`, `round_off`, `payment_note`, `note`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(10,	0,	20,	1,	1,	NULL,	91,	'0000-00-00 00:00:00',	0.0000,	0.0000,	0.0000,	0.0000,	NULL,	NULL,	'2022-08-22 19:12:47',	'2022-08-22 19:14:17',	NULL);
+
+DROP TABLE IF EXISTS `purchase_product`;
+CREATE TABLE `purchase_product` (
+  `purchase` int(11) NOT NULL,
+  `product` int(11) NOT NULL,
+  `quantity` decimal(12,4) NOT NULL,
+  `unit` int(11) NOT NULL,
+  `unit_cost` decimal(12,4) NOT NULL,
+  `discount` decimal(12,4) NOT NULL,
+  `tax_id` int(11) NOT NULL,
+  KEY `purchase` (`purchase`),
+  KEY `product` (`product`),
+  KEY `unit` (`unit`),
+  CONSTRAINT `purchase_product_ibfk_1` FOREIGN KEY (`purchase`) REFERENCES `purchase` (`id`),
+  CONSTRAINT `purchase_product_ibfk_2` FOREIGN KEY (`product`) REFERENCES `product` (`id`),
+  CONSTRAINT `purchase_product_ibfk_3` FOREIGN KEY (`unit`) REFERENCES `unit` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 DROP TABLE IF EXISTS `rack`;
 CREATE TABLE `rack` (
@@ -813,11 +873,17 @@ CREATE TABLE `stock_adjustment` (
   KEY `added_by` (`added_by`),
   CONSTRAINT `stock_adjustment_ibfk_2` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`),
   CONSTRAINT `stock_adjustment_ibfk_3` FOREIGN KEY (`added_by`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=209 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=223 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `stock_adjustment` (`id`, `warehouse`, `added_by`, `date`, `time`, `reference_no`, `note`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(207,	20,	1,	'2022-08-21',	'00:02:55',	NULL,	NULL,	'2022-08-20 18:32:57',	NULL,	NULL),
-(208,	20,	1,	'2022-08-21',	'00:03:09',	NULL,	NULL,	'2022-08-20 18:33:20',	NULL,	NULL);
+(215,	20,	1,	'2022-08-22',	'22:27:29',	NULL,	NULL,	'2022-08-22 16:57:42',	'2022-08-22 16:58:37',	NULL),
+(216,	20,	1,	'2022-08-22',	'22:28:50',	NULL,	NULL,	'2022-08-22 16:58:59',	NULL,	NULL),
+(217,	27,	1,	'2022-08-22',	'22:29:23',	NULL,	NULL,	'2022-08-22 16:59:25',	NULL,	NULL),
+(218,	27,	1,	'2022-08-22',	'22:29:47',	NULL,	NULL,	'2022-08-22 16:59:54',	NULL,	NULL),
+(219,	27,	1,	'2022-08-22',	'23:01:13',	NULL,	NULL,	'2022-08-22 17:31:20',	NULL,	NULL),
+(220,	20,	1,	'2022-08-22',	'23:01:27',	NULL,	NULL,	'2022-08-22 17:31:37',	NULL,	NULL),
+(221,	27,	1,	'2022-08-22',	'23:54:25',	NULL,	NULL,	'2022-08-22 18:24:25',	NULL,	NULL),
+(222,	20,	1,	'2022-08-23',	'00:49:58',	NULL,	NULL,	'2022-08-22 19:20:12',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `stock_adjustment_product`;
 CREATE TABLE `stock_adjustment_product` (
@@ -832,11 +898,17 @@ CREATE TABLE `stock_adjustment_product` (
   KEY `product_id` (`product`),
   CONSTRAINT `stock_adjustment_product_ibfk_1` FOREIGN KEY (`stock_adjustment`) REFERENCES `stock_adjustment` (`id`),
   CONSTRAINT `stock_adjustment_product_ibfk_2` FOREIGN KEY (`product`) REFERENCES `product` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=346 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=360 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `stock_adjustment_product` (`id`, `stock_adjustment`, `product`, `note`, `quantity`) VALUES
-(344,	207,	215,	NULL,	50.0000),
-(345,	208,	215,	NULL,	-10.0000);
+(352,	215,	215,	NULL,	240.0000),
+(353,	216,	215,	NULL,	-5.0000),
+(354,	217,	215,	NULL,	-1.0000),
+(355,	218,	215,	NULL,	-50.0000),
+(356,	219,	4,	NULL,	-50.0000),
+(357,	220,	4,	NULL,	50.0000),
+(358,	221,	217,	NULL,	10.0000),
+(359,	222,	10,	NULL,	422.0000);
 
 DROP TABLE IF EXISTS `supplier`;
 CREATE TABLE `supplier` (
@@ -990,38 +1062,6 @@ INSERT INTO `unit` (`id`, `base`, `code`, `name`, `step`, `operator`, `allow_dec
 (86,	1,	'uku',	'jkk,jik',	2,	'*',	1,	'6yuyuyu',	NULL,	NULL,	'2022-07-25 05:18:16',	NULL,	NULL),
 (87,	6,	'tytyt',	'nvbn',	3,	'*',	1,	NULL,	NULL,	NULL,	'2022-07-25 08:46:03',	NULL,	NULL);
 
-DROP TABLE IF EXISTS `unit_bulk`;
-CREATE TABLE `unit_bulk` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `unit` int(11) NOT NULL,
-  `value` int(11) NOT NULL,
-  `code` varchar(10) NOT NULL,
-  `name` varchar(15) NOT NULL,
-  `description` varchar(30) DEFAULT NULL,
-  `added_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
-  `deleted_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `unit` (`unit`) USING BTREE,
-  CONSTRAINT `unit_bulk-unit` FOREIGN KEY (`unit`) REFERENCES `unit` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4;
-
-INSERT INTO `unit_bulk` (`id`, `unit`, `value`, `code`, `name`, `description`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(38,	1,	10,	'10b',	'Box of 10',	NULL,	'2021-04-18 15:16:00',	NULL,	NULL),
-(39,	1,	5535,	'dsf',	'dsf',	'ert',	'2021-04-18 18:58:09',	NULL,	NULL),
-(70,	1,	6,	'fgh',	'rrr',	NULL,	'2022-04-15 05:52:47',	NULL,	NULL),
-(71,	1,	6,	'fc',	'ttt',	NULL,	'2022-04-15 05:55:13',	NULL,	NULL),
-(72,	1,	34,	'aa',	'ggg',	NULL,	'2022-04-15 05:57:14',	NULL,	NULL),
-(73,	1,	565,	'r5',	'tyty',	NULL,	'2022-04-15 05:58:17',	NULL,	NULL),
-(74,	1,	4,	'qq',	'qqq',	NULL,	'2022-04-15 06:06:01',	NULL,	NULL),
-(75,	1,	5,	'ss',	'sss',	NULL,	'2022-04-15 06:06:34',	NULL,	NULL),
-(76,	1,	5,	'jjj',	'jjj',	NULL,	'2022-04-15 06:07:38',	NULL,	NULL),
-(77,	1,	4,	'gfdfg',	'gdfg',	NULL,	'2022-04-15 06:10:56',	NULL,	NULL),
-(78,	1,	4545,	'efg',	'kkk',	NULL,	'2022-04-15 06:19:22',	NULL,	NULL),
-(79,	1,	5,	'ggg4',	'ddd',	NULL,	'2022-04-15 06:19:49',	NULL,	NULL),
-(80,	1,	45,	'fhgf',	'yyy',	NULL,	'2022-04-15 11:40:55',	NULL,	NULL),
-(81,	1,	554545,	'ghghgh',	'etttrt',	NULL,	'2022-04-15 11:45:34',	NULL,	NULL);
-
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -1063,7 +1103,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-08-20 07:43:16',	'2022-08-05 12:51:09',	'2021-04-20 19:22:52',	'2022-08-20 07:43:16',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-08-22 12:06:46',	'2022-08-05 12:51:09',	'2021-04-20 19:22:52',	'2022-08-22 12:06:46',	NULL),
 (30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
 (31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
@@ -1124,7 +1164,7 @@ CREATE TABLE `warehouse` (
 ) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country`, `city`, `pin_code`, `phone`, `email`, `address`, `longitude`, `latitude`, `description`, `status`, `status_reason`, `editable`, `deletable`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(20,	'WARE0020',	'Ware House AAA',	'dsds',	'2020-02-12',	'India',	'TVM',	'695505',	'+91-9745451448',	'tewest@gmail.com',	'TVM',	NULL,	NULL,	'Desc',	16,	'Flood',	NULL,	NULL,	'2021-04-14 19:54:53',	'2022-08-20 11:38:25',	NULL),
-(27,	'WARE0027',	'Ware House BBB',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	19,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-08-20 11:38:36',	NULL);
+(20,	'WARE0020',	'Ware House AAA',	'dsds',	'2020-02-12',	'India',	'TVM',	'695505',	'+91-9745451448',	'tewest@gmail.com',	'TVM',	NULL,	NULL,	'Desc',	16,	'Flood',	NULL,	NULL,	'2021-04-14 19:54:53',	'2022-08-22 18:15:26',	NULL),
+(27,	'WARE0027',	'Ware House BBB',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	17,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-08-22 19:22:31',	NULL);
 
--- 2022-08-20 19:32:53
+-- 2022-08-22 19:24:54

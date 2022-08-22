@@ -110,6 +110,11 @@
                 >POS Sales</router-link
               >
             </li>
+            <li>
+              <router-link class="nav-link" to="/admin/purchase/list"
+                >Purchases</router-link
+              >
+            </li>
             <li class="nav-item dropdown">
               <a
                 class="nav-link dropdown-toggle"
