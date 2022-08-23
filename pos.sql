@@ -48,29 +48,7 @@ CREATE TABLE `brand` (
 
 INSERT INTO `brand` (`id`, `code`, `name`, `image`, `description`, `deletable`, `editable`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (1,	'LX',	'Lexi',	NULL,	'Tesssssssssst.......',	0,	0,	'2021-01-24 06:01:28',	'2022-07-07 17:06:42',	NULL),
-(3,	'CM',	'Camlin',	NULL,	'jt',	NULL,	NULL,	'2021-01-24 06:01:54',	'2022-07-07 17:00:15',	NULL),
-(67,	'ew',	'rere',	NULL,	'wqq6',	NULL,	NULL,	'2021-04-23 18:17:49',	'2021-04-23 18:19:48',	NULL),
-(69,	'ry',	'lexi6',	NULL,	'7u7',	NULL,	NULL,	'2021-04-23 20:11:19',	NULL,	NULL),
-(70,	'df',	'df',	NULL,	'dfdf',	NULL,	NULL,	'2021-04-30 07:01:19',	'2022-07-07 17:00:15',	NULL),
-(72,	'yuyu',	'ty',	NULL,	'ytu',	NULL,	NULL,	'2021-05-08 18:00:04',	NULL,	NULL),
-(73,	'fgdfg',	'gfg',	NULL,	'dgddd',	NULL,	NULL,	'2021-05-11 20:48:27',	NULL,	NULL),
-(74,	'werwer',	'wer',	NULL,	'werwr',	NULL,	NULL,	'2021-05-11 20:52:34',	NULL,	NULL),
-(75,	'try',	'rty',	NULL,	'rtyrty',	NULL,	NULL,	'2021-05-11 20:52:49',	NULL,	NULL),
-(76,	'ytr',	'ryrty',	NULL,	'rtyrtyy',	NULL,	NULL,	'2021-05-11 20:53:39',	NULL,	NULL),
-(77,	'7567',	'756',	NULL,	'676',	NULL,	NULL,	'2021-05-11 22:17:08',	NULL,	NULL),
-(78,	'567',	'567',	NULL,	'657567',	NULL,	NULL,	'2021-05-17 19:12:50',	NULL,	NULL),
-(81,	'ty',	'ytuty',	NULL,	't76878',	NULL,	NULL,	'2021-08-19 19:54:10',	NULL,	NULL),
-(118,	'BRAN0118',	'oikpiopip',	NULL,	NULL,	NULL,	NULL,	'2022-07-09 14:43:31',	NULL,	NULL),
-(119,	'dgfg',	'bfgfg',	NULL,	'gfgfgfg',	NULL,	NULL,	'2022-07-15 15:38:56',	NULL,	NULL),
-(120,	'rrtergg',	'dfgdfgfg',	NULL,	'fgfgfg',	NULL,	NULL,	'2022-07-20 10:25:44',	NULL,	NULL),
-(121,	'BRAN0121',	'asas',	NULL,	NULL,	NULL,	NULL,	'2022-07-20 13:38:13',	NULL,	NULL),
-(122,	'BRAN0122',	'sdsdsd',	NULL,	NULL,	NULL,	NULL,	'2022-07-20 13:52:40',	NULL,	NULL),
-(123,	'BRAN0123',	'fgfgfg',	NULL,	NULL,	NULL,	NULL,	'2022-07-20 13:54:22',	NULL,	NULL),
-(124,	'BRAN0124',	'EEE',	NULL,	NULL,	NULL,	NULL,	'2022-07-20 13:56:03',	NULL,	NULL),
-(125,	'BRAN0125',	'PPP',	NULL,	NULL,	NULL,	NULL,	'2022-07-20 13:56:44',	NULL,	NULL),
-(126,	'BRAN0126',	'kljkkljkl',	NULL,	NULL,	NULL,	NULL,	'2022-07-20 13:57:29',	NULL,	NULL),
-(127,	'lkl',	'lklk',	NULL,	NULL,	NULL,	NULL,	'2022-07-23 16:26:15',	NULL,	NULL),
-(128,	'545',	'uuu',	NULL,	NULL,	NULL,	NULL,	'2022-07-24 07:20:24',	NULL,	NULL);
+(3,	'CM',	'Camlin',	NULL,	'jt',	NULL,	NULL,	'2021-01-24 06:01:54',	'2022-07-07 17:00:15',	NULL);
 
 DROP TABLE IF EXISTS `category`;
 CREATE TABLE `category` (
@@ -92,7 +70,7 @@ CREATE TABLE `category` (
   UNIQUE KEY `code` (`code`),
   UNIQUE KEY `slug` (`slug`),
   CONSTRAINT `category_ibfk_1` FOREIGN KEY (`parent`) REFERENCES `category` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `category` (`id`, `parent`, `code`, `image`, `name`, `description`, `slug`, `allow_sub`, `editable`, `deletable`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (1,	NULL,	'CAT003',	NULL,	'Miscellaneous',	'to898',	'fhfghfgh',	0,	NULL,	NULL,	'2022-07-17 16:19:16',	'2022-07-27 05:08:35',	NULL),
@@ -126,10 +104,7 @@ INSERT INTO `category` (`id`, `parent`, `code`, `image`, `name`, `description`, 
 (29,	26,	NULL,	NULL,	'I Phone 11 - 16 GB Red V1',	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-18 15:20:51',	NULL,	NULL),
 (30,	29,	NULL,	NULL,	'I Phone 11 - 16 GB Red V1 - 1',	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-18 15:20:51',	NULL,	NULL),
 (31,	NULL,	NULL,	NULL,	'Empty',	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-18 15:52:27',	NULL,	NULL),
-(73,	NULL,	'cccv',	NULL,	'Baby',	'',	'cvcv',	NULL,	NULL,	NULL,	'2022-08-18 13:25:17',	NULL,	NULL),
-(74,	NULL,	'fghfghfgh',	NULL,	'ghgh',	'',	'ghfghfgh',	NULL,	NULL,	NULL,	'2022-08-18 13:28:45',	NULL,	NULL),
-(75,	NULL,	'bnbvn',	NULL,	'vbnvn',	'',	'bnnm',	NULL,	NULL,	NULL,	'2022-08-18 13:29:16',	NULL,	NULL),
-(76,	NULL,	'CAT0076',	NULL,	'dfdfdf',	'',	'dfdfdf',	NULL,	NULL,	NULL,	'2022-08-18 13:46:49',	NULL,	NULL);
+(73,	NULL,	'cccv',	NULL,	'Baby',	'',	'cvcv',	NULL,	NULL,	NULL,	'2022-08-18 13:25:17',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `currency`;
 CREATE TABLE `currency` (
@@ -648,9 +623,9 @@ CREATE TABLE `product_type` (
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `product_type` (`id`, `code`, `name`, `description`, `deleted_at`) VALUES
-(1,	'S',	'Standard Product',	'Standard Product hereeeeeee',	NULL),
-(2,	'C',	'Combo Product',	'Combo Product here......',	NULL),
-(3,	'D',	'Digital',	'Digital hereeeee',	NULL),
+(1,	'SP',	'Standard Product',	'Standard Product hereeeeeee',	NULL),
+(2,	'CP',	'Combo Product',	'Combo Product here......',	NULL),
+(3,	'DP',	'Digital',	'Digital hereeeee',	NULL),
 (4,	'SV',	'Service',	'Service hereeee',	NULL);
 
 DROP TABLE IF EXISTS `purchase`;
@@ -686,7 +661,7 @@ CREATE TABLE `purchase` (
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `purchase` (`id`, `return_id`, `warehouse`, `status`, `created_by`, `updated_by`, `supplier`, `date`, `discount`, `shipping_charge`, `packing_charge`, `round_off`, `payment_note`, `note`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(10,	0,	20,	1,	1,	NULL,	91,	'0000-00-00 00:00:00',	0.0000,	0.0000,	0.0000,	0.0000,	NULL,	NULL,	'2022-08-22 19:12:47',	'2022-08-22 19:14:17',	NULL);
+(10,	0,	20,	8,	1,	NULL,	91,	'0000-00-00 00:00:00',	0.0000,	0.0000,	0.0000,	0.0000,	NULL,	NULL,	'2022-08-22 19:12:47',	'2022-08-23 17:56:34',	NULL);
 
 DROP TABLE IF EXISTS `purchase_product`;
 CREATE TABLE `purchase_product` (
@@ -1057,10 +1032,7 @@ INSERT INTO `unit` (`id`, `base`, `code`, `name`, `step`, `operator`, `allow_dec
 (6,	NULL,	'KG',	'Kilo Gram',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	'2022-07-20 14:21:49',	'2022-07-22 17:32:14',	NULL),
 (7,	6,	'1/2 KG /',	'Half KG /',	2,	'/',	1,	NULL,	NULL,	NULL,	'2022-07-20 15:13:35',	'2022-07-22 17:32:14',	NULL),
 (8,	5,	'1/2 KG *',	'Half KG *',	500,	'*',	0,	NULL,	NULL,	NULL,	'2022-07-20 15:18:12',	'2022-07-23 15:56:20',	NULL),
-(9,	NULL,	'MTR',	'Meter',	NULL,	NULL,	0,	NULL,	NULL,	NULL,	'2022-07-20 15:23:18',	'2022-07-23 15:59:45',	NULL),
-(84,	1,	'hghgh',	'ghgh',	54,	'*',	1,	NULL,	NULL,	NULL,	'2022-07-25 04:35:57',	NULL,	NULL),
-(86,	1,	'uku',	'jkk,jik',	2,	'*',	1,	'6yuyuyu',	NULL,	NULL,	'2022-07-25 05:18:16',	NULL,	NULL),
-(87,	6,	'tytyt',	'nvbn',	3,	'*',	1,	NULL,	NULL,	NULL,	'2022-07-25 08:46:03',	NULL,	NULL);
+(9,	NULL,	'MTR',	'Meter',	NULL,	NULL,	0,	NULL,	NULL,	NULL,	'2022-07-20 15:23:18',	'2022-07-23 15:59:45',	NULL);
 
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
@@ -1103,7 +1075,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-08-22 12:06:46',	'2022-08-05 12:51:09',	'2021-04-20 19:22:52',	'2022-08-22 12:06:46',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-08-23 15:38:30',	'2022-08-05 12:51:09',	'2021-04-20 19:22:52',	'2022-08-23 15:38:30',	NULL),
 (30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
 (31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
@@ -1165,6 +1137,6 @@ CREATE TABLE `warehouse` (
 
 INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country`, `city`, `pin_code`, `phone`, `email`, `address`, `longitude`, `latitude`, `description`, `status`, `status_reason`, `editable`, `deletable`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (20,	'WARE0020',	'Ware House AAA',	'dsds',	'2020-02-12',	'India',	'TVM',	'695505',	'+91-9745451448',	'tewest@gmail.com',	'TVM',	NULL,	NULL,	'Desc',	16,	'Flood',	NULL,	NULL,	'2021-04-14 19:54:53',	'2022-08-22 18:15:26',	NULL),
-(27,	'WARE0027',	'Ware House BBB',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	17,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-08-22 19:22:31',	NULL);
+(27,	'WARE0027',	'Ware House BBB',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	18,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-08-23 04:36:25',	NULL);
 
--- 2022-08-22 19:24:54
+-- 2022-08-23 18:03:12

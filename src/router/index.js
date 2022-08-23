@@ -14,6 +14,10 @@ import AdminProductListTest from '../admin/product/TestProductList.vue'
 // Sale Based Pages
 import AdminSaleMain from '../admin/sale/SaleMain.vue'
 import AdminSalePosList from '../admin/sale/SalePosList.vue'
+// Purchase Based Pages
+import AdminPurchaseMain from '../admin/purchase/PurchaseMain.vue'
+import AdminPurchaseList from '../admin/purchase/PurchaseList.vue'
+import AdminPurchaseNew from '../admin/purchase/PurchaseNew.vue'
 // Product Adjustment Based Pages
 import AdjustmentMain from '../admin/adjustment/AdjustmentMain.vue'
 import AdjustmentList from '../admin/adjustment/AdjustmentList.vue'
@@ -125,6 +129,24 @@ const routes = [
             path: 'pos',
             name: 'adminSalePosList',
             component: AdminSalePosList,
+          },
+        ],
+      },
+      {
+        path: 'purchase',
+        name: 'adminPurchaseMain',
+        component: AdminPurchaseMain,
+        redirect: '/admin/purchase/list',
+        children: [
+          {
+            path: 'list',
+            name: 'adminPurchaseList',
+            component: AdminPurchaseList,
+          },
+          {
+            path: 'new',
+            name: 'adminPurchaseNew',
+            component: AdminPurchaseNew,
           },
         ],
       },
