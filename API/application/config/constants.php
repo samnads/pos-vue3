@@ -122,3 +122,7 @@ defined('TABLE_PAYMENT_MODE')       or define('TABLE_PAYMENT_MODE', 'payment_mod
 defined('TABLE_POS_SALE')           or define('TABLE_POS_SALE', 'pos_sale');
 defined('TABLE_POS_SALE_PRODUCT')   or define('TABLE_POS_SALE_PRODUCT', 'pos_sale_product');
 defined('TABLE_POS_SALE_PAYMENT')   or define('TABLE_POS_SALE_PAYMENT', 'pos_sale_payment');
+//
+defined('TABLE_PURCHASE')           or define('TABLE_PURCHASE', 'purchase');
+defined('TABLE_PURCHASE_PRODUCT')   or define('TABLE_PURCHASE_PRODUCT', 'purchase_product');
+defined('TABLE_PURCHASE_PAYMENT')   or define('TABLE_PURCHASE_PAYMENT', 'purchase_payment');

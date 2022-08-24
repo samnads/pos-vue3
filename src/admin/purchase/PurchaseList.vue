@@ -42,13 +42,13 @@
           <th scope="col">Ref. No.</th>
           <th scope="col">Supplier</th>
           <th scope="col">Warehouse</th>
-          <th scope="col">Status</th>   
+          <th scope="col">Purchase Status</th>   
           <th scope="col">Products</th>
           <th scope="col">Payable</th>
           <th scope="col">Paid</th>
           <th scope="col">Due</th>
           <th scope="col">Return</th>
-          <th scope="col">Due</th>
+          <th scope="col">Payment Status</th>
           <th scope="col"><i class="fa-solid fa-bars"></i></th>
         </tr>
       </thead>
@@ -111,7 +111,7 @@ export default {
         order: [[0, "desc"]],
         ajax: {
           method: "GET",
-          url: process.env.VUE_APP_API_ROOT + "admin/ajax/pos",
+          url: process.env.VUE_APP_API_ROOT + "admin/ajax/purchase",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {

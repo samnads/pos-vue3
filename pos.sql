@@ -244,31 +244,32 @@ DROP TABLE IF EXISTS `module`;
 CREATE TABLE `module` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
-  `description` text NOT NULL,
+  `description` text DEFAULT NULL,
   `added_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `module` (`id`, `name`, `description`, `added_at`, `updated_at`) VALUES
-(1,	'product',	'',	'2022-07-06 11:59:05',	NULL),
-(2,	'category',	'',	'2022-07-06 11:59:05',	NULL),
+(1,	'product',	NULL,	'2022-07-06 11:59:05',	'2022-08-24 05:43:27'),
+(2,	'category',	NULL,	'2022-07-06 11:59:05',	'2022-08-24 05:43:27'),
 (3,	'brand',	'This module is for product brands, here you can set permission for add, edit, update and delete the brands.',	'2022-07-06 11:59:05',	NULL),
 (4,	'tax',	'This module can add create unique tax name based on tax rate and calculation type.',	'2022-07-06 11:59:05',	'2022-07-12 16:41:18'),
-(5,	'unit',	'',	'2022-07-06 11:59:05',	NULL),
-(6,	'supplier',	'',	'2022-07-06 11:59:05',	NULL),
-(7,	'customer',	'',	'2022-07-06 11:59:05',	NULL),
-(8,	'user',	'',	'2022-07-06 11:59:05',	NULL),
-(9,	'warehouse',	'',	'2022-07-06 11:59:05',	NULL),
+(5,	'unit',	NULL,	'2022-07-06 11:59:05',	'2022-08-24 05:43:27'),
+(6,	'supplier',	NULL,	'2022-07-06 11:59:05',	'2022-08-24 05:43:27'),
+(7,	'customer',	NULL,	'2022-07-06 11:59:05',	'2022-08-24 05:43:27'),
+(8,	'user',	NULL,	'2022-07-06 11:59:05',	'2022-08-24 05:43:27'),
+(9,	'warehouse',	NULL,	'2022-07-06 11:59:05',	'2022-08-24 05:43:27'),
 (10,	'role',	'Role is to restrict or allow actions based on user level.',	'2022-07-06 11:59:05',	'2022-07-12 13:31:17'),
-(11,	'pos',	'',	'2022-07-06 11:59:05',	NULL),
-(12,	'type',	'',	'2022-07-06 11:59:05',	NULL),
-(13,	'symbology',	'',	'2022-07-06 11:59:05',	NULL),
-(14,	'label',	'',	'2022-07-06 11:59:05',	NULL),
-(15,	'stock_adjustment',	'',	'2022-07-06 11:59:05',	NULL),
-(16,	'customer_group',	'',	'2022-07-06 11:59:05',	NULL),
-(17,	'common',	'',	'2022-07-06 11:59:05',	NULL);
+(11,	'pos',	NULL,	'2022-07-06 11:59:05',	'2022-08-24 05:43:27'),
+(12,	'type',	NULL,	'2022-07-06 11:59:05',	'2022-08-24 05:43:27'),
+(13,	'symbology',	NULL,	'2022-07-06 11:59:05',	'2022-08-24 05:43:27'),
+(14,	'label',	NULL,	'2022-07-06 11:59:05',	'2022-08-24 05:43:27'),
+(15,	'stock_adjustment',	NULL,	'2022-07-06 11:59:05',	'2022-08-24 05:43:27'),
+(16,	'customer_group',	NULL,	'2022-07-06 11:59:05',	'2022-08-24 05:43:27'),
+(17,	'common',	NULL,	'2022-07-06 11:59:05',	'2022-08-24 05:43:27'),
+(18,	'purchase',	NULL,	'2022-08-24 05:42:37',	'2022-08-24 05:43:27');
 
 DROP TABLE IF EXISTS `module_permission`;
 CREATE TABLE `module_permission` (
@@ -330,7 +331,8 @@ INSERT INTO `module_permission` (`module`, `permission`, `checked`, `read_only`,
 (15,	1,	1,	NULL,	'STOCK ADJ.'),
 (15,	3,	NULL,	NULL,	'STOCK ADJ.'),
 (15,	4,	NULL,	NULL,	'STOCK ADJ.'),
-(15,	6,	NULL,	NULL,	'STOCK ADJ.');
+(15,	6,	NULL,	NULL,	'STOCK ADJ.'),
+(18,	6,	NULL,	NULL,	'PURCHASE');
 
 DROP TABLE IF EXISTS `payment_mode`;
 CREATE TABLE `payment_mode` (
@@ -631,7 +633,7 @@ INSERT INTO `product_type` (`id`, `code`, `name`, `description`, `deleted_at`) V
 DROP TABLE IF EXISTS `purchase`;
 CREATE TABLE `purchase` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `return_id` int(11) NOT NULL,
+  `return_id` int(11) DEFAULT NULL,
   `warehouse` int(11) NOT NULL,
   `status` int(11) NOT NULL,
   `created_by` int(11) NOT NULL,
@@ -653,15 +655,17 @@ CREATE TABLE `purchase` (
   KEY `created_by` (`created_by`),
   KEY `updated_by` (`updated_by`),
   KEY `status` (`status`),
+  KEY `return_id` (`return_id`),
   CONSTRAINT `purchase_ibfk_1` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`),
   CONSTRAINT `purchase_ibfk_2` FOREIGN KEY (`supplier`) REFERENCES `supplier` (`id`),
   CONSTRAINT `purchase_ibfk_3` FOREIGN KEY (`created_by`) REFERENCES `user` (`id`),
   CONSTRAINT `purchase_ibfk_4` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`),
-  CONSTRAINT `purchase_ibfk_5` FOREIGN KEY (`status`) REFERENCES `status` (`id`)
+  CONSTRAINT `purchase_ibfk_5` FOREIGN KEY (`status`) REFERENCES `status` (`id`),
+  CONSTRAINT `purchase_ibfk_6` FOREIGN KEY (`return_id`) REFERENCES `purchase` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `purchase` (`id`, `return_id`, `warehouse`, `status`, `created_by`, `updated_by`, `supplier`, `date`, `discount`, `shipping_charge`, `packing_charge`, `round_off`, `payment_note`, `note`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(10,	0,	20,	8,	1,	NULL,	91,	'0000-00-00 00:00:00',	0.0000,	0.0000,	0.0000,	0.0000,	NULL,	NULL,	'2022-08-22 19:12:47',	'2022-08-23 17:56:34',	NULL);
+(10,	NULL,	20,	8,	1,	NULL,	91,	'2022-08-24 11:07:31',	0.0000,	0.0000,	0.0000,	0.0000,	NULL,	NULL,	'2022-08-22 19:12:47',	'2022-08-24 05:37:31',	NULL);
 
 DROP TABLE IF EXISTS `purchase_product`;
 CREATE TABLE `purchase_product` (
@@ -788,7 +792,8 @@ INSERT INTO `role_permission` (`role_id`, `module_id`, `permission_id`, `readonl
 (1,	15,	8,	1,	'STOCK ADJ - autocomplete product',	1,	NULL),
 (1,	16,	2,	1,	'MANUAL list customer groups (admin default)',	1,	NULL),
 (1,	16,	5,	1,	'CUSTOMER GROUP - dropdown',	1,	NULL),
-(1,	17,	2,	1,	'MANUAL genders (admin default)',	1,	NULL);
+(1,	17,	2,	1,	'MANUAL genders (admin default)',	1,	NULL),
+(1,	18,	6,	1,	'PURCHASE - datatable',	1,	NULL);
 
 DROP TABLE IF EXISTS `status`;
 CREATE TABLE `status` (
@@ -1075,7 +1080,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-08-23 15:38:30',	'2022-08-05 12:51:09',	'2021-04-20 19:22:52',	'2022-08-23 15:38:30',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-08-24 18:11:10',	'2022-08-05 12:51:09',	'2021-04-20 19:22:52',	'2022-08-24 18:11:10',	NULL),
 (30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
 (31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
@@ -1139,4 +1144,4 @@ INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country
 (20,	'WARE0020',	'Ware House AAA',	'dsds',	'2020-02-12',	'India',	'TVM',	'695505',	'+91-9745451448',	'tewest@gmail.com',	'TVM',	NULL,	NULL,	'Desc',	16,	'Flood',	NULL,	NULL,	'2021-04-14 19:54:53',	'2022-08-22 18:15:26',	NULL),
 (27,	'WARE0027',	'Ware House BBB',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	18,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-08-23 04:36:25',	NULL);
 
--- 2022-08-23 18:03:12
+-- 2022-08-24 18:23:50
