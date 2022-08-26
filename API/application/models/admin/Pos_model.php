@@ -14,7 +14,7 @@ class Pos_model extends CI_Model
 		$subquery_payment = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		/******************************************************/ // calculate each product_total excluding tax rate
-		$this->db->select('*,(unit_price * quantity)-(auto_discount * quantity)-discount as product_total_without_tax')->from(TABLE_POS_SALE_PRODUCT)->group_by(array('pos_sale', 'product'))->group_by('product');
+		$this->db->select('*,(unit_price * quantity)-(auto_discount * quantity)-discount as product_total_without_tax')->from(TABLE_POS_SALE_PRODUCT)->group_by(array('pos_sale', 'product'));
 		$subquery_product = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		/******************************************************/ // calculate each product total tax

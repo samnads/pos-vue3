@@ -46,10 +46,10 @@
           <th scope="col">Products</th>
           <th scope="col">Payable</th>
           <th scope="col">Paid</th>
-          <th scope="col">Due</th>
           <th scope="col">Return</th>
+          <th scope="col">Due</th>
           <th scope="col">Payment Status</th>
-          <th scope="col"><i class="fa-solid fa-bars"></i></th>
+          <th scope="col" class="text-center"><i class="fa-solid fa-bars"></i></th>
         </tr>
       </thead>
       <tbody>
@@ -160,25 +160,22 @@ export default {
             data: "created_at",
           },
           {
-            data: "id",
+            data: "date",
           },
           {
-            data: "created_at",
+            data: "reference_id",
           },
           {
-            data: "created_by_name",
-          },
-          {
-            data: "customer_name",
+            data: "supplier_name",
           },
           {
             data: "warehouse_name",
           },
           {
-            data: "product_count",
+            data: "status_name",
           },
           {
-            data: "status",
+            data: "product_count",
           },
           {
             data: "total_payable",
@@ -187,10 +184,13 @@ export default {
             data: "total_paid",
           },
           {
+            data: "due",
+          },
+          {
             data: "balance_return",
           },
           {
-            data: "due",
+            data: "payment_status_name",
           },
         ],
         columnDefs: [
@@ -213,12 +213,6 @@ export default {
           },
           {
             targets: [5],
-          },
-          {
-            targets: [6],
-          },
-          {
-            targets: [7],
             className: "text-capitalize text-center",
             render: function (data, type, row, meta) {
               return (
@@ -231,17 +225,20 @@ export default {
             },
           },
           {
-            targets: [8],
+            targets: [6],
+          },
+          {
+            targets: [7],
             render: function (data, type, row, meta) {
               return (
                 '<span class="text-primary fw-bold">' +
-                parseFloat(data || 0).toFixed(2) +
+                 parseFloat(data || 0).toFixed(2) +
                 "</span>"
               );
             },
           },
           {
-            targets: [9],
+            targets: [8],
             render: function (data, type, row, meta) {
               if (data > 0) {
                 return (
@@ -254,8 +251,8 @@ export default {
             },
           },
           {
-            targets: [10],
-            render: function (data, type, row, meta) {
+            targets: [9],
+             render: function (data, type, row, meta) {
               if (parseFloat(data).toFixed(2) < 0) {
                 return (
                   '<span class="text-info fw-bold">' +
@@ -267,7 +264,7 @@ export default {
             },
           },
           {
-            targets: [11],
+            targets: [10],
             render: function (data, type, row, meta) {
               if (parseFloat(data).toFixed(2) > 0) {
                 return (
@@ -277,6 +274,19 @@ export default {
                 );
               }
                return '<span class="text-muted small">-</span>';
+            },
+          },
+          {
+            targets: [11],
+            className: "text-capitalize text-center",
+            render: function (data, type, row, meta) {
+              return (
+                '<span class="badge ' +
+                row["css_class"] +
+                '">' +
+                data +
+                "</span>"
+              );
             },
           },
           {
@@ -422,7 +432,7 @@ export default {
             text: '<i class="fa-solid fa-plus"></i>',
             className: "btn-light",
             action: function () {
-              self.$router.push({ name: "adminProductNew" }).catch((e) => {});
+              self.$router.push({ name: "adminPurchaseNew" }).catch((e) => {});
             },
             attr: {
               "data-bs-toggle": "tooltip",
