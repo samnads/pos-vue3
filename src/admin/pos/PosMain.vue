@@ -251,7 +251,7 @@
           <button
             type="button"
             class="btn btn-success"
-            @click="onSubmit()"
+            @click="onSubmit"
             :disabled="isSubmitting"
           >
             Confirm&nbsp;<i class="fa-solid fa-check"></i>
@@ -822,20 +822,7 @@
   </div>
 </template>
 <style scoped>
-.autocomplete-wrap {
-  position: absolute;
-  margin-top: 38px;
-  right: 0;
-  left: 0;
-  z-index: 100;
-  padding-left: 0;
-  overflow-y: auto;
-  list-style-type: none;
-  background: #fff;
-  -webkit-box-shadow: 0 2px 5px 0 rgb(0 0 0 / 16%),
-    0 2px 10px 0 rgb(0 0 0 / 12%);
-  box-shadow: 0 2px 5px 0 rgb(0 0 0 / 16%), 0 2px 10px 0 rgb(0 0 0 / 12%);
-}
+
 #posmain {
   background-color: rgb(238, 236, 236);
 }
@@ -1147,7 +1134,6 @@ export default {
               self.autocompleteList = items;
             } else if (items.length == 1) {
               // One product found
-              self.search_product = null;
               self.checkAndPush(items[0]);
             } else {
               // no product found
@@ -1265,6 +1251,7 @@ export default {
       this.searchCustomerBox.focus();
     }
     function checkAndPush(product) {
+      this.search_product = null;
       if (!products.value.some((data) => data.id === product.id)) {
         // new
         /************************************** */

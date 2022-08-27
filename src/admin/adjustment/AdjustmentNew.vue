@@ -111,17 +111,23 @@
                 class="form-control"
                 placeholder="Scan or type product name..."
               />
-            </div>
-            <ul class="auto-complete-result">
-              <a
-                @click="checkAndPush(item)"
-                class="list-group-item list-group-item-action"
-                v-for="item in autocompleteList"
-                :key="item.id"
-                :value="item.name"
-                >{{ item.label }}</a
+              <ul
+                id="search-product-list"
+                class="autocomplete-wrap list-group"
+                style="max-height: 225px"
               >
-            </ul>
+                <li
+                  @click="checkAndPush(item)"
+                  role="button"
+                  class="list-group-item list-group-item-action"
+                  v-for="item in autocompleteList"
+                  :key="item.id"
+                  :value="item.name"
+                >
+                  {{ item.label }}
+                </li>
+              </ul>
+            </div>
           </div>
           <table
             class="
@@ -237,17 +243,6 @@
   </div>
 </template>
 <style>
-.auto-complete-result {
-  list-style: none;
-  margin: 0;
-  max-height: 207px;
-  overflow-y: auto;
-  padding: 0;
-}
-.auto-complete-result a:hover {
-  background-color: grey;
-  color: white;
-}
 </style>
 <script>
 import { useStore } from "vuex";
@@ -689,6 +684,7 @@ export default {
   },
   created() {},
   mounted() {
+    var self = this;
     if (!this.warehouses) {
       // if not found on store
       this.axiosAsyncStoreReturnBool("storeWareHouses", "stock_adjustment", {
@@ -696,6 +692,11 @@ export default {
         dropdown: "warehouses",
       }); // get ware houses
     }
+    document.onclick = function () {
+      // hide dropdowns and reset search
+      self.autocompleteList = [];
+      self.search = null;
+    };
   },
 };
 </script>

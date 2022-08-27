@@ -1,13 +1,9 @@
 <template>
-  <TaxNewModal />
-  <BrandNewModal />
-  <UnitNewModal />
-  <CategoryNewModal />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
         <h5 class="title">
-          <i class="fa-solid fa-cart-arrow-down"></i><span>New Product</span>
+          <i class="fa-solid fa-cart-arrow-down"></i><span>New Purchase</span>
         </h5>
       </div>
       <div class="p-2 bd-highlight"></div>
@@ -23,1578 +19,443 @@
     </div>
   </div>
   <div class="wrap_content" id="wrap_content">
-    <form @submit="onSubmit" class="needs-validation">
-      <div class="row">
-        <!-- main row -->
-        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-3">
-          <!-- column section 1 -->
-          <div class="row mb-1">
-            <div class="col">
-              <label for="producttype" class="form-label">
-                Product Type<i>*</i></label
-              >
+    <div class="card mb-2">
+      <h5 class="card-header bg-secondary text-light">Basic Details</h5>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+            <label class="form-label">Date & Time<i>*</i></label>
+            <div class="input-group is-invalid">
+              <span class="input-group-text"
+                ><i class="fa-solid fa-calendar"></i
+              ></span>
+              <input
+                type="datetime-local"
+                step="1"
+                name="date"
+                v-model="date"
+                class="form-control"
+              />
+            </div>
+            <div class="invalid-feedback">{{ errorDate }}</div>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+            <label class="form-label">Supplier<i>*</i></label>
+            <div class="input-group is-invalid">
               <select
                 class="form-select"
-                name="type"
-                :disabled="!productTypes"
-                v-model="type"
-                id="producttype"
+                name="warehouse"
+                :disabled="!suppliers"
+                v-model="supplier"
                 v-bind:class="[
-                  errorType
+                  errorSupplier
                     ? 'is-invalid'
-                    : productTypes && type
+                    : suppliers && supplier
                     ? 'is-valid'
                     : '',
                 ]"
               >
-                <option selected :value="formValues.type" v-if="!productTypes">
-                  Loading...
+                <option :value="null" selected>
+                  {{ suppliers ? "-- Select --" : "Loading..." }}
                 </option>
-                <option selected :value="null" v-if="productTypes">
-                  Select product type...
-                </option>
-                <option v-for="t in productTypes" :key="t.id" :value="t.id">
-                  {{ t.name }}
+                <option v-for="s in suppliers" :key="s.id" :value="s.id">
+                  {{ s.name }}
                 </option>
               </select>
-              <div class="invalid-feedback">{{ errorType }}</div>
             </div>
+            <div class="invalid-feedback">{{ errorSupplier }}</div>
           </div>
-          <div class="row">
-            <div class="col">
-              <label for="exampleInputEmail1" class="form-label"
-                >Product Code<i>*</i></label
-              >
-              <div class="input-group has-validation">
-                <span class="input-group-text"
-                  ><i class="fa-solid fa-barcode"></i
-                ></span>
-                <input
-                  type="text"
-                  name="code"
-                  v-model="code"
-                  class="form-control"
-                  id="productcode"
-                  v-bind:class="[
-                    errorCode
-                      ? 'is-invalid'
-                      : !errorCode && code
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                />
-                <span
-                  class="input-group-text text-primary"
-                  role="button"
-                  @click="genRandCode"
-                  ><i class="fa-solid fa-shuffle"></i
-                ></span>
-                <div class="invalid-feedback">{{ errorCode }}</div>
-              </div>
-            </div>
-            <div class="col">
-              <label for="exampleInputPassword1" class="form-label"
-                >Symbology<i>*</i></label
-              >
+          <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+            <label class="form-label">Warehouse<i>*</i></label>
+            <div class="input-group is-invalid">
               <select
                 class="form-select"
-                name="symbology"
-                :disabled="!symbologies"
-                v-model="symbology"
-                id="productsymbology"
+                name="warehouse"
+                :disabled="!warehouses"
+                v-model="warehouse"
                 v-bind:class="[
-                  errorSymbology
+                  errorWareHouse
                     ? 'is-invalid'
-                    : symbologies && symbology
+                    : warehouses && warehouse
                     ? 'is-valid'
                     : '',
                 ]"
               >
+                <option :value="null" selected>
+                  {{ warehouses ? "-- Select --" : "Loading..." }}
+                </option>
+                <option v-for="wh in warehouses" :key="wh.id" :value="wh.id">
+                  {{ wh.name }}
+                </option>
+              </select>
+            </div>
+            <div class="invalid-feedback">{{ errorWareHouse }}</div>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+            <label class="form-label">Purchase Status<i>*</i></label>
+            <div class="input-group is-invalid">
+              <select
+                class="form-select text-capitalize"
+                name="warehouse"
+                :disabled="!statuses"
+                v-model="purchase_status"
+                v-bind:class="[
+                  errorPurchaseStatus
+                    ? 'is-invalid'
+                    : statuses && purchase_status
+                    ? 'is-valid'
+                    : '',
+                ]"
+              >
+                <option :value="null" selected>
+                  {{ statuses ? "-- Select --" : "Loading..." }}
+                </option>
                 <option
-                  selected
-                  :value="formValues.symbology"
-                  v-if="!symbologies"
+                  v-for="s in statuses &&
+                  statuses.filter((obj) => obj.purchase_status == 1)"
+                  :key="s.id"
+                  :value="s.id"
                 >
-                  Loading...
-                </option>
-                <option selected :value="null" v-if="symbologies">
-                  -- Select symbology --
-                </option>
-                <option v-for="s in symbologies" :key="s.id" :value="s.id">
-                  {{ s.code }}
+                  {{ s.name }}
                 </option>
               </select>
-              <div class="invalid-feedback">{{ errorSymbology }}</div>
             </div>
+            <div class="invalid-feedback">{{ errorPurchaseStatus }}</div>
           </div>
-          <div class="row">
-            <div class="col">
-              <label for="" class="form-label">Product Name<i>*</i></label>
-              <input
+          <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+            <label class="form-label">Note</label>
+            <div class="input-group is-invalid">
+              <textarea
                 type="text"
-                name="name"
-                v-model="name"
+                name="note"
+                v-model="note"
                 class="form-control"
-                id="productname"
-                @input="handleChangeName"
-                v-bind:class="[
-                  errorName
-                    ? 'is-invalid'
-                    : !errorName && name
-                    ? 'is-valid'
-                    : '',
-                ]"
-              />
-              <div class="invalid-feedback">{{ errorName }}</div>
+                rows="1"
+              >
+              </textarea>
             </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <label for="" class="form-label">URL Slug<i>*</i></label>
-              <input
-                type="text"
-                name="slug"
-                v-model="slug"
-                class="form-control"
-                @input="handleChangeSlug"
-                v-bind:class="[
-                  errorSlug
-                    ? 'is-invalid'
-                    : !errorSlug && slug
-                    ? 'is-valid'
-                    : '',
-                ]"
-              />
-              <div class="invalid-feedback">{{ errorSlug }}</div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <label for="" class="form-label">Weight (in grams)</label>
-              <input
-                type="number"
-                name="weight"
-                v-model="weight"
-                class="form-control"
-                v-bind:class="[
-                  errorWeight
-                    ? 'is-invalid'
-                    : !errorWeight && weight
-                    ? 'is-valid'
-                    : '',
-                ]"
-              />
-              <div class="invalid-feedback">{{ errorWeight }}</div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <label for="" class="form-label">Category<i>*</i></label>
-              <div class="input-group is-invalid">
-                <select
-                  class="form-select"
-                  name="category"
-                  :disabled="!computed_categories"
-                  v-model="category"
-                  v-bind:class="[
-                    errorCategory
-                      ? 'is-invalid'
-                      : computed_categories && category
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                >
-                  <option
-                    selected
-                    :value="formValues.category"
-                    v-if="!computed_categories"
-                  >
-                    Loading...
-                  </option>
-                  <option :value="null" selected>
-                    {{
-                      !computed_categories
-                        ? "Updating..."
-                        : "-- Select (" + computed_categories.length + ")--"
-                    }}
-                  </option>
-                  <option
-                    v-for="c in computed_categories"
-                    :key="c.id"
-                    :value="c.id"
-                  >
-                    {{ c.name }}
-                  </option>
-                </select>
-                <button
-                  type="button"
-                  class="input-group-text text-info"
-                  @click="newCategory(category)"
-                  v-if="categories"
-                  :disabled="
-                    category &&
-                    categories.find((obj) => {
-                      return obj.id === category;
-                    })['allow_sub'] == 0
-                  "
-                >
-                  <span
-                    v-if="
-                      categories.find((obj) => {
-                        return obj.id === category;
-                      })['allow_sub'] == 0
-                    "
-                    data-bs-toggle="tooltip" data-bs-placement="left" title="Level Locked"><i class="fa-solid fa-lock text-dark"></i
-                  ></span>
-                  <span v-else><i class="fa-solid fa-plus"></i></span>
-                </button>
-              </div>
-              <div class="invalid-feedback">{{ errorCategory }}</div>
-            </div>
+            <div class="invalid-feedback">{{ errorNote }}</div>
           </div>
         </div>
-        <!-- column section 2 -->
-        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-5">
-          <div class="row mb-1">
-            <div class="col">
-              <label for="" class="form-label">Brand Name</label>
-              <div class="input-group is-invalid">
-                <select
-                  class="form-select"
-                  name="brand"
-                  :disabled="!brands"
-                  v-model="brand"
-                  v-bind:class="[
-                    errorBrand
-                      ? 'is-invalid'
-                      : brands && brand
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                >
-                  <option
-                    :value="formValues.brand"
-                    v-if="brands == undefined"
-                    selected
+      </div>
+    </div>
+    <div class="card mb-2">
+      <h5 class="card-header bg-secondary text-light">Products</h5>
+      <div class="card-body">
+        <div class="col-12">
+          <div class="input-group is-invalid">
+            <span class="input-group-text"
+              ><i class="fa-solid fa-magnifying-glass"></i
+            ></span>
+            <input
+              type="text"
+              ref="searchBox"
+              v-model="search_product"
+              @input="searchProduct(search_product)"
+              class="form-control"
+              placeholder="Scan or type product name..."
+            />
+            <ul
+              id="search-product-list"
+              class="autocomplete-wrap list-group"
+              style="max-height: 225px"
+            >
+              <li
+                @click="checkAndPush(item)"
+                role="button"
+                class="list-group-item list-group-item-action"
+                v-for="item in autocompleteList"
+                :key="item.id"
+                :value="item.name"
+              >
+                {{ item.label }}
+              </li>
+            </ul>
+          </div>
+        </div>
+        <table
+          class="
+            table table-sm table-hover table-striped table-bordered
+            align-middle
+            mt-2
+          "
+        >
+          <thead class="table-dark">
+            <tr>
+              <th scope="col" style="width: 1%">#</th>
+              <th scope="col" style="width: 25%">Code | Name</th>
+              <th scope="col" style="width: 5%">HSN</th>
+              <th scope="col" class="text-center" width="10%">Quantity</th>
+              <th scope="col" width="6%">Unit</th>
+              <th scope="col" class="text-center" width="10%">Cost</th>
+              <th scope="col" class="text-center" width="5%">Discount</th>
+              <th scope="col" class="text-center" width="6%">Net Unit Cost</th>
+              <th scope="col" class="text-center" width="5%">Tax</th>
+              <th scope="col" width="6%">Total</th>
+              <th scope="col" style="width: 1%">
+                <i class="fa-solid fa-trash-can"></i>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(product, index) in products" :key="product.id">
+              <th scope="row">{{ index + 1 }}</th>
+              <td>
+                <div class="d-flex justify-content-between">
+                  {{ product.code }} ~ {{ product.name }}
+                  <div>
+                    <i class="fa-solid fa-pencil" role="button"></i>
+                  </div>
+                </div>
+              </td>
+              <td class="fst-italic">000</td>
+              <td>
+                <div class="input-group input-group-sm is-invalid">
+                  <button
+                    type="button"
+                    class="btn input-group-text"
+                    v-bind:class="[
+                      product.quantity == 1 ? 'btn-secondary' : 'btn-warning',
+                    ]"
+                    @click="quantityButton(product, '-')"
+                    :disabled="product.quantity == 1"
                   >
-                    Loading...
+                    <i class="fa-solid fa-minus"></i>
+                  </button>
+                  <input
+                    @input="changeQuantity(product.id, product.quantity)"
+                    type="number"
+                    step="any"
+                    v-model="product.quantity"
+                    class="form-control no-arrow text-center"
+                    @focus="$event.target.select()"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-info input-group-text"
+                    @click="quantityButton(product, '+')"
+                  >
+                    <i class="fa-solid fa-plus"></i>
+                  </button>
+                </div>
+              </td>
+              <td>
+                <select
+                  class="form-select text-capitalize"
+                  :disabled="!units"
+                  v-model="product.unit"
+                  @change="unitChange(product, product.unit)"
+                >
+                  <option :value="product.unit_id" selected>
+                    {{ product.unit_name }} - [ {{ product.unit_code }} ]
                   </option>
-                  <option :value="null" selected>
-                    {{ brands == false ? "Updating..." : " -- Select --" }}
-                  </option>
-                  <option v-for="b in brands" :key="b.id" :value="b.id">
-                    {{ b.name }}
+                  <option
+                    v-for="u in units &&
+                    units.filter((obj) => obj.base == product.unit_id)"
+                    :key="u.id"
+                    :value="u.id"
+                  >
+                    {{ u.name }} - [ {{ u.code }} ]
                   </option>
                 </select>
-                <span
-                  class="input-group-text text-info"
-                  role="button"
-                  @click="newBrand"
-                  v-if="brands"
-                  ><i class="fa-solid fa-plus"></i
-                ></span>
-              </div>
-              <div class="invalid-feedback">{{ errorBrand }}</div>
-            </div>
-            <div class="col">
-              <label class="form-label">MRP</label>
-              <div class="input-group is-invalid">
-                <span class="input-group-text">₹</span>
+              </td>
+              <td>
                 <input
                   type="number"
                   step="any"
-                  name="mrp"
-                  placeholder="Maximum retail price"
-                  v-model="mrp"
-                  class="form-control"
-                  id="productcode"
-                  v-bind:class="[
-                    errorMrp
-                      ? 'is-invalid'
-                      : !errorMrp && mrp
-                      ? 'is-valid'
-                      : '',
-                  ]"
+                  v-model="product.cost"
+                  class="form-control form-control-sm no-arrow text-center"
+                  @focus="$event.target.select()"
                 />
-              </div>
-              <div class="invalid-feedback">{{ errorMrp }}</div>
-            </div>
-          </div>
-          <div class="row mb-1">
-            <div class="col">
-              <label for="" class="form-label">Product Unit<i>*</i></label>
-              <div class="input-group is-invalid">
-                <select
-                  class="form-select"
-                  name="unit"
-                  :disabled="!units || !unitsBulk"
-                  v-model="unit"
-                  v-bind:class="[
-                    units && errorUnit
-                      ? 'is-invalid'
-                      : units && unit
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                >
-                  <option
-                    :value="formValues.unit"
-                    v-if="units == undefined"
-                    selected
-                  >
-                    Loading...
-                  </option>
-                  <option :value="null" selected>
-                    {{ units == false ? "Updating..." : "-- Select --" }}
-                  </option>
-                  <option v-for="u in units" :key="u.id" :value="u.id">
-                    {{ u.name }} [{{ u.code }}]
-                  </option>
-                </select>
-                <span
-                  class="input-group-text text-info"
-                  role="button"
-                  @click="newUnit"
-                  v-if="units"
-                  ><i class="fa-solid fa-plus"></i
-                ></span>
-              </div>
-              <div class="invalid-feedback">{{ units ? errorUnit : "" }}</div>
-            </div>
-            <div class="col">
-              <label for="" class="form-label">Purchase Unit</label>
-              <div class="input-group is-invalid">
-                <select
-                  class="form-select"
-                  name="p_unit"
-                  :disabled="!unitsBulk || !unit"
-                  v-model="p_unit"
-                  v-bind:class="[
-                    errorPUnit
-                      ? 'is-invalid'
-                      : !errorPUnit && p_unit
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                >
-                  <option selected :value="formValues.p_unit" v-if="!unitsBulk">
-                    {{ unitsBulk == undefined ? "Loading..." : "Updating..." }}
-                  </option>
-                  <option selected :value="null" v-if="unitsBulk">
-                    {{
-                      unit && units
-                        ? units.find((obj) => {
-                            return obj.id === unit;
-                          })["name"]
-                        : "Select base unit first"
-                    }}
-                  </option>
-                  <option v-for="u in unitsBulk" :key="u.id" :value="u.id">
-                    {{ u.name }} [{{ u.code }}]
-                  </option>
-                </select>
-                <button
-                  class="input-group-text text-info"
-                  type="button"
-                  @click="newUnit(true)"
-                  v-if="unitsBulk && unit"
-                >
-                  <i class="fa-solid fa-plus"></i>
-                </button>
-              </div>
-              <div class="invalid-feedback">{{ errorPUnit }}</div>
-            </div>
-            <div class="col">
-              <label for="" class="form-label">Sale Unit</label>
-              <div class="input-group is-invalid">
-                <select
-                  class="form-select"
-                  name="s_unit"
-                  :disabled="!unitsBulk || !unit"
-                  v-model="s_unit"
-                  v-bind:class="[
-                    errorSUnit
-                      ? 'is-invalid'
-                      : !errorSUnit && s_unit
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                >
-                  <option selected :value="formValues.s_unit" v-if="!unitsBulk">
-                    {{ unitsBulk == undefined ? "Loading..." : "Updating..." }}
-                  </option>
-                  <option selected :value="null" v-if="unitsBulk">
-                    {{
-                      unit && units
-                        ? units.find((obj) => {
-                            return obj.id === unit;
-                          })["name"]
-                        : "Select base unit first"
-                    }}
-                  </option>
-                  <option v-for="u in unitsBulk" :key="u.id" :value="u.id">
-                    {{ u.name }} [{{ u.code }}]
-                  </option>
-                </select>
-                <button
-                  class="input-group-text text-info"
-                  type="button"
-                  @click="newUnit(true)"
-                  v-if="unitsBulk && unit"
-                >
-                  <i class="fa-solid fa-plus"></i>
-                </button>
-              </div>
-              <div class="invalid-feedback">{{ errorSUnit }}</div>
-            </div>
-          </div>
-          <div class="row mb-1">
-            <div class="col">
-              <label class="form-label"
-                >Stock Alert Quantity<i v-if="isalert">*</i></label
-              >
-              <div class="input-group is-invalid">
-                <span class="form-control" v-if="!isalert">{{
-                  isalert ? "Enabled ✅" : "Alert Disabled ❌"
-                }}</span>
+              </td>
+              <td>
                 <input
                   type="number"
-                  name="alert_quantity"
-                  v-model="alert_quantity"
-                  placeholder="Quantity for alert"
-                  class="form-control"
-                  v-bind:class="[
-                    errorAlertQuantity
-                      ? 'is-invalid'
-                      : !errorAlertQuantity && alert_quantity
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                  v-if="isalert"
+                  step="any"
+                  v-model="product.discount"
+                  class="form-control form-control-sm no-arrow text-center"
+                  @focus="$event.target.select()"
                 />
-                <div
-                  class="input-group-text"
-                  role="button"
-                  @click="toggleAlert"
-                >
-                  <div class="form-check form-switch">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      name="isalert"
-                      v-model="isalert"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div class="invalid-feedback">{{ errorIsalert }}</div>
-              <div class="invalid-feedback">{{ errorAlertQuantity }}</div>
-            </div>
-            <div class="col">
-              <label class="form-label">Product Image</label>
-              <div class="input-group">
-                <input
-                  type="file"
-                  class="form-control"
-                  id="inputGroupFile04"
-                  aria-describedby="inputGroupFileAddon04"
-                  aria-label="Upload"
-                />
-              </div>
-            </div>
-          </div>
-          <div class="row mb-1">
-            <div class="col">
-              <label class="form-label">Mfg. Date</label>
-              <div class="input-group is-invalid">
-                <span class="input-group-text"
-                  ><i class="fa-solid fa-calendar"></i
-                ></span>
-                <input
-                  type="date"
-                  name="mfg_date"
-                  v-model="mfg_date"
-                  class="form-control"
-                />
-              </div>
-              <div class="invalid-feedback">{{ errorMfgDate }}</div>
-            </div>
-            <div class="col">
-              <label class="form-label">Exp. Date</label>
-              <div class="input-group is-invalid">
-                <span class="input-group-text"
-                  ><i class="fa-solid fa-calendar"></i
-                ></span>
-                <input
-                  type="date"
-                  name="exp_date"
-                  v-model="exp_date"
-                  class="form-control"
-                />
-              </div>
-              <div class="invalid-feedback">{{ errorExpDate }}</div>
-            </div>
-          </div>
-        </div>
-        <!-- column section 3 -->
-        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6 col-xxl-4">
-          <div class="card mb-1">
-            <h5 class="card-header bg-secondary text-light">
-              Purchase Information
-            </h5>
-            <div class="card-body">
-              <div class="row"></div>
-            </div>
-          </div>
-          <div class="card">
-            <h5 class="card-header bg-secondary text-light">
-              Selling Information
-            </h5>
-            <div class="card-body">
-              <div class="row">
-                <div class="col">
-                  <label class="form-label">Cost<i>*</i></label>
-                  <div class="input-group is-invalid">
-                    <input
-                      type="number"
-                      step="any"
-                      name="cost"
-                      v-model="cost"
-                      class="form-control"
-                      v-bind:class="[
-                        errorCost
-                          ? 'is-invalid'
-                          : !errorCost && cost
-                          ? 'is-valid'
-                          : '',
-                      ]"
-                    /><span class="input-group-text">₹</span>
-                  </div>
-                  <div class="invalid-feedback">{{ errorCost }}</div>
-                </div>
-                <div class="col">
-                  <label for="taxrate" class="form-label">Tax Rate</label>
-                  <div class="input-group is-invalid">
-                    <select
-                      class="form-select"
-                      name="tax_rate"
-                      :disabled="!taxes || !cost"
-                      v-model="tax_rate"
-                      id="taxrate"
-                      v-bind:class="[
-                        errorTaxRate
-                          ? 'is-invalid'
-                          : taxes && tax_rate
-                          ? 'is-valid'
-                          : '',
-                      ]"
-                    >
-                      <option
-                        :value="formValues.tax_rate"
-                        v-if="taxes == undefined"
-                        selected
-                      >
-                        Loading...
-                      </option>
-                      <option :value="null" selected>
-                        {{ taxes == false ? "Updating..." : "-- No Tax --" }}
-                      </option>
-                      <option v-for="tr in taxes" :key="tr.id" :value="tr.id">
-                        {{
-                          tr.name +
-                          " ~ " +
-                          parseInt(tr.rate).toFixed(2) +
-                          (tr.type == "P" ? " %" : " (Fixed Rate)")
-                        }}
-                      </option>
-                    </select>
-                    <button
-                      class="input-group-text text-info"
-                      type="button"
-                      @click="newTaxRate"
-                      v-if="taxes"
-                    >
-                      <i class="fa-solid fa-plus"></i>
-                    </button>
-                  </div>
-                  <div class="invalid-feedback">{{ errorTaxRate }}</div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <label for="tax_method" class="form-label"
-                    >Tax Method<i>*</i></label
-                  >
-                  <div class="input-group is-invalid">
-                    <select
-                      class="form-select"
-                      name="tax_method"
-                      v-model="tax_method"
-                      id="tax_method"
-                      v-bind:class="[
-                        errorTaxMethod
-                          ? 'is-invalid'
-                          : tax_method
-                          ? 'is-valid'
-                          : '',
-                      ]"
-                      :disabled="!cost"
-                    >
-                      <option value="I">Inclusive</option>
-                      <option value="E">Exclusive</option>
-                    </select>
-                  </div>
-                  <div class="invalid-feedback">{{ errorTaxMethod }}</div>
-                </div>
-                <div class="col">
-                  <label class="form-label">Tax</label>
-                  <div class="input-group is-invalid">
-                    <input
-                      type="number"
-                      step="any"
-                      name="tax"
-                      v-model="tax"
-                      class="form-control"
-                      v-bind:class="[
-                        errorTax
-                          ? 'is-invalid'
-                          : !errorTax && tax
-                          ? 'is-valid'
-                          : '',
-                      ]"
-                      readonly
-                    />
-                    <span class="input-group-text">₹</span>
-                  </div>
-                  <div class="invalid-feedback">{{ errorTax }}</div>
-                </div>
-              </div>
-              <div class="row mb-1">
-                <div class="col">
-                  <label class="form-label">Markup</label>
-                  <div class="input-group is-invalid">
-                    <input
-                      type="number"
-                      step="any"
-                      name="markup"
-                      v-model="markup"
-                      class="form-control"
-                      v-bind:class="[
-                        errorMarkup
-                          ? 'is-invalid'
-                          : !errorMarkup && markup
-                          ? 'is-valid'
-                          : '',
-                      ]"
-                      :readonly="!cost"
-                    />
-                    <span class="input-group-text"
-                      ><i class="fa-solid fa-percent"></i
-                    ></span>
-                  </div>
-                  <div class="invalid-feedback">{{ errorMarkup }}</div>
-                </div>
-                <div class="col">
-                  <label class="form-label text-success"
-                    >Price Tag<i>*</i></label
-                  >
-                  <div class="input-group is-invalid">
-                    <input
-                      type="number"
-                      step="any"
-                      name="tag_price"
-                      v-model="tag_price"
-                      class="form-control"
-                      v-bind:class="[
-                        errorTagPrice
-                          ? 'is-invalid'
-                          : !errorTagPrice && tag_price
-                          ? 'is-valid'
-                          : '',
-                      ]"
-                      :readonly="!cost"
-                    />
-                    <span class="input-group-text">₹</span>
-                  </div>
-                  <div class="invalid-feedback">{{ errorTagPrice }}</div>
-                </div>
-              </div>
-              <div class="row mb-1">
-                <div class="col">
-                  <label class="form-label">Auto Discount</label>
-                  <div class="input-group is-invalid">
-                    <input
-                      type="number"
-                      step="any"
-                      name="auto_discount"
-                      v-model="auto_discount"
-                      class="form-control"
-                      id="productcode"
-                      v-bind:class="[
-                        errorAutoDiscount
-                          ? 'is-invalid'
-                          : !errorAutoDiscount && auto_discount
-                          ? 'is-valid'
-                          : '',
-                      ]"
-                      :readonly="!cost"
-                    />
-                    <div class="input-group-text">
-                      <input
-                        class="form-check-input mt-0"
-                        type="radio"
-                        name="auto_disc_type"
-                        v-model="auto_disc_type"
-                        value="P"
-                        :disabled="!cost"
-                      />&nbsp;<strong>%</strong>
-                    </div>
-                    <div class="input-group-text">
-                      <input
-                        class="form-check-input mt-0"
-                        type="radio"
-                        name="auto_disc_type"
-                        v-model="auto_disc_type"
-                        value="F"
-                        :disabled="!cost"
-                      />&nbsp;<strong>₹</strong>
-                    </div>
-                  </div>
-                  <div class="invalid-feedback">{{ errorAutoDiscount }}</div>
-                  <div class="invalid-feedback">{{ errorAutoDiscType }}</div>
-                </div>
-                <div class="col">
-                  <label class="form-label text-success"
-                    >Selling Price<i>*</i></label
-                  >
-                  <div class="input-group is-invalid">
-                    <input
-                      type="number"
-                      step="any"
-                      name="price"
-                      v-model="price"
-                      class="form-control"
-                      readonly
-                      v-bind:class="[
-                        errorPrice
-                          ? 'is-invalid'
-                          : !errorPrice && price
-                          ? 'is-valid'
-                          : '',
-                      ]"
-                    />
-                    <span class="input-group-text">₹</span>
-                  </div>
-                  <div class="invalid-feedback">{{ errorPrice }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+              </td>
+              <td>{{ product.net_unit_cost_() }}</td>
+              <td>{{ product.total_tax_() }}</td>
+              <td class="text-end fw-bold">{{ product.total_() }}</td>
+              <td
+                class="text-danger"
+                role="button"
+                @click="confirmDeleteShow(product)"
+              >
+                <i class="fa-solid fa-trash-can"></i>
+              </td>
+            </tr>
+            <tr class="text-center" v-if="products.length == 0">
+              <td colspan="11" class="text-center text-muted">
+                Empty product list, use the search bar to add products...
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <div class="row">
-        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
-          <div class="card">
-            <h5 class="card-header bg-secondary text-light">
-              Product POS Settings
-            </h5>
-            <div class="card-body">
-              <p class="card-text text-muted">
-                This options are only for product level pos settings.
-              </p>
-              <hr />
-              <div class="row mb-1">
-                <div class="col">
-                  <label class="form-check-label">POS Sale</label>
-                  <div class="input-group is-invalid">
-                    <span class="input-group-text form-control"
-                      ><div class="form-check form-switch">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          role="switch"
-                          name="pos_sale"
-                          v-model="pos_sale"
-                        /></div
-                    ></span>
-                  </div>
-                  <div class="invalid-feedback">{{}}</div>
-                </div>
-                <div class="col">
-                  <label class="form-check-label">Custom Discount</label>
-                  <div class="input-group is-invalid">
-                    <span class="input-group-text form-control"
-                      ><div class="form-check form-switch">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          role="switch"
-                          name="pos_custom_discount"
-                          v-model="pos_custom_discount"
-                        /></div
-                    ></span>
-                  </div>
-                  <div class="invalid-feedback">{{}}</div>
-                </div>
-                <div class="col">
-                  <label class="form-check-label">Custom Tax</label>
-                  <div class="input-group is-invalid">
-                    <span class="input-group-text form-control"
-                      ><div class="form-check form-switch">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          role="switch"
-                          name="pos_custom_tax"
-                          v-model="pos_custom_tax"
-                        /></div
-                    ></span>
-                  </div>
-                  <div class="invalid-feedback">{{}}</div>
-                </div>
-                <div class="col">
-                  <label class="form-check-label">Product Sale Note</label>
-                  <div class="input-group is-invalid">
-                    <span class="input-group-text form-control"
-                      ><div class="form-check form-switch">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          role="switch"
-                          name="pos_sale_note"
-                          v-model="pos_sale_note"
-                        /></div
-                    ></span>
-                  </div>
-                  <div class="invalid-feedback">{{}}</div>
-                </div>
-                <div class="col">
-                  <label class="form-label"
-                    >Minimum Sale Quantity<i>*</i></label
-                  >
-                  <div class="input-group is-invalid">
-                    <input type="number" class="form-control" :value="1" />
-                    <span class="input-group-text" v-if="units">{{
-                      units && unit && s_unit == null
-                        ? units.find((obj) => {
-                            return obj.id === unit;
-                          })["code"]
-                        : unitsBulk && s_unit > 0
-                        ? unitsBulk.find((obj) => {
-                            return obj.id === s_unit;
-                          })["code"]
-                        : "?"
-                    }}</span>
-                  </div>
-                  <div class="invalid-feedback">{{ errorRefNo }}</div>
-                </div>
-                <div class="col">
-                  <label class="form-label">Maximum Sale Quantity</label>
-                  <div class="input-group is-invalid">
-                    <input type="number" class="form-control" />
-                    <span class="input-group-text" v-if="units">{{
-                      units && unit && s_unit == null
-                        ? units.find((obj) => {
-                            return obj.id === unit;
-                          })["code"]
-                        : unitsBulk && s_unit > 0
-                        ? unitsBulk.find((obj) => {
-                            return obj.id === s_unit;
-                          })["code"]
-                        : "?"
-                    }}</span>
-                  </div>
-                  <div class="invalid-feedback">{{ errorRefNo }}</div>
-                </div>
-              </div>
-              <p class="card-text text-muted">
-                Custom Product Data Fields ( for example Serial No. or IMEI
-                etc.)
-              </p>
-              <hr />
-              <div class="row mb-1">
-                <div class="col">
-                  <label class="form-check-label"
-                    >POS Data Field - 1
-                    {{ dataFields.includes(dbData.pos_data_field_1)[0] }}</label
-                  >
-                  <select
-                    class="form-select"
-                    name="pos_data_field_1"
-                    v-model="pos_data_field_1"
-                  >
-                    <option :value="null" selected>-- Select --</option>
-                    <option
-                      :value="dbData.pos_data_field_1"
-                      v-if="
-                        route.name == 'adminProductEdit' &&
-                        dbData.pos_data_field_1 &&
-                        !dataFields.find(
-                          (o) => o.value === dbData.pos_data_field_1
-                        )
-                      "
-                    >
-                      {{ dbData.pos_data_field_1 }}
-                    </option>
-                    <option
-                      v-for="dataField in dataFields"
-                      :key="dataField.value"
-                      :value="dataField.value"
-                    >
-                      {{ dataField.value }}
-                    </option>
-                  </select>
-                  <div class="invalid-feedback">{{}}</div>
-                </div>
-                <div class="col">
-                  <label class="form-check-label">POS Data Field - 2</label>
-                  <select
-                    class="form-select"
-                    name="pos_data_field_2"
-                    v-model="pos_data_field_2"
-                  >
-                    <option :value="null" selected>-- Select --</option>
-                    <option
-                      :value="formValues.pos_data_field_2"
-                      v-if="
-                        route.name == 'adminProductEdit' &&
-                        dbData.pos_data_field_2 &&
-                        !dataFields.find(
-                          (o) => o.value === dbData.pos_data_field_2
-                        )
-                      "
-                    >
-                      {{ dbData.pos_data_field_2 }}
-                    </option>
-                    <option
-                      v-for="dataField in dataFields"
-                      :key="dataField.value"
-                      :value="dataField.value"
-                    >
-                      {{ dataField.value }}
-                    </option>
-                  </select>
-                  <div class="invalid-feedback">{{}}</div>
-                </div>
-                <div class="col">
-                  <label class="form-check-label">POS Data Field - 3</label>
-                  <input
-                    type="text"
-                    name="pos_data_field_3"
-                    v-model="pos_data_field_3"
-                    class="form-control"
-                  />
-                  <div class="invalid-feedback">{{}}</div>
-                </div>
-                <div class="col">
-                  <label class="form-check-label">POS Data Field - 4</label>
-                  <input
-                    type="text"
-                    name="pos_data_field_4"
-                    v-model="pos_data_field_4"
-                    class="form-control"
-                  />
-                  <div class="invalid-feedback">{{}}</div>
-                </div>
-                <div class="col">
-                  <label class="form-check-label">POS Data Field - 5</label>
-                  <input
-                    type="text"
-                    name="pos_data_field_5"
-                    v-model="pos_data_field_5"
-                    class="form-control"
-                  />
-                  <div class="invalid-feedback">{{}}</div>
-                </div>
-                <div class="col">
-                  <label class="form-check-label">POS Data Field - 6</label>
-                  <input
-                    type="text"
-                    name="pos_data_field_6"
-                    v-model="pos_data_field_6"
-                    class="form-control"
-                  />
-                  <div class="invalid-feedback">{{}}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    </div>
+    <div class="card mb-2">
+      <h5 class="card-header bg-secondary text-light">More Details</h5>
+      <div class="card-body"></div>
+    </div>
+    <div class="d-flex pt-3">
+      <div class="me-auto">
+        <button
+          @click="onSubmit"
+          class="btn btn-success"
+          :disabled="isSubmitting"
+        >
+          {{ isSubmitting ? "Saving..." : "Save" }}
+          <span
+            class="spinner-border spinner-border-sm"
+            role="status"
+            aria-hidden="true"
+            v-if="isSubmitting"
+          ></span>
+        </button>
       </div>
-      <div class="row" v-if="route.name != 'adminProductEdit'">
-        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
-          <div class="card">
-            <h5 class="card-header bg-secondary text-light">
-              Opening Stock
-            </h5>
-            <div class="card-body">
-              <p class="card-text text-muted">
-                You can add an opening stock count.
-              </p>
-              <div class="row mb-1">
-                <div class="col">
-                  <label class="form-label">Warehouse</label>
-                  <div class="input-group is-invalid">
-                    <select
-                      class="form-select"
-                      name="warehouse"
-                      :disabled="!warehouses"
-                      v-model="warehouse"
-                      v-bind:class="[
-                        errorWareHouse
-                          ? 'is-invalid'
-                          : warehouses && warehouse
-                          ? 'is-valid'
-                          : '',
-                      ]"
-                    >
-                      <option :value="null" selected>
-                        {{ warehouses ? "-- Select --" : "Loading..." }}
-                      </option>
-                      <option
-                        v-for="wh in warehouses"
-                        :key="wh.id"
-                        :value="wh.id"
-                      >
-                        {{ wh.name }}
-                      </option>
-                    </select>
-                  </div>
-                  <div class="invalid-feedback">{{ errorWareHouse }}</div>
-                </div>
-                <div class="col">
-                  <label class="form-label"
-                    >Adjustment Quantity<i v-if="warehouse">*</i></label
-                  >
-                  <div class="input-group is-invalid">
-                    <input
-                      type="number"
-                      name="stock_adj_count"
-                      v-model="stock_adj_count"
-                      class="form-control"
-                      placeholder="+/-"
-                      v-bind:class="[
-                        errorStockAdjCount
-                          ? 'is-invalid'
-                          : stock_adj_count
-                          ? 'is-valid'
-                          : '',
-                      ]"
-                    />
-                  </div>
-                  <div class="invalid-feedback">{{ errorStockAdjCount }}</div>
-                </div>
-                <div class="col">
-                  <label class="form-label">Reference No.</label>
-                  <div class="input-group is-invalid">
-                    <input
-                      type="number"
-                      name="ref_no"
-                      v-model="ref_no"
-                      class="form-control"
-                    />
-                  </div>
-                  <div class="invalid-feedback">{{ errorRefNo }}</div>
-                </div>
-                <div class="col">
-                  <label class="form-label">Adustment Note</label>
-                  <div class="input-group is-invalid">
-                    <textarea
-                      type="number"
-                      name="stock_adj_note"
-                      v-model="stock_adj_note"
-                      class="form-control"
-                      rows="1"
-                    >
-                    </textarea>
-                  </div>
-                  <div class="invalid-feedback">{{ errorStockAdjNote }}</div>
-                </div>
-                <div class="col">
-                  <label class="form-label">Opening Stock</label>
-                  <div class="input-group is-invalid">
-                    <input
-                      type="number"
-                      class="form-control"
-                      :value="0"
-                      disabled
-                    />
-                  </div>
-                  <div class="invalid-feedback">{{}}</div>
-                </div>
-                <div class="col">
-                  <label class="form-label">Final Stock</label>
-                  <div class="input-group is-invalid">
-                    <input
-                      type="number"
-                      class="form-control"
-                      :value="0"
-                      disabled
-                    />
-                  </div>
-                  <div class="invalid-feedback">{{}}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          v-if="isDirty && !isSubmitting"
+          @click="resetCustom"
+        >
+          <i class="fa-solid fa-rotate-left"></i>
+        </button>
       </div>
-      <div class="d-flex pt-3">
-        <div class="me-auto">
-          <button
-            type="submit"
-            class="btn btn-success"
-            :disabled="isSubmitting"
-          >
-            {{ isSubmitting ? "Saving..." : "Save" }}
-            <span
-              class="spinner-border spinner-border-sm"
-              role="status"
-              aria-hidden="true"
-              v-if="isSubmitting"
-            ></span>
-          </button>
-        </div>
-        <div class="">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            v-if="isDirty && !isSubmitting"
-            @click="resetCustom"
-          >
-            <i class="fa-solid fa-rotate-left"></i>
-          </button>
-        </div>
-      </div>
-    </form>
+    </div>
   </div>
 </template>
 <style>
 </style>
 <script>
 /* eslint-disable */
-import {
-  useForm,
-  useField,
-  useIsFormDirty,
-  useIsFormValid,
-} from "vee-validate";
-import * as yup from "yup";
-import { ref, computed } from "vue";
 import { useStore } from "vuex";
-//import adminMixin from "@/mixins/admin.js";
+import { watch, ref, computed } from "vue";
+import { useForm, useField, useIsFormDirty } from "vee-validate";
+import * as yup from "yup";
 import admin from "@/mixins/admin.js";
-import adminProduct from "@/mixins/adminProduct.js";
 import { useRouter, useRoute } from "vue-router";
 import { inject } from "vue";
-import TaxNewModal from "../tax/TaxNewModal.vue";
-import BrandNewModal from "../brand/BrandNewModal.vue";
-import UnitNewModal from "../unit/UnitNewModal.vue";
-import CategoryNewModal from "../category/CategoryNewModal.vue";
 export default {
-  props: {},
-  components: {
-    TaxNewModal,
-    BrandNewModal,
-    UnitNewModal,
-    CategoryNewModal,
-  },
+  components: {},
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
-    const route = useRoute();
     const router = useRouter();
-    const { randCode } = adminProduct();
+    const route = useRoute();
+    const store = useStore();
+    /************************************************************************* */
+    const searchBox = ref(null);
+    var search_product = null;
+    var autocompleteList = ref([]);
+    /************************************************************************* */
     const {
       notifyDefault,
-      axiosAsyncCallReturnData,
-      axiosAsyncStoreUpdateReturnData,
       axiosAsyncStoreReturnBool,
+      axiosAsyncCallReturnData,
       x_percentage_of_y,
     } = admin();
-    /**************************************** */ // from store
-    const store = useStore();
-    let productTypes = computed(function () {
-      return store.state.productTypes;
-    });
-    let symbologies = computed(function () {
-      return store.state.symbologies;
-    });
-    let categories = computed(function () {
-      return store.state.categories;
-    });
-    let brands = computed(function () {
-      return store.state.brands;
-    });
-    let units = computed(function () {
-      return store.state.units;
-    });
-    const unitsBulk = ref(undefined);
-    let taxes = computed(function () {
-      return store.state.TAXES;
-    });
+    /************************************************************************* */
     let warehouses = computed(function () {
       return store.state.WARE_HOUSES;
     });
-    /**************************************** */ // category things
-    const cats_list = ref([]);
-    var hyphen_count = ref(0);
+    let suppliers = computed(function () {
+      return store.state.SUPPLIERS;
+    });
+    let statuses = computed(function () {
+      return store.state.STATUSES;
+    });
+    let units = computed(function () {
+      return store.state.UNITS;
+    });
     /************************************************************************* */
     var formValues = {}; // pre form values
     var dbData = ref({}); // pre form data for edit product
-    var dataFields = [
-      { value: "Serial No." },
-      { value: "IMEI No." },
-      { value: "Color" },
-    ];
-    if (route.name == "adminProductEdit" && route.params.data) {
-      dbData.value = JSON.parse(route.params.data); // required
-      formValues = {
-        type: dbData.value.type,
-        code: dbData.value.code,
-        symbology: dbData.value.symbology,
-        name: dbData.value.name,
-        slug: dbData.value.slug,
-        weight: dbData.value.weight,
-        category: dbData.value.category,
-        cost: Number(dbData.value.cost),
-        tax_method: dbData.value.tax_method,
-        tax_rate: dbData.value.tax_rate,
-        //markup: dbData.value.markup,
-        brand: dbData.value.brand,
-        mrp: dbData.value.mrp,
-        unit: dbData.value.unit,
-        p_unit: dbData.value.p_unit || null,
-        s_unit: dbData.value.s_unit || null,
-        isalert: dbData.value.alert == "1" ? true : false,
-        alert_quantity: dbData.value.alert_quantity,
-        mfg_date: dbData.value.mfg_date,
-        exp_date: dbData.value.exp_date,
-        tag_price: dbData.value.price,
-        price: dbData.value.price - dbData.value.auto_discount,
-        auto_discount: dbData.value.auto_discount,
-        pos_sale: dbData.value.pos_sale == "1" ? true : false,
-        pos_custom_discount:
-          dbData.value.pos_custom_discount == "1" ? true : false,
-        pos_custom_tax: dbData.value.pos_custom_tax == "1" ? true : false,
-        pos_sale_note: dbData.value.pos_sale_note == "1" ? true : false,
-        pos_min_sale_qty: dbData.value.pos_min_sale_qty,
-        pos_max_sale_qty: dbData.value.pos_max_sale_qty,
-        pos_data_field_1: dbData.value.pos_data_field_1,
-        pos_data_field_2: dbData.value.pos_data_field_2,
-        pos_data_field_3: dbData.value.pos_data_field_3,
-        pos_data_field_4: dbData.value.pos_data_field_4,
-        pos_data_field_5: dbData.value.pos_data_field_5,
-        pos_data_field_6: dbData.value.pos_data_field_6,
-        auto_disc_type: "F",
-      };
-    } else if (route.name == "adminProductCopy" && route.params.data) {
-      formValues = {};
-    } else if (route.name == "adminProductNew") {
-      formValues = {
-        type: 1,
-        symbology: 1,
-        category: 2,
-        brand: null,
-        unit: 1,
-        p_unit: null,
-        s_unit: null,
-        isalert: true,
-        tax_rate: null,
-        tax_method: "I",
-        markup: 50,
-        auto_disc_type: "F",
-        warehouse: null,
-        pos_sale: true,
-        pos_custom_discount: true,
-        pos_sale_note: true,
-        pos_data_field_1: null,
-        pos_data_field_2: null,
-      };
-    } else {
-      router.push({ name: "adminProductList" }).catch(() => {});
-    }
-    /************************************************************************* */
     const schema = computed(() => {
       return yup.object({
-        type: yup
-          .number()
-          .required()
-          .min(1)
-          .nullable(true)
-          .label("Product Type"),
-        code: yup
-          .string()
-          .required()
-          .min(3)
-          .transform((_, val) => (val.length > 0 ? val : undefined))
-          .label("Product Code"),
-        symbology: yup
-          .number()
-          .required()
-          .min(1)
-          .nullable(true)
-          .label("Barcode Symbology"),
-        name: yup
-          .string()
-          .required()
-          .min(3)
-          .max(100)
-          .transform((_, val) => (val.length > 0 ? val : undefined))
-          .label("Product Name"),
-        slug: yup
-          .string()
-          .required()
-          .min(3)
-          .max(100)
-          .transform((_, val) => (val.length > 0 ? val : undefined))
-          .label("URL Slug"),
-        weight: yup
-          .number()
-          .min(0)
-          .max(10)
-          .nullable(true)
-          .transform((_, val) => (val === Number(val) ? val : null))
-          .label("Product Weight"),
-        category: yup
+        warehouse: yup.number().required().nullable(true).label("Warehouse"),
+        supplier: yup.number().required().nullable(true).label("Supplier"),
+        purchase_status: yup
           .number()
           .required()
           .nullable(true)
-          .transform((_, val) => (val === Number(val) ? val : null))
-          .label("Category"),
-        brand: yup.number().nullable(true).label("Brand Name"),
-        tag_price: yup
-          .number()
-          .required()
-          .nullable(true)
-          .typeError("Tag Price must be a number")
-          .when("mrp", {
-            is: (mrp) => Number(mrp),
-            then: yup
-              .number()
-              .required()
-              .nullable(true)
-              .typeError("Tag Price must be a number")
-              .max(yup.ref("mrp"), "Tag Price must be less than MRP"),
-          })
-          .label("Tag Price"),
-        price: yup
-          .number()
-          .required()
-          .nullable(true)
-          .typeError("Selling Price must be a number")
-          .when("mrp", {
-            is: (mrp) => Number(mrp),
-            then: yup
-              .number()
-              .required()
-              .nullable(true)
-              .typeError("Selling Price must be a number")
-              .max(yup.ref("mrp"), "Selling Price must be less than MRP"),
-          })
-          .label("Selling Price"),
-        mrp: yup
-          .number()
-          .nullable(true)
-          .typeError("MRP must be a number")
-          .transform((_, val) => (val ? Number(val) : null))
-          .label("MRP"),
-        markup: yup
-          .number()
-          .nullable(true)
-          .typeError("Markupn must be a number")
-          .transform((_, val) => (val ? Number(val) : null))
-          .label("Markup"),
-        unit: yup
-          .number()
-          .required()
-          .nullable(true)
-          .transform((_, val) => (val === Number(val) ? val : null))
-          .label("Unit"),
-        p_unit: yup
-          .number()
-          .nullable(true)
-          .transform((_, val) => (val === Number(val) ? val : null))
-          .label("Purchase Unit"),
-        s_unit: yup
-          .number()
-          .nullable(true)
-          .transform((_, val) => (val === Number(val) ? val : null))
-          .label("Sale Unit"),
-        alert_quantity: yup
-          .number()
-          .nullable(true)
-          .transform((_, val) => (val === Number(val) ? val : null))
-          .when("isalert", {
-            is: true,
-            then: yup
-              .number()
-              .nullable(true)
-              .transform((_, val) => (val === Number(val) ? val : null))
-              .required(),
-          })
-          .label("Alert Quantity"),
-        tax_rate: yup
-          .number()
-          .nullable(true)
-          .transform((_, val) => (val === Number(val) ? val : null))
-          .label("Tax Rate"),
-        tax: yup
-          .number()
-          .nullable(true)
-          .transform((_, val) => (val === Number(val) ? val : null))
-          .label("Tax"),
-        cost: yup
-          .number()
-          .required()
-          .nullable(true)
-          .typeError("Cost must be a number")
-          .transform((_, val) => (val ? Number(val) : null))
-          .label("Cost"),
-        auto_discount: yup
-          .number()
-          .nullable(true)
-          .typeError("Discount must be a number")
-          .min(0, "Discount price can't be less than 0")
-          .transform((_, val) => (val ? Number(val) : null))
-          .label("Auto Discount"),
-        auto_disc_type: yup
-          .string()
-          .matches(/(F|P)/)
-          .label("Auto Discount Type"),
-        mfg_date: yup
+          .label("Purchase Status"),
+        note: yup.string().nullable(true).label("Note"),
+        date: yup
           .date()
+          .required()
           .nullable(true)
           .transform((curr, orig) => (orig === "" ? null : curr))
-          .label("Mfg. date"),
-        exp_date: yup
-          .date()
-          .nullable(true)
-          .transform((curr, orig) => (orig === "" ? null : curr))
-          .when("mfg_date", {
-            is: (mfg_date) => mfg_date,
-            then: yup
-              .date()
-              .nullable(true)
-              .transform((curr, orig) => (orig === "" ? null : curr))
-              .min(
-                yup.ref("mfg_date"),
-                "Exp. date can't be less than Mfg. date"
-              ),
-          })
-          .label("Exp. date"),
-        warehouse: yup
-          .number()
-          .nullable(true)
-          .transform((_, val) => (val === Number(val) ? val : null))
-          .label("Warehouse"),
-        stock_adj_count: yup
-          .number()
-          .nullable(true)
-          .typeError("Invalid input")
-          .when("warehouse", {
-            is: (warehouse) => Number(warehouse),
-            then: yup
-              .number()
-              .required()
-              .nullable(true)
-              .typeError("Invalid input"),
-          })
-          .label("Stock Adj. Count"),
+          .label("Date"),
+        products: yup
+          .array()
+          .required()
+          .min(1, "Please add some products !")
+          .label("Products"),
       });
     });
-    /************************************************************************* */
-    const {
-      setFieldValue,
-      handleSubmit,
-      setFieldError,
-      isSubmitting,
-      resetForm,
-    } = useForm({
+    if (route.name == "adminPurchaseEdit" && route.params.data) {
+      dbData.value = JSON.parse(route.params.data); // required
+      //console.log(dbData.value)
+      formValues = {
+        warehouse: dbData.value.warehouse,
+        date: dbData.value.date,
+        note: dbData.value.note,
+      };
+    } else if (route.name == "adminPurchaseNew") {
+      formValues = {
+        products: [],
+        supplier: null,
+        warehouse: null,
+        purchase_status: null,
+      };
+    } else {
+      router.push({ name: "adminPurchaseList" }).catch(() => {});
+    }
+    const { handleSubmit, setFieldError, isSubmitting, resetForm } = useForm({
       validationSchema: schema,
       initialValues: formValues,
       initialErrors: {},
     });
-    /************************************************************************* */
-    const { value: type, errorMessage: errorType } = useField("type");
-    const { value: code, errorMessage: errorCode } = useField("code");
-    const { value: symbology, errorMessage: errorSymbology } =
-      useField("symbology");
-    const {
-      errorMessage: errorName,
-      value: name,
-      meta: metaName,
-    } = useField("name");
-    const { value: slug, errorMessage: errorSlug } = useField("slug");
-    const { value: weight, errorMessage: errorWeight } = useField("weight");
-    const { value: category, errorMessage: errorCategory } =
-      useField("category");
-    const { value: brand, errorMessage: errorBrand } = useField("brand");
-    const { value: mrp, errorMessage: errorMrp } = useField("mrp");
-    const { value: unit, errorMessage: errorUnit } = useField("unit");
-    const { value: p_unit, errorMessage: errorPUnit } = useField("p_unit");
-    const { value: s_unit, errorMessage: errorSUnit } = useField("s_unit");
-    const { value: isalert, errorMessage: errorIsalert } = useField("isalert");
-    const { value: alert_quantity, errorMessage: errorAlertQuantity } =
-      useField("alert_quantity");
-    const { value: mfg_date, errorMessage: errorMfgDate } =
-      useField("mfg_date");
-    const { value: exp_date, errorMessage: errorExpDate } =
-      useField("exp_date");
-    const { value: tax_rate, errorMessage: errorTaxRate } =
-      useField("tax_rate");
-    const { value: tax, errorMessage: errorTax } = useField("tax");
-    const { value: tax_method, errorMessage: errorTaxMethod } =
-      useField("tax_method");
-    const { value: cost, errorMessage: errorCost } = useField("cost");
-    const { value: markup, errorMessage: errorMarkup } = useField("markup");
-    const { value: auto_discount, errorMessage: errorAutoDiscount } =
-      useField("auto_discount");
-    const { value: auto_disc_type, errorMessage: errorAutoDiscType } =
-      useField("auto_disc_type");
-    const { value: price, errorMessage: errorPrice } = useField("price");
-    const { value: tag_price, errorMessage: errorTagPrice } =
-      useField("tag_price");
+    const { value: supplier, errorMessage: errorSupplier } =
+      useField("supplier");
     const { value: warehouse, errorMessage: errorWareHouse } =
       useField("warehouse");
-    const { value: stock_adj_count, errorMessage: errorStockAdjCount } =
-      useField("stock_adj_count");
-    const { value: ref_no, errorMessage: errorRefNo } = useField("ref_no");
-    const { value: stock_adj_note, errorMessage: errorStockAdjNote } =
-      useField("stock_adj_note");
-    // pos settings
-    const { value: pos_sale } = useField("pos_sale");
-    const { value: pos_custom_discount } = useField("pos_custom_discount");
-    const { value: pos_custom_tax } = useField("pos_custom_tax");
-    const { value: pos_sale_note } = useField("pos_sale_note");
-    const { value: pos_data_field_1 } = useField("pos_data_field_1");
-    const { value: pos_data_field_2 } = useField("pos_data_field_2");
-    const { value: pos_data_field_3 } = useField("pos_data_field_3");
-    const { value: pos_data_field_4 } = useField("pos_data_field_4");
-    const { value: pos_data_field_5 } = useField("pos_data_field_5");
-    const { value: pos_data_field_6 } = useField("pos_data_field_6");
-    /************************************************************************* */
+    const { value: purchase_status, errorMessage: errorPurchaseStatus } =
+      useField("purchase_status");
+    const { value: note, errorMessage: errorNote } = useField("note");
+    const { value: date, errorMessage: errorDate } = useField("date");
+    const { value: products } = useField("products");
     const isDirty = useIsFormDirty();
-    const isValid = useIsFormValid();
     /************************************************************************* */
-    function onInvalidSubmit({ values }) {
+    function onInvalidSubmit({ values, errors }) {
       console.log("Form field errors found !");
-      console.log(values);
+      console.log(errors);
+      for (var key in errors) {
+        notifyDefault({ message: errors[key] });
+      }
     }
     const onSubmit = handleSubmit((values) => {
-      values.db = route.name == "adminProductEdit" ? dbData.value : undefined; // for edit product
-      return axiosAsyncCallReturnData(
-        route.name == "adminProductEdit" ? "PUT" : "POST",
-        "product",
-        {
-          action: "create",
-          data: values,
-        }
-      ).then(function (data) {
+      console.log(values.date);
+      var method = "POST";
+      var action = "create";
+      if (route.name == "adminPurchaseEdit") {
+        values.id = dbData.value.id;
+        method = "PUT";
+        action = "update";
+      }
+      return axiosAsyncCallReturnData(method, "purchase", {
+        data: values,
+        action: action,
+      }).then(function (data) {
         if (data.success == true) {
-          console.log("Product added !");
+          console.log("Purchase added !");
         } else if (data.success == false) {
-          console.log("Product not added !");
+          console.log("Purchase not added !");
           // valid error
           if (data.errors) {
             for (var key in data.errors) {
@@ -1607,519 +468,247 @@ export default {
       });
     }, onInvalidSubmit);
     /************************************************************************* */
-    function genRandCode() {
-      setFieldValue("code", randCode());
-    }
-    function toggleAlert() {
-      if (!isalert.value) {
-        alert_quantity.value = null;
-        isalert.value = true;
+    function checkAndPush(product) {
+      if (!this.products.some((data) => data.id === product.id)) {
+        // new
+        product.quantity = 1;
+        product.cost = Number(parseFloat(product.cost).toFixed(2));
+        product.discount =
+          product.discount == null
+            ? 0
+            : Number(parseFloat(product.discount).toFixed(2));
+        product.net_unit_cost_ = function () {
+          return Number((product.cost - product.discount).toFixed(2));
+        };
+        product.total_cost_ = function () {
+          return Number(parseFloat(product.quantity * product.cost).toFixed(2));
+        };
+        product.total_discount_ = function () {
+          return Number(
+            parseFloat(product.quantity * product.discount).toFixed(2)
+          );
+        };
+        product.total_taxable_ = function () {
+          return Number(
+            (product.total_cost_() - product.total_discount_()).toFixed(2)
+          );
+        };
+        product.total_tax_ = function () {
+          return Number(
+            parseFloat(
+              x_percentage_of_y(
+                product.tax_rate,
+                product.total_taxable_()
+              ).toFixed(2)
+            )
+          );
+        };
+        product.total_ = function () {
+          return Number(
+            (
+              product.total_cost_() -
+              product.total_discount_() +
+              product.total_tax_()
+            ).toFixed(2)
+          );
+        };
+        /************************************** */
+        this.products.push(product);
       } else {
-        alert_quantity.value = null;
-        isalert.value = false;
+        // update
+        let index = this.products.findIndex((item) => item.id === product.id);
+        this.products[index].quantity++;
+      }
+      this.autocompleteList = [];
+      this.search_product = null;
+      this.searchBox.focus();
+    }
+    function changeQuantity(id, quantity) {
+      let index = this.products.findIndex((item) => item.id === id);
+      if (quantity >= 1) {
+        this.products[index].quantity = quantity;
+      } else {
+        this.products[index].quantity = 1;
       }
     }
-    function handleChangeName() {
-      if (name.value) {
-        setFieldValue(
-          "slug",
-          name.value.trim().replace(/\s+/g, "-").toLowerCase()
-        );
+    function quantityButton(product, operator) {
+      let index = this.products.findIndex((item) => item.id === product.id);
+      this.products[index].quantity = Number(this.products[index].quantity);
+      if (operator == "+") {
+        this.products[index].quantity = this.products[index].quantity + 1;
+      } else {
+        this.products[index].quantity =
+          this.products[index].quantity - 1 == 0
+            ? 1
+            : this.products[index].quantity - 1;
       }
+      this.searchBox.focus();
     }
-    function handleChangeSlug() {
-      if (slug.value) {
-        setFieldValue(
-          "slug",
-          slug.value.trim().replace(/\s+/g, "-").toLowerCase()
-        );
-      }
+    function confirmDeleteShow(data) {
+      emitter.emit("deleteConfirmModal", {
+        title: null,
+        body: "Confirm delete <b>" + data.name + "</b> from purchase list ?",
+        data: data,
+        hide: true,
+        emit: "confirmDeleteProduct",
+        type: "danger",
+      });
+      window.DELETE_CONFIRM_DEFAULT_MODAL.show();
     }
+    emitter.on("confirmDeleteProduct", (data) => {
+      // delete selected adjustment stuff here
+      let index = products.value.findIndex((item) => item.id === data.id);
+      products.value.splice(index, 1);
+    });
     function resetCustom() {
       resetForm();
     }
-    function autoDiscConvert(tag_price, auto_discount, type) {
-      let ad = 0;
-      if (type == "F") {
-        ad = (auto_discount / 100) * tag_price;
-      } else {
-        ad = (auto_discount / tag_price) * 100;
-      }
-      return Number(ad).toFixed(2);
+    function unitChange(product, unit) {
+      let index = this.products.findIndex((item) => item.id === product.id);
+      let step = this.units.find((obj) => {
+        return obj.id === unit;
+      })["step"];
+      this.products[index].cost = step * this.products[index].cost;
     }
-    function newTaxRate() {
-      emitter.emit("newTaxModal", {
-        title: "New Tax Rate",
-        type: "success",
-        emit: "refreshTaxRateDropdown",
-      });
-    }
-    emitter.on("refreshTaxRateDropdown", (data) => {
-      /*****************************************  update list and set new ***********************************/
-      tax_rate.value = null;
-      axiosAsyncStoreUpdateReturnData("storeTaxes", "product", {
-        action: "create",
-        dropdown: "tax_rates",
-      }).then(function (response) {
-        if (response.success == true) {
-          tax_rate.value = data.id;
+    function searchProduct(query) {
+      var self = this;
+      self.autocompleteList = [];
+      if (query) {
+        if (self.controller) {
+          self.controller.abort();
         }
-      });
-    });
-    function newBrand() {
-      emitter.emit("newBrandModal", {
-        title: "New Brand",
-        type: "success",
-        emit: "refreshBrandDropdown",
-      });
-    }
-    emitter.on("refreshBrandDropdown", (data) => {
-      /*****************************************  update list and set new ***********************************/
-      brand.value = null;
-      axiosAsyncStoreUpdateReturnData("storeBrands", "product", {
-        action: "create",
-        dropdown: "brands",
-      }).then(function (response) {
-        if (response.success == true) {
-          brand.value = data.id;
-        }
-      });
-    });
-    function newCategory(data) {
-      var emitData;
-      if (data != null) {
-        // sub
-        let row = categories.value.find((obj) => {
-          return obj.id === data;
-        });
-        emitData = {
-          title: "New Sub Category",
-          data: row,
-          type: "success",
-          emit: "refreshCategoryDropdown",
-        };
-      } else {
-        // top
-        emitData = {
-          title: "New Top Level Category",
-          type: "success",
-          emit: "refreshCategoryDropdown",
-        };
-      }
-      emitter.emit("newCategoryModal", emitData);
-    }
-    emitter.on("refreshCategoryDropdown", (data) => {
-      /*****************************************  update list and set new ***********************************/
-      category.value = null;
-      axiosAsyncStoreUpdateReturnData("storeCategories", "product", {
-        action: "create",
-        dropdown: "categories",
-      }).then(function (response) {
-        if (response.success == true) {
-          category.value = data.id;
-        }
-      });
-    });
-    function newUnit(sub = false) {
-      var emitData;
-      var data; // used if new sub unit
-      if (sub == true) {
-        data = units.value.find((obj) => {
-          return obj.id === unit.value;
-        });
-        emitData = {
-          title: "New Sub Unit of ",
-          type: "success",
-          data: data,
-          emit: "refreshSubUnitDropdown",
-        };
-      } else {
-        emitData = {
-          title: "New Unit",
-          type: "success",
-          emit: "refreshUnitDropdown",
-        };
-      }
-      emitter.emit("newUnitModal", emitData);
-    }
-    emitter.on("refreshUnitDropdown", (data) => {
-      /*****************************************  update list and set new ***********************************/
-      unit.value = null;
-      axiosAsyncStoreUpdateReturnData("storeUnits", "product", {
-        action: "create",
-        dropdown: "base_units",
-      }).then(function (response) {
-        if (response.success == true) {
-          unit.value = data.id;
-        }
-      });
-    });
-    emitter.on("refreshSubUnitDropdown", (data) => {
-      /*****************************************  update list and set new ***********************************/
-      unitsBulk.value = false;
-      p_unit.value = null;
-      s_unit.value = null;
-      axiosAsyncCallReturnData(
-        "get",
-        "product",
-        {
-          action: "create",
-          dropdown: "sub_units",
-          id: unit.value,
-        },
-        null,
-        {
-          showSuccessNotification: false,
-          showCatchNotification: true,
-          showProgress: true,
-        }
-      ).then(function (response) {
-        if (response.success == true) {
-          unitsBulk.value = response.data;
-          p_unit.value = data.id;
-          s_unit.value = data.id;
-        }
-      });
-    });
-    return {
-      route,
-      /**************** default form sel values */
-      formValues,
-      /**************** event handler */
-      genRandCode,
-      // modals
-      toggleAlert,
-      //
-      handleChangeName,
-      handleChangeSlug,
-      /************** db */
-      productTypes,
-      symbologies,
-      categories,
-      brands,
-      units,
-      unitsBulk,
-      taxes,
-      warehouses,
-      /******* fields   */
-      type,
-      errorType,
-      code,
-      errorCode,
-      symbology,
-      errorSymbology,
-      name,
-      metaName,
-      errorName,
-      slug,
-      errorSlug,
-      weight,
-      errorWeight,
-      category,
-      errorCategory,
-      brand,
-      errorBrand,
-      mrp,
-      errorMrp,
-      unit,
-      errorUnit,
-      p_unit,
-      errorPUnit,
-      s_unit,
-      errorSUnit,
-      isalert,
-      errorIsalert,
-      alert_quantity,
-      errorAlertQuantity,
-      mfg_date,
-      errorMfgDate,
-      errorExpDate,
-      exp_date,
-      tax_rate,
-      tax,
-      errorTax,
-      errorTaxRate,
-      tax_method,
-      errorTaxMethod,
-      cost,
-      errorCost,
-      markup,
-      errorMarkup,
-      auto_discount,
-      errorAutoDiscount,
-      auto_disc_type,
-      errorAutoDiscType,
-      price,
-      tag_price,
-      errorTagPrice,
-      errorPrice,
-      warehouse,
-      errorWareHouse,
-      stock_adj_count,
-      errorStockAdjCount,
-      ref_no,
-      errorRefNo,
-      stock_adj_note,
-      errorStockAdjNote,
-      //
-      pos_sale,
-      pos_custom_discount,
-      pos_custom_tax,
-      pos_sale_note,
-      //
-      dbData,
-      dataFields,
-      pos_data_field_1,
-      pos_data_field_2,
-      pos_data_field_3,
-      pos_data_field_4,
-      pos_data_field_5,
-      pos_data_field_6,
-      /*************** */
-      isDirty,
-      isValid,
-      onSubmit,
-      isSubmitting,
-      resetForm,
-      resetCustom,
-      autoDiscConvert,
-      notifyDefault,
-      /******************/
-      axiosAsyncCallReturnData,
-      axiosAsyncStoreUpdateReturnData,
-      axiosAsyncStoreReturnBool,
-      x_percentage_of_y,
-      cats_list,
-      hyphen_count,
-      newTaxRate,
-      newBrand,
-      newCategory,
-      newUnit,
-      emitter,
-    };
-  },
-  /* eslint-disable */
-  computed: {
-    // a computed getter
-    computed_categories() {
-      //alert();
-      //this.cats_list = [];
-      return this.make_category_tree();
-    },
-  },
-  methods: {
-    make_category_tree(
-      array = this.categories,
-      parent = null,
-      length = 0,
-      first = true
-    ) {
-      var search = [];
-      if (Array.isArray(array)) {
-        search = array.filter(
-          (category) => category.parent == (first ? null : parent)
-        );
-        while (search.length > 0) {
-          search.forEach((element) => {
-            search = this.categories.filter(
-              (category) => category.parent == element.id
-            ); // check for subs
-            if (search.length) {
-              element.name =
-                "---".repeat(length) +
-                "■ " +
-                element.name +
-                " (" +
-                search.length +
-                ")";
-            } else if (!search.length && first) {
-              element.name = "".repeat(length) + "  ■ " + element.name;
-              this.hyphen_count = 0;
-            } else {
-              element.name = "---".repeat(length) + "  • " + element.name;
-              this.hyphen_count = 0;
-            }
-            this.cats_list.push(element);
-            if (search.length > 0) {
-              this.hyphen_count = this.hyphen_count + 1;
-              this.make_category_tree(
-                search,
-                element.id,
-                this.hyphen_count,
-                false
-              );
-            } else {
-            }
-            search = [];
-          });
-        }
-        return this.cats_list;
-      }
-      return undefined;
-    },
-  },
-  watch: {
-    unit(value) {
-      /************************************************************************* while change of unit  */
-      if (value) {
-        var self = this;
-        this.unitsBulk = undefined;
-        this.p_unit = this.s_unit = null;
+        self.controller = new AbortController();
         this.axiosAsyncCallReturnData(
           "get",
-          "product",
+          "purchase",
           {
             action: "create",
-            dropdown: "sub_units",
-            id: this.unit,
+            search: "product",
+            query: query,
           },
-          null,
+          self.controller,
           {
             showSuccessNotification: false,
             showCatchNotification: true,
             showProgress: true,
           }
-        ).then(function (response) {
-          if (response.success == true) {
-            self.unitsBulk = response.data;
+        ).then(function (data) {
+          if (data.success == true) {
+            let items = data.data;
+            if (items.length > 1) {
+              // many product found
+              self.autocompleteList = items;
+            } else if (items.length == 1) {
+              // One product found
+              self.checkAndPush(items[0]);
+            } else {
+              // no product found
+              self.autocompleteList = [];
+              self.search_product = null;
+              self.emitter.emit("showAlert", {
+                title: "No search result found !",
+                body:
+                  "No product found for your search query <b>" +
+                  query +
+                  "</b> !",
+                type: "danger",
+                play: "danger.mp3",
+              });
+            }
+          } else {
+            // network error or cancelled duplicate call
           }
         });
       } else {
-        this.p_unit = this.s_unit = null;
+        self.autocompleteList = [];
       }
-    },
-    cost(cost) {
-      if (cost) {
-        let markup = this.markup ? this.markup : 0;
-        let auto_discount = this.auto_discount ? this.auto_discount : 0;
-        this.tag_price = Number(cost + (markup / 100) * cost).toFixed(2);
-        this.price = Number(this.tag_price - auto_discount).toFixed(2);
-      }
-    },
-    markup(markup) {
-      /*if (this.cost) {
-        this.tag_price = Number(
-          this.x_percentage_of_y(markup, this.cost) + this.cost
-        ).toFixed(2);
-      } else {
-        this.tag_price = null;
-      }*/
-    },
-    auto_discount(auto_discount) {
-      if (this.auto_disc_type == "F") {
-        this.price = Number(this.tag_price - auto_discount).toFixed(2);
-      } else {
-        this.price = Number(
-          this.tag_price - this.x_percentage_of_y(auto_discount, this.tag_price)
-        ).toFixed(2);
-      }
-    },
-    auto_disc_type(type) {
-      this.auto_discount = this.autoDiscConvert(
-        this.tag_price,
-        this.auto_discount,
-        type
-      );
-    },
-    tag_price(tag_price) {
-      /* if (this.cost) {
-        let profit = this.tag_price - this.cost;
-        let test = (profit / this.cost) * 100;
-        this.markup = test;
-      } else {
-        //this.markup = null;
-      }
-      this.price = Number(tag_price - this.auto_discount).toFixed(2);*/
-    },
-    tax_method() {},
-    tax_rate(rate) {
-      this.tax = Number(this.x_percentage_of_y(rate, this.tag_price)).toFixed(
-        2
-      );
-    },
+    }
+    watch(
+      [products],
+      () => {
+        //customer_readonly.value = customer.value ? true : false;
+        emitter.emit("playSound", { file: "add.mp3" });
+      },
+      { deep: true }
+    );
+    return {
+      autocompleteList,
+      products,
+      warehouses,
+      suppliers,
+      supplier,
+      errorSupplier,
+      warehouse,
+      errorWareHouse,
+      purchase_status,
+      errorPurchaseStatus,
+      search_product,
+      searchProduct,
+      searchBox,
+      date,
+      errorDate,
+      note,
+      errorNote,
+      onSubmit,
+      isDirty,
+      isSubmitting,
+      resetForm,
+      resetCustom,
+      notifyDefault,
+      axiosAsyncStoreReturnBool,
+      axiosAsyncCallReturnData,
+      x_percentage_of_y,
+      changeQuantity,
+      quantityButton,
+      confirmDeleteShow,
+      checkAndPush,
+      emitter,
+      statuses,
+      units,
+      unitChange,
+    };
   },
+  data() {
+    return {};
+  },
+  methods: {},
+  watch: {},
   created() {},
   mounted() {
     var self = this;
-    if (!this.productTypes) {
-      // if not found on store
-      this.axiosAsyncStoreReturnBool("storeProductTypes", "product", {
-        action: "create",
-        dropdown: "product_types",
-      });
-      // get product types
-    }
-    if (!this.symbologies) {
-      // if not found on store
-      this.axiosAsyncStoreReturnBool("storeSymbologies", "product", {
-        action: "create",
-        dropdown: "barcode_symbologies",
-      }); // get symbologies
-    }
-    if (!this.categories) {
-      // if not found on store
-      this.axiosAsyncStoreReturnBool("storeCategories", "product", {
-        action: "create",
-        dropdown: "categories",
-      }); // get categories
-    }
-    if (!this.brands) {
-      // if not found on store
-      this.axiosAsyncStoreReturnBool("storeBrands", "product", {
-        action: "create",
-        dropdown: "brands",
-      }); // get brands
-    }
-    if (!this.taxes) {
-      // if not found on store
-      this.axiosAsyncStoreReturnBool("storeTaxes", "product", {
-        action: "create",
-        dropdown: "tax_rates",
-      }); // get tax rates
-    }
     if (!this.warehouses) {
       // if not found on store
-      this.axiosAsyncStoreReturnBool("storeWareHouses", "product", {
+      this.axiosAsyncStoreReturnBool("storeWareHouses", "purchase", {
         action: "create",
         dropdown: "warehouses",
       }); // get ware houses
     }
-    if (!this.units) {
-      /*****************************************  first time unit loading  */
+    if (!this.suppliers) {
       // if not found on store
-      this.axiosAsyncStoreReturnBool("storeUnits", "product", {
+      this.axiosAsyncStoreReturnBool("storeSuppliers", "purchase", {
         action: "create",
-        dropdown: "base_units",
+        dropdown: "suppliers",
+      }); // get suppliers
+    }
+    if (!this.statuses) {
+      // if not found on store
+      this.axiosAsyncStoreReturnBool("storeStatuses", "purchase", {
+        action: "create",
+        dropdown: "statuses",
+      }); // get statuses
+    }
+    if (!this.units) {
+      // if not found on store
+      this.axiosAsyncStoreReturnBool("storeUnitsAll", "purchase", {
+        action: "create",
+        dropdown: "units",
       }); // get units
     }
-    this.axiosAsyncCallReturnData(
-      /*****************************************  first time sub unit loading  */
-      "get",
-      "product",
-      {
-        action: "create",
-        dropdown: "sub_units",
-        id: self.unit,
-      },
-      null,
-      {
-        showSuccessNotification: false,
-        showCatchNotification: true,
-        showProgress: true,
-      }
-    ).then(function (response) {
-      if (response.success == true) {
-        self.unitsBulk = response.data;
-      }
-    });
-  },
-  beforeUnmount() {
-    var self = this;
-    self.emitter.off("refreshTaxRateDropdown");
-    self.emitter.off("refreshBrandDropdown");
-    self.emitter.off("refreshUnitDropdown");
-    self.emitter.off("refreshSubUnitDropdown");
-    self.emitter.off("refreshCategoryDropdown");
+    document.onclick = function () {
+      // hide dropdowns and reset search
+      self.autocompleteList = [];
+      self.search_product = null;
+    };
   },
 };
 </script>

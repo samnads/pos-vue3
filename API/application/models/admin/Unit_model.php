@@ -7,6 +7,13 @@ class Unit_model extends CI_Model
         // Call the Model constructor
         parent::__construct();
     }
+    function getall_active_4_frontend()
+    {
+        $this->db->select('u.id,u.base,u.code,u.name,IFNULL(u.step,1) as step,u.allow_decimal');
+        $this->db->from(TABLE_UNIT . ' u');
+        $query = $this->db->get();
+        return $query->result();
+    }
     function dropdown_main_active()
     {
         $query = $this->db->get_where(TABLE_UNIT, array('base' => NULL));

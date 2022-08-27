@@ -42,14 +42,16 @@
           <th scope="col">Ref. No.</th>
           <th scope="col">Supplier</th>
           <th scope="col">Warehouse</th>
-          <th scope="col">Purchase Status</th>   
+          <th scope="col">Purchase Status</th>
           <th scope="col">Products</th>
           <th scope="col">Payable</th>
           <th scope="col">Paid</th>
           <th scope="col">Return</th>
           <th scope="col">Due</th>
           <th scope="col">Payment Status</th>
-          <th scope="col" class="text-center"><i class="fa-solid fa-bars"></i></th>
+          <th scope="col" class="text-center">
+            <i class="fa-solid fa-bars"></i>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -190,7 +192,7 @@ export default {
             data: "balance_return",
           },
           {
-            data: "payment_status_name",
+            data: "due",
           },
         ],
         columnDefs: [
@@ -232,7 +234,7 @@ export default {
             render: function (data, type, row, meta) {
               return (
                 '<span class="text-primary fw-bold">' +
-                 parseFloat(data || 0).toFixed(2) +
+                parseFloat(data || 0).toFixed(2) +
                 "</span>"
               );
             },
@@ -252,12 +254,12 @@ export default {
           },
           {
             targets: [9],
-             render: function (data, type, row, meta) {
+            render: function (data, type, row, meta) {
               if (parseFloat(data).toFixed(2) < 0) {
                 return (
                   '<span class="text-info fw-bold">' +
                   parseFloat(data).toFixed(2) +
-                  '</span>'
+                  "</span>"
                 );
               }
               return '<span class="text-muted small">-</span>';
@@ -273,20 +275,24 @@ export default {
                   "</span>"
                 );
               }
-               return '<span class="text-muted small">-</span>';
+              return '<span class="text-muted small">-</span>';
             },
           },
           {
             targets: [11],
             className: "text-capitalize text-center",
             render: function (data, type, row, meta) {
-              return (
-                '<span class="badge ' +
-                row["css_class"] +
-                '">' +
-                data +
-                "</span>"
-              );
+              if (row['total_paid'] == row['total_payable']) {
+                return (
+                  '<span class="badge bg-success fw-bold w-100">Completed</span>'
+                );
+              }
+              else if (row['total_paid'] > row['total_payable']) {
+                return (
+                  '<span class="badge bg-info fw-bold w-100">Completed</span>'
+                );
+              }
+              return '<span class="badge bg-danger fw-bold w-100">Due</span>';
             },
           },
           {

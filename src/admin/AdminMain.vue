@@ -110,10 +110,29 @@
                 >POS Sales</router-link
               >
             </li>
-            <li>
-              <router-link class="nav-link" to="/admin/purchase/list"
-                >Purchases</router-link
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
               >
+                Purchases
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li>
+                  <router-link class="dropdown-item" to="/admin/purchase/list"
+                    >Purchase List</router-link
+                  >
+                </li>
+                <li>
+                  <router-link class="dropdown-item" to="/admin/purchase/new"
+                    >New</router-link
+                  >
+                </li>
+              </ul>
             </li>
             <li class="nav-item dropdown">
               <a
@@ -393,7 +412,27 @@ input[type="number"].no-arrow::-webkit-inner-spin-button {
 input[type="number"].no-arrow {
   -moz-appearance: textfield;
 }
-/***************************************************************  disabled things */
+/***************************************************************  autocomplete things */
+.autocomplete-wrap {
+  position: absolute;
+  margin-top: 38px;
+  right: 0;
+  left: 0;
+  z-index: 100;
+  padding-left: 0;
+  overflow-y: auto;
+  list-style-type: none;
+  background: #fff;
+  -webkit-box-shadow: 0 2px 5px 0 rgb(0 0 0 / 16%),
+    0 2px 10px 0 rgb(0 0 0 / 12%);
+  box-shadow: 0 2px 5px 0 rgb(0 0 0 / 16%), 0 2px 10px 0 rgb(0 0 0 / 12%);
+}
+/***************************************************************  table column things */
+.table td.col-fit,
+.table th.col-fit {
+  white-space: nowrap;
+  width: 1%;
+}
 </style>
 <script>
 import "datatables.net-bs5/js/dataTables.bootstrap5";

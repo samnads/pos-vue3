@@ -55,7 +55,6 @@ class Purchase_model extends CI_Model
 		s.name as supplier_name,
 		w.name as warehouse_name,
 		st.name as status_name,
-		st2.name as payment_status_name,
 		st.css_class as css_class,
 		ROUND(SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) + p.shipping_charge + p.packing_charge - p.discount + p.round_off) as total_payable,
 		ROUND(IFNULL(ppy.total_paid, 0)) as total_paid,
@@ -66,7 +65,6 @@ class Purchase_model extends CI_Model
 		$this->db->join(TABLE_SUPPLIER . ' as s',    's.id = p.supplier', 'left');
 		$this->db->join(TABLE_WAREHOUSE . ' as w',    'w.id = p.warehouse', 'left');
 		$this->db->join(TABLE_STATUS . ' as st',    'st.id = p.status', 'left');
-		$this->db->join(TABLE_STATUS . ' as st2',    'st2.id = p.payment_status', 'left');
 		$this->db->join('(' . $subquery_payment . ')  as ppy', 'ppy.purchase = p.id', 'left');
 		$this->db->join('(' . $subquery_product . ') as pup', 'pup.purchase = p.id', 'left');
 		$this->db->join('(' . $product_total_tax . ') as ptt', 'ptt.purchase = p.id AND ptt.product = pup.product', 'left');
@@ -93,5 +91,56 @@ class Purchase_model extends CI_Model
 		//die($this->db->last_query());
 		return $query;
 	}
-	
+	function suggestProdsForPurchase($search, $offset, $limit, $order_by, $order)
+	{
+		$search = trim($search);
+		$this->db->select('
+		p.id														as id,
+		p.code														as code,
+		p.name														as name,
+		p.name														as value,
+		p.cost														as cost,
+		p.mrp														as mrp,
+		p.thumbnail													as thumbnail,
+		0															as discount,
+		p.tax_method												as tax_method,
+		1															as quantity,
+		DATE_FORMAT(p.mfg_date,"%d/%b/%Y")							as mfg_date,
+		DATE_FORMAT(p.exp_date,"%d/%b/%Y")							as exp_date,
+
+		pt.name														as type,
+
+		bs.code														as symbology,
+
+		c.id														as category_id,
+		c.name														as category_name,
+
+		b.id														as brand_id,
+		b.name														as brand_name,
+		b.code														as brand_code,
+
+		u.id														as unit,
+		u.id														as unit_id,
+		u.name														as unit_name,
+		u.code														as unit_code,
+
+		tr.id														as tax_id,
+		tr.code														as tax_code,
+		tr.name														as tax_name,
+		tr.rate														as tax_rate,
+
+		CONCAT(p.name," | ",p.code," | Rs. ",TRUNCATE(p.price,2))	as label');
+		$this->db->from(TABLE_PRODUCT . '				p');
+		$this->db->join(TABLE_PRODUCT_TYPE . '		pt',	'pt.id=p.type',	'left');
+		$this->db->join(TABLE_BARCODE_SYMBOLOGY . '	bs',	'bs.id=p.symbology',	'left');
+		$this->db->join(TABLE_CATEGORY . '			c',	'c.id=p.category',	'left');
+		$this->db->join(TABLE_BRAND . '				b',	'b.id=p.brand',	'left');
+		$this->db->join(TABLE_UNIT . '				u',	'u.id=p.unit',	'left');
+		$this->db->join(TABLE_TAX_RATE . '			tr',	'tr.id=p.tax_rate',	'left');
+		$this->db->order_by($order_by, $order);
+		$this->db->or_like('p.code',	$search);
+		$this->db->or_like('p.name',	$search);
+		$query = $this->db->get('', $limit, $offset);
+		return $query;
+	}
 }

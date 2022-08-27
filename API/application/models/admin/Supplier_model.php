@@ -7,6 +7,13 @@ class Supplier_model extends CI_Model
         // Call the Model constructor
         parent::__construct();
     }
+    function dropdown_active()
+    {
+        $this->db->select('s.id,s.name');
+        $this->db->from(TABLE_SUPPLIER . ' s');
+        $query = $this->db->get();
+        return $query->result();
+    }
     function get_all_supplier($all = false, $columns = null, $search, $offset, $limit, $order_by, $order)
     {
         $search = trim($search);
