@@ -102,25 +102,24 @@ class Purchase_model extends CI_Model
 		p.cost														as cost,
 		p.mrp														as mrp,
 		p.thumbnail													as thumbnail,
-		0															as discount,
 		p.tax_method												as tax_method,
 		1															as quantity,
 		DATE_FORMAT(p.mfg_date,"%d/%b/%Y")							as mfg_date,
 		DATE_FORMAT(p.exp_date,"%d/%b/%Y")							as exp_date,
+		IFNULL(p.p_unit,p.unit)										as p_unit,
 
 		pt.name														as type,
 
 		bs.code														as symbology,
 
-		c.id														as category_id,
+		c.id														as category,
 		c.name														as category_name,
 
-		b.id														as brand_id,
+		b.id														as brand,
 		b.name														as brand_name,
 		b.code														as brand_code,
 
 		u.id														as unit,
-		u.id														as unit_id,
 		u.name														as unit_name,
 		u.code														as unit_code,
 

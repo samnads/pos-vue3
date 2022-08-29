@@ -33,7 +33,6 @@ class Unit_model extends CI_Model
         u.name   as name,
         u.allow_decimal   as allow_decimal,
         u.base  as base,
-        u.operator   as operator,
         u.step   as step,
         u1.code  as base_code,
         u1.name  as base_name,
@@ -48,7 +47,6 @@ class Unit_model extends CI_Model
         $this->db->or_like('u.name',    $search);
         $this->db->or_like('u.code',    $search);
         $this->db->or_like('u.step',    $search);
-        $this->db->or_like('u.operator',    $search);
         $this->db->or_like('u.description',    $search);
         $this->db->group_end();
         $this->db->order_by($order_by, $order);
@@ -65,7 +63,6 @@ class Unit_model extends CI_Model
         $this->db->or_like('u.name',    $search);
         $this->db->or_like('u.code',    $search);
         $this->db->or_like('u.step',    $search);
-        $this->db->or_like('u.operator',    $search);
         $this->db->or_like('u.description',    $search);
         $this->db->group_end();
         $query = $this->db->get(TABLE_UNIT . ' u');

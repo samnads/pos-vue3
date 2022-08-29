@@ -235,9 +235,7 @@ export default {
                     row["code"] +
                     " = " +
                     row["step"] +
-                    " " +
-                    row["operator"] +
-                    " " +
+                    " * " +
                     row["base_code"] +
                     "</i>";
             },

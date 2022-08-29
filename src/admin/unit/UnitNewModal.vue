@@ -44,27 +44,6 @@
                 <div class="invalid-feedback">{{ errorName }}</div>
               </div>
               <div class="col">
-                <label class="form-label">Operator<i>*</i></label>
-                <select
-                  class="form-select"
-                  name="operator"
-                  v-model="operator"
-                  v-bind:class="[
-                    errorOperator
-                      ? 'is-invalid'
-                      : !errorOperator && operator
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                >
-                  <option value="*">*</option>
-                  <option value="/">/</option>
-                  <option value="+">+</option>
-                  <option value="+">-</option>
-                </select>
-                <div class="invalid-feedback">{{ errorOperator }}</div>
-              </div>
-              <div class="col">
                 <label class="form-label">Step<i>*</i></label>
                 <input
                   type="number"
@@ -239,11 +218,6 @@ export default {
           .transform((_, val) => (val.length > 0 ? val : undefined))
           .label("Code"),
         allow_decimal: yup.boolean().required().label("Allow Decimal"),
-        operator: yup
-          .string()
-          .nullable(true)
-          .transform((_, val) => (val.length > 0 ? val : undefined))
-          .label("Operator"),
         step: yup
           .number()
           .nullable(true)
@@ -293,13 +267,11 @@ export default {
           "allow_decimal",
           fields.allow_decimal == 1 ? true : false
         );
-        setFieldValue("operator", fields.operator || "");
         setFieldValue("step", fields.step);
         setFieldValue("description", fields.description || "");
         subForm.value = DATA.value.db.base ? true : false;
       } else {
         // new form
-        setFieldValue("operator", "*");
         subForm.value =
           DATA.value.data && DATA.value.data.base === null ? true : false; // for dynamic required or not schema
       }
@@ -379,7 +351,6 @@ export default {
         let fields = DATA.value.db;
         setFieldValue("name", fields.name);
         setFieldValue("code", fields.code);
-        setFieldValue("operator", fields.operator || "*");
         setFieldValue("step", fields.step);
         setFieldValue(
           "allow_decimal",
@@ -389,14 +360,11 @@ export default {
       } else {
         // new
         resetForm();
-        setFieldValue("operator", "*");
       }
     }
     /************************************************************************* */
     const { value: name, errorMessage: errorName } = useField("name");
     const { value: code, errorMessage: errorCode } = useField("code");
-    const { value: operator, errorMessage: errorOperator } =
-      useField("operator");
     const { value: step, errorMessage: errorStep } = useField("step");
     const { value: allow_decimal } = useField("allow_decimal");
     const { value: description, errorMessage: errorDescription } =
@@ -409,8 +377,6 @@ export default {
       code,
       errorCode,
       allow_decimal,
-      operator,
-      errorOperator,
       step,
       errorStep,
       description,

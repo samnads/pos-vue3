@@ -10,7 +10,7 @@ class Purchase extends CI_Controller
         $this->load->model('admin/Supplier_model');
         $this->load->model('admin/Status_model');
         $this->load->model('admin/Unit_model');
-        //$this->load->model('admin/Stock_adjustment_product_model');
+        $this->load->model('admin/Tax_model');
         $_POST = raw_input_to_post();
         $action = $this->input->get('action') ?: $this->input->post('action');
         $dropdown = $this->input->get('dropdown') ?: $this->input->post('dropdown');
@@ -63,6 +63,11 @@ class Purchase extends CI_Controller
                 break;
             case 'units':
                 $result['data'] = $this->Unit_model->getall_active_4_frontend();
+                $result['success'] = true;
+                echo json_encode($result);
+                break;
+            case 'tax_rates':
+                $result['data'] = $this->Tax_model->dropdown_active();
                 $result['success'] = true;
                 echo json_encode($result);
                 break;

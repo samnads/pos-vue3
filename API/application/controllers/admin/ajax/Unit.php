@@ -38,7 +38,6 @@ class Unit extends CI_Controller
 						'base'			=> $this->input->post('unit'), // base unit id
 						'name'			=> $this->input->post('name'),
 						'code'			=> $this->input->post('code'),
-						'operator'			=> $this->input->post('operator') ?: NULL,
 						'step'			=> $this->input->post('step') ?: NULL,
 						'allow_decimal'	=> $this->input->post('allow_decimal') ? 1 : 0,
 						'description'	=> $this->input->post('description') ?: NULL
@@ -61,11 +60,6 @@ class Unit extends CI_Controller
 							'field' => 'code',
 							'label' => 'Code',
 							'rules' => 'required|max_length[10]|is_unique[' . TABLE_UNIT . '.code]|xss_clean|trim'
-						),
-						array(
-							'field' => 'operator',
-							'label' => 'Operator',
-							'rules' => 'required|in_list[*,/,+,-]|xss_clean|trim'
 						),
 						array(
 							'field' => 'step',
@@ -153,7 +147,6 @@ class Unit extends CI_Controller
 						'code'			=> $this->input->post('code'),
 						'allow_decimal'	=> $this->input->post('allow_decimal') ? 1 : 0,
 						'description'	=> $this->input->post('description') ?: NULL,
-						'operator'		=> $this->input->post('operator') ?: NULL,
 						'step'			=> $this->input->post('step') ?: NULL
 					);
 					$ruleName	= 'callback_edit_unique_name[' . $this->input->post('id') . ']';
@@ -174,11 +167,6 @@ class Unit extends CI_Controller
 							'field' => 'code',
 							'label' => 'Code',
 							'rules' => 'required|max_length[10]|' . $ruleCode . '|xss_clean|trim'
-						),
-						array(
-							'field' => 'operator',
-							'label' => 'Operator',
-							'rules' => 'required|in_list[*,/,+,-]|xss_clean|trim'
 						),
 						array(
 							'field' => 'step',
