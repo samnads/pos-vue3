@@ -215,6 +215,13 @@ export default function () {
     function x_percentage_of_y(x, y) {
         return (x / 100) * y;
     }
+    function tax_value_calc(tax_data, amount) {
+        // for calculating tax based on Fixed or Percentage
+        if (tax_data.type == 'F') {
+            return parseFloat(tax_data.rate);
+        }
+        return (tax_data.rate / 100) * amount;
+    }
     return {
         /******************* for notify */
         notifyDefault,
@@ -228,6 +235,7 @@ export default function () {
         axiosAsyncStoreUpdateReturnData,
         axiosAsyncStoreReturnBool,
         /******************* */ // calculations
-        x_percentage_of_y
+        x_percentage_of_y,
+        tax_value_calc
     }
 }

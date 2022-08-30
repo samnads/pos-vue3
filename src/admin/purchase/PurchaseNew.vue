@@ -212,7 +212,7 @@
               </div>
             </div>
           </td>
-          <td class="fst-italic">000</td>
+          <td class="fst-italic">{{ product.hsn }}</td>
           <td>
             <div class="input-group input-group-sm is-invalid">
               <button
@@ -319,9 +319,9 @@
               @focus="$event.target.select()"
             />
           </td>
-          <td class="text-end">{{ product.net_unit_cost_() }}</td>
+          <td class="text-end">{{ product.cost_after_discount_() }}</td>
           <td class="text-end">{{ product.total_tax_() }}</td>
-          <td class="text-end fw-bold">{{ product.total_() }}</td>
+          <td class="text-end">{{ product.total_() }}</td>
           <td
             class="text-danger text-center"
             role="button"
@@ -337,7 +337,21 @@
           </td>
         </tr>
         <tr>
-          <td colspan="8" class="text-end fw-bold">Total</td>
+          <td></td>
+          <td colspan="2" class="text-end fw-bold">Total</td>
+          <td class="text-center fw-bold">
+            {{ calc.total_quantity() }} ({{ calc.total_items() }})
+          </td>
+          <td class="text-end fw-bold"></td>
+          <td class="text-center fw-bold">
+            {{ calc.total_product_cost_before_discount() }}
+          </td>
+          <td class="text-center fw-bold">
+            {{ calc.total_product_discount() }}
+          </td>
+          <td class="text-end fw-bold">
+            {{ calc.total_product_cost_after_discount() }}
+          </td>
           <td class="text-end fw-bold">
             {{ calc.total_product_tax().toFixed(2) }}
           </td>
@@ -354,41 +368,9 @@
       <div class="col-xxl-3 col-xl-3 col-lg-5 col-md-6">
         <table class="table table-sm text-light align-middle">
           <tbody>
-            <tr class="">
-              <td class="bg-dark bg-opacity-75">Items</td>
-              <td class="bg-secondary text-end">
-                {{ calc.total_items() }}
-              </td>
-              <td class="bg-dark bg-opacity-75">Quantity</td>
-              <td class="bg-secondary text-end">
-                {{ calc.total_quantity() }}
-              </td>
-            </tr>
-
             <tr>
-              <td class="bg-dark bg-opacity-75" width="25%">Tax Rate</td>
-              <td class="text-end p-0" width="25%">
-                <select
-                  class="form-select form-select-sm rounded-0"
-                  name="warehouse"
-                  :disabled="!taxes"
-                  v-model="tax_rate"
-                >
-                  <option :value="null" selected>
-                    {{ taxes ? "-- Select --" : "Loading..." }}
-                  </option>
-                  <option v-for="tr in taxes" :key="tr.id" :value="tr.id">
-                    {{
-                      tr.name +
-                      " ~ " +
-                      parseInt(tr.rate).toFixed(2) +
-                      (tr.type == "P" ? " %" : " (Fixed Rate)")
-                    }}
-                  </option>
-                </select>
-              </td>
               <td class="bg-dark bg-opacity-75" width="25%">Discount</td>
-              <td class="text-end p-0" width="25%">
+              <td class="text-end bg-secondary" width="25%">
                 <div class="input-group input-group-sm">
                   <span class="input-group-text rounded-0"
                     ><i class="fa-solid fa-tag"></i
@@ -408,10 +390,43 @@
                   />
                 </div>
               </td>
+              <td class="bg-dark bg-opacity-75">After Dsc.</td>
+              <td class="bg-secondary text-end">
+                {{
+                  calc.total_product_sub_total_after_cart_discount().toFixed(2)
+                }}
+              </td>
             </tr>
-            <tr class="">
-              <td class="bg-dark bg-opacity-75">Shipping</td>
-              <td class="text-end p-0">
+            <tr>
+              <td class="bg-dark bg-opacity-75" width="25%">Order Tax Rate</td>
+              <td class="text-end bg-secondary" width="25%">
+                <select
+                  class="form-select form-select-sm rounded-0"
+                  name="warehouse"
+                  :disabled="!taxes"
+                  v-model="tax_rate"
+                >
+                  <option :value="null" selected>
+                    {{ taxes ? "-- Select --" : "Loading..." }}
+                  </option>
+                  <option v-for="tr in taxes" :key="tr.id" :value="tr.id">
+                    {{
+                      tr.name +
+                      " ~ " +
+                      parseFloat(tr.rate).toFixed(2) +
+                      (tr.type == "P" ? " %" : " (Fixed Rate)")
+                    }}
+                  </option>
+                </select>
+              </td>
+              <td class="bg-dark bg-opacity-75" width="25%">Tax</td>
+              <td class="text-end bg-secondary" width="25%">
+                {{ calc.total_order_tax().toFixed(2) }}
+              </td>
+            </tr>
+            <tr>
+              <td class="bg-dark bg-opacity-75">Shipping & Tax</td>
+              <td class="text-end bg-secondary">
                 <div class="input-group input-group-sm">
                   <span class="input-group-text rounded-0"
                     ><i class="fa-solid fa-truck"></i
@@ -431,8 +446,33 @@
                   />
                 </div>
               </td>
-              <td class="bg-dark bg-opacity-75">Packing</td>
-              <td class="text-end p-0">
+              <td class="bg-dark bg-opacity-75">
+                <select
+                  class="form-select form-select-sm rounded-0"
+                  name="shipping_tax"
+                  :disabled="!taxes"
+                  v-model="shipping_tax"
+                >
+                  <option :value="null" selected>
+                    {{ taxes ? "-- Select --" : "Loading..." }}
+                  </option>
+                  <option v-for="tr in taxes" :key="tr.id" :value="tr.id">
+                    {{
+                      tr.name +
+                      " ~ " +
+                      parseFloat(tr.rate).toFixed(2) +
+                      (tr.type == "P" ? " %" : " (Fixed Rate)")
+                    }}
+                  </option>
+                </select>
+              </td>
+              <td class="text-end bg-secondary">
+                {{ calc.shipping_plus_tax_value().toFixed(2) }}
+              </td>
+            </tr>
+            <tr>
+              <td class="bg-dark bg-opacity-75">Packing & Tax</td>
+              <td class="text-end bg-secondary">
                 <div class="input-group input-group-sm">
                   <span class="input-group-text rounded-0"
                     ><i class="fa-solid fa-gift"></i
@@ -452,13 +492,34 @@
                   />
                 </div>
               </td>
-            </tr>
-            <tr class="">
-              <td class="bg-dark bg-opacity-75">Order Tax</td>
-              <td class="bg-secondary text-end">
-                {{ calc.total_order_tax() }}
+              <td class="bg-dark bg-opacity-75">
+                <select
+                  class="form-select form-select-sm rounded-0"
+                  name="packing_tax"
+                  :disabled="!taxes"
+                  v-model="packing_tax"
+                >
+                  <option :value="null" selected>
+                    {{ taxes ? "-- Select --" : "Loading..." }}
+                  </option>
+                  <option v-for="tr in taxes" :key="tr.id" :value="tr.id">
+                    {{
+                      tr.name +
+                      " ~ " +
+                      parseFloat(tr.rate).toFixed(2) +
+                      (tr.type == "P" ? " %" : " (Fixed Rate)")
+                    }}
+                  </option>
+                </select>
               </td>
-              <td class="bg-dark bg-opacity-75">Round off</td>
+              <td class="bg-secondary text-end">
+                {{ calc.packing_plus_tax_value().toFixed(2) }}
+              </td>
+            </tr>
+            <tr>
+              <td class="bg-dark bg-opacity-75"></td>
+              <td class="bg-dark bg-opacity-75"></td>
+              <td class="bg-dark bg-opacity-75">Round Off</td>
               <td class="bg-secondary text-end">
                 {{ calc.round_off().toFixed(2) }}
               </td>
@@ -540,6 +601,7 @@ export default {
       axiosAsyncStoreReturnBool,
       axiosAsyncCallReturnData,
       x_percentage_of_y,
+      tax_value_calc,
     } = admin();
     /************************************************************************* */
     let warehouses = computed(function () {
@@ -583,6 +645,16 @@ export default {
           .label("Products"),
         packing: yup.number().required().min(0).label("Packing"),
         shipping: yup.number().required().min(0).label("Shipping"),
+        shipping_tax: yup
+          .number()
+          .nullable(true)
+          .transform((_, val) => (val === Number(val) ? val : null))
+          .label("Shipping Tax"),
+        packing_tax: yup
+          .number()
+          .nullable(true)
+          .transform((_, val) => (val === Number(val) ? val : null))
+          .label("Packing Tax"),
         discount: yup.number().required().min(0).label("Discount"),
         roundoff: yup.number().required().label("Round off"),
         tax_rate: yup
@@ -608,6 +680,8 @@ export default {
         purchase_status: null,
         packing: 0,
         shipping: 0,
+        shipping_tax: null,
+        packing_tax: null,
         discount: 0,
         roundoff: 0,
         tax_rate: null,
@@ -638,6 +712,8 @@ export default {
       useField("products");
     const { value: packing } = useField("packing");
     const { value: shipping } = useField("shipping");
+    const { value: shipping_tax } = useField("shipping_tax");
+    const { value: packing_tax } = useField("packing_tax");
     const { value: discount } = useField("discount");
     const { value: roundoff } = useField("roundoff");
     const { value: tax_rate } = useField("tax_rate");
@@ -654,10 +730,26 @@ export default {
         });
         return total_quantity;
       },
+      total_product_cost_before_discount: function () {
+        var total_product_cost_before_discount = 0;
+        products.value.forEach((element, index, array) => {
+          total_product_cost_before_discount +=
+            element.total_cost_before_discount_();
+        });
+        return total_product_cost_before_discount;
+      },
+      total_product_cost_after_discount: function () {
+        var total_product_cost_after_discount = 0;
+        products.value.forEach((element, index, array) => {
+          total_product_cost_after_discount +=
+            element.total_cost_after_discount_();
+        });
+        return total_product_cost_after_discount;
+      },
       total_product_discount: function () {
         var total_product_discount = 0;
         products.value.forEach((element, index, array) => {
-          total_product_discount += element.discount;
+          total_product_discount += element.total_discount_();
         });
         return total_product_discount;
       },
@@ -675,21 +767,62 @@ export default {
         });
         return total_product_sub_total;
       },
+      total_product_sub_total_after_cart_discount: function () {
+        return this.total_product_sub_total() - discount.value;
+      },
       total_order_tax: function () {
-        return Number(
-          x_percentage_of_y(
-            tax_rate.value,
-            this.total_product_sub_total()
-          ).toFixed(2)
-        );
+        if (tax_rate.value > 0) {
+          return Number(
+            tax_value_calc(
+              taxes.value.find((obj) => {
+                return obj.id == tax_rate.value;
+              }),
+              this.total_product_sub_total_after_cart_discount()
+            )
+          );
+        }
+        return 0;
       },
       total_payable: function () {
         var total_payable = 0;
-        total_payable += this.total_product_sub_total();
-        total_payable += this.total_order_tax();
         total_payable =
-          total_payable - discount.value + shipping.value + packing.value;
-        return Number(parseFloat(total_payable).toFixed(2));
+          this.total_product_sub_total() +
+          this.total_order_tax() +
+          this.shipping_plus_tax_value();
+        total_payable = total_payable - discount.value + packing.value;
+        return parseFloat(total_payable);
+      },
+      shipping_plus_tax_value: function () {
+        if (shipping_tax.value > 0 && shipping.value) {
+          return (
+            shipping.value +
+            Number(
+              tax_value_calc(
+                taxes.value.find((obj) => {
+                  return obj.id == shipping_tax.value;
+                }),
+                shipping.value
+              )
+            )
+          );
+        }
+        return shipping.value;
+      },
+      packing_plus_tax_value: function () {
+        if (packing_tax.value > 0 && packing.value) {
+          return (
+            packing.value +
+            Number(
+              tax_value_calc(
+                taxes.value.find((obj) => {
+                  return obj.id == packing_tax.value;
+                }),
+                packing.value
+              )
+            )
+          );
+        }
+        return packing.value;
       },
       round_off: function () {
         var round_off = this.total_payable() - Math.floor(this.total_payable());
@@ -752,20 +885,28 @@ export default {
         let step = this.units[p_unit_index].step;
         product.cost = product.db_cost * step;
         /******************************* */
-        product.net_unit_cost_ = function () {
+        product.cost_after_discount_ = function () {
+          // net unit cost after discount
           return Number((product.cost - product.discount).toFixed(2));
         };
-        product.total_cost_ = function () {
+        product.total_cost_before_discount_ = function () {
+          // total quantity cost aft
           return Number(parseFloat(product.quantity * product.cost).toFixed(2));
+        };
+        product.total_cost_after_discount_ = function () {
+          // total quantity cost aft
+          return Number(
+            parseFloat(
+              product.quantity * product.cost_after_discount_()
+            ).toFixed(2)
+          );
         };
         product.total_discount_ = function () {
           return Number(
-            parseFloat(product.quantity * product.discount).toFixed(2)
-          );
-        };
-        product.total_taxable_ = function () {
-          return Number(
-            (product.total_cost_() - product.total_discount_()).toFixed(2)
+            parseFloat(
+              product.total_cost_before_discount_() -
+                product.total_cost_after_discount_()
+            ).toFixed(2)
           );
         };
         product.total_tax_ = function () {
@@ -773,7 +914,7 @@ export default {
             parseFloat(
               x_percentage_of_y(
                 product.tax_rate,
-                product.total_taxable_()
+                product.total_cost_after_discount_()
               ).toFixed(2)
             )
           );
@@ -781,9 +922,7 @@ export default {
         product.total_ = function () {
           return Number(
             (
-              product.total_cost_() -
-              product.total_discount_() +
-              product.total_tax_()
+              product.total_cost_after_discount_() + product.total_tax_()
             ).toFixed(2)
           );
         };
@@ -879,7 +1018,7 @@ export default {
       this.products[index].cost = this.products[index].db_cost * step;
     }
     function costChange(product, cost) {
-      cost = Number(cost);
+      cost = Number(parseFloat(cost).toFixed(2));
       if (cost > 0) {
         let index = this.products.findIndex((item) => item.id === product.id);
         //
@@ -906,7 +1045,7 @@ export default {
     }
     function discountChange(product, discount) {
       discount = Number(discount);
-      if (discount > 0) {
+      if (discount >= 0 && discount <= product.cost) {
         let index = this.products.findIndex((item) => item.id === product.id);
         // change on cart data
         this.products[index].discount = discount;
@@ -1013,6 +1152,7 @@ export default {
       axiosAsyncStoreReturnBool,
       axiosAsyncCallReturnData,
       x_percentage_of_y,
+      tax_value_calc,
       changeQuantity,
       quantityButton,
       confirmDeleteShow,
@@ -1026,6 +1166,8 @@ export default {
       calc,
       packing,
       shipping,
+      shipping_tax,
+      packing_tax,
       discount,
       roundoff,
       changeShippingCharge,
