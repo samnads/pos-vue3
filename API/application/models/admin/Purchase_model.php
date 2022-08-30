@@ -15,14 +15,14 @@ class Purchase_model extends CI_Model
 		$this->db->reset_query();
 		//die($subquery_payment);
 		/******************************************************/ // calculate each product_total excluding tax rate
-		$this->db->select('*,(quantity * (unit_cost - unit_discount)) as product_total_without_tax')->from(TABLE_PURCHASE_PRODUCT)->group_by(array('purchase', 'product'));
+		$this->db->select('*,(quantity * (unit_cost - IFNULL(unit_discount,0))) as product_total_without_tax')->from(TABLE_PURCHASE_PRODUCT)->group_by(array('purchase', 'product'));
 		$subquery_product = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($subquery_product);
 		/******************************************************/ // calculate each product total tax
 		$this->db->select('*,
 		tr.rate as tax_rate,
-		(IFNULL(tr.rate, 0) / 100) * (psp.quantity * (psp.unit_cost - psp.unit_discount)) as product_total_tax');
+		(IFNULL(tr.rate, 0) / 100) * (psp.quantity * (psp.unit_cost - IFNULL(psp.unit_discount,0))) as product_total_tax');
 		$this->db->from(TABLE_PURCHASE_PRODUCT . ' as psp');
 		$this->db->join(TABLE_TAX_RATE . ' as tr',    'tr.id = psp.tax_id', 'left');
 		$this->db->group_by(array('psp.purchase', 'psp.product'));
@@ -140,6 +140,25 @@ class Purchase_model extends CI_Model
 		$this->db->or_like('p.code',	$search);
 		$this->db->or_like('p.name',	$search);
 		$query = $this->db->get('', $limit, $offset);
+		return $query;
+	}
+	function get_AUTO_INCREMENT()
+	{
+		$this->db->select('AUTO_INCREMENT');
+		$this->db->from('INFORMATION_SCHEMA.TABLES');
+		$this->db->where(array('TABLE_NAME' => TABLE_PURCHASE, 'TABLE_SCHEMA' => $this->db->database));
+		$query = $this->db->get();
+		$cnt = $query->row_array();
+		return $cnt['AUTO_INCREMENT'];
+	}
+	function insert_purchase($data)
+	{
+		$query = $this->db->insert(TABLE_PURCHASE, $data);
+		return $query;
+	}
+	function insert_purchase_product($data)
+	{
+		$query = $this->db->insert(TABLE_PURCHASE_PRODUCT, $data);
 		return $query;
 	}
 }

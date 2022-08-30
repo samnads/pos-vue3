@@ -788,7 +788,8 @@ export default {
         total_payable =
           this.total_product_sub_total() +
           this.total_order_tax() +
-          this.shipping_plus_tax_value();
+          this.shipping_plus_tax_value() +
+          this.packing_plus_tax_value();
         total_payable = total_payable - discount.value + packing.value;
         return parseFloat(total_payable);
       },
