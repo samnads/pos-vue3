@@ -39,11 +39,28 @@ class Product_model extends CI_Model
 		$query_psp = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($query_psp);
-		/******************************************************/ // join both
-		$this->db->select('wh.name as warehouse_name,qsap.p_id as sap_product,qpsp.p_id as psp_product,total_sap_quantity,total_psp_quantity,(IFNULL(qsap.total_sap_quantity,0)-IFNULL(qpsp.total_psp_quantity,0)) total_wh_quantity');
+		/******************************************************/ // calc quantity using purchase - received status
+		$this->db->select('p.id as p_id,pc.id as pc_id,wh.id as wh_id,wh.name as wh_name,,SUM(IFNULL(u.step,1) * pp.quantity) as total_pp_quantity');
+		$this->db->from(TABLE_WAREHOUSE . ' as wh');
+		$this->db->join(TABLE_PURCHASE . ' as pc',    'pc.warehouse = wh.id', 'left');
+		$this->db->join(TABLE_PURCHASE_PRODUCT . ' as pp',    'pp.purchase = pc.id', 'left');
+		$this->db->join(TABLE_PRODUCT . ' as p',    'p.id = pp.product', 'left');
+		$this->db->join(TABLE_UNIT . ' as u',    'u.id = pp.unit', 'left'); // useful for bulk quantity calc
+		$this->db->where('pc.status', 22); // 22 - for received status
+		$this->db->where(array('p.id' => $id));
+		$this->db->group_by('p.id');
+		$this->db->group_by('wh.id');
+		//$this->db->where('pc.warehouse', 27); // change this for warehouse based stock, remove for all warehouse
+		$this->db->group_by('pp.product');
+		$query_pur_product = $this->db->get_compiled_select();
+		$this->db->reset_query();
+		//die($query_pur_product);
+		/******************************************************/ // join all
+		$this->db->select('wh.name as warehouse_name,qsap.p_id as sap_product,qpsp.p_id as psp_product,total_sap_quantity,total_psp_quantity,(IFNULL(qsap.total_sap_quantity,0) - IFNULL(qpsp.total_psp_quantity,0) + IFNULL(qpp.total_pp_quantity,0)) total_wh_quantity');
 		$this->db->from(TABLE_WAREHOUSE . ' as wh');
 		$this->db->join('(' . $query_sap . ') as qsap', 'qsap.wh_id = wh.id', 'left');
 		$this->db->join('(' . $query_psp . ') as qpsp', 'qpsp.wh_id = wh.id', 'left');
+		$this->db->join('(' . $query_pur_product . ') as qpp', 'qpp.wh_id = wh.id', 'left');
 		$this->db->where(array('wh.deleted_at' => NULL));
 		$query_stock = $this->db->get_compiled_select();
 		$this->db->reset_query();
@@ -209,6 +226,19 @@ class Product_model extends CI_Model
 		$query_pos_sale_product = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($query_pos_sale_product);
+		/******************************************************/ // calc quantity using purchase - received status
+		$this->db->select('pp.product as pp_product,SUM(IFNULL(u.step,1) * pp.quantity) as total_pp_quantity');
+		$this->db->from(TABLE_PURCHASE_PRODUCT . ' as pp');
+		$this->db->join(TABLE_PURCHASE. ' as pc',    'pc.id = pp.purchase', 'left');
+		$this->db->join(TABLE_PRODUCT . ' as p',    'p.id = pp.product', 'left');
+		$this->db->join(TABLE_UNIT . ' as u',    'u.id = pp.unit', 'left'); // useful for bulk quantity calc
+		$this->db->where('pc.deleted_at', NULL); // select only not deleted rows
+		$this->db->where('pc.status',22); // 22 - for received status
+		//$this->db->where('pc.warehouse', 27); // change this for warehouse based stock, remove for all warehouse
+		$this->db->group_by('pp.product');
+		$query_pur_product = $this->db->get_compiled_select();
+		$this->db->reset_query();
+		//die($query_pur_product);
 		/******************************************************/
 		$search = trim($search);
 		$this->db->select(
@@ -266,7 +296,7 @@ class Product_model extends CI_Model
 		tr.id		as tax_rate,
 		tr.code		as tax_code,
 		tr.name		as tax_name,
-		IFNULL(qsap.total_sap_quantity, 0)+IFNULL(qpsp.total_psp_quantity, 0) as quantity'
+		IFNULL(qsap.total_sap_quantity, 0) + IFNULL(qpsp.total_psp_quantity, 0) + IFNULL(qpp.total_pp_quantity, 0) as quantity'
 		);
 		$this->db->from(TABLE_PRODUCT . ' as p');
 		$this->db->join(TABLE_PRODUCT_TYPE . ' as t',		't.id=p.type',			'left');
@@ -277,6 +307,7 @@ class Product_model extends CI_Model
 		$this->db->join(TABLE_TAX_RATE . ' as tr',	'tr.id=p.tax_rate',		'left');
 		$this->db->join('(' . $query_stock_adj_product . ') as qsap', 'qsap.sap_product = p.id', 'left');
 		$this->db->join('(' . $query_pos_sale_product . ') as qpsp', 'qpsp.psp_product = p.id', 'left');
+		$this->db->join('(' . $query_pur_product . ') as qpp', 'qpp.pp_product = p.id', 'left');
 		$this->db->order_by($order_by, $order);
 		$this->db->group_by('p.id');
 		$this->db->where(array('p.deleted_at' => NULL)); // select only not deleted rows

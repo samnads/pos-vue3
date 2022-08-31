@@ -70,7 +70,7 @@ CREATE TABLE `category` (
   UNIQUE KEY `code` (`code`),
   UNIQUE KEY `slug` (`slug`),
   CONSTRAINT `category_ibfk_1` FOREIGN KEY (`parent`) REFERENCES `category` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `category` (`id`, `parent`, `code`, `image`, `name`, `description`, `slug`, `allow_sub`, `editable`, `deletable`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (1,	NULL,	'CAT003',	NULL,	'Miscellaneous',	'to898',	'fhfghfgh',	0,	NULL,	NULL,	'2022-07-17 16:19:16',	'2022-07-27 05:08:35',	NULL),
@@ -104,7 +104,8 @@ INSERT INTO `category` (`id`, `parent`, `code`, `image`, `name`, `description`, 
 (29,	26,	NULL,	NULL,	'I Phone 11 - 16 GB Red V1',	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-18 15:20:51',	NULL,	NULL),
 (30,	29,	NULL,	NULL,	'I Phone 11 - 16 GB Red V1 - 1',	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-18 15:20:51',	NULL,	NULL),
 (31,	NULL,	NULL,	NULL,	'Empty',	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-18 15:52:27',	NULL,	NULL),
-(73,	NULL,	'cccv',	NULL,	'Baby',	'',	'cvcv',	NULL,	NULL,	NULL,	'2022-08-18 13:25:17',	NULL,	NULL);
+(73,	NULL,	'cccv',	NULL,	'Baby',	'',	'cvcv',	NULL,	NULL,	NULL,	'2022-08-18 13:25:17',	NULL,	NULL),
+(78,	26,	'hjhj',	NULL,	'jhhjhjhj',	'hjhj',	'jhj',	NULL,	NULL,	NULL,	'2022-08-31 18:52:16',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `currency`;
 CREATE TABLE `currency` (
@@ -403,7 +404,7 @@ CREATE TABLE `pos_sale` (
   CONSTRAINT `pos_sale_ibfk_4` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`),
   CONSTRAINT `pos_sale_ibfk_5` FOREIGN KEY (`return_id`) REFERENCES `pos_sale` (`id`),
   CONSTRAINT `pos_sale_ibfk_6` FOREIGN KEY (`status`) REFERENCES `status` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=158 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=159 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `pos_sale` (`id`, `status`, `return_id`, `warehouse`, `customer`, `created_by`, `updated_by`, `cart_discount`, `shipping_charge`, `packing_charge`, `round_off`, `payment_note`, `sale_note`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (151,	20,	NULL,	20,	1,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.5000,	NULL,	NULL,	'2022-08-22 22:28:09',	NULL,	NULL),
@@ -412,7 +413,8 @@ INSERT INTO `pos_sale` (`id`, `status`, `return_id`, `warehouse`, `customer`, `c
 (154,	20,	NULL,	20,	42,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.5000,	NULL,	NULL,	'2022-08-23 00:14:05',	NULL,	NULL),
 (155,	20,	NULL,	20,	48,	1,	NULL,	0.0000,	0.0000,	0.0000,	0.0000,	NULL,	NULL,	'2022-08-27 11:59:35',	NULL,	NULL),
 (156,	20,	NULL,	20,	44,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.2600,	NULL,	NULL,	'2022-08-27 11:59:56',	NULL,	NULL),
-(157,	20,	NULL,	20,	1,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.2600,	NULL,	NULL,	'2022-08-29 23:14:04',	NULL,	NULL);
+(157,	20,	NULL,	20,	1,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.2600,	NULL,	NULL,	'2022-08-29 23:14:04',	NULL,	NULL),
+(158,	20,	NULL,	20,	1,	1,	NULL,	0.0000,	0.0000,	0.0000,	-0.2400,	NULL,	NULL,	'2022-08-31 22:30:45',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `pos_sale_payment`;
 CREATE TABLE `pos_sale_payment` (
@@ -460,7 +462,9 @@ INSERT INTO `pos_sale_product` (`pos_sale`, `product`, `quantity`, `unit_price`,
 (154,	152,	1.0000,	75.0000,	0.0000,	0.0000,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
 (155,	218,	1.0000,	11817.0000,	0.0000,	0.0000,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
 (156,	6,	1.0000,	570.0000,	170.2500,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(157,	6,	1.0000,	570.0000,	170.2500,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL);
+(157,	6,	1.0000,	570.0000,	170.2500,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(158,	6,	1.0000,	570.0000,	170.2500,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(158,	10,	1.0000,	1000.0000,	250.0000,	0.0000,	2,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product` (
@@ -547,7 +551,7 @@ INSERT INTO `product` (`id`, `type`, `code`, `symbology`, `name`, `slug`, `thumb
 (215,	1,	'74587136',	1,	'RRRRRRRRRRR',	'rrrrrrrrrrr',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	445.0000,	NULL,	50.0000,	667.5000,	NULL,	NULL,	NULL,	'I',	NULL,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-08-19 12:18:28',	NULL,	NULL,	NULL,	NULL),
 (216,	1,	'62006262',	1,	'jkjkjk',	'jkjkjk',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	6767.0000,	NULL,	50.0000,	10150.5000,	NULL,	NULL,	NULL,	'I',	NULL,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-08-22 23:47:18',	NULL,	NULL,	NULL,	NULL),
 (217,	1,	'70491654',	1,	'UIII',	'uiii',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	4545.0000,	NULL,	50.0000,	6817.5000,	NULL,	NULL,	NULL,	'I',	NULL,	'1',	3,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-08-22 23:54:25',	NULL,	NULL,	NULL,	NULL),
-(218,	1,	'20183462',	1,	'iuiui',	'iuiui',	NULL,	NULL,	2,	NULL,	1,	NULL,	NULL,	'1',	7878.0000,	NULL,	50.0000,	11817.0000,	NULL,	NULL,	NULL,	'I',	NULL,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-08-27 11:58:56',	NULL,	NULL,	NULL,	NULL);
+(218,	1,	'20183462',	1,	'iuiui',	'iuiui',	NULL,	NULL,	2,	NULL,	1,	3,	NULL,	'1',	7878.0000,	NULL,	NULL,	11817.0000,	0.0000,	NULL,	NULL,	'I',	NULL,	'0',	NULL,	1,	NULL,	NULL,	NULL,	1,	1,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-08-27 11:58:56',	'2022-09-01 00:24:52',	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `product_gallery`;
 CREATE TABLE `product_gallery` (
@@ -680,15 +684,13 @@ CREATE TABLE `purchase` (
   CONSTRAINT `purchase_ibfk_6` FOREIGN KEY (`return_id`) REFERENCES `purchase` (`id`),
   CONSTRAINT `purchase_ibfk_8` FOREIGN KEY (`shipping_tax`) REFERENCES `tax_rate` (`id`),
   CONSTRAINT `purchase_ibfk_9` FOREIGN KEY (`packing_tax`) REFERENCES `tax_rate` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=161 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=178 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `purchase` (`id`, `reference_id`, `return_id`, `warehouse`, `date`, `time`, `status`, `created_by`, `updated_by`, `supplier`, `discount`, `purchase_tax`, `shipping_charge`, `shipping_tax`, `packing_charge`, `packing_tax`, `round_off`, `payment_note`, `note`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(155,	'REF-PUR-00155',	NULL,	27,	'2022-08-04',	'21:13:19',	20,	1,	NULL,	91,	0.9100,	1,	15.0000,	1,	55.0000,	2,	0.3252,	NULL,	'kkk',	'2022-08-31 15:43:27',	NULL,	NULL),
-(156,	'REF-PUR-00156',	NULL,	27,	'2022-08-04',	'21:13:19',	20,	1,	NULL,	91,	0.9100,	1,	15.0000,	1,	55.0000,	2,	0.9376,	NULL,	'kkk',	'2022-08-31 15:43:44',	NULL,	NULL),
-(157,	'REF-PUR-00157',	NULL,	27,	'2022-08-12',	'21:46:50',	8,	1,	NULL,	89,	0.1800,	2,	10.0000,	2,	10.0000,	1,	0.2600,	NULL,	NULL,	'2022-08-31 16:16:54',	NULL,	NULL),
-(158,	'REF-PUR-00158',	NULL,	27,	'2022-08-12',	'21:46:50',	8,	1,	NULL,	89,	0.1800,	2,	10.0000,	1,	10.0000,	1,	0.1300,	NULL,	NULL,	'2022-08-31 16:17:34',	NULL,	NULL),
-(159,	'REF-PUR-00159',	NULL,	27,	'2022-08-12',	'21:46:50',	8,	1,	NULL,	89,	0.1800,	5,	10.0000,	1,	10.0000,	1,	0.2401,	NULL,	NULL,	'2022-08-31 16:17:41',	NULL,	NULL),
-(160,	'REF-PUR-00160',	NULL,	27,	'2022-08-12',	'21:46:50',	8,	1,	NULL,	89,	0.1800,	2,	10.0000,	1,	10.0000,	1,	0.1300,	NULL,	NULL,	'2022-08-31 16:23:50',	NULL,	NULL);
+(174,	'REF-PUR-00174',	NULL,	27,	'2022-08-05',	'23:21:32',	22,	1,	NULL,	88,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	NULL,	'2022-08-31 18:30:24',	NULL,	NULL),
+(175,	'REF-PUR-00175',	NULL,	20,	'2022-08-05',	'23:21:32',	22,	1,	NULL,	88,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	NULL,	'2022-08-31 18:30:45',	NULL,	NULL),
+(176,	'REF-PUR-00176',	NULL,	27,	'2022-09-15',	'00:04:55',	8,	1,	NULL,	88,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.9097,	NULL,	NULL,	'2022-08-31 18:35:01',	NULL,	NULL),
+(177,	'REF-PUR-00177',	NULL,	27,	'2022-09-15',	'00:04:55',	22,	1,	NULL,	88,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.9097,	NULL,	NULL,	'2022-08-31 18:35:17',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `purchase_payment`;
 CREATE TABLE `purchase_payment` (
@@ -704,10 +706,6 @@ CREATE TABLE `purchase_payment` (
   CONSTRAINT `purchase_payment_ibfk_2` FOREIGN KEY (`payment_mode`) REFERENCES `payment_mode` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `purchase_payment` (`purchase`, `payment_mode`, `amount`, `transaction_id`, `reference_no`, `note`) VALUES
-(156,	1,	10.0000,	'ghfh',	'ghddgfg',	'gfg'),
-(156,	1,	5769.0000,	'ghfh',	'ghddgfg',	'gfg'),
-(156,	1,	10.0000,	'ghfh',	'ghddgfg',	'gfg');
 
 DROP TABLE IF EXISTS `purchase_product`;
 CREATE TABLE `purchase_product` (
@@ -731,44 +729,10 @@ CREATE TABLE `purchase_product` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `purchase_product` (`purchase`, `product`, `quantity`, `unit`, `unit_cost`, `unit_discount`, `tax_id`, `net_unit_cost`, `product_total_without_tax`) VALUES
-(155,	6,	2.0000,	1,	250.8000,	0.8000,	2,	250.0000,	500.0000),
-(155,	10,	1.0000,	6,	12.0000,	0.0000,	2,	12.0000,	12.0000),
-(155,	152,	1.0000,	1,	50.0000,	0.0000,	1,	50.0000,	50.0000),
-(156,	6,	2.0000,	3,	2508.0000,	0.8000,	2,	2507.2000,	5014.4000),
-(156,	10,	1.0000,	6,	12.0000,	0.0000,	2,	12.0000,	12.0000),
-(156,	152,	1.0000,	1,	50.0000,	0.0000,	1,	50.0000,	50.0000),
-(157,	1,	1.0000,	3,	120.0000,	0.0000,	NULL,	120.0000,	120.0000),
-(157,	3,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000),
-(157,	4,	1.0000,	2,	60.0000,	0.0000,	NULL,	60.0000,	60.0000),
-(157,	5,	2.0000,	1,	12.0000,	1.4450,	2,	10.5550,	21.1100),
-(157,	6,	2.0000,	2,	1253.7500,	0.0000,	2,	1253.7500,	2507.5000),
-(157,	10,	3.0000,	89,	12000.0000,	0.3200,	2,	11999.6800,	35999.0400),
-(157,	217,	2.0000,	1,	4545.0000,	2.4545,	NULL,	4542.5455,	9085.0910),
-(157,	218,	1.0000,	1,	7878.5445,	10.0000,	NULL,	7868.5445,	7868.5445),
-(158,	1,	1.0000,	3,	120.0000,	0.0000,	NULL,	120.0000,	120.0000),
-(158,	3,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000),
-(158,	4,	1.0000,	2,	60.0000,	0.0000,	NULL,	60.0000,	60.0000),
-(158,	5,	2.0000,	1,	12.0000,	1.4450,	2,	10.5550,	21.1100),
-(158,	6,	2.0000,	2,	1253.7500,	0.0000,	2,	1253.7500,	2507.5000),
-(158,	10,	3.0000,	89,	12000.0000,	0.3200,	2,	11999.6800,	35999.0400),
-(158,	217,	2.0000,	1,	4545.0000,	2.4545,	NULL,	4542.5455,	9085.0910),
-(158,	218,	1.0000,	1,	7878.5445,	10.0000,	NULL,	7868.5445,	7868.5445),
-(159,	1,	1.0000,	3,	120.0000,	0.0000,	NULL,	120.0000,	120.0000),
-(159,	3,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000),
-(159,	4,	1.0000,	2,	60.0000,	0.0000,	NULL,	60.0000,	60.0000),
-(159,	5,	2.0000,	1,	12.0000,	1.4450,	2,	10.5550,	21.1100),
-(159,	6,	2.0000,	2,	1253.7500,	0.0000,	2,	1253.7500,	2507.5000),
-(159,	10,	3.0000,	89,	12000.0000,	0.3200,	2,	11999.6800,	35999.0400),
-(159,	217,	2.0000,	1,	4545.0000,	2.4545,	NULL,	4542.5455,	9085.0910),
-(159,	218,	1.0000,	1,	7878.5445,	10.0000,	NULL,	7868.5445,	7868.5445),
-(160,	1,	1.0000,	3,	120.0000,	0.0000,	NULL,	120.0000,	120.0000),
-(160,	3,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000),
-(160,	4,	6.0000,	2,	60.0000,	0.0000,	NULL,	60.0000,	360.0000),
-(160,	5,	2.0000,	1,	12.0000,	1.4450,	2,	10.5550,	21.1100),
-(160,	6,	2.0000,	2,	1253.7500,	0.0000,	2,	1253.7500,	2507.5000),
-(160,	10,	3.0000,	89,	12000.0000,	0.3200,	2,	11999.6800,	35999.0400),
-(160,	217,	2.0000,	1,	4545.0000,	2.4545,	NULL,	4542.5455,	9085.0910),
-(160,	218,	1.0000,	1,	7878.5445,	10.0000,	NULL,	7868.5445,	7868.5445);
+(174,	218,	1.0000,	2,	39390.0000,	0.0000,	NULL,	39390.0000,	39390.0000),
+(175,	218,	4.0000,	1,	7878.0000,	0.0000,	NULL,	7878.0000,	31512.0000),
+(176,	6,	1.0000,	3,	2507.5000,	0.0000,	2,	2507.5000,	2507.5000),
+(177,	6,	1.0000,	3,	2507.5000,	0.0000,	2,	2507.5000,	2507.5000);
 
 DROP TABLE IF EXISTS `rack`;
 CREATE TABLE `rack` (
@@ -922,7 +886,7 @@ INSERT INTO `status` (`id`, `name`, `css_class`, `css_color`, `online_status`, `
 (19,	'temperorily closed',	'bg-info text-dark',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL),
 (20,	'completed',	'bg-success',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1,	NULL),
 (21,	'due',	'bg-danger',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(22,	'recieved',	'bg-success',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1);
+(22,	'recieved ✓',	'bg-success',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1);
 
 DROP TABLE IF EXISTS `stock_adjustment`;
 CREATE TABLE `stock_adjustment` (
@@ -1226,4 +1190,4 @@ INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country
 (20,	'WARE0020',	'Ware House AAA',	'dsds',	'2020-02-12',	'India',	'TVM',	'695505',	'+91-9745451448',	'tewest@gmail.com',	'TVM',	NULL,	NULL,	'lklkl',	16,	'Flood',	NULL,	NULL,	'2021-04-14 19:54:53',	'2022-08-27 06:30:31',	NULL),
 (27,	'WARE0027',	'Ware House BBB',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	18,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-08-23 04:36:25',	NULL);
 
--- 2022-08-31 16:58:11
+-- 2022-08-31 18:56:22

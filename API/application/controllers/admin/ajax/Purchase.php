@@ -97,7 +97,7 @@ class Purchase extends CI_Controller
                         }
                     }
                     $this->db->trans_commit();
-                    echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'ok'));
+                    echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully added new purchase !'));
                 } else {
                     $error = $this->db->error();
                     $this->db->trans_rollback();

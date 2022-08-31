@@ -521,7 +521,7 @@
               <td class="bg-dark bg-opacity-75"></td>
               <td class="bg-dark bg-opacity-75">Round Off</td>
               <td class="bg-secondary text-end">
-                {{ calc.round_off().toFixed(2) }}
+                {{ '- '+calc.round_off().toFixed(2) }}
               </td>
             </tr>
             <tr>
