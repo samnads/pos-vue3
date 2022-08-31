@@ -52,13 +52,14 @@ class Purchase extends CI_Controller
                     'created_by'        => $this->session->id,
                     'supplier'          => $this->input->post('supplier'),
                     'discount'          => $this->input->post('discount'),
+                    'purchase_tax'      => $this->input->post('tax_rate') ?: NULL,
                     'shipping_charge'   => $this->input->post('shipping'),
                     'shipping_tax'      => $this->input->post('shipping_tax') ?: NULL,
                     'packing_charge'    => $this->input->post('packing'),
                     'packing_tax'       => $this->input->post('packing_tax') ?: NULL,
                     'round_off'         => $this->input->post('roundoff'),
-                    'payment_note'      => $this->input->post('payment_note'),
-                    'note'               => $this->input->post('note'),
+                    'payment_note'      => $this->input->post('payment_note') ?: NULL,
+                    'note'               => $this->input->post('note') ?: NULL,
                 );
                 $this->form_validation->set_data($data);
                 $config = array(

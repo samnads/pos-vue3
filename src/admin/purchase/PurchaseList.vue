@@ -186,13 +186,16 @@ export default {
             data: "total_paid",
           },
           {
-            data: "due",
-          },
-          {
             data: "balance_return",
           },
           {
             data: "due",
+          },
+          {
+            data: "",
+          },
+          {
+            data: "",
           },
         ],
         columnDefs: [
@@ -272,7 +275,7 @@ export default {
                 return (
                   '<span class="text-danger fw-bold">' +
                   parseFloat(data).toFixed(2) +
-                  "</span>"
+                  '</span>'
                 );
               }
               return '<span class="text-muted small">-</span>';
@@ -289,7 +292,7 @@ export default {
               }
               else if (row['total_paid'] > row['total_payable']) {
                 return (
-                  '<span class="badge bg-info fw-bold w-100">Completed</span>'
+                  '<span class="badge bg-success fw-bold w-100">Completed</span>'
                 );
               }
               return '<span class="badge bg-danger fw-bold w-100">Due</span>';

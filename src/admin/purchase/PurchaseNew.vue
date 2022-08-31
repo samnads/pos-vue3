@@ -303,7 +303,7 @@
             <input
               type="number"
               step="any"
-              :value="product.cost"
+              :value="product.cost.toFixed(2)"
               @change="costChange(product, $event.target.value)"
               class="form-control form-control-sm no-arrow text-center"
               @focus="$event.target.select()"
@@ -313,15 +313,15 @@
             <input
               type="number"
               step="any"
-              :value="product.discount"
+              :value="product.discount.toFixed(2)"
               @change="discountChange(product, $event.target.value)"
               class="form-control form-control-sm no-arrow text-center"
               @focus="$event.target.select()"
             />
           </td>
-          <td class="text-end">{{ product.cost_after_discount_() }}</td>
-          <td class="text-end">{{ product.total_tax_() }}</td>
-          <td class="text-end">{{ product.total_() }}</td>
+          <td class="text-end">{{ product.cost_after_discount_().toFixed(2) }}</td>
+          <td class="text-end">{{ product.total_tax_().toFixed(2) }}</td>
+          <td class="text-end">{{ product.total_().toFixed(2) }}</td>
           <td
             class="text-danger text-center"
             role="button"
@@ -340,17 +340,17 @@
           <td></td>
           <td colspan="2" class="text-end fw-bold">Total</td>
           <td class="text-center fw-bold">
-            {{ calc.total_quantity() }} ({{ calc.total_items() }})
+            {{ calc.total_quantity().toFixed(2) }} ({{ calc.total_items() }})
           </td>
           <td class="text-end fw-bold"></td>
           <td class="text-center fw-bold">
-            {{ calc.total_product_cost_before_discount() }}
+            {{ calc.total_product_cost_before_discount().toFixed(2) }}
           </td>
           <td class="text-center fw-bold">
-            {{ calc.total_product_discount() }}
+            {{ calc.total_product_discount().toFixed(2) }}
           </td>
           <td class="text-end fw-bold">
-            {{ calc.total_product_cost_after_discount() }}
+            {{ calc.total_product_cost_after_discount().toFixed(2) }}
           </td>
           <td class="text-end fw-bold">
             {{ calc.total_product_tax().toFixed(2) }}
@@ -786,11 +786,10 @@ export default {
       total_payable: function () {
         var total_payable = 0;
         total_payable =
-          this.total_product_sub_total() +
+          this.total_product_sub_total_after_cart_discount() +
           this.total_order_tax() +
           this.shipping_plus_tax_value() +
           this.packing_plus_tax_value();
-        total_payable = total_payable - discount.value + packing.value;
         return parseFloat(total_payable);
       },
       shipping_plus_tax_value: function () {
@@ -850,6 +849,7 @@ export default {
         method = "PUT";
         action = "update";
       }
+      values.roundoff = calc.round_off();
       return axiosAsyncCallReturnData(method, "purchase", {
         data: values,
         action: action,
@@ -876,8 +876,8 @@ export default {
         product.quantity = 1; // always 1 for new
         product.discount = 0; // always 0 for new
         /******************************* */
-        product.db_cost = Number(parseFloat(product.cost).toFixed(2));
-        product.db_unit = Number(parseFloat(product.unit).toFixed(2));
+        product.db_cost = parseFloat(product.cost);
+        product.db_unit = parseFloat(product.unit);
         product.unit = product.db_unit;
         /******************************* purchase unit cost calculation */
         let p_unit_index = this.units.findIndex(
@@ -888,18 +888,18 @@ export default {
         /******************************* */
         product.cost_after_discount_ = function () {
           // net unit cost after discount
-          return Number((product.cost - product.discount).toFixed(2));
+          return Number((product.cost - product.discount));
         };
         product.total_cost_before_discount_ = function () {
           // total quantity cost aft
-          return Number(parseFloat(product.quantity * product.cost).toFixed(2));
+          return Number(parseFloat(product.quantity * product.cost));
         };
         product.total_cost_after_discount_ = function () {
           // total quantity cost aft
           return Number(
             parseFloat(
               product.quantity * product.cost_after_discount_()
-            ).toFixed(2)
+            )
           );
         };
         product.total_discount_ = function () {
@@ -907,7 +907,7 @@ export default {
             parseFloat(
               product.total_cost_before_discount_() -
                 product.total_cost_after_discount_()
-            ).toFixed(2)
+            )
           );
         };
         product.total_tax_ = function () {
@@ -916,7 +916,7 @@ export default {
               x_percentage_of_y(
                 product.tax_rate,
                 product.total_cost_after_discount_()
-              ).toFixed(2)
+              )
             )
           );
         };
@@ -924,7 +924,7 @@ export default {
           return Number(
             (
               product.total_cost_after_discount_() + product.total_tax_()
-            ).toFixed(2)
+            )
           );
         };
         /************************************** */
@@ -1000,13 +1000,13 @@ export default {
       resetForm();
     }
     function changeShippingCharge(price) {
-      setFieldValue("shipping", price > 0 ? parseFloat(price.toFixed(2)) : 0);
+      setFieldValue("shipping", price > 0 ? parseFloat(price) : 0);
     }
     function changePackingCharge(price) {
-      setFieldValue("packing", price > 0 ? parseFloat(price.toFixed(2)) : 0);
+      setFieldValue("packing", price > 0 ? parseFloat(price) : 0);
     }
     function changeCartDiscount(price) {
-      setFieldValue("discount", price > 0 ? parseFloat(price.toFixed(2)) : 0);
+      setFieldValue("discount", price > 0 ? parseFloat(price) : 0);
     }
     function unitChange(product) {
       let index = this.products.findIndex((item) => item.id === product.id);
@@ -1019,7 +1019,7 @@ export default {
       this.products[index].cost = this.products[index].db_cost * step;
     }
     function costChange(product, cost) {
-      cost = Number(parseFloat(cost).toFixed(2));
+      cost = Number(parseFloat(cost));
       if (cost > 0) {
         let index = this.products.findIndex((item) => item.id === product.id);
         //

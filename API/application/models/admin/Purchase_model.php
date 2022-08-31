@@ -15,14 +15,14 @@ class Purchase_model extends CI_Model
 		$this->db->reset_query();
 		//die($subquery_payment);
 		/******************************************************/ // calculate each product_total excluding tax rate
-		$this->db->select('*,(quantity * (unit_cost - IFNULL(unit_discount,0))) as product_total_without_tax')->from(TABLE_PURCHASE_PRODUCT)->group_by(array('purchase', 'product'));
+		$this->db->select('*')->from(TABLE_PURCHASE_PRODUCT)->group_by(array('purchase', 'product'));
 		$subquery_product = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($subquery_product);
 		/******************************************************/ // calculate each product total tax
 		$this->db->select('*,
 		tr.rate as tax_rate,
-		(IFNULL(tr.rate, 0) / 100) * (psp.quantity * (psp.unit_cost - IFNULL(psp.unit_discount,0))) as product_total_tax');
+		(IFNULL(tr.rate, 0) / 100) * psp.product_total_without_tax as product_total_tax');
 		$this->db->from(TABLE_PURCHASE_PRODUCT . ' as psp');
 		$this->db->join(TABLE_TAX_RATE . ' as tr',    'tr.id = psp.tax_id', 'left');
 		$this->db->group_by(array('psp.purchase', 'psp.product'));
@@ -56,15 +56,99 @@ class Purchase_model extends CI_Model
 		w.name as warehouse_name,
 		st.name as status_name,
 		st.css_class as css_class,
-		ROUND(SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) + p.shipping_charge + p.packing_charge - p.discount + p.round_off) as total_payable,
+		SUM(pup.product_total_without_tax) as product_total_without_unit_tax,
+		SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) as product_total_with_unit_tax,
+
+
+		(CASE 
+			WHEN tr_p.type = "P" THEN (IFNULL(tr_p.rate, 0) / 100) * (SUM(ptt.product_total_tax) + SUM(pup.product_total_without_tax)-p.discount)
+			ELSE IFNULL(tr_p.rate, 0)
+		END) as purchase_tax_value,
+
+
+		(CASE 
+			WHEN tr_p.type = "P" THEN (IFNULL(tr_p.rate, 0) / 100) * (SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) - p.discount)
+			ELSE IFNULL(tr_p.rate, 0)
+		END) + (SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) - p.discount) as product_total_with_tax,
+
+
+		p.shipping_charge as shipping_charge,
+
+
+		(CASE 
+			WHEN tr_s.type = "P" THEN (IFNULL(tr_s.rate, 0) / 100) * p.shipping_charge
+			ELSE IFNULL(tr_s.rate, 0)
+		END) as shipping_tax_value,
+
+
+		p.packing_charge as packing_charge,
+
+
+		(CASE 
+			WHEN tr_pk.type = "P" THEN (IFNULL(tr_pk.rate, 0) / 100) * p.packing_charge
+			ELSE IFNULL(tr_pk.rate, 0)
+		END) as packing_tax_value,
+
+
+		(CASE 
+			WHEN tr_p.type = "P" THEN (IFNULL(tr_p.rate, 0) / 100) * (SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) - p.discount)
+			ELSE IFNULL(tr_p.rate, 0)
+		END) + (SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) - p.discount) +
+		(CASE 
+			WHEN tr_s.type = "P" THEN (IFNULL(tr_s.rate, 0) / 100) * p.shipping_charge
+			ELSE IFNULL(tr_s.rate, 0)
+		END) +
+		p.shipping_charge +
+		(CASE 
+			WHEN tr_pk.type = "P" THEN (IFNULL(tr_pk.rate, 0) / 100) * p.packing_charge
+			ELSE IFNULL(tr_pk.rate, 0)
+		END) +
+		p.packing_charge -
+		p.round_off as total_payable,
+
 		ROUND(IFNULL(ppy.total_paid, 0)) as total_paid,
-		ROUND(SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) + p.shipping_charge + p.packing_charge - p.discount + p.round_off - IFNULL(ppy.total_paid, 0)) as balance_return,
-		ROUND(SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) + p.shipping_charge + p.packing_charge - p.discount + p.round_off - IFNULL(ppy.total_paid, 0)) as due,'
+		
+		
+		(CASE 
+			WHEN tr_p.type = "P" THEN (IFNULL(tr_p.rate, 0) / 100) * (SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) - p.discount)
+			ELSE IFNULL(tr_p.rate, 0)
+		END) + (SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) - p.discount) +
+		(CASE 
+			WHEN tr_s.type = "P" THEN (IFNULL(tr_s.rate, 0) / 100) * p.shipping_charge
+			ELSE IFNULL(tr_s.rate, 0)
+		END) +
+		p.shipping_charge +
+		(CASE 
+			WHEN tr_pk.type = "P" THEN (IFNULL(tr_pk.rate, 0) / 100) * p.packing_charge
+			ELSE IFNULL(tr_pk.rate, 0)
+		END) +
+		p.packing_charge -
+		p.round_off - IFNULL(ppy.total_paid, 0) as balance_return,
+		
+		
+		(CASE 
+			WHEN tr_p.type = "P" THEN (IFNULL(tr_p.rate, 0) / 100) * (SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) - p.discount)
+			ELSE IFNULL(tr_p.rate, 0)
+		END) + (SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) - p.discount) +
+		(CASE 
+			WHEN tr_s.type = "P" THEN (IFNULL(tr_s.rate, 0) / 100) * p.shipping_charge
+			ELSE IFNULL(tr_s.rate, 0)
+		END) +
+		p.shipping_charge +
+		(CASE 
+			WHEN tr_pk.type = "P" THEN (IFNULL(tr_pk.rate, 0) / 100) * p.packing_charge
+			ELSE IFNULL(tr_pk.rate, 0)
+		END) +
+		p.packing_charge -
+		p.round_off - IFNULL(ppy.total_paid, 0) as due'
 		);
 		$this->db->from(TABLE_PURCHASE . ' as p');
 		$this->db->join(TABLE_SUPPLIER . ' as s',    's.id = p.supplier', 'left');
 		$this->db->join(TABLE_WAREHOUSE . ' as w',    'w.id = p.warehouse', 'left');
 		$this->db->join(TABLE_STATUS . ' as st',    'st.id = p.status', 'left');
+		$this->db->join(TABLE_TAX_RATE . ' as tr_p',    'tr_p.id = p.purchase_tax', 'left');
+		$this->db->join(TABLE_TAX_RATE . ' as tr_s',    'tr_s.id = p.shipping_tax', 'left');
+		$this->db->join(TABLE_TAX_RATE . ' as tr_pk',    'tr_pk.id = p.packing_tax', 'left');
 		$this->db->join('(' . $subquery_payment . ')  as ppy', 'ppy.purchase = p.id', 'left');
 		$this->db->join('(' . $subquery_product . ') as pup', 'pup.purchase = p.id', 'left');
 		$this->db->join('(' . $product_total_tax . ') as ptt', 'ptt.purchase = p.id AND ptt.product = pup.product', 'left');
