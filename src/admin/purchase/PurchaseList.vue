@@ -489,7 +489,7 @@ export default {
         self.row = self.table.row($(this).parents("tr")).data();
         self.$router
           .push({
-            name: "adminProductEdit",
+            name: "adminPurchaseEdit",
             params: { id: self.row.id, data: JSON.stringify(self.row) },
           })
           .catch(() => {});

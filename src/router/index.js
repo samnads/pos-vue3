@@ -148,6 +148,11 @@ const routes = [
             name: 'adminPurchaseNew',
             component: AdminPurchaseNew,
           },
+          {
+            path: 'edit/:id',
+            name: 'adminPurchaseEdit',
+            component: AdminPurchaseNew,
+          },
         ],
       },
       {

@@ -334,6 +334,7 @@ INSERT INTO `module_permission` (`module`, `permission`, `checked`, `read_only`,
 (15,	4,	NULL,	NULL,	'STOCK ADJ.'),
 (15,	6,	NULL,	NULL,	'STOCK ADJ.'),
 (18,	1,	NULL,	NULL,	'PURCHASE'),
+(18,	3,	NULL,	NULL,	'PURCHASE'),
 (18,	6,	NULL,	NULL,	'PURCHASE');
 
 DROP TABLE IF EXISTS `payment_mode`;
@@ -684,13 +685,17 @@ CREATE TABLE `purchase` (
   CONSTRAINT `purchase_ibfk_6` FOREIGN KEY (`return_id`) REFERENCES `purchase` (`id`),
   CONSTRAINT `purchase_ibfk_8` FOREIGN KEY (`shipping_tax`) REFERENCES `tax_rate` (`id`),
   CONSTRAINT `purchase_ibfk_9` FOREIGN KEY (`packing_tax`) REFERENCES `tax_rate` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=178 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=182 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `purchase` (`id`, `reference_id`, `return_id`, `warehouse`, `date`, `time`, `status`, `created_by`, `updated_by`, `supplier`, `discount`, `purchase_tax`, `shipping_charge`, `shipping_tax`, `packing_charge`, `packing_tax`, `round_off`, `payment_note`, `note`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (174,	'REF-PUR-00174',	NULL,	27,	'2022-08-05',	'23:21:32',	22,	1,	NULL,	88,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	NULL,	'2022-08-31 18:30:24',	NULL,	NULL),
 (175,	'REF-PUR-00175',	NULL,	20,	'2022-08-05',	'23:21:32',	22,	1,	NULL,	88,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	NULL,	'2022-08-31 18:30:45',	NULL,	NULL),
 (176,	'REF-PUR-00176',	NULL,	27,	'2022-09-15',	'00:04:55',	8,	1,	NULL,	88,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.9097,	NULL,	NULL,	'2022-08-31 18:35:01',	NULL,	NULL),
-(177,	'REF-PUR-00177',	NULL,	27,	'2022-09-15',	'00:04:55',	22,	1,	NULL,	88,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.9097,	NULL,	NULL,	'2022-08-31 18:35:17',	NULL,	NULL);
+(177,	'REF-PUR-00177',	NULL,	27,	'2022-09-15',	'00:04:55',	22,	1,	NULL,	88,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.9097,	NULL,	NULL,	'2022-08-31 18:35:17',	NULL,	NULL),
+(178,	'REF-PUR-00178',	NULL,	27,	'2022-09-22',	'12:03:28',	22,	1,	NULL,	88,	1.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.2556,	NULL,	'k',	'2022-09-03 06:33:55',	NULL,	NULL),
+(179,	'REF-PUR-00179',	NULL,	27,	'2022-09-22',	'12:03:28',	22,	1,	NULL,	88,	1.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	'k',	'2022-09-03 06:34:32',	NULL,	NULL),
+(180,	'REF-PUR-00180',	NULL,	20,	'2022-09-22',	'12:03:28',	22,	1,	NULL,	88,	1.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	'k',	'2022-09-03 06:35:34',	NULL,	NULL),
+(181,	'REF-PUR-00181',	NULL,	20,	'2022-09-21',	'22:48:27',	22,	1,	NULL,	88,	0.2800,	1,	10.0000,	1,	10.0000,	1,	0.0978,	NULL,	'vcvbn',	'2022-09-03 17:19:13',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `purchase_payment`;
 CREATE TABLE `purchase_payment` (
@@ -732,7 +737,11 @@ INSERT INTO `purchase_product` (`purchase`, `product`, `quantity`, `unit`, `unit
 (174,	218,	1.0000,	2,	39390.0000,	0.0000,	NULL,	39390.0000,	39390.0000),
 (175,	218,	4.0000,	1,	7878.0000,	0.0000,	NULL,	7878.0000,	31512.0000),
 (176,	6,	1.0000,	3,	2507.5000,	0.0000,	2,	2507.5000,	2507.5000),
-(177,	6,	1.0000,	3,	2507.5000,	0.0000,	2,	2507.5000,	2507.5000);
+(177,	6,	1.0000,	3,	2507.5000,	0.0000,	2,	2507.5000,	2507.5000),
+(178,	10,	1.0000,	6,	12.0000,	0.0000,	2,	12.0000,	12.0000),
+(179,	218,	1.0000,	2,	39390.0000,	0.0000,	NULL,	39390.0000,	39390.0000),
+(180,	218,	2.0000,	2,	39390.0000,	0.0000,	NULL,	39390.0000,	78780.0000),
+(181,	5,	1.0000,	2,	60.0000,	0.0000,	2,	60.0000,	60.0000);
 
 DROP TABLE IF EXISTS `rack`;
 CREATE TABLE `rack` (
@@ -843,6 +852,7 @@ INSERT INTO `role_permission` (`role_id`, `module_id`, `permission_id`, `readonl
 (1,	16,	5,	1,	'CUSTOMER GROUP - dropdown',	1,	NULL),
 (1,	17,	2,	1,	'MANUAL genders (admin default)',	1,	NULL),
 (1,	18,	1,	1,	'PURCHASE - create',	1,	NULL),
+(1,	18,	3,	1,	'PURCHASE - update',	1,	NULL),
 (1,	18,	6,	1,	'PURCHASE - datatable',	1,	NULL);
 
 DROP TABLE IF EXISTS `status`;
@@ -1126,7 +1136,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-08-31 10:17:43',	'2022-08-30 19:16:13',	'2021-04-20 19:22:52',	'2022-08-31 10:17:43',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-09-03 10:11:14',	'2022-08-30 19:16:13',	'2021-04-20 19:22:52',	'2022-09-03 10:11:14',	NULL),
 (30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
 (31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
@@ -1190,4 +1200,4 @@ INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country
 (20,	'WARE0020',	'Ware House AAA',	'dsds',	'2020-02-12',	'India',	'TVM',	'695505',	'+91-9745451448',	'tewest@gmail.com',	'TVM',	NULL,	NULL,	'lklkl',	16,	'Flood',	NULL,	NULL,	'2021-04-14 19:54:53',	'2022-08-27 06:30:31',	NULL),
 (27,	'WARE0027',	'Ware House BBB',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	18,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-08-23 04:36:25',	NULL);
 
--- 2022-08-31 18:56:22
+-- 2022-09-03 19:14:03

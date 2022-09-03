@@ -235,6 +235,61 @@ class Purchase_model extends CI_Model
 		$cnt = $query->row_array();
 		return $cnt['AUTO_INCREMENT'];
 	}
+	function get_purchase_row_by_id($where)
+	{
+		$this->db->select('
+		`p.id`,
+		`p.reference_id`,
+		`p.return_id`,
+		`p.warehouse`,
+		`p.date`,
+		`p.time`,
+		`p.status`,
+		`p.created_by`,
+		`p.updated_by`,
+		`p.supplier`,
+		`p.discount`,
+		`p.purchase_tax`,
+		`p.shipping_charge`,
+		`p.shipping_tax`,
+		`p.packing_charge`,
+		`p.packing_tax`,
+		`p.round_off`,
+		`p.payment_note`,
+		`p.note`,
+		');
+		$this->db->from(TABLE_PURCHASE . ' p');
+		$this->db->where($where);
+		$query = $this->db->get();
+		return $query->row_array();
+	}
+	function get_purchase_products_by_purchase($where)
+	{
+		$this->db->select('
+		p.id														as id,
+		p.code														as code,
+		p.name														as name,
+		pp.unit														as p_unit,
+		pp.unit_cost												as unit_cost,
+		(pp.unit_cost / IFNULL(u.step,1))							as db_cost,
+		pp.unit_discount											as unit_discount,
+		pp.tax_id													as tax_id,
+		pp.quantity													as quantity,
+		
+		p.unit														as unit,
+		u.name														as unit_name,
+		u.code
+																	as unit_code,
+		tr.rate														as tax_rate');
+		$this->db->from(TABLE_PURCHASE_PRODUCT . ' pp');
+		$this->db->join(TABLE_PRODUCT . ' p',	'p.id=pp.product',	'left');
+		$this->db->join(TABLE_UNIT . ' u',	'u.id=pp.unit',	'left');
+		$this->db->join(TABLE_TAX_RATE . ' tr',	'tr.id=pp.tax_id',	'left');
+		$this->db->where($where);
+		$query = $this->db->get();
+		//die($this->db->last_query());
+		return $query->result();
+	}
 	function insert_purchase($data)
 	{
 		$query = $this->db->insert(TABLE_PURCHASE, $data);

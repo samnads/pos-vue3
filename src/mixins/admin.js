@@ -21,7 +21,7 @@ export default function () {
                 url: endpoint + url,
                 method: method,
                 data: data,
-                params: method == 'get' ? data : undefined,
+                params: method.toLowerCase() == 'get' ? data : undefined,
                 signal: AbortController ? AbortController.signal : undefined,
                 timeout: 8000,
                 headers: {
@@ -123,7 +123,7 @@ export default function () {
                 url: endpoint + url,
                 method: method,
                 data: data,
-                params: method == 'get' ? data : undefined,
+                params: method.toLowerCase() == 'get' ? data : undefined,
                 timeout: timeout,
                 headers: {
                     'Content-Type': 'application/json',
@@ -178,7 +178,7 @@ export default function () {
                 url: endpoint + url,
                 method: method,
                 data: data,
-                params: method == 'get' ? data : undefined,
+                params: method.toLowerCase() == 'get' ? data : undefined,
                 timeout: timeout,
                 headers: {
                     'Content-Type': 'application/json',

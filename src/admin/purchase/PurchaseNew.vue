@@ -22,6 +22,7 @@
   </div>
   <div class="wrap_content" id="wrap_content">
     <div class="row">
+      <AdminLoadingSpinnerDiv />
       <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-2">
         <label class="form-label">Date & Time<i>*</i></label>
         <div class="input-group is-invalid">
@@ -256,7 +257,7 @@
                   {{ product.unit_name }} - [ {{ product.unit_code }} ]
                 </option>
                 <option
-                  v-if="product.p_unit != null"
+                  v-if="units && product.p_unit != null"
                   :value="
                     units.find((obj) => {
                       return obj.id === product.p_unit;
@@ -319,7 +320,9 @@
               @focus="$event.target.select()"
             />
           </td>
-          <td class="text-end">{{ product.cost_after_discount_().toFixed(2) }}</td>
+          <td class="text-end">
+            {{ product.cost_after_discount_().toFixed(2) }}
+          </td>
           <td class="text-end">{{ product.total_tax_().toFixed(2) }}</td>
           <td class="text-end">{{ product.total_().toFixed(2) }}</td>
           <td
@@ -521,7 +524,7 @@
               <td class="bg-dark bg-opacity-75"></td>
               <td class="bg-dark bg-opacity-75">Round Off</td>
               <td class="bg-secondary text-end">
-                {{ '- '+calc.round_off().toFixed(2) }}
+                {{ "- " + calc.round_off().toFixed(2) }}
               </td>
             </tr>
             <tr>
@@ -591,6 +594,7 @@ export default {
     const router = useRouter();
     const route = useRoute();
     const store = useStore();
+    const DATA = ref({});
     /************************************************************************* */
     const searchBox = ref(null);
     var search_product = null;
@@ -664,13 +668,19 @@ export default {
           .label("Tax Rate"),
       });
     });
-    if (route.name == "adminPurchaseEdit" && route.params.data) {
-      dbData.value = JSON.parse(route.params.data); // required
-      //console.log(dbData.value)
+    if (route.name == "adminPurchaseEdit") {
       formValues = {
-        warehouse: dbData.value.warehouse,
-        date: dbData.value.date,
-        note: dbData.value.note,
+        products: [],
+        supplier: null,
+        warehouse: null,
+        purchase_status: null,
+        packing: 0,
+        shipping: 0,
+        shipping_tax: null,
+        packing_tax: null,
+        discount: 0,
+        roundoff: 0,
+        tax_rate: null,
       };
     } else if (route.name == "adminPurchaseNew") {
       formValues = {
@@ -888,7 +898,7 @@ export default {
         /******************************* */
         product.cost_after_discount_ = function () {
           // net unit cost after discount
-          return Number((product.cost - product.discount));
+          return Number(product.cost - product.discount);
         };
         product.total_cost_before_discount_ = function () {
           // total quantity cost aft
@@ -897,9 +907,7 @@ export default {
         product.total_cost_after_discount_ = function () {
           // total quantity cost aft
           return Number(
-            parseFloat(
-              product.quantity * product.cost_after_discount_()
-            )
+            parseFloat(product.quantity * product.cost_after_discount_())
           );
         };
         product.total_discount_ = function () {
@@ -922,9 +930,7 @@ export default {
         };
         product.total_ = function () {
           return Number(
-            (
-              product.total_cost_after_discount_() + product.total_tax_()
-            )
+            product.total_cost_after_discount_() + product.total_tax_()
           );
         };
         /************************************** */
@@ -1121,7 +1127,7 @@ export default {
       [products, shipping, packing, discount, tax_rate],
       () => {
         //customer_readonly.value = customer.value ? true : false;
-        emitter.emit("playSound", { file: "add.mp3" });
+        //emitter.emit("playSound", { file: "add.mp3" });
       },
       { deep: true }
     );
@@ -1179,6 +1185,7 @@ export default {
       tax_rate,
       newUnit,
       newSupplier,
+      route,
     };
   },
   data() {
@@ -1189,6 +1196,104 @@ export default {
   created() {},
   mounted() {
     var self = this;
+    /************************************************************** GET DB DATA for editing */
+    if (self.route.name == "adminPurchaseEdit") {
+      this.axiosAsyncCallReturnData(
+        "GET",
+        "purchase",
+        {
+          action: "update",
+          job: "purchase_data",
+          id: Number(self.route.params.id),
+        },
+        null,
+        {
+          showSuccessNotification: false,
+          showCatchNotification: true,
+          showProgress: true,
+        }
+      ).then(function (response) {
+        if (response.success == true) {
+          var data = response.data;
+          var products = response.data.products;
+          var units = response.data.units;
+          data.products.forEach((element, index, array) => {
+            products[index].hsn = "000";
+            products[index].quantity = Number(element.quantity); //item quantity
+            products[index].discount = Number(element.unit_discount); // unit (per p_unit) discount
+            products[index].db_cost = Number(element.db_cost); // base unit cost
+            products[index].db_unit = Number(element.p_unit); // base unit
+            products[index].unit = Number(element.unit); // purchase unit
+            products[index].p_unit = Number(element.p_unit); // purchase unit
+            /******************************* purchase unit cost calculation */
+            let p_unit_index = units.findIndex(
+              (item) => item.id == products[index].p_unit
+            );
+            let step = units[p_unit_index].step;
+            products[index].cost = products[index].db_cost * step; // calc p_unit cost
+            /******************************* */
+            products[index].tax_rate = Number(element.tax_rate);
+            products[index].cost_after_discount_ = function () {
+              // net unit cost after discount
+              return Number(products[index].cost - products[index].discount);
+            };
+            products[index].total_cost_before_discount_ = function () {
+              // total quantity cost aft
+              return Number(
+                parseFloat(products[index].quantity * products[index].cost)
+              );
+            };
+            products[index].total_cost_after_discount_ = function () {
+              // total quantity cost aft
+              return Number(
+                parseFloat(
+                  products[index].quantity *
+                    products[index].cost_after_discount_()
+                )
+              );
+            };
+            products[index].total_discount_ = function () {
+              return Number(
+                parseFloat(
+                  products[index].total_cost_before_discount_() -
+                    products[index].total_cost_after_discount_()
+                )
+              );
+            };
+            products[index].total_tax_ = function () {
+              return Number(
+                parseFloat(
+                  self.x_percentage_of_y(
+                    products[index].tax_rate,
+                    products[index].total_cost_after_discount_()
+                  )
+                )
+              );
+            };
+            products[index].total_ = function () {
+              return Number(
+                products[index].total_cost_after_discount_() +
+                  products[index].total_tax_()
+              );
+            };
+          });
+          self.setFieldValue("products", data.products);
+          self.setFieldValue("date", data.date + "T" + data.time);
+          self.setFieldValue("supplier", data.supplier);
+          self.setFieldValue("warehouse", data.warehouse);
+          self.setFieldValue("purchase_status", data.status);
+          self.setFieldValue("note", data.note);
+          self.setFieldValue("discount", data.discount);
+          self.setFieldValue("tax_rate", data.purchase_tax);
+          self.setFieldValue("shipping", Number(data.shipping_charge));
+          self.setFieldValue("shipping_tax", data.shipping_tax);
+          self.setFieldValue("packing", Number(data.packing_charge));
+          self.setFieldValue("packing_tax", data.packing_tax);
+          self.setFieldValue("roundoff", data.round_off);
+        }
+      });
+    }
+    /************************************************************** */
     if (!this.warehouses) {
       // if not found on store
       this.axiosAsyncStoreReturnBool("storeWareHouses", "purchase", {
