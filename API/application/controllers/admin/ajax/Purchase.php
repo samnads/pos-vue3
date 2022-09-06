@@ -101,7 +101,7 @@ class Purchase extends CI_Controller
                         }
                     }
                     $this->db->trans_commit();
-                    echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully added new purchase !'));
+                    echo json_encode(array('success' => true, 'type' => 'success', 'message' =>'Successfully added new purchase !', 'location' => "admin/purchase/list"));
                 } else {
                     $error = $this->db->error();
                     $this->db->trans_rollback();
@@ -110,6 +110,76 @@ class Purchase extends CI_Controller
                 /************************************************************ */
                 break;
             case 'PUT': // update stock adjustment
+                $_POST = $this->input->post('data');
+                $data = array(
+                    'warehouse'         => $this->input->post('warehouse'),
+                    'date'              => $this->input->post('date'),
+                    'time'              => $this->input->post('date'),
+                    'status'            => $this->input->post('purchase_status'),
+                    'updated_by'        => $this->session->id,
+                    'supplier'          => $this->input->post('supplier'),
+                    'discount'          => $this->input->post('discount'),
+                    'purchase_tax'      => $this->input->post('tax_rate') ?: NULL,
+                    'shipping_charge'   => $this->input->post('shipping'),
+                    'shipping_tax'      => $this->input->post('shipping_tax') ?: NULL,
+                    'packing_charge'    => $this->input->post('packing'),
+                    'packing_tax'       => $this->input->post('packing_tax') ?: NULL,
+                    'round_off'         => $this->input->post('roundoff'),
+                    'payment_note'      => $this->input->post('payment_note') ?: NULL,
+                    'note'               => $this->input->post('note') ?: NULL,
+                );
+                $this->form_validation->set_data($data);
+                $config = array(
+                    array(
+                        'field' => 'warehouse',
+                        'label' => 'Warehouse',
+                        'rules' => 'required|trim|numeric|xss_clean',
+                    )
+                );
+                $this->form_validation->set_rules($config);
+                if ($this->form_validation->run() == FALSE) { // check data fields
+                    die(json_encode(array('success' => false, 'errors' => $this->form_validation->error_array())));
+                }
+                $changed_db1 = false;
+                $changed_db2 = false;
+                /************************************************************ */
+                $this->db->trans_begin();
+                $purchase_id = $this->input->post('id');
+                $this->Purchase_model->update_purchase($data, $purchase_id);
+                $error = $this->db->error();
+                if ($this->db->affected_rows() == 1 || $error['code'] == 0) { // // success or no change - update purchase
+                    if ($this->db->affected_rows() == 1) { // data changed
+                        $changed_db1 = true;
+                    }
+                    $products = $this->input->post('products'); // list of purchased products for updating (may contain new and edited or old deleted)
+                    // its best to delete previous all from db then insert new data from request
+                    /***************************************** */
+                    $this->Purchase_model->delete_purchase_products(array('purchase' => $purchase_id));
+                    /***************************************** */
+                    foreach ($products as $product) { // add products
+                        $data = array(
+                            'purchase' => $purchase_id,
+                            'product' => $product['id'],
+                            'quantity' =>  $product['quantity'],
+                            'unit' =>  $product['p_unit'],
+                            'unit_cost' => $product['cost'],
+                            'unit_discount' => $product['discount'],
+                            'tax_id' => $product['tax_id'] ?: null,
+                        );
+                        $this->Purchase_model->insert_purchase_product($data);
+                        if ($this->db->affected_rows() != 1) {
+                            $error = $this->db->error();
+                            $this->db->trans_rollback();
+                            die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                        }
+                    }
+                    $this->db->trans_commit();
+                    echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully updated purchase !','location' => "admin/purchase/list"));
+                } else {
+                    $this->db->trans_rollback();
+                    echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
+                }
+                /************************************************************ */
                 break;
             default:
         }

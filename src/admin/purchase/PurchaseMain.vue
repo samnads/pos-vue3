@@ -1,7 +1,8 @@
 <template>
   <div id="adminProductRoute">
     <AdminPurchaseList v-if="this.$route.name == 'adminPurchaseList'" />
-    <AdminPurchaseNew v-if="this.$route.name == 'adminPurchaseNew' || this.$route.name == 'adminPurchaseEdit'" />
+    <AdminPurchaseNew v-if="this.$route.name == 'adminPurchaseNew'" />
+    <AdminPurchaseEdit v-if="this.$route.name == 'adminPurchaseEdit'" />
   </div>
 </template>
 <style>
@@ -9,10 +10,12 @@
 <script>
 import AdminPurchaseList from "./PurchaseList.vue";
 import AdminPurchaseNew from "./PurchaseNew.vue";
+import AdminPurchaseEdit from "./PurchaseNew.vue";
 export default {
   components: {
     AdminPurchaseList,
     AdminPurchaseNew,
+    AdminPurchaseEdit,
   },
   data() {
     return {};

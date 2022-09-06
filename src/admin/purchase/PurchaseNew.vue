@@ -22,7 +22,6 @@
   </div>
   <div class="wrap_content" id="wrap_content">
     <div class="row">
-      <AdminLoadingSpinnerDiv />
       <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-2">
         <label class="form-label">Date & Time<i>*</i></label>
         <div class="input-group is-invalid">
@@ -252,37 +251,11 @@
                 v-model="product.p_unit"
                 @change="unitChange(product)"
               >
-                <option :value="product.db_unit">
-                  <!-- product base unit -->
-                  {{ product.unit_name }} - [ {{ product.unit_code }} ]
-                </option>
-                <option
-                  v-if="units && product.p_unit != null"
-                  :value="
-                    units.find((obj) => {
-                      return obj.id === product.p_unit;
-                    })['id']
-                  "
-                >
-                  <!-- product puchase unit unit -->
-                  {{
-                    units.find((obj) => {
-                      return obj.id === product.p_unit;
-                    })["name"]
-                  }}
-                  - [
-                  {{
-                    units.find((obj) => {
-                      return obj.id === product.p_unit;
-                    })["code"]
-                  }}
-                  ]
-                </option>
                 <option
                   v-for="u in units &&
                   units.filter(
                     (unit) =>
-                      unit.base == product.db_unit && unit.id != product.p_unit
+                      unit.base == product.unit || unit.id == product.unit
                   )"
                   :key="u.id"
                   :value="u.id"
@@ -333,10 +306,25 @@
             <i class="fa-solid fa-trash-can"></i>
           </td>
         </tr>
-        <tr class="text-center" v-if="products.length == 0">
-          <td colspan="11" class="text-center text-muted">
-            Empty product list, use the search bar to add products...
+        <tr class="text-center">
+          <td
+            colspan="11"
+            class="text-center text-muted"
+            v-if="
+              (products.length == 0 && route.name == 'adminPurchaseNew') ||
+              (products.length == 0 &&
+                route.name == 'adminPurchaseEdit' &&
+                DATA)
+            "
+          >
+            Use the search bar to add products...
             <div class="text-danger">{{ errorProducts }}</div>
+          </td>
+        </tr>
+
+        <tr v-if="route.name == 'adminPurchaseEdit' && !DATA">
+          <td colspan="11" class="text-center text-muted">
+            <AdminLoadingSpinnerDiv />
           </td>
         </tr>
         <tr>
@@ -580,7 +568,12 @@
 /* eslint-disable */
 import { useStore } from "vuex";
 import { watch, ref, computed } from "vue";
-import { useForm, useField, useIsFormDirty } from "vee-validate";
+import {
+  useForm,
+  useField,
+  useIsFormDirty,
+  useIsFormValid,
+} from "vee-validate";
 import * as yup from "yup";
 import admin from "@/mixins/admin.js";
 import { useRouter, useRoute } from "vue-router";
@@ -594,7 +587,7 @@ export default {
     const router = useRouter();
     const route = useRoute();
     const store = useStore();
-    const DATA = ref({});
+    const DATA = ref(undefined);
     /************************************************************************* */
     const searchBox = ref(null);
     var search_product = null;
@@ -728,6 +721,7 @@ export default {
     const { value: roundoff } = useField("roundoff");
     const { value: tax_rate } = useField("tax_rate");
     const isDirty = useIsFormDirty();
+    const isValid = useIsFormValid();
     /************************************************************************* */
     const calc = {
       total_items: function () {
@@ -781,7 +775,7 @@ export default {
         return this.total_product_sub_total() - discount.value;
       },
       total_order_tax: function () {
-        if (tax_rate.value > 0) {
+        if (tax_rate.value > 0 && taxes.value && taxes.value.length) {
           return Number(
             tax_value_calc(
               taxes.value.find((obj) => {
@@ -803,7 +797,12 @@ export default {
         return parseFloat(total_payable);
       },
       shipping_plus_tax_value: function () {
-        if (shipping_tax.value > 0 && shipping.value) {
+        if (
+          shipping_tax.value > 0 &&
+          shipping.value &&
+          taxes.value &&
+          taxes.value.length
+        ) {
           return (
             shipping.value +
             Number(
@@ -819,7 +818,12 @@ export default {
         return shipping.value;
       },
       packing_plus_tax_value: function () {
-        if (packing_tax.value > 0 && packing.value) {
+        if (
+          packing_tax.value > 0 &&
+          packing.value &&
+          taxes.value &&
+          taxes.value.length
+        ) {
           return (
             packing.value +
             Number(
@@ -855,7 +859,7 @@ export default {
       var method = "POST";
       var action = "create";
       if (route.name == "adminPurchaseEdit") {
-        values.id = dbData.value.id;
+        values.id = DATA.value.id;
         method = "PUT";
         action = "update";
       }
@@ -865,9 +869,8 @@ export default {
         action: action,
       }).then(function (data) {
         if (data.success == true) {
-          console.log("Purchase added !");
+
         } else if (data.success == false) {
-          console.log("Purchase not added !");
           // valid error
           if (data.errors) {
             for (var key in data.errors) {
@@ -1124,10 +1127,23 @@ export default {
       }
     }
     watch(
-      [products, shipping, packing, discount, tax_rate],
+      [
+        /*date,
+        supplier,
+        warehouse,
+        purchase_status,
+        note,*/
+        products,
+        shipping,
+        shipping_tax,
+        packing,
+        packing_tax,
+        discount,
+        tax_rate,
+      ],
       () => {
         //customer_readonly.value = customer.value ? true : false;
-        //emitter.emit("playSound", { file: "add.mp3" });
+        emitter.emit("playSound", { file: "add.mp3" });
       },
       { deep: true }
     );
@@ -1152,6 +1168,7 @@ export default {
       errorNote,
       onSubmit,
       isDirty,
+      isValid,
       isSubmitting,
       resetForm,
       resetCustom,
@@ -1186,6 +1203,7 @@ export default {
       newUnit,
       newSupplier,
       route,
+      DATA,
     };
   },
   data() {
@@ -1215,9 +1233,10 @@ export default {
       ).then(function (response) {
         if (response.success == true) {
           var data = response.data;
-          var products = response.data.products;
-          var units = response.data.units;
-          data.products.forEach((element, index, array) => {
+          self.DATA = data; // store db data
+          var products = data.products;
+          var units = data.units;
+          products.forEach((element, index) => {
             products[index].hsn = "000";
             products[index].quantity = Number(element.quantity); //item quantity
             products[index].discount = Number(element.unit_discount); // unit (per p_unit) discount
@@ -1276,8 +1295,8 @@ export default {
                   products[index].total_tax_()
               );
             };
+            self.products.push(products[index]);
           });
-          self.setFieldValue("products", data.products);
           self.setFieldValue("date", data.date + "T" + data.time);
           self.setFieldValue("supplier", data.supplier);
           self.setFieldValue("warehouse", data.warehouse);

@@ -156,6 +156,7 @@ class Purchase_model extends CI_Model
 		$this->db->group_by('p.id');
 		$this->db->where(array('p.deleted_at' => NULL)); // select only not deleted rows
 		$this->db->group_start();
+		$this->db->or_like('p.reference_id',	$search);
 		$this->db->or_like('p.date',			$search);
 		$this->db->or_like('p.discount',		$search);
 		$this->db->or_like('p.shipping_charge',	$search);
@@ -190,7 +191,6 @@ class Purchase_model extends CI_Model
 		1															as quantity,
 		DATE_FORMAT(p.mfg_date,"%d/%b/%Y")							as mfg_date,
 		DATE_FORMAT(p.exp_date,"%d/%b/%Y")							as exp_date,
-		IFNULL(p.p_unit,p.unit)										as p_unit,
 
 		pt.name														as type,
 
@@ -203,9 +203,10 @@ class Purchase_model extends CI_Model
 		b.name														as brand_name,
 		b.code														as brand_code,
 
-		u.id														as unit,
+		p.unit														as unit,
 		u.name														as unit_name,
 		u.code														as unit_code,
+		IFNULL(p.p_unit,p.unit)										as p_unit,
 
 		tr.id														as tax_id,
 		tr.code														as tax_code,
@@ -295,9 +296,21 @@ class Purchase_model extends CI_Model
 		$query = $this->db->insert(TABLE_PURCHASE, $data);
 		return $query;
 	}
+	function update_purchase($data, $id)
+	{
+		$this->db->where('id', $id);
+		$query = $this->db->update(TABLE_PURCHASE, $data);
+		return $query;
+	}
 	function insert_purchase_product($data)
 	{
 		$query = $this->db->insert(TABLE_PURCHASE_PRODUCT, $data);
+		return $query;
+	}
+	function delete_purchase_products($where)
+	{
+		$this->db->where($where);
+		$query = $this->db->delete(TABLE_PURCHASE_PRODUCT);
 		return $query;
 	}
 }
