@@ -144,12 +144,6 @@ export default {
         language: {
           processing:
             '<div class="spinner-grow" style="width: 3rem; height: 3rem;" role="status"> <span class="visually-hidden">Loading...</span></div>',
-          emptyTable: "No data available in table",
-          zeroRecords: "No matching products found",
-          info: "Showing _START_ to _END_ of _TOTAL_ Products",
-          infoEmpty: "No product info found",
-          emptyTable: "No products found",
-          infoFiltered: "(filtered from _MAX_ Products)",
           paginate: {
             first: "First",
             last: "Last",
@@ -275,7 +269,7 @@ export default {
                 return (
                   '<span class="text-danger fw-bold">' +
                   parseFloat(data).toFixed(2) +
-                  '</span>'
+                  "</span>"
                 );
               }
               return '<span class="text-muted small">-</span>';
@@ -285,15 +279,10 @@ export default {
             targets: [11],
             className: "text-capitalize text-center",
             render: function (data, type, row, meta) {
-              if (row['total_paid'] == row['total_payable']) {
-                return (
-                  '<span class="badge bg-success fw-bold w-100">Completed</span>'
-                );
-              }
-              else if (row['total_paid'] > row['total_payable']) {
-                return (
-                  '<span class="badge bg-success fw-bold w-100">Completed</span>'
-                );
+              if (row["total_paid"] == row["total_payable"]) {
+                return '<span class="badge bg-success fw-bold w-100">Completed</span>';
+              } else if (row["total_paid"] > row["total_payable"]) {
+                return '<span class="badge bg-success fw-bold w-100">Completed</span>';
               }
               return '<span class="badge bg-danger fw-bold w-100">Due</span>';
             },
@@ -402,30 +391,6 @@ export default {
             },
           },
           {
-            text: '<i class="fa fa-trash"></i>',
-            className: "btn-light",
-            enabled: false,
-            action: function () {
-              let rows = self.table.rows(".selected").data().toArray();
-              self.emitter.emit("deleteConfirmModal", {
-                title: null,
-                body: "Delete products <b>(" + rows.length + ")</b> ?",
-                data: { bulk: true, rows: rows },
-                emit: "confirmDeleteProduct",
-                hide: true,
-                type: "danger",
-              });
-            },
-            attr: {
-              title: "Delete",
-              id: "delete",
-            },
-            key: {
-              key: "d",
-              shiftKey: true,
-            },
-          },
-          {
             extend: "copy",
             text: '<i class="fas fa-copy"></i>',
             className: "btn-light",
@@ -458,12 +423,7 @@ export default {
         initComplete: function (settings) {
           $("#buttons").html(self.table.buttons().container());
         },
-        drawCallback: function (settings) {
-          let rows = self.table.rows(".selected").data().toArray();
-          self.table.button(5).enable(rows.length >= 1);
-          $("#checkall").prop("indeterminate", false);
-          $("#checkall").prop("checked", false);
-        },
+        drawCallback: function (settings) {},
         createdRow: function (row, data, dataIndex) {
           if (data["deleted_at"]) {
             $(row).addClass("bg-danger");
@@ -509,33 +469,13 @@ export default {
         let row = self.table.row($(this).parents("tr")).data();
         self.emitter.emit("deleteConfirmModal", {
           title: null,
-          body: "Delete product with name <b>" + row.name + "</b> ?",
+          body:
+            "Delete purchase with Ref. No. <b>" + row.reference_id + "</b> ?",
           data: row,
-          emit: "confirmDeleteProduct",
+          emit: "confirmDeletePurchase",
           hide: true,
           type: "danger",
         });
-      });
-      self.table.on("select deselect", function () {
-        self.rows = self.table.rows(".selected").data().toArray();
-        self.table.button(5).enable(self.rows.length >= 1);
-        if (self.rows.length == 0) {
-          $("#checkall").prop("indeterminate", false);
-          $("#checkall").prop("checked", false);
-        } else if (self.rows.length < self.table.data().count()) {
-          $("#checkall").prop("checked", false);
-          $("#checkall").prop("indeterminate", true);
-        } else if (self.rows.length == self.table.data().count()) {
-          $("#checkall").prop("indeterminate", false);
-          $("#checkall").prop("checked", true);
-        }
-      });
-      $("#checkall").on("click", function (e) {
-        if ($(this).is(":checked")) {
-          self.table.rows().select();
-        } else {
-          self.table.rows().deselect();
-        }
       });
       $("#search").keyup(function () {
         // custom search box
@@ -552,7 +492,7 @@ export default {
           self.table.search("").draw();
         });
     });
-    self.emitter.on("confirmDeleteProduct", (data) => {
+    self.emitter.on("confirmDeletePurchase", (data) => {
       // delete selected supplier stuff here
       if (self.controller_delete.value) {
         self.controller_delete.value.abort();
@@ -561,7 +501,7 @@ export default {
       self
         .axiosAsyncCallReturnData(
           "delete",
-          "product",
+          "purchase",
           {
             data: data,
             action: "delete",
@@ -592,17 +532,9 @@ export default {
   },
   beforeUnmount() {
     var self = this;
-    self.emitter.off("confirmDeleteProduct");
+    self.emitter.off("confirmDeletePurchase");
     // turn off for duplicate calling
     // because its called multiple times when page loaded multiple times
-  },
-  data: function () {
-    return {
-      products: [],
-      product: {
-        details: {},
-      },
-    };
   },
 };
 </script>

@@ -335,6 +335,7 @@ INSERT INTO `module_permission` (`module`, `permission`, `checked`, `read_only`,
 (15,	6,	NULL,	NULL,	'STOCK ADJ.'),
 (18,	1,	NULL,	NULL,	'PURCHASE'),
 (18,	3,	NULL,	NULL,	'PURCHASE'),
+(18,	4,	NULL,	NULL,	'PURCHASE'),
 (18,	6,	NULL,	NULL,	'PURCHASE');
 
 DROP TABLE IF EXISTS `payment_mode`;
@@ -678,9 +679,9 @@ CREATE TABLE `purchase` (
 ) ENGINE=InnoDB AUTO_INCREMENT=193 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `purchase` (`id`, `reference_id`, `return_id`, `warehouse`, `date`, `time`, `status`, `created_by`, `updated_by`, `supplier`, `discount`, `purchase_tax`, `shipping_charge`, `shipping_tax`, `packing_charge`, `packing_tax`, `round_off`, `payment_note`, `note`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(190,	'REF-PUR-00190',	NULL,	20,	'2022-09-12',	'22:41:20',	22,	1,	1,	88,	1.0000,	1,	10.0000,	1,	10.0000,	2,	0.0300,	NULL,	'sdsd',	'2022-09-06 17:11:41',	'2022-09-06 17:20:51',	NULL),
-(191,	'REF-PUR-00191',	NULL,	27,	'2022-08-31',	'22:53:26',	22,	1,	1,	89,	0.0000,	NULL,	50.0000,	NULL,	50.0000,	NULL,	0.5560,	NULL,	'sdsd',	'2022-09-06 17:23:47',	'2022-09-06 17:28:26',	NULL),
-(192,	'REF-PUR-00192',	NULL,	27,	'2022-09-09',	'23:04:44',	22,	1,	1,	91,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.9097,	NULL,	NULL,	'2022-09-06 17:34:46',	'2022-09-06 17:34:56',	NULL);
+(190,	'REF-PUR-00190',	NULL,	20,	'2022-09-12',	'22:41:20',	22,	1,	1,	88,	1.0000,	1,	10.0000,	1,	10.0000,	2,	0.0300,	NULL,	'sdsd',	'2022-09-06 17:11:41',	'2022-09-07 18:41:30',	NULL),
+(191,	'REF-PUR-00191',	NULL,	27,	'2022-08-31',	'22:53:26',	22,	1,	1,	89,	0.0000,	NULL,	50.0000,	NULL,	50.0000,	NULL,	0.5560,	NULL,	'sdsd',	'2022-09-06 17:23:47',	'2022-09-07 18:41:30',	NULL),
+(192,	'REF-PUR-00192',	NULL,	27,	'2022-09-09',	'23:04:44',	22,	1,	1,	91,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.9097,	NULL,	NULL,	'2022-09-06 17:34:46',	'2022-09-07 18:54:14',	'2022-09-07 18:54:14');
 
 DROP TABLE IF EXISTS `purchase_payment`;
 CREATE TABLE `purchase_payment` (
@@ -834,6 +835,7 @@ INSERT INTO `role_permission` (`role_id`, `module_id`, `permission_id`, `readonl
 (1,	17,	2,	1,	'MANUAL genders (admin default)',	1,	NULL),
 (1,	18,	1,	1,	'PURCHASE - create',	1,	NULL),
 (1,	18,	3,	1,	'PURCHASE - update',	1,	NULL),
+(1,	18,	4,	1,	'PURCHASE - delete',	1,	NULL),
 (1,	18,	6,	1,	'PURCHASE - datatable',	1,	NULL);
 
 DROP TABLE IF EXISTS `status`;
@@ -1161,4 +1163,4 @@ INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country
 (20,	'WARE0020',	'Ware House AAA',	'dsds',	'2020-02-12',	'India',	'TVM',	'695505',	'+91-9745451448',	'tewest@gmail.com',	'TVM',	NULL,	NULL,	'lklkl',	16,	'Flood',	NULL,	NULL,	'2021-04-14 19:54:53',	'2022-08-27 06:30:31',	NULL),
 (27,	'WARE0027',	'Ware House BBB',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	18,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-08-23 04:36:25',	NULL);
 
--- 2022-09-06 18:32:30
+-- 2022-09-07 18:54:50

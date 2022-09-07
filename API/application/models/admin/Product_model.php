@@ -46,6 +46,7 @@ class Product_model extends CI_Model
 		$this->db->join(TABLE_PURCHASE_PRODUCT . ' as pp',    'pp.purchase = pc.id', 'left');
 		$this->db->join(TABLE_PRODUCT . ' as p',    'p.id = pp.product', 'left');
 		$this->db->join(TABLE_UNIT . ' as u',    'u.id = pp.unit', 'left'); // useful for bulk quantity calc
+		$this->db->where('pc.deleted_at', NULL); // select only not deleted rows
 		$this->db->where('pc.status', 22); // 22 - for received status
 		$this->db->where(array('p.id' => $id));
 		$this->db->group_by('p.id');
@@ -229,11 +230,11 @@ class Product_model extends CI_Model
 		/******************************************************/ // calc quantity using purchase - received status
 		$this->db->select('pp.product as pp_product,SUM(IFNULL(u.step,1) * pp.quantity) as total_pp_quantity');
 		$this->db->from(TABLE_PURCHASE_PRODUCT . ' as pp');
-		$this->db->join(TABLE_PURCHASE. ' as pc',    'pc.id = pp.purchase', 'left');
+		$this->db->join(TABLE_PURCHASE . ' as pc',    'pc.id = pp.purchase', 'left');
 		$this->db->join(TABLE_PRODUCT . ' as p',    'p.id = pp.product', 'left');
 		$this->db->join(TABLE_UNIT . ' as u',    'u.id = pp.unit', 'left'); // useful for bulk quantity calc
 		$this->db->where('pc.deleted_at', NULL); // select only not deleted rows
-		$this->db->where('pc.status',22); // 22 - for received status
+		$this->db->where('pc.status', 22); // 22 - for received status
 		//$this->db->where('pc.warehouse', 27); // change this for warehouse based stock, remove for all warehouse
 		$this->db->group_by('pp.product');
 		$query_pur_product = $this->db->get_compiled_select();

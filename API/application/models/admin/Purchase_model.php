@@ -262,7 +262,7 @@ class Purchase_model extends CI_Model
 		$this->db->from(TABLE_PURCHASE . ' p');
 		$this->db->where($where);
 		$query = $this->db->get();
-		return $query->row_array();
+		return $query ? $query->row_array() : false;
 	}
 	function get_purchase_products_by_purchase($where)
 	{
@@ -289,7 +289,7 @@ class Purchase_model extends CI_Model
 		$this->db->where($where);
 		$query = $this->db->get();
 		//die($this->db->last_query());
-		return $query->result();
+		return $query ? $query->result() : false;
 	}
 	function insert_purchase($data)
 	{
@@ -298,8 +298,15 @@ class Purchase_model extends CI_Model
 	}
 	function update_purchase($data, $id)
 	{
-		$this->db->where('id', $id);
+		$this->db->where(array('id' => $id, 'deleted_at' => NULL));
 		$query = $this->db->update(TABLE_PURCHASE, $data);
+		return $query;
+	}
+	function set_deleted_at($where) // mark as deleted
+	{
+		$this->db->where($where);
+		$this->db->set('deleted_at', 'NOW()', FALSE); // deleted rows have a timestamp
+		$query = $this->db->update(TABLE_PURCHASE);
 		return $query;
 	}
 	function insert_purchase_product($data)
