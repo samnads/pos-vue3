@@ -1,4 +1,5 @@
 <template>
+  <PurchasePayment />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
@@ -66,8 +67,9 @@
 import { ref } from "vue";
 import admin from "@/mixins/admin.js";
 import { inject } from "vue";
+import PurchasePayment from "../purchase/PurchasePayment.vue";
 export default {
-  components: {},
+  components: { PurchasePayment },
   /* eslint-disable */
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
@@ -76,6 +78,7 @@ export default {
     const {
       axiosAsyncCallReturnData,
       notifyDefault,
+      axiosAsyncStoreReturnBool,
       notifyApiResponse,
       notifyCatchResponse,
     } = admin();
@@ -84,6 +87,7 @@ export default {
       controller_delete,
       axiosAsyncCallReturnData,
       notifyDefault,
+      axiosAsyncStoreReturnBool,
       notifyApiResponse,
       notifyCatchResponse,
     };
@@ -314,11 +318,19 @@ export default {
                   : "") +
                 (row["deletable"] === 0 ? "disabled" : "") +
                 '><i class="fas fa-trash"></i></button>';
+              let addPay =
+                '<button type="button" id="addpay" class="btn btn-secondary"' +
+                (row["deletable"] !== 0
+                  ? 'data-bs-toggle="tooltip" data-bs-placement="left" title="Add Payment"'
+                  : "") +
+                (row["deletable"] === 0 ? "disabled" : "") +
+                '><i class="fa-brands fa-paypal"></i></button>';
               return (
                 '<div class="btn-group btn-group-sm" role="group">' +
                 editBtn +
                 infoBtn +
                 delBtn +
+                addPay +
                 "</div>"
               );
             },
@@ -476,6 +488,9 @@ export default {
           hide: true,
           type: "danger",
         });
+      });
+      $("#datatable tbody").on("click", "#addpay", function () {
+        window.PURCHASE_PAY_MODAL.show();
       });
       $("#search").keyup(function () {
         // custom search box

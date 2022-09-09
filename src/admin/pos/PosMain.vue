@@ -874,7 +874,7 @@ import {
 } from "vee-validate";
 import * as yup from "yup";
 import CustomerNewModal from "../customer/CustomerNewModal.vue";
-import CustomerInfoModal from "../customer//CustomerInfoModal.vue";
+import CustomerInfoModal from "../customer/CustomerInfoModal.vue";
 export default {
   components: {
     CustomerNewModal,
