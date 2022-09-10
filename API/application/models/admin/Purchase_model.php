@@ -90,7 +90,7 @@ class Purchase_model extends CI_Model
 		END) as packing_tax_value,
 
 
-		(CASE 
+		ROUND((CASE 
 			WHEN tr_p.type = "P" THEN (IFNULL(tr_p.rate, 0) / 100) * (SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) - p.discount)
 			ELSE IFNULL(tr_p.rate, 0)
 		END) + (SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) - p.discount) +
@@ -104,7 +104,7 @@ class Purchase_model extends CI_Model
 			ELSE IFNULL(tr_pk.rate, 0)
 		END) +
 		p.packing_charge -
-		p.round_off as total_payable,
+		p.round_off,2) as total_payable,
 
 		ROUND(IFNULL(ppy.total_paid, 0)) as total_paid,
 		
@@ -318,6 +318,11 @@ class Purchase_model extends CI_Model
 	{
 		$this->db->where($where);
 		$query = $this->db->delete(TABLE_PURCHASE_PRODUCT);
+		return $query;
+	}
+	function create_purchase_sale_payment($data)
+	{
+		$query = $this->db->insert(TABLE_PURCHASE_PAYMENT, $data);
 		return $query;
 	}
 }

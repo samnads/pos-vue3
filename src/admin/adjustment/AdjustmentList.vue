@@ -204,12 +204,6 @@ export default {
         language: {
           processing:
             '<div class="spinner-grow" style="width: 3rem; height: 3rem;" role="status"> <span class="visually-hidden">Loading...</span></div>',
-          emptyTable: "No data available in table",
-          zeroRecords: "No matching adjustments found",
-          info: "Showing _START_ to _END_ of _TOTAL_ adjustments",
-          infoEmpty: "No adjustment info found",
-          emptyTable: "No adjustments found",
-          infoFiltered: "(filtered from _MAX_ adjustments)",
           paginate: {
             first: "First",
             last: "Last",

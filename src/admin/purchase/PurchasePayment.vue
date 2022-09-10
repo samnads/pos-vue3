@@ -19,19 +19,21 @@
                 <div class="card-body">
                   <div class="row">
                     <div class="col-6">
-                      <label class="form-label">Ref. No.</label> : Walk-in
-                      Customer
+                      <label class="form-label">Ref. No.</label> :
+                      {{ DATA.reference_id }}
                     </div>
                     <div class="col-6 text-end">
-                      <label class="form-label"> Date</label> : CUS7116
+                      <label class="form-label"> Date</label> : {{ DATA.date }}
                     </div>
                   </div>
                   <div class="row">
                     <div class="col-6">
-                      <label class="form-label">Supplier</label> : N/A
+                      <label class="form-label">Supplier</label> :
+                      {{ DATA.supplier_name }}
                     </div>
                     <div class="col-6 text-end">
-                      <label class="form-label">Warehouse</label> : CUS7116
+                      <label class="form-label">Warehouse</label> :
+                      {{ DATA.warehouse_name }}
                     </div>
                   </div>
                 </div>
@@ -60,7 +62,7 @@
                     @click="removePayment(p)"
                   ></button>
                   <div class="row">
-                    <div class="col-6">
+                    <div class="col-5">
                       <label class="form-label">Amount<i>*</i></label>
                       <input
                         type="number"
@@ -70,7 +72,7 @@
                         @focus="$event.target.select()"
                       />
                     </div>
-                    <div class="col-6">
+                    <div class="col-3">
                       <label class="form-label">Payment Method<i>*</i></label>
                       <select
                         class="form-select"
@@ -88,6 +90,14 @@
                           {{ m.name }}
                         </option>
                       </select>
+                    </div>
+                    <div class="col-4">
+                      <label class="form-label">Date & Time<i>*</i></label>
+                      <input
+                        type="datetime-local"
+                        v-model="p.date_time"
+                        class="form-control"
+                      />
                     </div>
                     <div class="col-6">
                       <label class="form-label">Transaction ID</label>
@@ -173,24 +183,43 @@
                 >
                   <div class="card-body">
                     <div class="row text-end">
-                      <div class="col-12 fs-4">Previous Due</div>
+                      <div class="col-12 fs-4">Due Amount</div>
                       <div class="col-12 fs-4">
-                        <span class="badge bg-light text-dark">{{}}</span>
+                        <span class="badge bg-light text-dark">{{
+                          (
+                            parseFloat(DATA.total_payable) -
+                            parseFloat(DATA.total_paid)
+                          ).toFixed(2)
+                        }}</span>
                       </div>
                       <hr class="m-1" />
-                      <div class="col-12 fs-4">Current Payable</div>
+                      <div class="col-12 fs-4">Paying Amount</div>
                       <div class="col-12 fs-4">
-                        <span class="badge bg-light text-dark">{{}}</span>
+                        <span class="badge bg-light text-dark">{{
+                          calc.payingTotal().toFixed(2)
+                        }}</span>
                       </div>
                       <hr class="m-1" />
                       <div class="col-12 fs-4">
-                        Balance {{ calc.balance() >= 0 ? "" : "Return" }}
+                        Balance {{ calc.balance() >= 0 ? "Due" : "Returned" }}
                       </div>
                       <div class="col-12 fs-4">
                         <span class="badge bg-light text-dark">{{
                           calc.balance().toFixed(2)
                         }}</span>
                       </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-body">
+                    <div class="col">
+                      <label class="form-label">Payment Note</label>
+                      <textarea
+                        type="text"
+                        v-model="payment_note"
+                        class="form-control"
+                      ></textarea>
                     </div>
                   </div>
                 </div>
@@ -224,7 +253,7 @@
 <style>
 </style>
 <script>
-import { ref, computed } from "vue";
+import { watch, ref, computed } from "vue";
 import admin from "@/mixins/admin.js";
 import { Modal } from "bootstrap";
 import { inject } from "vue";
@@ -241,6 +270,7 @@ export default {
   /* eslint-disable */
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
+    const DATA = ref({});
     const controller_delete = ref({});
     const store = useStore();
     let paymentModes = computed(function () {
@@ -252,6 +282,7 @@ export default {
           .array(
             yup.object().shape({
               id: yup.number().required().label("Payment ID"),
+              date_time: yup.string().required().label("Date & Time"),
               amount: yup
                 .number()
                 .typeError("Amount must be a number")
@@ -266,19 +297,11 @@ export default {
           )
           .required()
           .label("Payments"),
+        payment_note: yup.string().nullable().label("Payment Note"),
       });
     });
     var formValues = {
-      payments: [
-        {
-          id: Date.now(),
-          amount: 0,
-          mode: 2,
-          transaction_id: null,
-          reference_no: null,
-          note: null,
-        },
-      ],
+      payments: [],
     }; // pre form values
     const {
       setFieldValue,
@@ -292,13 +315,21 @@ export default {
       initialErrors: {},
     });
     const { value: payments } = useField("payments");
+    const { value: payment_note } = useField("payment_note");
     const calc = {
-      balance: function () {
-        var totalPaying = 0;
+      payingTotal: function () {
+        var payingTotal = 0;
         payments.value.forEach((element, index, array) => {
-          totalPaying += element.amount;
+          payingTotal += element.amount;
         });
-        return totalPaying;
+        return payingTotal;
+      },
+      balance: function () {
+        return (
+          Number(DATA.value.total_payable) -
+          Number(DATA.value.total_paid) -
+          this.payingTotal()
+        );
       },
     };
     // notify
@@ -309,21 +340,55 @@ export default {
       notifyApiResponse,
       notifyCatchResponse,
     } = admin();
-    function addNewPayment(mode) {
-      let payMethod = {
-        id: Date.now(),
-        amount: 0,
-        mode: mode,
-        transaction_id: null,
-        reference_no: null,
-        note: null,
-      };
-      payments.value.push(payMethod);
+    function addNewPayment(mode, launch = false) {
+      // launch is for first time show modal
+      let total = 0;
+      payments.value.forEach((element) => {
+        total += element.amount;
+      });
+      let total_payable = Number(
+        parseFloat(DATA.value.total_payable).toFixed(2)
+      );
+      let balance_payable = total_payable - total - DATA.value.total_paid;
+      if (balance_payable <= 0 && launch == true) {
+        // first time load and all amount is paid
+        notifyDefault({ message: "Payment already completed !", type: "info" });
+      } else {
+        // create date
+        let now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        let date_time = now.toISOString().slice(0, 16);
+        //
+        let payMethod = {
+          id: Date.now(),
+          date_time: date_time,
+          amount: balance_payable > 0 ? balance_payable : 0,
+          mode: mode,
+          transaction_id: null,
+          reference_no: null,
+          note: null,
+        };
+        payments.value.push(payMethod);
+        window.PURCHASE_PAY_MODAL.show();
+      }
     }
     function removePayment(payment) {
       let index = payments.value.findIndex((item) => item.id === payment.id);
       payments.value.splice(index, 1);
     }
+    emitter.on("purchasePayModal", (data) => {
+      payments.value = [];
+      payment_note.value = data.data.payment_note; // show from db
+      data.data.total_payable = Number(
+        parseFloat(data.data.total_payable).toFixed(2)
+      );
+      data.data.total_paid = Number(
+        parseFloat(data.data.total_paid).toFixed(2)
+      );
+      data.data.due = Number(parseFloat(data.data.due).toFixed(2));
+      DATA.value = data.data;
+      addNewPayment(1, true);
+    });
     function onInvalidSubmit({ values, errors }) {
       console.log("Form field errors found !");
       for (var key in errors) {
@@ -331,14 +396,15 @@ export default {
       }
     }
     const onSubmit = handleSubmit((values) => {
+      values.purchase = DATA.value;
       return axiosAsyncCallReturnData("POST", "purchase", {
-        action: "create",
-        job: "payment",
+        action: "payment",
         data: values,
       }).then(function (data) {
         if (data.success == true) {
           window.PURCHASE_PAY_MODAL.hide();
           resetForm();
+          emitter.emit("refreshPurchaseTable", data);
         } else if (data.success == false) {
           // valid error
           if (data.errors) {
@@ -351,6 +417,14 @@ export default {
         }
       });
     }, onInvalidSubmit);
+    watch(
+      [payments],
+      () => {
+        //customer_readonly.value = customer.value ? true : false;
+        emitter.emit("playSound", { file: "add.mp3" });
+      },
+      { deep: true }
+    );
     return {
       emitter,
       controller_delete,
@@ -362,11 +436,14 @@ export default {
       useIsFormDirty,
       useIsFormValid,
       payments,
+      payment_note,
       calc,
       paymentModes,
       addNewPayment,
       removePayment,
       onSubmit,
+      isSubmitting,
+      DATA,
     };
   },
   methods: {},
@@ -387,7 +464,7 @@ export default {
   },
   beforeUnmount() {
     var self = this;
-    self.emitter.off("confirmDeletePurchase");
+    self.emitter.off("purchasePayModal");
     // turn off for duplicate calling
     // because its called multiple times when page loaded multiple times
   },

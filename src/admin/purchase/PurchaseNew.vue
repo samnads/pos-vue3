@@ -5,7 +5,7 @@
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
         <h5 class="title">
-          <i class="fa-solid fa-cart-arrow-down"></i><span>New Purchase</span>
+          <i class="fa-sharp fa-solid fa-truck-fast"></i><span>{{route.name != "adminPurchaseEdit" ? 'New Purchase' : 'Edit Purchase'}}</span>
         </h5>
       </div>
       <div class="p-2 bd-highlight"></div>
@@ -384,7 +384,7 @@
               <td class="bg-dark bg-opacity-75">After Dsc.</td>
               <td class="bg-secondary text-end">
                 {{
-                  calc.total_product_sub_total_after_cart_discount().toFixed(2)
+                  calc.total_product_sub_total_after_cart_discount()
                 }}
               </td>
             </tr>
@@ -412,7 +412,7 @@
               </td>
               <td class="bg-dark bg-opacity-75" width="25%">Tax</td>
               <td class="text-end bg-secondary" width="25%">
-                {{ calc.total_order_tax().toFixed(2) }}
+                {{ calc.total_order_tax() }}
               </td>
             </tr>
             <tr>
@@ -458,7 +458,7 @@
                 </select>
               </td>
               <td class="text-end bg-secondary">
-                {{ calc.shipping_plus_tax_value().toFixed(2) }}
+                {{ calc.shipping_plus_tax_value() }}
               </td>
             </tr>
             <tr>
@@ -504,7 +504,7 @@
                 </select>
               </td>
               <td class="bg-secondary text-end">
-                {{ calc.packing_plus_tax_value().toFixed(2) }}
+                {{ calc.packing_plus_tax_value() }}
               </td>
             </tr>
             <tr>
@@ -512,7 +512,7 @@
               <td class="bg-dark bg-opacity-75"></td>
               <td class="bg-dark bg-opacity-75">Round Off</td>
               <td class="bg-secondary text-end">
-                {{ "- " + calc.round_off().toFixed(2) }}
+                {{ "- " + calc.round_off() }}
               </td>
             </tr>
             <tr>
@@ -525,7 +525,7 @@
               >
                 <div class="d-flex justify-content-between">
                   <div class="text-muted">₹</div>
-                  <div>{{ calc.total_payable_round().toFixed(2) }}</div>
+                  <div>{{ calc.total_payable_round() }}</div>
                 </div>
               </td>
             </tr>

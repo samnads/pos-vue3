@@ -4,7 +4,7 @@
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
         <h5 class="title">
-          <i class="fa-solid fa-cart-shopping"></i><span>POS Sale List</span>
+          <i class="fa-solid fa-truck-fast"></i><span>Purchase List</span>
         </h5>
       </div>
       <div class="p-2 bd-highlight">
@@ -96,6 +96,9 @@ export default {
   created() {},
   mounted() {
     var self = this;
+    self.emitter.on("refreshPurchaseTable", (data) => {
+      self.table.ajax.reload();
+    });
     $(function () {
       $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
         console.log(message);
@@ -283,12 +286,16 @@ export default {
             targets: [11],
             className: "text-capitalize text-center",
             render: function (data, type, row, meta) {
-              if (row["total_paid"] == row["total_payable"]) {
+              if (Number(row["total_paid"]) == Number(row["total_payable"])) {
                 return '<span class="badge bg-success fw-bold w-100">Completed</span>';
-              } else if (row["total_paid"] > row["total_payable"]) {
+              } else if (
+                Number(row["total_paid"]) > Number(row["total_payable"])
+              ) {
                 return '<span class="badge bg-success fw-bold w-100">Completed</span>';
+              } else if (Number(row["total_paid"]) == 0) {
+                return '<span class="badge bg-danger fw-bold w-100">Due</span>';
               }
-              return '<span class="badge bg-danger fw-bold w-100">Due</span>';
+              return '<span class="badge bg-warning text-black-50 fw-bold w-100">Due</span>';
             },
           },
           {
@@ -309,7 +316,7 @@ export default {
                   : "") +
                 (row["editable"] === 0 ? "disabled" : "") +
                 '><i class="fas fa-pencil-alt"></i></button> ';
-              let delBtn =
+              /*let delBtn =
                 '<button type="button" id="delete" class="btn btn-' +
                 (row["deletable"] !== 0 ? "danger" : "secondary") +
                 '"' +
@@ -317,20 +324,21 @@ export default {
                   ? 'data-bs-toggle="tooltip" data-bs-placement="left" title="Delete"'
                   : "") +
                 (row["deletable"] === 0 ? "disabled" : "") +
-                '><i class="fas fa-trash"></i></button>';
-              let addPay =
-                '<button type="button" id="addpay" class="btn btn-secondary"' +
-                (row["deletable"] !== 0
-                  ? 'data-bs-toggle="tooltip" data-bs-placement="left" title="Add Payment"'
-                  : "") +
-                (row["deletable"] === 0 ? "disabled" : "") +
-                '><i class="fa-brands fa-paypal"></i></button>';
+                '><i class="fas fa-trash"></i></button>';*/
+              let addPay = '<li><a class="dropdown-item" href="#" id="addpay"><i class="fa-brands fa-paypal fa-fw"></i>Add Payment</a></li>';
               return (
-                '<div class="btn-group btn-group-sm" role="group">' +
+                '<div class="row-btn-group btn-group btn-group-sm" role="group" aria-label="Button group with nested dropdown">' +
                 editBtn +
                 infoBtn +
-                delBtn +
+                '<div class="btn-group btn-group-sm" role="group">' +
+                '<button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">' +
+                "</button>" +
+                '<ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">' +
+                '<li><a class="dropdown-item" href="#"><i class="fa-solid fa-eye fa-fw"></i>Show Payments</a></li>' +
                 addPay +
+                '<li><a class="dropdown-item" href="#" id="delete"><i class="fas fa-trash fa-fw"></i>Delete Purchase</a></li>' +
+                "</ul>" +
+                "</div>" +
                 "</div>"
               );
             },
@@ -490,7 +498,10 @@ export default {
         });
       });
       $("#datatable tbody").on("click", "#addpay", function () {
-        window.PURCHASE_PAY_MODAL.show();
+        let row = self.table.row($(this).parents("tr")).data();
+        self.emitter.emit("purchasePayModal", {
+          data: row,
+        });
       });
       $("#search").keyup(function () {
         // custom search box
@@ -548,6 +559,7 @@ export default {
   beforeUnmount() {
     var self = this;
     self.emitter.off("confirmDeletePurchase");
+    self.emitter.off("refreshPurchaseTable");
     // turn off for duplicate calling
     // because its called multiple times when page loaded multiple times
   },

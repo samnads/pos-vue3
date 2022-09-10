@@ -129,7 +129,12 @@
                 </li>
                 <li>
                   <router-link class="dropdown-item" to="/admin/purchase/new"
-                    >New</router-link
+                    >New Purchase</router-link
+                  >
+                </li>
+                <li>
+                  <router-link class="dropdown-item" to="/admin/purchase_return/list"
+                    >Return List</router-link
                   >
                 </li>
               </ul>
@@ -432,6 +437,12 @@ input[type="number"].no-arrow {
 .table th.col-fit {
   white-space: nowrap;
   width: 1%;
+}
+/***************************************************************  table row menu with icon things */
+.row-btn-group .dropdown-item .fa-fw {
+  margin-right: 0.5em;
+  padding-right: 0.5em;
+  border-right: 1px solid #000;
 }
 </style>
 <script>
