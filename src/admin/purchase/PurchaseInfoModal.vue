@@ -1,9 +1,9 @@
 <template>
-  <div class="modal" id="productInfoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal" id="purchaseInfoModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Product Details</h5>
+          <h5 class="modal-title">Purchase Details</h5>
           <button
             type="button"
             class="btn-close"
@@ -166,7 +166,7 @@ export default {
     const product = ref({});
     const details = ref({});
     const controller = ref(undefined);
-    emitter.on("showProductDetails", (data) => {
+    emitter.on("showPurchaseDetails", (data) => {
       let row = data.data;
       product.value = row;
       details.value = {};
@@ -174,10 +174,10 @@ export default {
         controller.value.abort();
       }
       controller.value = new AbortController();
-      window.PRODUCT_INFO_MODAL.show();
+      window.PURCHASE_INFO_MODAL.show();
       axiosAsyncCallReturnData(
         "get",
-        "product",
+        "purchase",
         {
           action: "details",
           id: row.id,
@@ -195,11 +195,11 @@ export default {
         } else {
           if (data.success == false) {
             // not ok
-            window.PRODUCT_INFO_MODAL.hide();
+            window.PURCHASE_INFO_MODAL.hide();
           } else {
             // other error
             if (data.message != "canceled") {
-              window.PRODUCT_INFO_MODAL.hide();
+              window.PURCHASE_INFO_MODAL.hide();
               notifyCatchResponse({ title: data.message });
             }
           }
@@ -221,7 +221,7 @@ export default {
   methods: {
     edit(data) {
       var self = this;
-      window.PRODUCT_INFO_MODAL.hide();
+      window.PURCHASE_INFO_MODAL.hide();
       self.$router
         .push({
           name: "adminProductEdit",
@@ -231,14 +231,14 @@ export default {
     },
   },
   mounted() {
-    window.PRODUCT_INFO_MODAL = new Modal($("#productInfoModal"), {
+    window.PURCHASE_INFO_MODAL = new Modal($("#purchaseInfoModal"), {
       backdrop: true,
       show: true,
     });
   },
   beforeUnmount() {
     var self = this;
-    self.emitter.off("showProductDetails");
+    self.emitter.off("showPurchaseDetails");
     // turn off for duplicate calling
     // because its called multiple times when page loaded multiple times
   },

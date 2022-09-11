@@ -1,5 +1,6 @@
 <template>
   <PurchasePayment />
+  <PurchaseInfoModal />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
@@ -68,8 +69,9 @@ import { ref } from "vue";
 import admin from "@/mixins/admin.js";
 import { inject } from "vue";
 import PurchasePayment from "../purchase/PurchasePayment.vue";
+import PurchaseInfoModal from "../purchase/PurchaseInfoModal.vue";
 export default {
-  components: { PurchasePayment },
+  components: { PurchasePayment, PurchaseInfoModal },
   /* eslint-disable */
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
@@ -325,7 +327,8 @@ export default {
                   : "") +
                 (row["deletable"] === 0 ? "disabled" : "") +
                 '><i class="fas fa-trash"></i></button>';*/
-              let addPay = '<li><a class="dropdown-item" href="#" id="addpay"><i class="fa-brands fa-paypal fa-fw"></i>Add Payment</a></li>';
+              let addPay =
+                '<li><a class="dropdown-item" href="#" id="addpay"><i class="fa-brands fa-paypal fa-fw"></i>Add Payment</a></li>';
               return (
                 '<div class="row-btn-group btn-group btn-group-sm" role="group" aria-label="Button group with nested dropdown">' +
                 editBtn +
@@ -452,11 +455,11 @@ export default {
       });
       $("#datatable tbody").on(
         "click",
-        "td:not(:first-child):not(:last-child),#details",
+        "td:not(:last-child),#details",
         function () {
           // show single product info
           let row = self.table.row($(this).parents("tr")).data();
-          self.emitter.emit("showProductDetails", {
+          self.emitter.emit("showPurchaseDetails", {
             title: null,
             body: null,
             data: row,
