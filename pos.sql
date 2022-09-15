@@ -338,6 +338,7 @@ INSERT INTO `module_permission` (`module`, `permission`, `checked`, `read_only`,
 (18,	3,	NULL,	NULL,	'PURCHASE'),
 (18,	4,	NULL,	NULL,	'PURCHASE'),
 (18,	6,	NULL,	NULL,	'PURCHASE'),
+(18,	7,	NULL,	NULL,	'PURCHASE'),
 (18,	9,	NULL,	NULL,	'PURCHASE');
 
 DROP TABLE IF EXISTS `payment_mode`;
@@ -686,8 +687,8 @@ INSERT INTO `purchase` (`id`, `reference_id`, `return_id`, `warehouse`, `date`, 
 (191,	'REF-PUR-00191',	NULL,	27,	'2022-08-31',	'22:53:26',	22,	1,	1,	89,	0.0000,	NULL,	50.0000,	NULL,	50.0000,	NULL,	0.5347,	'',	'sdsd',	'2022-09-06 17:23:47',	'2022-09-10 18:49:09',	NULL),
 (192,	'REF-PUR-00192',	NULL,	27,	'2022-09-09',	'23:04:44',	22,	1,	1,	91,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.3466,	'',	NULL,	'2022-09-06 17:34:46',	'2022-09-10 18:58:35',	NULL),
 (194,	'REF-PUR-00194',	NULL,	20,	'2022-09-02',	'12:24:08',	22,	1,	1,	88,	0.0000,	1,	1.0000,	1,	1.0000,	2,	0.7839,	'sdsd',	NULL,	'2022-09-10 06:54:34',	'2022-09-10 17:56:55',	NULL),
-(195,	'REF-PUR-00195',	NULL,	27,	'2022-09-01',	'19:13:38',	5,	1,	1,	89,	12.0000,	1,	0.0000,	NULL,	2.0000,	NULL,	0.2812,	NULL,	'fgfdg',	'2022-09-10 13:45:18',	'2022-09-10 18:59:12',	NULL),
-(196,	'REF-PUR-00196',	NULL,	27,	'2022-09-15',	'00:29:24',	22,	1,	1,	91,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	'trtrt',	'2022-09-10 18:59:37',	'2022-09-10 18:59:49',	NULL);
+(195,	'REF-PUR-00195',	NULL,	27,	'2022-09-01',	'19:13:38',	22,	1,	1,	89,	12.0000,	1,	0.0000,	NULL,	2.0000,	NULL,	0.2812,	NULL,	'fgfdg',	'2022-09-10 13:45:18',	'2022-09-11 06:55:59',	NULL),
+(196,	'REF-PUR-00196',	NULL,	27,	'2022-09-15',	'00:29:24',	22,	1,	1,	91,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	'',	'trtrt',	'2022-09-10 18:59:37',	'2022-09-11 06:56:10',	NULL);
 
 DROP TABLE IF EXISTS `purchase_payment`;
 CREATE TABLE `purchase_payment` (
@@ -705,15 +706,7 @@ CREATE TABLE `purchase_payment` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `purchase_payment` (`purchase`, `payment_mode`, `amount`, `date_time`, `transaction_id`, `reference_no`, `note`) VALUES
-(195,	1,	661.0000,	'2022-09-10 23:28:00',	NULL,	NULL,	NULL),
-(195,	6,	1.0000,	'2022-09-10 23:28:00',	NULL,	NULL,	NULL),
-(194,	1,	50.0000,	'2022-09-11 00:17:00',	NULL,	NULL,	NULL),
-(194,	4,	1.0000,	'2022-09-11 00:17:00',	NULL,	NULL,	NULL),
-(190,	1,	14982.0000,	'2022-09-11 00:18:00',	NULL,	NULL,	NULL),
-(192,	1,	256.0000,	'2022-09-11 00:18:00',	NULL,	NULL,	NULL),
-(194,	1,	540.0000,	'2022-09-11 00:19:00',	NULL,	NULL,	NULL),
-(191,	1,	221.0000,	'2022-09-11 00:19:00',	NULL,	NULL,	NULL),
-(192,	1,	12.0000,	'2022-09-22 12:32:00',	NULL,	NULL,	NULL);
+(196,	1,	39390.0000,	'2022-09-12 11:41:00',	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `purchase_product`;
 CREATE TABLE `purchase_product` (
@@ -928,6 +921,7 @@ INSERT INTO `role_permission` (`role_id`, `module_id`, `permission_id`, `readonl
 (1,	18,	3,	1,	'PURCHASE - update',	1,	NULL),
 (1,	18,	4,	1,	'PURCHASE - delete',	1,	NULL),
 (1,	18,	6,	1,	'PURCHASE - datatable',	1,	NULL),
+(1,	18,	7,	1,	'PURCHASE - details',	1,	NULL),
 (1,	18,	9,	1,	'PURCHASE - payment',	1,	NULL);
 
 DROP TABLE IF EXISTS `status`;
@@ -991,10 +985,11 @@ CREATE TABLE `stock_adjustment` (
   KEY `added_by` (`added_by`),
   CONSTRAINT `stock_adjustment_ibfk_2` FOREIGN KEY (`warehouse`) REFERENCES `warehouse` (`id`),
   CONSTRAINT `stock_adjustment_ibfk_3` FOREIGN KEY (`added_by`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=225 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=226 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `stock_adjustment` (`id`, `warehouse`, `added_by`, `date`, `time`, `reference_no`, `note`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(224,	20,	1,	'2022-09-10',	'19:31:41',	'gfh',	'ghgfhgfh',	'2022-09-10 12:02:20',	NULL,	NULL);
+(224,	20,	1,	'2022-09-10',	'19:31:41',	'gfh',	'ghgfhgfh',	'2022-09-10 12:02:20',	NULL,	NULL),
+(225,	20,	1,	'2022-09-15',	'12:57:12',	'gfgfg',	'43545',	'2022-09-11 07:27:36',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `stock_adjustment_product`;
 CREATE TABLE `stock_adjustment_product` (
@@ -1009,11 +1004,13 @@ CREATE TABLE `stock_adjustment_product` (
   KEY `product_id` (`product`),
   CONSTRAINT `stock_adjustment_product_ibfk_1` FOREIGN KEY (`stock_adjustment`) REFERENCES `stock_adjustment` (`id`),
   CONSTRAINT `stock_adjustment_product_ibfk_2` FOREIGN KEY (`product`) REFERENCES `product` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=363 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=365 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `stock_adjustment_product` (`id`, `stock_adjustment`, `product`, `note`, `quantity`) VALUES
 (361,	224,	10,	NULL,	1.0000),
-(362,	224,	6,	NULL,	2.0000);
+(362,	224,	6,	NULL,	2.0000),
+(363,	225,	10,	NULL,	1.0000),
+(364,	225,	6,	NULL,	3.0000);
 
 DROP TABLE IF EXISTS `supplier`;
 CREATE TABLE `supplier` (
@@ -1152,7 +1149,7 @@ INSERT INTO `unit` (`id`, `base`, `code`, `name`, `step`, `allow_decimal`, `desc
 (7,	6,	'5kkk',	'5 kg',	5,	1,	NULL,	NULL,	NULL,	'2022-07-20 15:13:35',	'2022-08-29 11:08:08',	NULL),
 (8,	5,	'1/2 KG',	'Half KG',	500,	0,	NULL,	NULL,	NULL,	'2022-07-20 15:18:12',	'2022-08-29 11:08:27',	NULL),
 (9,	NULL,	'MTR',	'Meter',	NULL,	0,	NULL,	NULL,	NULL,	'2022-07-20 15:23:18',	'2022-07-23 15:59:45',	NULL),
-(88,	6,	'jk',	'14hjhgj',	14,	1,	NULL,	NULL,	NULL,	'2022-08-29 17:33:18',	NULL,	NULL),
+(88,	6,	'jk',	'14hjhgj',	14,	0,	NULL,	NULL,	NULL,	'2022-08-29 17:33:18',	'2022-09-11 07:25:23',	NULL),
 (89,	6,	'1 Ton',	'Ton',	1000,	1,	NULL,	NULL,	NULL,	'2022-08-29 17:34:29',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `user`;
@@ -1196,7 +1193,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-09-10 09:59:18',	'2022-08-30 19:16:13',	'2021-04-20 19:22:52',	'2022-09-10 09:59:18',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-09-12 06:10:38',	'2022-09-12 06:10:36',	'2021-04-20 19:22:52',	'2022-09-12 06:10:38',	NULL),
 (30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
 (31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
@@ -1254,10 +1251,11 @@ CREATE TABLE `warehouse` (
   UNIQUE KEY `name_place` (`name`,`place`),
   KEY `status` (`status`),
   CONSTRAINT `warehouse_ibfk_1` FOREIGN KEY (`status`) REFERENCES `status` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country`, `city`, `pin_code`, `phone`, `email`, `address`, `longitude`, `latitude`, `description`, `status`, `status_reason`, `editable`, `deletable`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (20,	'WARE0020',	'Ware House AAA',	'dsds',	'2020-02-12',	'India',	'TVM',	'695505',	'+91-9745451448',	'tewest@gmail.com',	'TVM',	NULL,	NULL,	'lklkl',	16,	'Flood',	NULL,	NULL,	'2021-04-14 19:54:53',	'2022-08-27 06:30:31',	NULL),
-(27,	'WARE0027',	'Ware House BBB',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	18,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-08-23 04:36:25',	NULL);
+(27,	'WARE0027',	'Ware House BBB',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	16,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-09-12 06:08:24',	NULL),
+(33,	'WARE0033',	' bvbv',	'nbnvbnvbn',	'2022-09-08',	NULL,	NULL,	NULL,	'45454545',	'bnvbn@qqwqw.ghg',	NULL,	NULL,	NULL,	NULL,	16,	NULL,	NULL,	NULL,	'2022-09-11 07:52:55',	NULL,	NULL);
 
--- 2022-09-10 19:10:35
+-- 2022-09-15 15:46:28
