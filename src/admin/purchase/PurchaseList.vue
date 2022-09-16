@@ -1,6 +1,7 @@
 <template>
   <PurchasePayment />
   <PurchaseInfoModal />
+  <PurchasePayInfoModal />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
@@ -70,8 +71,9 @@ import admin from "@/mixins/admin.js";
 import { inject } from "vue";
 import PurchasePayment from "../purchase/PurchasePayment.vue";
 import PurchaseInfoModal from "../purchase/PurchaseInfoModal.vue";
+import PurchasePayInfoModal from "../purchase/PurchasePayInfoModal.vue";
 export default {
-  components: { PurchasePayment, PurchaseInfoModal },
+  components: { PurchasePayment, PurchaseInfoModal, PurchasePayInfoModal },
   /* eslint-disable */
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
@@ -337,7 +339,7 @@ export default {
                 '<button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">' +
                 "</button>" +
                 '<ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">' +
-                '<li><a class="dropdown-item" href="#"><i class="fa-solid fa-eye fa-fw"></i>Show Payments</a></li>' +
+                '<li><a class="dropdown-item" href="#" id="payinfo"><i class="fa-solid fa-eye fa-fw"></i>Show Payments</a></li>' +
                 addPay +
                 '<li><a class="dropdown-item" href="#" id="delete"><i class="fas fa-trash fa-fw"></i>Delete Purchase</a></li>' +
                 "</ul>" +
@@ -467,6 +469,13 @@ export default {
           });
         }
       );
+      $("#datatable tbody").on("click", "#payinfo", function () {
+        // from action menu
+        let row = self.table.row($(this).parents("tr")).data();
+        self.emitter.emit("showPurchasePayDetails", {
+          data: row,
+        });
+      });
       $("#datatable tbody").on("click", "#edit", function () {
         // edit from action menu
         self.row = self.table.row($(this).parents("tr")).data();

@@ -1,9 +1,9 @@
 <template>
-  <div class="modal" id="purchaseInfoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal" id="purchasePayInfoModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
-        <div class="modal-header bg-info">
-          <h5 class="modal-title text-dark">Purchase Details</h5>
+        <div class="modal-header bg-primary">
+          <h5 class="modal-title">Payment Details</h5>
           <button
             type="button"
             class="btn-close"
@@ -13,54 +13,22 @@
         </div>
         <div class="modal-body">
           <AdminLoadingSpinnerDiv v-if="!Object.keys(details).length" />
-          <div v-if="details.purchase">
+          <div v-if="details.payments">
             <div class="row row-cols-1 row-cols-md-2 g-3">
-              <div class="col">
-                <div class="card border-dark mb-3">
-                  <div class="card-header">Supplier</div>
-                  <div class="card-body text-dark">
-                    <h5 class="card-title text-primary">
-                      {{ details.purchase.supplier_name }}
-                    </h5>
-                    <p class="card-text">
-                      Some quick example text to build on the card title and
-                      make up the bulk of the card's content.
-                    </p>
-                  </div>
-                </div>
-              </div>
               <div class="col">
                 <div class="card border-dark mb-3">
                   <div class="card-header">Purchase</div>
                   <div class="card-body text-dark">
                     <h5 class="card-title text-primary">
-                      {{ details.purchase.warehouse_name }}
+                      {{ details.payments.reference_id }}
                     </h5>
-                    <p class="card-text">
-                      Ref. No. : {{ details.purchase.reference_id }}<br />
-                      Date : {{ details.purchase.date }}
-                      {{ details.purchase.time }}<br />
-                      Return ID : {{ details.purchase.return_id }}<br />
-                      Status :
-                      <span
-                        class="
-                          badge
-                          rounded-pill
-                          text-bg-success text-capitalize
-                        "
-                        v-bind:class="[details.purchase.status_css_class]"
-                        >{{ details.purchase.status_name }}</span
-                      ><br />
-                      Created By : {{ details.purchase.created_by_name }}<br />
-                      Last Updated By : {{ details.purchase.updated_by_name
-                      }}<br />
-                    </p>
+                    <p class="card-text">Date :</p>
                   </div>
                 </div>
               </div>
             </div>
             <div class="col">
-              <p class="h5">Products</p>
+              <p class="h5">Payments</p>
               <hr class="border border-dark border-1 mt-0" />
               <table
                 class="
@@ -71,17 +39,21 @@
                 <thead class="table-info">
                   <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Code | Name</th>
-                    <th scope="col">Quantity</th>
-                    <th scope="col">Unit</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Reference</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Mode</th>
+                    <th scope="col">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(item, index) in details.products" :key="index">
+                  <tr v-for="(item, index) in details.payments" :key="index">
                     <td>{{ index + 1 }}</td>
-                    <td>{{ item.code }} | {{ item.name }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>{{ item.unit_name }}</td>
+                    <td>{{ item.date_time }}</td>
+                    <td>{{ item.reference_no || 'NIL' }}</td>
+                    <td>{{ item.amount }}</td>
+                    <td>{{ item.payment_mode_name }}</td>
+                    <td>{{}}</td>
                   </tr>
                 </tbody>
               </table>
@@ -141,7 +113,7 @@ export default {
     const product = ref({});
     const details = ref({});
     const controller = ref(undefined);
-    emitter.on("showPurchaseDetails", (data) => {
+    emitter.on("showPurchasePayDetails", (data) => {
       let row = data.data;
       product.value = row;
       details.value = {};
@@ -149,12 +121,12 @@ export default {
         controller.value.abort();
       }
       controller.value = new AbortController();
-      window.PURCHASE_INFO_MODAL.show();
+      window.PURCHASE_PAY_INFO_MODAL.show();
       axiosAsyncCallReturnData(
         "get",
         "purchase",
         {
-          action: "details",
+          action: "payment_details",
           id: row.id,
         },
         controller.value,
@@ -174,7 +146,7 @@ export default {
           } else {
             // other error
             if (data.message != "canceled") {
-              window.PURCHASE_INFO_MODAL.hide();
+              window.PURCHASE_PAY_INFO_MODAL.hide();
               notifyCatchResponse({ title: data.message });
             }
           }
@@ -182,7 +154,7 @@ export default {
       });
     });
     function deleteConfirm(data) {
-      window.PURCHASE_INFO_MODAL.hide();
+      window.PURCHASE_PAY_INFO_MODAL.hide();
       emitter.emit("deleteConfirmModal", {
         title: null,
         body:
@@ -206,7 +178,7 @@ export default {
   methods: {
     edit(data) {
       var self = this;
-      window.PURCHASE_INFO_MODAL.hide();
+      window.PURCHASE_PAY_INFO_MODAL.hide();
       self.$router
         .push({
           name: "adminPurchaseEdit",
@@ -216,14 +188,14 @@ export default {
     },
   },
   mounted() {
-    window.PURCHASE_INFO_MODAL = new Modal($("#purchaseInfoModal"), {
+    window.PURCHASE_PAY_INFO_MODAL = new Modal($("#purchasePayInfoModal"), {
       backdrop: true,
       show: true,
     });
   },
   beforeUnmount() {
     var self = this;
-    self.emitter.off("showPurchaseDetails");
+    self.emitter.off("showPurchasePayDetails");
     // turn off for duplicate calling
     // because its called multiple times when page loaded multiple times
   },

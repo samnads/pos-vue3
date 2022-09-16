@@ -264,6 +264,74 @@ class Purchase_model extends CI_Model
 		$query = $this->db->get();
 		return $query ? $query->row_array() : false;
 	}
+	function getPurchaseProductsDetails($where)
+	{
+		$this->db->select('
+		p.id														as id,
+		p.code														as code,
+		p.name														as name,
+		pp.unit														as p_unit,
+		pp.unit_cost												as unit_cost,
+		(pp.unit_cost / IFNULL(u.step,1))							as db_cost,
+		pp.unit_discount											as unit_discount,
+		pp.tax_id													as tax_id,
+		pp.quantity													as quantity,
+		
+		p.unit														as unit,
+		u.name														as unit_name,
+		u.code
+																	as unit_code,
+		tr.rate														as tax_rate');
+		$this->db->from(TABLE_PURCHASE_PRODUCT . ' pp');
+		$this->db->join(TABLE_PRODUCT . ' p',	'p.id=pp.product',	'left');
+		$this->db->join(TABLE_UNIT . ' u',	'u.id=pp.unit',	'left');
+		$this->db->join(TABLE_TAX_RATE . ' tr',	'tr.id=pp.tax_id',	'left');
+		$this->db->where($where);
+		$query = $this->db->get();
+		//die($this->db->last_query());
+		return $query ? $query->result() : false;
+	}
+	function getPurchaseDetails($where)
+	{
+		$this->db->select('
+		p.reference_id										as reference_id,
+		p.return_id											as return_id,
+		w.name												as warehouse_name,
+		p.date												as date,
+		p.time												as time,
+		s.name												as status_name,
+		CONCAT(cu.first_name," ",cu.last_name)				as created_by_name,
+		CONCAT(uu.first_name," ",uu.last_name)				as updated_by_name,
+		sp.name												as supplier_name,
+		s.css_class											as status_css_class');
+		$this->db->from(TABLE_PURCHASE . ' p');
+		$this->db->join(TABLE_WAREHOUSE . ' w',	'w.id=p.warehouse',	'left');
+		$this->db->join(TABLE_STATUS . ' s',	's.id=p.status',	'left');
+		$this->db->join(TABLE_USER . ' cu',	'cu.id=p.created_by',	'left');
+		$this->db->join(TABLE_USER . ' uu',	'uu.id=p.updated_by',	'left');
+		$this->db->join(TABLE_SUPPLIER . ' sp',	'sp.id=p.supplier',	'left');
+		$this->db->where($where);
+		$query = $this->db->get();
+		//die($this->db->last_query());
+		return $query ? $query->row_array() : false;
+	}
+	function getPurchasePayments($where)
+	{
+		$this->db->select('
+		pp.date_time								as date_time,
+		pm.name										as payment_mode_name,
+		pp.amount									as amount,
+		pp.transaction_id							as transaction_id,
+		pp.reference_no								as reference_no,
+		pp.note												as note');
+		$this->db->from(TABLE_PURCHASE_PAYMENT . ' pp');
+		$this->db->join(TABLE_PAYMENT_MODE . ' pm',	'pm.id=pp.payment_mode',	'left');
+		$this->db->where($where);
+		$this->db->order_by("pp.date_time", "desc");
+		$query = $this->db->get();
+		//die($this->db->last_query());
+		return $query ? $query->result() : false;
+	}
 	function get_purchase_products_by_purchase($where)
 	{
 		$this->db->select('

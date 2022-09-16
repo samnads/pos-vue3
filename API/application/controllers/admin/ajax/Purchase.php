@@ -39,6 +39,17 @@ class Purchase extends CI_Controller
                         break;
                     case 'update':
                         break;
+                    case 'details':
+                        $data = array();
+                        $data['products'] = $this->Purchase_model->getPurchaseProductsDetails(array('pp.purchase' => (int)$this->input->get('id')));
+                        $data['purchase'] = $this->Purchase_model->getPurchaseDetails(array('p.id' => (int)$this->input->get('id')));
+                        echo json_encode(array('success' => true, 'type' => 'success', 'data' => $data));
+                        break;
+                    case 'payment_details':
+                        $data = array();
+                        $data['payments'] = $this->Purchase_model->getPurchasePayments(array('pp.purchase' => (int)$this->input->get('id')));
+                        echo json_encode(array('success' => true, 'type' => 'success', 'data' => $data));
+                        break;
                     default:
                         die(json_encode(array('success' => false, 'type' => 'danger', 'message' => 'Action not found !')));
                 }
