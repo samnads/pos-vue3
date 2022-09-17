@@ -318,8 +318,10 @@ class Purchase_model extends CI_Model
 	function getPurchasePayments($where)
 	{
 		$this->db->select('
+		FLOOR(RAND() * 401) + 100					as id,
 		pp.date_time								as date_time,
 		pm.name										as payment_mode_name,
+		pm.id										as mode,
 		pp.amount									as amount,
 		pp.transaction_id							as transaction_id,
 		pp.reference_no								as reference_no,

@@ -14,35 +14,30 @@
         <div class="modal-body">
           <AdminLoadingSpinnerDiv v-if="!Object.keys(details).length" />
           <div v-if="details.payments">
-            <div class="row row-cols-1 row-cols-md-2 g-3">
-              <div class="col">
-                <div class="card border-dark mb-3">
-                  <div class="card-header">Purchase</div>
-                  <div class="card-body text-dark">
-                    <h5 class="card-title text-primary">
-                      {{ details.payments.reference_id }}
-                    </h5>
-                    <p class="card-text">Date :</p>
-                  </div>
-                </div>
-              </div>
-            </div>
             <div class="col">
               <p class="h5">Payments</p>
               <hr class="border border-dark border-1 mt-0" />
+              <div
+                class="alert alert-info text-center"
+                role="alert"
+                v-if="details.payments.length == 0"
+              >
+                No Payments Found !
+              </div>
               <table
                 class="
                   table table-sm table-bordered
                   border-dark border-opacity-25
                 "
+                v-else
               >
                 <thead class="table-info">
                   <tr>
                     <th scope="col">#</th>
                     <th scope="col">Date</th>
                     <th scope="col">Reference</th>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Mode</th>
+                    <th scope="col" class="text-end">Amount</th>
+                    <th scope="col" class="text-center">Mode</th>
                     <th scope="col">Action</th>
                   </tr>
                 </thead>
@@ -50,9 +45,11 @@
                   <tr v-for="(item, index) in details.payments" :key="index">
                     <td>{{ index + 1 }}</td>
                     <td>{{ item.date_time }}</td>
-                    <td>{{ item.reference_no || 'NIL' }}</td>
-                    <td>{{ item.amount }}</td>
-                    <td>{{ item.payment_mode_name }}</td>
+                    <td>{{ item.reference_no || "NIL" }}</td>
+                    <td class="text-end">
+                      {{ parseFloat(item.amount).toFixed(2) }}
+                    </td>
+                    <td class="text-center">{{ item.payment_mode_name }}</td>
                     <td>{{}}</td>
                   </tr>
                 </tbody>
@@ -65,7 +62,7 @@
             type="button"
             class="btn btn-danger me-auto"
             :disabled="!Object.keys(details).length"
-            v-on:click="deleteConfirm(product)"
+            v-on:click="deleteConfirm(purchase)"
           >
             <i class="fa-solid fa-trash"></i>DELETE
           </button>
@@ -80,7 +77,7 @@
             type="button"
             class="btn btn-warning"
             :disabled="!Object.keys(details).length"
-            v-on:click="edit(product)"
+            v-on:click="editPay()"
           >
             <i class="fa-solid fa-pen-to-square"></i>Edit
           </button>
@@ -110,12 +107,12 @@ export default {
       notifyApiResponse,
       notifyCatchResponse,
     } = admin();
-    const product = ref({});
+    const purchase = ref({});
     const details = ref({});
     const controller = ref(undefined);
     emitter.on("showPurchasePayDetails", (data) => {
       let row = data.data;
-      product.value = row;
+      purchase.value = row;
       details.value = {};
       if (controller.value) {
         controller.value.abort();
@@ -138,7 +135,7 @@ export default {
       ).then(function (data) {
         if (data.success == true) {
           // ok
-          details.value = data.data || {}; // {} - because sometimes the product is already deleted so gets a null response data
+          details.value = data.data;
         } else {
           if (data.success == false) {
             // not ok
@@ -166,7 +163,7 @@ export default {
       });
     }
     return {
-      product,
+      purchase,
       details,
       emitter,
       notifyApiResponse,
@@ -176,15 +173,14 @@ export default {
     };
   },
   methods: {
-    edit(data) {
+    editPay() {
       var self = this;
+      let data = self.purchase;
+      data.payments = self.details.payments
       window.PURCHASE_PAY_INFO_MODAL.hide();
-      self.$router
-        .push({
-          name: "adminPurchaseEdit",
-          params: { id: data.id, data: JSON.stringify(data) },
-        })
-        .catch(() => {});
+      self.emitter.emit("purchasePayModal", {
+        data: data,
+      });
     },
   },
   mounted() {

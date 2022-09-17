@@ -40,7 +40,7 @@
               </div>
               <ul class="list-group">
                 <li class="list-group-item bg-secondary text-light fs-5">
-                  Payment Details
+                  Payment Details ({{ payments.length }})
                 </li>
                 <li
                   class="list-group-item border-secondary"
@@ -196,7 +196,7 @@
                       <div class="col-12 fs-4">Paying Amount</div>
                       <div class="col-12 fs-4">
                         <span class="badge bg-light text-dark">{{
-                          calc.payingTotal().toFixed(2)
+                          parseFloat(calc.payingTotal()).toFixed(2)
                         }}</span>
                       </div>
                       <hr class="m-1" />
@@ -205,7 +205,7 @@
                       </div>
                       <div class="col-12 fs-4">
                         <span class="badge bg-light text-dark">{{
-                          calc.balance().toFixed(2)
+                          parseFloat(calc.balance()).toFixed(2)
                         }}</span>
                       </div>
                     </div>
@@ -320,7 +320,7 @@ export default {
       payingTotal: function () {
         var payingTotal = 0;
         payments.value.forEach((element, index, array) => {
-          payingTotal += element.amount;
+          payingTotal += parseFloat(element.amount);
         });
         return payingTotal;
       },
@@ -377,16 +377,27 @@ export default {
       payments.value.splice(index, 1);
     }
     emitter.on("purchasePayModal", (data) => {
+      var data = data.data;
+      console.log(data);
       payments.value = [];
-      payment_note.value = data.data.payment_note; // show from db
-      data.data.total_payable = Number(
-        parseFloat(data.data.total_payable).toFixed(2)
-      );
-      data.data.total_paid = Number(
-        parseFloat(data.data.total_paid).toFixed(2)
-      );
-      data.data.due = Number(parseFloat(data.data.due).toFixed(2));
-      DATA.value = data.data;
+      if (data.payments) {
+        alert("edit pay");
+        // edit payment
+        payments.value = data.payments;
+        var total_paid = 0;
+        data.payments.forEach((element, index, array) => {
+          total_paid += parseFloat(element.amount);
+        });
+        alert(total_paid);
+      } else {
+        // add payment
+        payments.value = [];
+        data.total_payable = Number(parseFloat(data.total_payable).toFixed(2));
+      }
+      payment_note.value = data.payment_note; // show from db
+      data.total_paid = Number(parseFloat(data.total_paid).toFixed(2));
+      data.due = Number(parseFloat(data.due).toFixed(2));
+      DATA.value = data;
       addNewPayment(1, true);
     });
     function onInvalidSubmit({ values, errors }) {
