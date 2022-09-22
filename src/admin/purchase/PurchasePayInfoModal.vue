@@ -12,15 +12,15 @@
           ></button>
         </div>
         <div class="modal-body">
-          <AdminLoadingSpinnerDiv v-if="!Object.keys(details).length" />
-          <div v-if="details.payments">
+          <AdminLoadingSpinnerDiv v-if="!Object.keys(detailsPurchase).length" />
+          <div v-if="detailsPurchase.payments">
             <div class="col">
               <p class="h5">Payments</p>
               <hr class="border border-dark border-1 mt-0" />
               <div
                 class="alert alert-info text-center"
                 role="alert"
-                v-if="details.payments.length == 0"
+                v-if="detailsPurchase.payments.length == 0"
               >
                 No Payments Found !
               </div>
@@ -38,11 +38,13 @@
                     <th scope="col">Reference</th>
                     <th scope="col" class="text-end">Amount</th>
                     <th scope="col" class="text-center">Mode</th>
-                    <th scope="col">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(item, index) in details.payments" :key="index">
+                  <tr
+                    v-for="(item, index) in detailsPurchase.payments"
+                    :key="index"
+                  >
                     <td>{{ index + 1 }}</td>
                     <td>{{ item.date_time }}</td>
                     <td>{{ item.reference_no || "NIL" }}</td>
@@ -50,7 +52,6 @@
                       {{ parseFloat(item.amount).toFixed(2) }}
                     </td>
                     <td class="text-center">{{ item.payment_mode_name }}</td>
-                    <td>{{}}</td>
                   </tr>
                 </tbody>
               </table>
@@ -60,31 +61,23 @@
         <div class="modal-footer">
           <button
             type="button"
-            class="btn btn-danger me-auto"
-            :disabled="!Object.keys(details).length"
-            v-on:click="deleteConfirm(purchase)"
-          >
-            <i class="fa-solid fa-trash"></i>DELETE
-          </button>
-          <button
-            type="button"
             class="btn btn-primary"
-            :disabled="!Object.keys(details).length"
+            :disabled="!Object.keys(detailsPurchase).length"
           >
             <i class="fa-solid fa-print"></i>Print
           </button>
           <button
             type="button"
             class="btn btn-warning"
-            :disabled="!Object.keys(details).length"
-            v-on:click="editPay()"
+            :disabled="!Object.keys(detailsPurchase).length || detailsPurchase.payments.length == 0"
+            v-on:click="editPay(purchaseData)"
           >
             <i class="fa-solid fa-pen-to-square"></i>Edit
           </button>
           <button
             type="button"
             class="btn btn-dark"
-            :disabled="!Object.keys(details).length"
+            :disabled="!Object.keys(detailsPurchase).length"
           >
             <i class="fa-solid fa-file-pdf"></i>PDF
           </button>
@@ -107,13 +100,13 @@ export default {
       notifyApiResponse,
       notifyCatchResponse,
     } = admin();
-    const purchase = ref({});
-    const details = ref({});
+    const purchaseData = ref({}); // purchase data
+    const detailsPurchase = ref({}); // payment details
     const controller = ref(undefined);
-    emitter.on("showPurchasePayDetails", (data) => {
-      let row = data.data;
-      purchase.value = row;
-      details.value = {};
+    emitter.on("showPurchasePayDetails", (row) => {
+      //console.log(row)
+      purchaseData.value = row;
+      detailsPurchase.value = {}; // rest details for purchase
       if (controller.value) {
         controller.value.abort();
       }
@@ -124,7 +117,7 @@ export default {
         "purchase",
         {
           action: "payment_details",
-          id: row.id,
+          id: purchaseData.value.id,
         },
         controller.value,
         {
@@ -135,7 +128,7 @@ export default {
       ).then(function (data) {
         if (data.success == true) {
           // ok
-          details.value = data.data;
+          detailsPurchase.value = data.data;
         } else {
           if (data.success == false) {
             // not ok
@@ -162,27 +155,23 @@ export default {
         type: "danger",
       });
     }
+    function editPay(data) {
+      data.payments = detailsPurchase.value.payments; // add payment data
+      window.PURCHASE_PAY_INFO_MODAL.hide();
+      emitter.emit("purchasePayModal", JSON.parse(JSON.stringify(data)));
+    }
     return {
-      purchase,
-      details,
+      purchaseData,
+      detailsPurchase,
       emitter,
       notifyApiResponse,
       notifyDefault,
       axiosAsyncCallReturnData,
       deleteConfirm,
+      editPay,
     };
   },
-  methods: {
-    editPay() {
-      var self = this;
-      let data = self.purchase;
-      data.payments = self.details.payments
-      window.PURCHASE_PAY_INFO_MODAL.hide();
-      self.emitter.emit("purchasePayModal", {
-        data: data,
-      });
-    },
-  },
+  methods: {},
   mounted() {
     window.PURCHASE_PAY_INFO_MODAL = new Modal($("#purchasePayInfoModal"), {
       backdrop: true,

@@ -186,10 +186,7 @@
                       <div class="col-12 fs-4">Due Amount</div>
                       <div class="col-12 fs-4">
                         <span class="badge bg-light text-dark">{{
-                          (
-                            parseFloat(DATA.total_payable) -
-                            parseFloat(DATA.total_paid)
-                          ).toFixed(2)
+                          calc.duePurchase().toFixed(2)
                         }}</span>
                       </div>
                       <hr class="m-1" />
@@ -253,6 +250,7 @@
 <style>
 </style>
 <script>
+/* eslint-disable */
 import { watch, ref, computed } from "vue";
 import admin from "@/mixins/admin.js";
 import { Modal } from "bootstrap";
@@ -324,12 +322,31 @@ export default {
         });
         return payingTotal;
       },
+      duePurchase: function () {
+        let duePurchase;
+        if (DATA.value.payments) {
+          // edit payment
+          duePurchase = Number(DATA.value.total_payable);
+        } else {
+          // new payment
+          return (duePurchase =
+            Number(DATA.value.total_payable) - Number(DATA.value.total_paid));
+        }
+        return parseFloat(duePurchase.toFixed(2));
+      },
       balance: function () {
-        return (
-          Number(DATA.value.total_payable) -
-          Number(DATA.value.total_paid) -
-          this.payingTotal()
-        );
+        let balance;
+        if (DATA.value.payments) {
+          // edit payment
+          balance = Number(DATA.value.total_payable) - this.payingTotal();
+        } else {
+          // new payment
+          balance =
+            Number(DATA.value.total_payable) -
+            Number(DATA.value.total_paid) -
+            this.payingTotal();
+        }
+        return parseFloat(balance.toFixed(2));
       },
     };
     // notify
@@ -342,15 +359,8 @@ export default {
     } = admin();
     function addNewPayment(mode, launch = false) {
       // launch is for first time show modal
-      let total = 0;
-      payments.value.forEach((element) => {
-        total += element.amount;
-      });
-      let total_payable = Number(
-        parseFloat(DATA.value.total_payable).toFixed(2)
-      );
-      let balance_payable = total_payable - total - DATA.value.total_paid;
-      if (balance_payable <= 0 && launch == true) {
+      /*************************************************** */
+      if (calc.balance() <= 0 && launch == true) {
         // first time load and all amount is paid
         notifyDefault({ message: "Payment already completed !", type: "info" });
       } else {
@@ -362,7 +372,7 @@ export default {
         let payMethod = {
           id: Date.now(),
           date_time: date_time,
-          amount: balance_payable > 0 ? balance_payable : 0,
+          amount: calc.balance(),
           mode: mode,
           transaction_id: null,
           reference_no: null,
@@ -377,28 +387,29 @@ export default {
       payments.value.splice(index, 1);
     }
     emitter.on("purchasePayModal", (data) => {
-      var data = data.data;
-      console.log(data);
-      payments.value = [];
-      if (data.payments) {
-        alert("edit pay");
-        // edit payment
-        payments.value = data.payments;
-        var total_paid = 0;
-        data.payments.forEach((element, index, array) => {
-          total_paid += parseFloat(element.amount);
-        });
-        alert(total_paid);
-      } else {
-        // add payment
-        payments.value = [];
-        data.total_payable = Number(parseFloat(data.total_payable).toFixed(2));
-      }
+      // Show payment form for purchase
+      //console.log(data);
       payment_note.value = data.payment_note; // show from db
-      data.total_paid = Number(parseFloat(data.total_paid).toFixed(2));
-      data.due = Number(parseFloat(data.due).toFixed(2));
-      DATA.value = data;
-      addNewPayment(1, true);
+      if (data.payments) {
+        notifyDefault({ message: "Edit Payment !", type: "danger" });
+        // edit payment (payment data found)
+        // edit payment
+        data.payments.forEach((element, index, array) => {
+          // fix decimal points (2)
+          data.payments[index].amount = parseFloat(element.amount).toFixed(2);
+        });
+        payments.value = data.payments;
+        window.PURCHASE_PAY_MODAL.show();
+        //
+        DATA.value = data;
+      } else {
+        notifyDefault({ message: "New Payment !", type: "success" });
+        // add new payment
+        // direct call from table row menu
+        payments.value = []; // reset
+        DATA.value = data;
+        addNewPayment(1, true);
+      }
     });
     function onInvalidSubmit({ values, errors }) {
       console.log("Form field errors found !");

@@ -459,61 +459,57 @@ export default {
         "click",
         "td:not(:last-child),#details",
         function () {
+          let data = JSON.parse(JSON.stringify(self.table.row($(this).parents("tr")).data()));
           // show single product info
-          let row = self.table.row($(this).parents("tr")).data();
           self.emitter.emit("showPurchaseDetails", {
             title: null,
             body: null,
-            data: row,
+            data: data,
             type: "danger",
           });
         }
       );
       $("#datatable tbody").on("click", "#payinfo", function () {
         // from action menu
-        let row = self.table.row($(this).parents("tr")).data();
-        self.emitter.emit("showPurchasePayDetails", {
-          data: row,
-        });
+        let data = JSON.parse(JSON.stringify(self.table.row($(this).parents("tr")).data()));
+        self.emitter.emit("showPurchasePayDetails",data);
       });
       $("#datatable tbody").on("click", "#edit", function () {
         // edit from action menu
-        self.row = self.table.row($(this).parents("tr")).data();
+        let data = JSON.parse(JSON.stringify(self.table.row($(this).parents("tr")).data()));
         self.$router
           .push({
             name: "adminPurchaseEdit",
-            params: { id: self.row.id, data: JSON.stringify(self.row) },
+            params: { id: data.id, data: data },
           })
           .catch(() => {});
       });
       $("#datatable tbody").on("click", "#copy", function () {
         // copy from action menu
-        self.row = self.table.row($(this).parents("tr")).data();
+         let data = JSON.parse(JSON.stringify(self.table.row($(this).parents("tr")).data()));
         self.$router
           .push({
             name: "adminProductCopy",
-            params: { id: self.row.id, data: JSON.stringify(self.row) },
+            params: { id: data.id, data: data },
           })
           .catch(() => {});
       });
       $("#datatable tbody").on("click", "#delete", function () {
         // delete from action menu
-        let row = self.table.row($(this).parents("tr")).data();
+         let data = JSON.parse(JSON.stringify(self.table.row($(this).parents("tr")).data()));
         self.emitter.emit("deleteConfirmModal", {
           title: null,
           body:
-            "Delete purchase with Ref. No. <b>" + row.reference_id + "</b> ?",
-          data: row,
+            "Delete purchase with Ref. No. <b>" + data.reference_id + "</b> ?",
+          data: data,
           emit: "confirmDeletePurchase",
           hide: true,
           type: "danger",
         });
       });
       $("#datatable tbody").on("click", "#addpay", function () {
-        let row = self.table.row($(this).parents("tr")).data();
-        self.emitter.emit("purchasePayModal", {
-          data: row,
-        });
+         let data = JSON.parse(JSON.stringify(self.table.row($(this).parents("tr")).data()));
+        self.emitter.emit("purchasePayModal", data);
       });
       $("#search").keyup(function () {
         // custom search box
