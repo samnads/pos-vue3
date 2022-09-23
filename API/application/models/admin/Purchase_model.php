@@ -318,7 +318,7 @@ class Purchase_model extends CI_Model
 	function getPurchasePayments($where)
 	{
 		$this->db->select('
-		FLOOR(RAND() * 401) + 100					as id,
+		pp.id										as id,
 		pp.date_time								as date_time,
 		pm.name										as payment_mode_name,
 		pm.id										as mode,
@@ -332,7 +332,7 @@ class Purchase_model extends CI_Model
 		$this->db->order_by("pp.date_time", "desc");
 		$query = $this->db->get();
 		//die($this->db->last_query());
-		return $query ? $query->result() : false;
+		return $query ? $query->result_array() : false;
 	}
 	function get_purchase_products_by_purchase($where)
 	{
@@ -394,5 +394,14 @@ class Purchase_model extends CI_Model
 	{
 		$query = $this->db->insert(TABLE_PURCHASE_PAYMENT, $data);
 		return $query;
+	}
+	function get_purchase_payment_row($where)
+	{
+		$this->db->select('*');
+		$this->db->from(TABLE_PURCHASE_PAYMENT . ' pp');
+		$this->db->where($where);
+		$query = $this->db->get();
+		//die($this->db->last_query());
+		return $query ? $query->row_array() : false;
 	}
 }

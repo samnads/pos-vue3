@@ -391,7 +391,6 @@ export default {
       //console.log(data);
       payment_note.value = data.payment_note; // show from db
       if (data.payments) {
-        notifyDefault({ message: "Edit Payment !", type: "danger" });
         // edit payment (payment data found)
         // edit payment
         data.payments.forEach((element, index, array) => {
@@ -403,7 +402,6 @@ export default {
         //
         DATA.value = data;
       } else {
-        notifyDefault({ message: "New Payment !", type: "success" });
         // add new payment
         // direct call from table row menu
         payments.value = []; // reset
@@ -419,10 +417,14 @@ export default {
     }
     const onSubmit = handleSubmit((values) => {
       values.purchase = DATA.value;
-      return axiosAsyncCallReturnData("POST", "purchase", {
-        action: "payment",
-        data: values,
-      }).then(function (data) {
+      return axiosAsyncCallReturnData(
+        DATA.value.payments ? "PUT" : "POST",
+        "purchase",
+        {
+          action: DATA.value.payments ? "update_payment" : "payment",
+          data: values,
+        }
+      ).then(function (data) {
         if (data.success == true) {
           window.PURCHASE_PAY_MODAL.hide();
           resetForm();
