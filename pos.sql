@@ -704,21 +704,32 @@ CREATE TABLE `purchase_payment` (
   `transaction_id` varchar(255) DEFAULT NULL,
   `reference_no` varchar(255) DEFAULT NULL,
   `note` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
+  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `purchase` (`purchase`),
   KEY `payment_mode` (`payment_mode`),
   CONSTRAINT `purchase_payment_ibfk_1` FOREIGN KEY (`purchase`) REFERENCES `purchase` (`id`),
   CONSTRAINT `purchase_payment_ibfk_2` FOREIGN KEY (`payment_mode`) REFERENCES `payment_mode` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `purchase_payment` (`id`, `purchase`, `payment_mode`, `amount`, `date_time`, `transaction_id`, `reference_no`, `note`) VALUES
-(1,	196,	1,	2822.2455,	'2022-09-23 20:43:00',	NULL,	NULL,	NULL),
-(2,	196,	1,	36568.0000,	'2022-09-23 20:43:00',	NULL,	NULL,	NULL),
-(3,	195,	1,	10.0000,	'2022-09-23 21:17:00',	NULL,	NULL,	NULL),
-(4,	195,	1,	25.0000,	'2022-09-23 21:33:00',	NULL,	NULL,	NULL),
-(5,	195,	4,	55.0000,	'2022-09-23 21:33:00',	NULL,	NULL,	NULL),
-(6,	191,	1,	2.0000,	'2022-09-23 22:55:00',	NULL,	NULL,	NULL),
-(7,	191,	4,	1.0000,	'2022-09-23 22:55:00',	NULL,	NULL,	NULL);
+INSERT INTO `purchase_payment` (`id`, `purchase`, `payment_mode`, `amount`, `date_time`, `transaction_id`, `reference_no`, `note`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1,	196,	1,	2822.2455,	'2022-09-23 20:43:00',	NULL,	NULL,	NULL,	'2022-09-25 17:39:52',	'2022-09-25 18:02:17',	'2022-09-25 18:02:17'),
+(2,	196,	1,	36568.0000,	'2022-09-23 20:43:00',	NULL,	NULL,	NULL,	'2022-09-25 17:39:52',	'2022-09-25 18:02:17',	'2022-09-25 18:02:17'),
+(3,	195,	1,	10.0000,	'2022-09-23 21:16:00',	NULL,	NULL,	NULL,	'2022-09-24 17:39:52',	'2022-09-25 17:44:00',	'2022-09-25 17:44:00'),
+(4,	195,	1,	25.0000,	'2022-09-23 21:33:00',	NULL,	NULL,	NULL,	'2022-09-25 17:39:52',	'2022-09-25 18:00:51',	'2022-09-25 18:00:51'),
+(5,	195,	4,	55.0000,	'2022-09-23 21:33:00',	NULL,	NULL,	NULL,	'2022-09-25 17:39:52',	'2022-09-25 17:49:49',	'2022-09-25 17:49:49'),
+(6,	191,	1,	2.0000,	'2022-09-23 22:55:00',	NULL,	NULL,	NULL,	'2022-09-25 17:39:52',	NULL,	NULL),
+(7,	191,	4,	1.0000,	'2022-09-23 22:55:00',	NULL,	NULL,	NULL,	'2022-09-25 17:39:52',	NULL,	NULL),
+(8,	190,	1,	22.0000,	'2022-09-25 23:26:00',	NULL,	NULL,	NULL,	'2022-09-25 17:56:41',	NULL,	NULL),
+(9,	190,	5,	22.0000,	'2022-09-25 23:26:00',	NULL,	NULL,	NULL,	'2022-09-25 17:56:41',	NULL,	NULL),
+(10,	190,	3,	11.0000,	'2022-09-25 23:26:00',	NULL,	NULL,	NULL,	'2022-09-25 17:56:41',	NULL,	NULL),
+(11,	195,	5,	50.0000,	'2022-09-25 23:28:00',	'',	'',	'',	'2022-09-25 18:00:37',	'2022-09-25 18:01:18',	'2022-09-25 18:01:18'),
+(12,	195,	4,	100.0000,	'2022-09-25 23:28:00',	'',	'',	'',	'2022-09-25 18:00:37',	'2022-09-25 18:01:18',	'2022-09-25 18:01:18'),
+(13,	195,	3,	1.0000,	'2022-09-25 23:28:00',	'',	'',	'',	'2022-09-25 18:00:37',	NULL,	NULL),
+(14,	195,	4,	500.0000,	'2022-09-25 23:31:00',	'',	'',	'',	'2022-09-25 18:01:04',	'2022-09-25 18:01:18',	'2022-09-25 18:01:18'),
+(15,	196,	1,	10.0000,	'2022-09-25 23:32:00',	NULL,	NULL,	NULL,	'2022-09-25 18:02:29',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `purchase_product`;
 CREATE TABLE `purchase_product` (
@@ -1210,7 +1221,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-09-23 14:14:25',	'2022-09-16 15:18:20',	'2021-04-20 19:22:52',	'2022-09-23 14:14:25',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-09-25 15:05:45',	'2022-09-16 15:18:20',	'2021-04-20 19:22:52',	'2022-09-25 15:05:45',	NULL),
 (30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
 (31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
@@ -1275,4 +1286,4 @@ INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country
 (27,	'WARE0027',	'Ware House BBB',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	16,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-09-12 06:08:24',	NULL),
 (33,	'WARE0033',	' bvbv',	'nbnvbnvbn',	'2022-09-08',	NULL,	NULL,	NULL,	'45454545',	'bnvbn@qqwqw.ghg',	NULL,	NULL,	NULL,	NULL,	16,	NULL,	NULL,	NULL,	'2022-09-11 07:52:55',	NULL,	NULL);
 
--- 2022-09-23 18:28:34
+-- 2022-09-25 18:03:13
