@@ -58,7 +58,7 @@
                       start-100
                       m-0
                     "
-                    v-if="payments.length > 1"
+                    v-if="payments.length > 1 || DATA.payments"
                     @click="removePayment(p)"
                   ></button>
                   <div class="row">
@@ -370,7 +370,7 @@ export default {
         let date_time = now.toISOString().slice(0, 16);
         //
         let payMethod = {
-          id: Date.now(),
+          id: 0.1 + Date.now(), // add 0.1 to not interfere with db id
           date_time: date_time,
           amount: calc.balance(),
           mode: mode,

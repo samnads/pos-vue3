@@ -166,7 +166,7 @@ class Purchase extends CI_Controller
                                 $this->db->trans_rollback();
                                 die(json_encode(array('success' => false, 'errors' => $this->form_validation->error_array())));
                             }
-                            $this->Purchase_model->create_purchase_sale_payment($data);
+                            $this->Purchase_model->create_purchase_payment($data);
                             if ($this->db->affected_rows() != 1) {
                                 $error = $this->db->error();
                                 $this->db->trans_rollback();
@@ -185,81 +185,52 @@ class Purchase extends CI_Controller
                         $_POST = $this->input->post('data');
                         $purchase = $this->input->post('purchase');
                         $ui_payments = $this->input->post('payments');
-                        //print_r($ui_payments);
                         // update payment note
-                        $this->Purchase_model->update_purchase(array('payment_note' => $this->input->post('payment_note')), $purchase['id']);
-                        $this->db->trans_begin();
+                        $this->Purchase_model->update_purchase(array('payment_note' => $this->input->post('payment_note') ?: NULL), $purchase['id']);
                         // get all payment for the purchase
                         $db_payments = $this->Purchase_model->getPurchasePayments(array('pp.purchase' => (int)$purchase['id']));
-                        //print_r($db_payments);
-                        // find data for update (check in both arrays)
-
-                        $result = array_intersect_key(array_column($ui_payments, null, 'id'), array_flip($db_payments));
-
-                        print_r($result);
-
-
-                        foreach ($ui_payments as $ui_payment) { // loop through ui payments
+                        $existing_ids = array(); // id exist in both -  ui & db (for updating)
+                        $new_pays = array(); // exist in ui only - new (for adding)
+                        $delete_ids = array(); // id exist in db only -  for deleting
+                        foreach ($ui_payments as $ui_payment) { // loop through ui payments - update existing id, remove from ui array
+                            // check and get same from db
                             $db_payment = $this->Purchase_model->get_purchase_payment_row(array('pp.id' => $ui_payment['id'], 'pp.purchase' => (int)$purchase['id']));
-                            if ($db_payment['id']) { // same exist in db
+                            if ($db_payment['id']) { // same id exist in db
+                                array_push($existing_ids, $db_payment['id']); // add to existing array
                                 // update on db using unique id
-
-                                // delete from ui array ( so at last only new pays exist for adding )
-                                $key = array_search($ui_payment['id'], array_column($ui_payments, 'id'));
-                                unset($ui_payments[$key]);
-                                array_values($ui_payments);
-                                //print_r($ui_payments[$key]);
+                                /* prepare for db data */
+                                unset($ui_payment['purchase']);
+                                unset($ui_payment['id']);
+                                $ui_payment['payment_mode'] = $ui_payment['mode'];
+                                unset($ui_payment['mode']);
+                                $this->Purchase_model->update_purchase_payment($ui_payment, array('id' => $db_payment['id'], 'purchase' => (int)$purchase['id'])); // UPDATE pay row
                             } else { // new payment found
                                 // add to db
+                                /* prepare for db data */
+                                $ui_payment['purchase'] = $purchase['id'];
+                                unset($ui_payment['id']);
+                                $ui_payment['payment_mode'] = $ui_payment['mode'];
+                                unset($ui_payment['mode']);
+                                $ui_payment['transaction_id'] = $ui_payment['transaction_id'] ?: NULL;
+                                $ui_payment['reference_no'] = $ui_payment['reference_no'] ?: NULL;
+                                $ui_payment['note'] = $ui_payment['note'] ?: NULL;
+                                $new_pays[] = $ui_payment;
                             }
-
-
-                            /* $data = array(
-                                'purchase' => $purchase['id'],
-                                'payment_mode' => $payment['mode'],
-                                'amount' =>  $payment['amount'],
-                                'date_time' => $payment['date_time'],
-                                'transaction_id' =>  $payment['transaction_id'] ? trim($payment['transaction_id']) : NULL,
-                                'reference_no' =>  $payment['reference_no'] ? trim($payment['reference_no']) : NULL,
-                                'note' =>  $payment['note'] ? trim($payment['note']) : NULL
-                            );
-                            $this->form_validation->set_data($data);
-                            $config = array(
-                                array(
-                                    'field' => 'amount',
-                                    'label' => 'Amount',
-                                    'rules' => 'trim|numeric|greater_than[0]'
-                                ),
-                                array(
-                                    'field' => 'transaction_id',
-                                    'label' => 'Transaction ID',
-                                    'rules' => 'trim'
-                                ),
-                                array(
-                                    'field' => 'reference_no',
-                                    'label' => 'Reference No.',
-                                    'rules' => 'trim'
-                                ),
-                                array(
-                                    'field' => 'note',
-                                    'label' => 'Note',
-                                    'rules' => 'trim'
-                                )
-                            );
-                            $this->form_validation->set_rules($config);
-                            if ($this->form_validation->run() == FALSE) {
-                                $this->db->trans_rollback();
-                                die(json_encode(array('success' => false, 'errors' => $this->form_validation->error_array())));
-                            }
-                            $this->Purchase_model->create_purchase_sale_payment($data);
-                            if ($this->db->affected_rows() != 1) {
-                                $error = $this->db->error();
-                                $this->db->trans_rollback();
-                                die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
-                            }*/
                         }
-                        //print_r($ui_payments);
-                        $this->db->trans_commit();
+                        $this->Purchase_model->create_purchase_payment_batch($new_pays); // ADD new pays (batch add)
+                        //print_r($new_pays);
+                        //die();
+                        // DELETE ui reomved payment
+                        foreach ($db_payments as $db_payment) { // loop through db payments - delete not that not exist in ui pays
+                            // check with existing_ids
+                            if (array_search($db_payment['id'], $existing_ids) !== false) { // same exist in ui
+                                // don't delete from db
+                            } else {
+                                // delete from db
+                                array_push($delete_ids, $db_payment['id']); // save ids for delete
+                            }
+                        }
+                        $this->Purchase_model->set_deleted_at_purchase_payment_ids($delete_ids); // DELETE not exist pays
                         echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully Updated Purchase Payment !'));
                         break;
                     default:

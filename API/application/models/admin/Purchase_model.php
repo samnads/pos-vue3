@@ -10,7 +10,7 @@ class Purchase_model extends CI_Model
 	function datatable_data($search, $offset, $limit, $order_by, $order)
 	{
 		/******************************************************/ // calculate total paid using all payment methods
-		$this->db->select('*,SUM(amount) as total_paid')->from(TABLE_PURCHASE_PAYMENT)->group_by('purchase');
+		$this->db->select('*,SUM(amount) as total_paid')->from(TABLE_PURCHASE_PAYMENT)->where(array('deleted_at' => NULL))->group_by('purchase');
 		$subquery_payment = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($subquery_payment);
@@ -329,6 +329,7 @@ class Purchase_model extends CI_Model
 		$this->db->from(TABLE_PURCHASE_PAYMENT . ' pp');
 		$this->db->join(TABLE_PAYMENT_MODE . ' pm',	'pm.id=pp.payment_mode',	'left');
 		$this->db->where($where);
+		$this->db->where(array('deleted_at' => NULL));
 		$this->db->order_by("pp.date_time", "desc");
 		$query = $this->db->get();
 		//die($this->db->last_query());
@@ -390,9 +391,28 @@ class Purchase_model extends CI_Model
 		$query = $this->db->delete(TABLE_PURCHASE_PRODUCT);
 		return $query;
 	}
-	function create_purchase_sale_payment($data)
+	function create_purchase_payment($data) // for add payment option
 	{
 		$query = $this->db->insert(TABLE_PURCHASE_PAYMENT, $data);
+		return $query;
+	}
+	function update_purchase_payment($data, $where)
+	{
+		$this->db->set($data);
+		$this->db->where($where);
+		$query = $this->db->update(TABLE_PURCHASE_PAYMENT);
+		return $query;
+	}
+	function create_purchase_payment_batch($data) // for batch add payment option
+	{
+		$query = $this->db->insert_batch(TABLE_PURCHASE_PAYMENT, $data);
+		return $query;
+	}
+	function set_deleted_at_purchase_payment_ids($ids)
+	{
+		$this->db->where_in('id', $ids);
+		$this->db->set('deleted_at', 'NOW()', FALSE); // deleted rows have a timestamp
+		$query = $this->db->update(TABLE_PURCHASE_PAYMENT . ' pp');
 		return $query;
 	}
 	function get_purchase_payment_row($where)
