@@ -58,7 +58,6 @@
                       start-100
                       m-0
                     "
-                    v-if="payments.length > 1 || DATA.payments"
                     @click="removePayment(p)"
                   ></button>
                   <div class="row">
@@ -314,6 +313,8 @@ export default {
     });
     const { value: payments } = useField("payments");
     const { value: payment_note } = useField("payment_note");
+    const isDirty = useIsFormDirty();
+    const isValid = useIsFormValid();
     const calc = {
       payingTotal: function () {
         var payingTotal = 0;
@@ -468,6 +469,8 @@ export default {
       onSubmit,
       isSubmitting,
       DATA,
+      isDirty,
+      isValid
     };
   },
   methods: {},

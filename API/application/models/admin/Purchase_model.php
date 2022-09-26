@@ -400,7 +400,7 @@ class Purchase_model extends CI_Model
 	{
 		$this->db->set($data);
 		$this->db->where($where);
-		$query = $this->db->update(TABLE_PURCHASE_PAYMENT);
+		$query = $this->db->update(TABLE_PURCHASE_PAYMENT . ' pp');
 		return $query;
 	}
 	function create_purchase_payment_batch($data) // for batch add payment option
@@ -412,6 +412,7 @@ class Purchase_model extends CI_Model
 	{
 		$this->db->where_in('id', $ids);
 		$this->db->set('deleted_at', 'NOW()', FALSE); // deleted rows have a timestamp
+		$this->db->set('deleted_by', $this->session->id);
 		$query = $this->db->update(TABLE_PURCHASE_PAYMENT . ' pp');
 		return $query;
 	}

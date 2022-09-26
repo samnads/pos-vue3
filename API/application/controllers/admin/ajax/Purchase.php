@@ -135,7 +135,9 @@ class Purchase extends CI_Controller
                                 'date_time' => $payment['date_time'],
                                 'transaction_id' =>  $payment['transaction_id'] ? trim($payment['transaction_id']) : NULL,
                                 'reference_no' =>  $payment['reference_no'] ? trim($payment['reference_no']) : NULL,
-                                'note' =>  $payment['note'] ? trim($payment['note']) : NULL
+                                'note' =>  $payment['note'] ? trim($payment['note']) : NULL,
+                                'created_by' => $this->session->id
+
                             );
                             /***************************/ // validate each payment methods
                             $this->form_validation->set_data($data);
@@ -179,16 +181,33 @@ class Purchase extends CI_Controller
                     default:
                 }
                 break;
-            case 'PUT': // update purchase
+            case 'PUT': // update purchase payment
                 switch ($action) {
                     case 'update_payment':
                         $_POST = $this->input->post('data');
                         $purchase = $this->input->post('purchase');
                         $ui_payments = $this->input->post('payments');
+                        $changed_db1 = false; // purchase
+                        $changed_db2 = false; // purchase payment
+                        //$this->db->trans_begin();
                         // update payment note
                         $this->Purchase_model->update_purchase(array('payment_note' => $this->input->post('payment_note') ?: NULL), $purchase['id']);
+                        if ($this->db->affected_rows() == 1) {
+                            $changed_db1 = true;
+                        } else if ($this->db->affected_rows() == 0) {
+                            //
+                        } else {
+                            $error = $this->db->error();
+                            $this->db->trans_rollback();
+                            die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                        }
                         // get all payment for the purchase
                         $db_payments = $this->Purchase_model->getPurchasePayments(array('pp.purchase' => (int)$purchase['id']));
+                        if (!$db_payments) {
+                            $error = $this->db->error();
+                            $this->db->trans_rollback();
+                            die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                        }
                         $existing_ids = array(); // id exist in both -  ui & db (for updating)
                         $new_pays = array(); // exist in ui only - new (for adding)
                         $delete_ids = array(); // id exist in db only -  for deleting
@@ -201,9 +220,20 @@ class Purchase extends CI_Controller
                                 /* prepare for db data */
                                 unset($ui_payment['purchase']);
                                 unset($ui_payment['id']);
+                                unset($ui_payment['payment_mode_name']);
                                 $ui_payment['payment_mode'] = $ui_payment['mode'];
                                 unset($ui_payment['mode']);
+                                $ui_payment['updated_by'] = $this->session->id;
                                 $this->Purchase_model->update_purchase_payment($ui_payment, array('id' => $db_payment['id'], 'purchase' => (int)$purchase['id'])); // UPDATE pay row
+                                if ($this->db->affected_rows() == 1) {
+                                    $changed_db2 = true;
+                                } else if ($this->db->affected_rows() == 0) {
+                                    //
+                                } else {
+                                    $error = $this->db->error();
+                                    $this->db->trans_rollback();
+                                    die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                                }
                             } else { // new payment found
                                 // add to db
                                 /* prepare for db data */
@@ -214,12 +244,20 @@ class Purchase extends CI_Controller
                                 $ui_payment['transaction_id'] = $ui_payment['transaction_id'] ?: NULL;
                                 $ui_payment['reference_no'] = $ui_payment['reference_no'] ?: NULL;
                                 $ui_payment['note'] = $ui_payment['note'] ?: NULL;
+                                $ui_payment['created_by'] = $this->session->id;
                                 $new_pays[] = $ui_payment;
                             }
                         }
-                        $this->Purchase_model->create_purchase_payment_batch($new_pays); // ADD new pays (batch add)
-                        //print_r($new_pays);
-                        //die();
+                        $affected_rows = $this->Purchase_model->create_purchase_payment_batch($new_pays); // ADD new pays (batch add)
+                        if ($affected_rows >= 1) {
+                            $changed_db2 = true;
+                        } else if ($affected_rows == 0) {
+                            //
+                        } else {
+                            $error = $this->db->error();
+                            $this->db->trans_rollback();
+                            die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                        }
                         // DELETE ui reomved payment
                         foreach ($db_payments as $db_payment) { // loop through db payments - delete not that not exist in ui pays
                             // check with existing_ids
@@ -230,10 +268,27 @@ class Purchase extends CI_Controller
                                 array_push($delete_ids, $db_payment['id']); // save ids for delete
                             }
                         }
-                        $this->Purchase_model->set_deleted_at_purchase_payment_ids($delete_ids); // DELETE not exist pays
-                        echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully Updated Purchase Payment !'));
+                        if (count($delete_ids) > 0) {
+                            $this->Purchase_model->set_deleted_at_purchase_payment_ids($delete_ids); // DELETE not exist pays
+                        }
+                        //print_r($this->db->last_query());
+                        if ($this->db->affected_rows() >= 1) {
+                            $changed_db2 = true;
+                        } else if ($this->db->affected_rows() == 0) {
+                            //
+                        } else {
+                            $error = $this->db->error();
+                            $this->db->trans_rollback();
+                            die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                        }
+
+                        if ($changed_db1 == true || $changed_db2 == true) {
+                            echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully Updated Purchase Payment !'));
+                        } else {
+                            echo json_encode(array('success' => true, 'type' => 'notice', 'timeout' => '5000', 'message' => $this->lang->line('no_data_changed_after_query')));
+                        }
                         break;
-                    default:
+                    default: // update purchase
                         $_POST = $this->input->post('data');
                         $data = array(
                             'warehouse'         => $this->input->post('warehouse'),

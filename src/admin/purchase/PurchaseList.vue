@@ -331,6 +331,8 @@ export default {
                 '><i class="fas fa-trash"></i></button>';*/
               let addPay =
                 '<li><a class="dropdown-item" href="#" id="addpay"><i class="fa-brands fa-paypal fa-fw"></i>Add Payment</a></li>';
+              let retPur =
+                '<li><a class="dropdown-item" href="#" id="return"><i class="fa-solid fa-rotate-left fa-fw"></i>Return Purchase</a></li>';
               return (
                 '<div class="row-btn-group btn-group btn-group-sm" role="group" aria-label="Button group with nested dropdown">' +
                 editBtn +
@@ -341,6 +343,7 @@ export default {
                 '<ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">' +
                 '<li><a class="dropdown-item" href="#" id="payinfo"><i class="fa-solid fa-eye fa-fw"></i>Show Payments</a></li>' +
                 addPay +
+                retPur +
                 '<li><a class="dropdown-item" href="#" id="delete"><i class="fas fa-trash fa-fw"></i>Delete Purchase</a></li>' +
                 "</ul>" +
                 "</div>" +
@@ -459,7 +462,9 @@ export default {
         "click",
         "td:not(:last-child),#details",
         function () {
-          let data = JSON.parse(JSON.stringify(self.table.row($(this).parents("tr")).data()));
+          let data = JSON.parse(
+            JSON.stringify(self.table.row($(this).parents("tr")).data())
+          );
           // show single product info
           self.emitter.emit("showPurchaseDetails", {
             title: null,
@@ -471,12 +476,16 @@ export default {
       );
       $("#datatable tbody").on("click", "#payinfo", function () {
         // from action menu
-        let data = JSON.parse(JSON.stringify(self.table.row($(this).parents("tr")).data()));
-        self.emitter.emit("showPurchasePayDetails",data);
+        let data = JSON.parse(
+          JSON.stringify(self.table.row($(this).parents("tr")).data())
+        );
+        self.emitter.emit("showPurchasePayDetails", data);
       });
       $("#datatable tbody").on("click", "#edit", function () {
         // edit from action menu
-        let data = JSON.parse(JSON.stringify(self.table.row($(this).parents("tr")).data()));
+        let data = JSON.parse(
+          JSON.stringify(self.table.row($(this).parents("tr")).data())
+        );
         self.$router
           .push({
             name: "adminPurchaseEdit",
@@ -484,19 +493,23 @@ export default {
           })
           .catch(() => {});
       });
-      $("#datatable tbody").on("click", "#copy", function () {
-        // copy from action menu
-         let data = JSON.parse(JSON.stringify(self.table.row($(this).parents("tr")).data()));
+      $("#datatable tbody").on("click", "#return", function () {
+        // edit from action menu
+        let data = JSON.parse(
+          JSON.stringify(self.table.row($(this).parents("tr")).data())
+        );
         self.$router
           .push({
-            name: "adminProductCopy",
+            name: "adminPurchaseEdit",
             params: { id: data.id, data: data },
           })
           .catch(() => {});
       });
       $("#datatable tbody").on("click", "#delete", function () {
         // delete from action menu
-         let data = JSON.parse(JSON.stringify(self.table.row($(this).parents("tr")).data()));
+        let data = JSON.parse(
+          JSON.stringify(self.table.row($(this).parents("tr")).data())
+        );
         self.emitter.emit("deleteConfirmModal", {
           title: null,
           body:
@@ -508,7 +521,9 @@ export default {
         });
       });
       $("#datatable tbody").on("click", "#addpay", function () {
-         let data = JSON.parse(JSON.stringify(self.table.row($(this).parents("tr")).data()));
+        let data = JSON.parse(
+          JSON.stringify(self.table.row($(this).parents("tr")).data())
+        );
         self.emitter.emit("purchasePayModal", data);
       });
       $("#search").keyup(function () {

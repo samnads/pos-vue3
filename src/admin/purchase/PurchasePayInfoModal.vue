@@ -61,18 +61,32 @@
         <div class="modal-footer">
           <button
             type="button"
-            class="btn btn-primary"
-            :disabled="!Object.keys(detailsPurchase).length"
+            class="btn btn-success"
+            v-if="
+              Object.keys(detailsPurchase).length &&
+              purchaseData.due > 0
+            "
+            v-on:click="addPay()"
           >
-            <i class="fa-solid fa-print"></i>Print
+            <i class="fa-solid fa-plus"></i>Add
           </button>
           <button
             type="button"
             class="btn btn-warning"
-            :disabled="!Object.keys(detailsPurchase).length || detailsPurchase.payments.length == 0"
+            v-if="
+              Object.keys(detailsPurchase).length &&
+              detailsPurchase.payments.length > 0
+            "
             v-on:click="editPay(purchaseData)"
           >
             <i class="fa-solid fa-pen-to-square"></i>Edit
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            :disabled="!Object.keys(detailsPurchase).length"
+          >
+            <i class="fa-solid fa-print"></i>Print
           </button>
           <button
             type="button"
@@ -160,6 +174,10 @@ export default {
       window.PURCHASE_PAY_INFO_MODAL.hide();
       emitter.emit("purchasePayModal", JSON.parse(JSON.stringify(data)));
     }
+    function addPay() {
+      window.PURCHASE_PAY_INFO_MODAL.hide();
+      emitter.emit("purchasePayModal", purchaseData.value);
+    }
     return {
       purchaseData,
       detailsPurchase,
@@ -169,6 +187,7 @@ export default {
       axiosAsyncCallReturnData,
       deleteConfirm,
       editPay,
+      addPay,
     };
   },
   methods: {},
