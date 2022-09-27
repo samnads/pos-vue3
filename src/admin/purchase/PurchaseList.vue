@@ -309,8 +309,6 @@ export default {
             searchable: false,
             width: "1%",
             render: function (data, type, row, meta) {
-              let infoBtn =
-                '<button type="button" id="details" class="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="left" title="Info"><i class="fas fa-info-circle"></i></button>';
               let editBtn =
                 '<button type="button" id="edit" class="btn btn-' +
                 (row["editable"] !== 0 ? "primary" : "secondary") +
@@ -320,15 +318,10 @@ export default {
                   : "") +
                 (row["editable"] === 0 ? "disabled" : "") +
                 '><i class="fas fa-pencil-alt"></i></button> ';
-              /*let delBtn =
-                '<button type="button" id="delete" class="btn btn-' +
-                (row["deletable"] !== 0 ? "danger" : "secondary") +
-                '"' +
-                (row["deletable"] !== 0
-                  ? 'data-bs-toggle="tooltip" data-bs-placement="left" title="Delete"'
-                  : "") +
-                (row["deletable"] === 0 ? "disabled" : "") +
-                '><i class="fas fa-trash"></i></button>';*/
+              let purchaseDeatils =
+                '<li><a class="dropdown-item" href="#" id="details"><i class="fa-solid fa-circle-info fa-fw"></i>Details</a></li>';
+              let purchaseEdit =
+                '<li><a class="dropdown-item" href="#" id="edit"><i class="fa-solid fa-pencil fa-fw"></i>Edit Purchase</a></li>';
               let addPay =
                 '<li><a class="dropdown-item" href="#" id="addpay"><i class="fa-brands fa-paypal fa-fw"></i>Add Payment</a></li>';
               let retPur =
@@ -336,11 +329,12 @@ export default {
               return (
                 '<div class="row-btn-group btn-group btn-group-sm" role="group" aria-label="Button group with nested dropdown">' +
                 editBtn +
-                infoBtn +
                 '<div class="btn-group btn-group-sm" role="group">' +
                 '<button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">' +
                 "</button>" +
                 '<ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">' +
+                purchaseDeatils +
+                purchaseEdit +
                 '<li><a class="dropdown-item" href="#" id="payinfo"><i class="fa-solid fa-eye fa-fw"></i>Show Payments</a></li>' +
                 addPay +
                 retPur +
@@ -500,7 +494,7 @@ export default {
         );
         self.$router
           .push({
-            name: "adminPurchaseEdit",
+            name: "adminPurchaseReturnNew",
             params: { id: data.id, data: data },
           })
           .catch(() => {});

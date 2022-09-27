@@ -156,6 +156,24 @@ const routes = [
         ],
       },
       {
+        path: 'purchase_return',
+        name: 'adminPurchaseReturnMain',
+        component: AdminPurchaseMain,
+        redirect: '/admin/purchase_return/list',
+        children: [
+          {
+            path: 'list',
+            name: 'adminPurchaseReturnList',
+            component: AdminPurchaseList,
+          },
+          {
+            path: 'new/:id',
+            name: 'adminPurchaseReturnNew',
+            component: AdminPurchaseNew,
+          },
+        ],
+      },
+      {
         path: 'product/test',
         name: 'adminProductTest',
         component: AdminProductListTest,

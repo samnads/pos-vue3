@@ -139,6 +139,11 @@
                 </li>
               </ul>
             </li>
+            <li>
+              <router-link class="nav-link" to="/admin/purchase_return/list"
+                > Purchase Returns</router-link
+              >
+            </li>
             <li class="nav-item dropdown">
               <a
                 class="nav-link dropdown-toggle"

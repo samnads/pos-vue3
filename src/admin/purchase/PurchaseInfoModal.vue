@@ -16,32 +16,47 @@
           <div v-if="details.purchase">
             <div class="row row-cols-1 row-cols-md-2 g-3">
               <div class="col">
-                <div class="card border-dark mb-3">
+                <div class="card border-dark border-opacity-25 h-100">
                   <div class="card-header">Supplier</div>
                   <div class="card-body text-dark">
                     <h5 class="card-title text-primary">
                       {{ details.purchase.supplier_name }}
                     </h5>
-                    <p class="card-text">
-                      Some quick example text to build on the card title and
-                      make up the bulk of the card's content.
+                    <p class="m-0">
+                      {{ details.purchase.supplier_email }}
+                    </p>
+                    <p class="m-0">
+                      {{ details.purchase.supplier_phone }}
+                    </p>
+                    <p class="m-0">
+                      {{ details.purchase.supplier_place }}
+                    </p>
+                    <p class="m-0">
+                      {{ details.purchase.supplier_city }}
                     </p>
                   </div>
                 </div>
               </div>
               <div class="col">
-                <div class="card border-dark mb-3">
+                <div class="card border-dark border-opacity-25 h-100">
                   <div class="card-header">Purchase</div>
                   <div class="card-body text-dark">
                     <h5 class="card-title text-primary">
                       {{ details.purchase.warehouse_name }}
+                      <span class="fs-6 text-secondary">(Warehouse)</span>
                     </h5>
-                    <p class="card-text">
-                      Ref. No. : {{ details.purchase.reference_id }}<br />
-                      Date : {{ details.purchase.date }}
-                      {{ details.purchase.time }}<br />
-                      Return ID : {{ details.purchase.return_id }}<br />
-                      Status :
+                    <p class="m-0">
+                      Ref. No. : <b>{{ details.purchase.reference_id }}</b>
+                    </p>
+                    <p class="m-0">
+                      Date : {{ details.purchase.date }} <i class="fa-regular fa-clock"></i>
+                      {{ details.purchase.time }}
+                    </p>
+                    <p class="m-0" v-if="details.purchase.return_id">
+                      Return ID : {{ details.purchase.return_id }}
+                    </p>
+                    <p class="m-0">
+                      Order Status :
                       <span
                         class="
                           badge
@@ -50,17 +65,17 @@
                         "
                         v-bind:class="[details.purchase.status_css_class]"
                         >{{ details.purchase.status_name }}</span
-                      ><br />
-                      Created By : {{ details.purchase.created_by_name }}<br />
-                      Last Updated By : {{ details.purchase.updated_by_name
-                      }}<br />
+                      >
+                    </p>
+                    <p class="m-0">
+                      Created By : {{ details.purchase.created_by_name }}
                     </p>
                   </div>
                 </div>
               </div>
             </div>
             <div class="col">
-              <p class="h5">Products</p>
+              <p class="h5 mt-2">Products</p>
               <hr class="border border-dark border-1 mt-0" />
               <table
                 class="
