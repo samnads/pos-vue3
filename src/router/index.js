@@ -18,6 +18,10 @@ import AdminSalePosList from '../admin/sale/SalePosList.vue'
 import AdminPurchaseMain from '../admin/purchase/PurchaseMain.vue'
 import AdminPurchaseList from '../admin/purchase/PurchaseList.vue'
 import AdminPurchaseNew from '../admin/purchase/PurchaseNew.vue'
+// Purchase Return Based Pages
+import AdminPurchaseReturnMain from '../admin/purchase_return/PurchaseReturnMain.vue'
+import AdminPurchaseReturnList from '../admin/purchase_return/PurchaseReturnList.vue'
+import AdminPurchaseReturnNew from '../admin/purchase_return/PurchaseReturnNew.vue'
 // Product Adjustment Based Pages
 import AdjustmentMain from '../admin/adjustment/AdjustmentMain.vue'
 import AdjustmentList from '../admin/adjustment/AdjustmentList.vue'
@@ -158,18 +162,18 @@ const routes = [
       {
         path: 'purchase_return',
         name: 'adminPurchaseReturnMain',
-        component: AdminPurchaseMain,
+        component: AdminPurchaseReturnMain,
         redirect: '/admin/purchase_return/list',
         children: [
           {
             path: 'list',
             name: 'adminPurchaseReturnList',
-            component: AdminPurchaseList,
+            component: AdminPurchaseReturnList,
           },
           {
             path: 'new/:id',
             name: 'adminPurchaseReturnNew',
-            component: AdminPurchaseNew,
+            component: AdminPurchaseReturnNew,
           },
         ],
       },
