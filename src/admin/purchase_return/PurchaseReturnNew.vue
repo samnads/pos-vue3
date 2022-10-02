@@ -70,7 +70,20 @@
         <div class="invalid-feedback">{{ errorPurchaseStatus }}</div>
       </div>
       <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
-        <label class="form-label">Note</label>
+        <label class="form-label">Purchase Ref. No.</label>
+        <div class="input-group is-invalid">
+          <input
+            v-if="DATA"
+            type="text"
+            class="form-control"
+            v-model="DATA.reference_id"
+            disabled
+          />
+        </div>
+        <div class="invalid-feedback">{{ errorNote }}</div>
+      </div>
+      <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+        <label class="form-label">Return Note</label>
         <div class="input-group is-invalid">
           <textarea
             type="text"
@@ -86,7 +99,7 @@
     </div>
     <hr />
     <div class="col">
-      <label class="form-label">Search Product</label>
+      <label class="form-label">Search Product ( purchase )</label>
       <div class="input-group is-invalid">
         <span class="input-group-text"
           ><i class="fa-solid fa-magnifying-glass"></i
@@ -130,7 +143,7 @@
           <th scope="col" style="width: 1%">#</th>
           <th scope="col" style="width: 25%">Code | Name</th>
           <th scope="col" style="width: 5%">HSN</th>
-          <th scope="col" class="text-center" width="10%">Quantity</th>
+          <th scope="col" class="text-center" width="10%">Return Quantity</th>
           <th scope="col" width="8%">Unit</th>
           <th scope="col" class="text-center" width="10%">Cost</th>
           <th scope="col" class="text-center" width="5%">Discount</th>
@@ -188,7 +201,7 @@
             <div class="input-group is-invalid">
               <select
                 class="form-select form-select-sm text-capitalize"
-                :disabled="!units"
+                :disabled="!units || true"
                 v-model="product.p_unit"
                 @change="unitChange(product)"
               >
@@ -196,7 +209,7 @@
                   v-for="u in units &&
                   units.filter(
                     (unit) =>
-                      unit.base == product.unit || unit.id == product.unit
+                      /*unit.base == product.unit || */ unit.id == product.unit
                   )"
                   :key="u.id"
                   :value="u.id"
@@ -205,13 +218,13 @@
                   {{ u.name }} - [ {{ u.code }} ]
                 </option>
               </select>
-              <button
+              <!--<button
                 class="input-group-text text-info"
                 type="button"
                 @click="newUnit(product)"
               >
                 <i class="fa-solid fa-plus"></i>
-              </button>
+              </button>-->
             </div>
           </td>
           <td>
@@ -222,6 +235,7 @@
               @change="costChange(product, $event.target.value)"
               class="form-control form-control-sm no-arrow text-center"
               @focus="$event.target.select()"
+              disabled
             />
           </td>
           <td>
@@ -232,6 +246,7 @@
               @change="discountChange(product, $event.target.value)"
               class="form-control form-control-sm no-arrow text-center"
               @focus="$event.target.select()"
+              disabled
             />
           </td>
           <td class="text-end">
@@ -252,9 +267,9 @@
             colspan="11"
             class="text-center text-muted"
             v-if="
-              (products.length == 0 && route.name == 'adminPurchaseNew') ||
+              (products.length == 0 && route.name == 'adminPurchaseReturnNew') ||
               (products.length == 0 &&
-                route.name == 'adminPurchaseEdit' &&
+                route.name == 'adminPurchaseReturnEdit' &&
                 DATA)
             "
           >
