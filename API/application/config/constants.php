@@ -126,3 +126,7 @@ defined('TABLE_POS_SALE_PAYMENT')   or define('TABLE_POS_SALE_PAYMENT', 'pos_sal
 defined('TABLE_PURCHASE')           or define('TABLE_PURCHASE', 'purchase');
 defined('TABLE_PURCHASE_PRODUCT')   or define('TABLE_PURCHASE_PRODUCT', 'purchase_product');
 defined('TABLE_PURCHASE_PAYMENT')   or define('TABLE_PURCHASE_PAYMENT', 'purchase_payment');
+
+defined('TABLE_RETURN_PURCHASE')    or define('TABLE_RETURN_PURCHASE', 'return_purchase');
+defined('TABLE_RETURN_PURCHASE_PRODUCT')   or define('TABLE_RETURN_PURCHASE_PRODUCT', 'return_purchase_product');
+defined('TABLE_RETURN_PURCHASE_PAYMENT')   or define('TABLE_RETURN_PURCHASE_PAYMENT', 'return_purchase_payment');

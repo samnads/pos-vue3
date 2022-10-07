@@ -1,6 +1,4 @@
 <template>
-  <UnitNewModal />
-  <SupplierNewModal />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
@@ -43,13 +41,12 @@
         <div class="input-group is-invalid">
           <select
             class="form-select text-capitalize"
-            name="warehouse"
             :disabled="!statuses"
-            v-model="purchase_status"
+            v-model="return_status"
             v-bind:class="[
-              errorPurchaseStatus
+              errorReturnStatus
                 ? 'is-invalid'
-                : statuses && purchase_status
+                : statuses && return_status
                 ? 'is-valid'
                 : '',
             ]"
@@ -67,7 +64,7 @@
             </option>
           </select>
         </div>
-        <div class="invalid-feedback">{{ errorPurchaseStatus }}</div>
+        <div class="invalid-feedback">{{ errorReturnStatus }}</div>
       </div>
       <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
         <label class="form-label">Purchase Ref. No.</label>
@@ -99,7 +96,7 @@
     </div>
     <hr />
     <div class="col">
-      <label class="form-label">Search Product ( purchase )</label>
+      <label class="form-label">Search Product ( from purchase only )</label>
       <div class="input-group is-invalid">
         <span class="input-group-text"
           ><i class="fa-solid fa-magnifying-glass"></i
@@ -141,9 +138,12 @@
       <thead class="table-dark">
         <tr>
           <th scope="col" style="width: 1%">#</th>
-          <th scope="col" style="width: 25%">Code | Name</th>
+          <th scope="col" style="width: 15%">Code | Name</th>
           <th scope="col" style="width: 5%">HSN</th>
-          <th scope="col" class="text-center" width="10%">Return Quantity</th>
+          <th scope="col" class="text-center" width="10%">Purchase Qty.</th>
+          <th scope="col" class="text-center" width="10%">Returned Qty.</th>
+          <th scope="col" class="text-center" width="10%">Available Qty.</th>
+          <th scope="col" class="text-center" width="10%">Quantity</th>
           <th scope="col" width="8%">Unit</th>
           <th scope="col" class="text-center" width="10%">Cost</th>
           <th scope="col" class="text-center" width="5%">Discount</th>
@@ -156,7 +156,13 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(product, index) in products" :key="product.id">
+        <tr
+          v-for="(product, index) in products"
+          :key="product.id"
+          v-bind:class="[
+            product.to_be_return_quantity == 0 ? 'bg-warning opaciy-50' : '',
+          ]"
+        >
           <th scope="row">{{ index + 1 }}</th>
           <td>
             <div class="d-flex justify-content-between">
@@ -167,16 +173,25 @@
             </div>
           </td>
           <td class="fst-italic">{{ product.hsn }}</td>
-          <td>
+          <td class="text-center">
+            {{ parseFloat(product.purchase_quantity).toFixed(2) }}
+          </td>
+          <td class="text-center">
+            {{ parseFloat(product.returned_quantity).toFixed(2) }}
+          </td>
+          <td class="text-center">
+            {{ parseFloat(product.to_be_return_quantity).toFixed(2) }}
+          </td>
+          <td class="text-center">
             <div class="input-group input-group-sm is-invalid">
               <button
                 type="button"
                 class="btn input-group-text"
                 v-bind:class="[
-                  product.quantity == 1 ? 'btn-secondary' : 'btn-warning',
+                  product.quantity <= 0 ? 'btn-secondary' : 'btn-warning',
                 ]"
                 @click="quantityButton(product, '-')"
-                :disabled="product.quantity == 1"
+                :disabled="product.quantity <= 0"
               >
                 <i class="fa-solid fa-minus"></i>
               </button>
@@ -187,21 +202,31 @@
                 v-model="product.quantity"
                 class="form-control no-arrow text-center"
                 @focus="$event.target.select()"
+                :disabled="product.to_be_return_quantity == 0"
               />
               <button
                 type="button"
-                class="btn btn-info input-group-text"
+                class="btn input-group-text"
+                v-bind:class="[
+                  product.quantity == product.to_be_return_quantity
+                    ? 'btn-secondary'
+                    : 'btn-info',
+                ]"
                 @click="quantityButton(product, '+')"
+                :disabled="product.quantity == product.to_be_return_quantity"
               >
                 <i class="fa-solid fa-plus"></i>
               </button>
             </div>
+            <small class="text-center opacity-75 text-danger" v-show="product.to_be_return_quantity > 0">{{
+              errors["products[" + index + "].quantity"]
+            }}</small>
           </td>
           <td>
             <div class="input-group is-invalid">
               <select
                 class="form-select form-select-sm text-capitalize"
-                :disabled="!units || true"
+                :disabled="true"
                 v-model="product.p_unit"
                 @change="unitChange(product)"
               >
@@ -209,7 +234,7 @@
                   v-for="u in units &&
                   units.filter(
                     (unit) =>
-                      /*unit.base == product.unit || */ unit.id == product.unit
+                      unit.base == product.unit || unit.id == product.unit
                   )"
                   :key="u.id"
                   :value="u.id"
@@ -218,13 +243,6 @@
                   {{ u.name }} - [ {{ u.code }} ]
                 </option>
               </select>
-              <!--<button
-                class="input-group-text text-info"
-                type="button"
-                @click="newUnit(product)"
-              >
-                <i class="fa-solid fa-plus"></i>
-              </button>-->
             </div>
           </td>
           <td>
@@ -267,13 +285,14 @@
             colspan="11"
             class="text-center text-muted"
             v-if="
-              (products.length == 0 && route.name == 'adminPurchaseReturnNew') ||
+              (products.length == 0 &&
+                route.name == 'adminPurchaseReturnNew') ||
               (products.length == 0 &&
                 route.name == 'adminPurchaseReturnEdit' &&
                 DATA)
             "
           >
-            Use the search bar to add products...
+            Use the search bar to add return products...
             <div class="text-danger">{{ errorProducts }}</div>
           </td>
         </tr>
@@ -284,8 +303,7 @@
           </td>
         </tr>
         <tr>
-          <td></td>
-          <td colspan="2" class="text-end fw-bold">Total</td>
+          <td colspan="6" class="text-end fw-bold">Total</td>
           <td class="text-center fw-bold">
             {{ calc.total_quantity().toFixed(2) }} ({{ calc.total_items() }})
           </td>
@@ -347,7 +365,6 @@
               <td class="text-end bg-secondary" width="25%">
                 <select
                   class="form-select form-select-sm rounded-0"
-                  name="warehouse"
                   :disabled="!taxes"
                   v-model="tax_rate"
                 >
@@ -492,7 +509,7 @@
         <button
           @click="onSubmit"
           class="btn btn-success"
-          :disabled="isSubmitting"
+          :disable="isSubmitting || !isValid"
         >
           {{ isSubmitting ? "Saving..." : "Save" }}
           <span
@@ -532,10 +549,8 @@ import * as yup from "yup";
 import admin from "@/mixins/admin.js";
 import { useRouter, useRoute } from "vue-router";
 import { inject } from "vue";
-import UnitNewModal from "../unit/UnitNewModal.vue";
-import SupplierNewModal from "../supplier/SupplierNewModal.vue";
 export default {
-  components: { UnitNewModal, SupplierNewModal },
+  components: {},
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
     const router = useRouter();
@@ -568,7 +583,7 @@ export default {
     var formValues = {}; // pre form values
     const schema = computed(() => {
       return yup.object({
-        purchase_status: yup
+        return_status: yup
           .number()
           .required()
           .nullable(true)
@@ -581,10 +596,20 @@ export default {
           .transform((curr, orig) => (orig === "" ? null : curr))
           .label("Date"),
         products: yup
-          .array()
+          .array(
+            yup.object().shape({
+              name: yup.string(),
+              quantity: yup
+                .number()
+                .required("Required")
+                .transform((_, val) => (val === Number(val) ? val : null))
+                .moreThan(0, "Should be greater than 0."),
+            })
+          )
           .required()
-          .min(1, "Atleast one product required !")
+          .min(1, "Atleast one return product required !")
           .label("Products"),
+
         packing: yup.number().required().min(0).label("Packing"),
         shipping: yup.number().required().min(0).label("Shipping"),
         shipping_tax: yup
@@ -610,7 +635,7 @@ export default {
     if (route.name == "adminPurchaseReturnEdit") {
       formValues = {
         products: [],
-        purchase_status: null,
+        return_status: null,
         packing: 0,
         shipping: 0,
         shipping_tax: null,
@@ -622,7 +647,7 @@ export default {
     } else if (route.name == "adminPurchaseReturnNew") {
       formValues = {
         products: [],
-        purchase_status: null,
+        return_status: null,
         packing: 0,
         shipping: 0,
         shipping_tax: null,
@@ -640,13 +665,14 @@ export default {
       setFieldError,
       isSubmitting,
       resetForm,
+      errors,
     } = useForm({
       validationSchema: schema,
       initialValues: formValues,
       initialErrors: {},
     });
-    const { value: purchase_status, errorMessage: errorPurchaseStatus } =
-      useField("purchase_status");
+    const { value: return_status, errorMessage: errorReturnStatus } =
+      useField("return_status");
     const { value: note, errorMessage: errorNote } = useField("note");
     const { value: date, errorMessage: errorDate } = useField("date");
     const { value: products, errorMessage: errorProducts } =
@@ -796,13 +822,14 @@ export default {
       console.log(values.date);
       var method = "POST";
       var action = "create";
-      if (route.name == "adminPurchaseEdit") {
+      values.purchase = Number(route.params.id);
+      if (route.name == "adminPurchaseReturnEdit") {
         values.id = DATA.value.id;
         method = "PUT";
         action = "update";
       }
       values.roundoff = calc.round_off();
-      return axiosAsyncCallReturnData(method, "purchase", {
+      return axiosAsyncCallReturnData(method, "purchase_return", {
         data: values,
         action: action,
       }).then(function (data) {
@@ -823,7 +850,13 @@ export default {
     function checkAndPush(product) {
       if (!this.products.some((data) => data.id === product.id)) {
         // new
-        product.quantity = 1; // always 1 for new
+        if (product.to_be_return_quantity > 0) {
+          // return qty available
+          product.quantity = 1;
+        } else {
+          // qty not available
+          product.quantity = 0;
+        }
         product.discount = 0; // always 0 for new
         /******************************* */
         product.db_cost = parseFloat(product.cost);
@@ -878,7 +911,24 @@ export default {
       } else {
         // update
         let index = this.products.findIndex((item) => item.id === product.id);
-        this.products[index].quantity++;
+        if (
+          product.to_be_return_quantity >=
+          this.products[index].quantity + 1
+        ) {
+          // return qty available
+          this.products[index].quantity++;
+        } else {
+          // qty not available
+          emitter.emit("showAlert", {
+            title: "Return quantity exceeded !",
+            body:
+              "Their is no more <b>" +
+              product.name +
+              "</b> available to return !",
+            type: "danger",
+            play: "danger.mp3",
+          });
+        }
       }
       this.autocompleteList = [];
       this.search_product = null;
@@ -886,41 +936,30 @@ export default {
     }
     function changeQuantity(id, quantity) {
       let index = this.products.findIndex((item) => item.id === id);
-      if (quantity >= 1) {
+      if (
+        quantity >= 1 &&
+        quantity <= this.products[index].to_be_return_quantity
+      ) {
         this.products[index].quantity = quantity;
       } else {
-        this.products[index].quantity = 1;
+        this.products[index].quantity = 0;
       }
-    }
-    function newUnit(product) {
-      var emitData;
-      var data; // used if new sub unit
-      data = units.value.find((obj) => {
-        return obj.id === product.unit;
-      });
-      emitData = {
-        title: "New Sub Unit of ",
-        type: "success",
-        data: data,
-        emit: "refreshSubUnitDropdown",
-      };
-      emitter.emit("newUnitModal", emitData);
-    }
-    function newSupplier(product) {
-      emitter.emit("newSupplierModal", {
-        title: "New Supplier",
-        type: "success",
-        emit: "refreshSupplierDataTable",
-      });
     }
     function quantityButton(product, operator) {
       let index = this.products.findIndex((item) => item.id === product.id);
       this.products[index].quantity = Number(this.products[index].quantity);
       if (operator == "+") {
-        this.products[index].quantity = this.products[index].quantity + 1;
+        if (
+          this.products[index].quantity + 1 >
+          this.products[index].to_be_return_quantity
+        ) {
+          //
+        } else {
+          this.products[index].quantity = this.products[index].quantity + 1;
+        }
       } else {
         this.products[index].quantity =
-          this.products[index].quantity - 1 == 0
+          this.products[index].quantity - 1 < 0
             ? 1
             : this.products[index].quantity - 1;
       }
@@ -929,7 +968,8 @@ export default {
     function confirmDeleteShow(data) {
       emitter.emit("deleteConfirmModal", {
         title: null,
-        body: "Confirm delete <b>" + data.name + "</b> from purchase list ?",
+        body:
+          "Confirm delete <b>" + data.name + "</b> from purchase return list ?",
         data: data,
         hide: true,
         emit: "confirmDeleteProduct",
@@ -1020,11 +1060,12 @@ export default {
         self.controller = new AbortController();
         this.axiosAsyncCallReturnData(
           "get",
-          "purchase",
+          "purchase_return",
           {
             action: "create",
             search: "product",
             query: query,
+            purchase: DATA.value.id,
           },
           self.controller,
           {
@@ -1048,7 +1089,7 @@ export default {
               self.emitter.emit("showAlert", {
                 title: "No search result found !",
                 body:
-                  "No product found for your search query <b>" +
+                  "No product found in purchase list for your search query <b>" +
                   query +
                   "</b> !",
                 type: "danger",
@@ -1066,9 +1107,6 @@ export default {
     watch(
       [
         /*date,
-        supplier,
-        warehouse,
-        purchase_status,
         note,*/
         products,
         shipping,
@@ -1088,8 +1126,8 @@ export default {
       autocompleteList,
       products,
       errorProducts,
-      purchase_status,
-      errorPurchaseStatus,
+      return_status,
+      errorReturnStatus,
       search_product,
       searchProduct,
       searchBox,
@@ -1131,10 +1169,9 @@ export default {
       discountChange,
       taxes,
       tax_rate,
-      newUnit,
-      newSupplier,
       route,
       DATA,
+      errors,
     };
   },
   data() {
@@ -1149,9 +1186,9 @@ export default {
 
     this.axiosAsyncCallReturnData(
       "GET",
-      "purchase",
+      "purchase_return",
       {
-        action: "update",
+        action: "create",
         job: "purchase_data",
         id: Number(self.route.params.id),
       },
@@ -1175,6 +1212,9 @@ export default {
           products[index].db_unit = Number(element.p_unit); // base unit
           products[index].unit = Number(element.unit); // purchase unit
           products[index].p_unit = Number(element.p_unit); // purchase unit
+          products[index].to_be_return_quantity = Number(
+            element.to_be_return_quantity
+          ); // quantity available to return;
           /******************************* purchase unit cost calculation */
           let p_unit_index = units.findIndex(
             (item) => item.id == products[index].p_unit
@@ -1234,10 +1274,7 @@ export default {
         );
         // slice(0, 19) includes seconds
         self.setFieldValue("date", date_.toISOString().slice(0, 19));
-        self.setFieldValue("supplier", data.supplier);
-        self.setFieldValue("warehouse", data.warehouse);
-        self.setFieldValue("purchase_status", 5);
-        self.setFieldValue("note", data.note);
+        self.setFieldValue("return_status", 5);
         self.setFieldValue("discount", data.discount);
         self.setFieldValue("tax_rate", data.purchase_tax);
         self.setFieldValue("shipping", Number(data.shipping_charge));

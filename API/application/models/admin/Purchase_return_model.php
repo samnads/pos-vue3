@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
-class Purchase_model extends CI_Model
+class Purchase_return_model extends CI_Model
 {
 	function __construct()
 	{
@@ -175,7 +175,7 @@ class Purchase_model extends CI_Model
 		//die($this->db->last_query());
 		return $query;
 	}
-	function suggestProdsForPurchase($search, $offset, $limit, $order_by, $order)
+	function suggestProdsForReturn($search, $offset, $limit, $order_by, $order, $where)
 	{
 		$search = trim($search);
 		$this->db->select('
@@ -188,6 +188,11 @@ class Purchase_model extends CI_Model
 		p.thumbnail													as thumbnail,
 		p.tax_method												as tax_method,
 		1															as quantity,
+		pp.quantity													as purchase_quantity,
+		1															as returned_quantity,
+		IFNULL((pp.quantity - 1),0) 								as to_be_return_quantity,
+
+
 		DATE_FORMAT(p.mfg_date,"%d/%b/%Y")							as mfg_date,
 		DATE_FORMAT(p.exp_date,"%d/%b/%Y")							as exp_date,
 
@@ -213,7 +218,12 @@ class Purchase_model extends CI_Model
 		tr.rate														as tax_rate,
 
 		CONCAT(p.name," | ",p.code," | Rs. ",TRUNCATE(p.price,2))	as label');
-		$this->db->from(TABLE_PRODUCT . '				p');
+		//$this->db->from(TABLE_PRODUCT . '				p');
+
+		$this->db->from(TABLE_PURCHASE_PRODUCT . '				pp');
+		$this->db->join(TABLE_PRODUCT . '			p',	'p.id=pp.product',	'left');
+
+
 		$this->db->join(TABLE_PRODUCT_TYPE . '		pt',	'pt.id=p.type',	'left');
 		$this->db->join(TABLE_BARCODE_SYMBOLOGY . '	bs',	'bs.id=p.symbology',	'left');
 		$this->db->join(TABLE_CATEGORY . '			c',	'c.id=p.category',	'left');
@@ -223,6 +233,7 @@ class Purchase_model extends CI_Model
 		$this->db->order_by($order_by, $order);
 		$this->db->or_like('p.code',	$search);
 		$this->db->or_like('p.name',	$search);
+		$this->db->where($where);
 		$query = $this->db->get('', $limit, $offset);
 		return $query;
 	}
@@ -230,7 +241,7 @@ class Purchase_model extends CI_Model
 	{
 		$this->db->select('AUTO_INCREMENT');
 		$this->db->from('INFORMATION_SCHEMA.TABLES');
-		$this->db->where(array('TABLE_NAME' => TABLE_PURCHASE, 'TABLE_SCHEMA' => $this->db->database));
+		$this->db->where(array('TABLE_NAME' => TABLE_RETURN_PURCHASE, 'TABLE_SCHEMA' => $this->db->database));
 		$query = $this->db->get();
 		$cnt = $query->row_array();
 		return $cnt['AUTO_INCREMENT'];
@@ -348,8 +359,10 @@ class Purchase_model extends CI_Model
 		(pp.unit_cost / IFNULL(u.step,1))							as db_cost,
 		pp.unit_discount											as unit_discount,
 		pp.tax_id													as tax_id,
-		pp.quantity													as quantity,
-		
+		0															as quantity,
+		pp.quantity													as purchase_quantity,
+		1															as returned_quantity,
+		IFNULL((pp.quantity - 1),0) 								as to_be_return_quantity,
 		p.unit														as unit,
 		u.name														as unit_name,
 		u.code
@@ -364,9 +377,9 @@ class Purchase_model extends CI_Model
 		//die($this->db->last_query());
 		return $query ? $query->result() : false;
 	}
-	function insert_purchase($data)
+	function insert_purchase_return($data)
 	{
-		$query = $this->db->insert(TABLE_PURCHASE, $data);
+		$query = $this->db->insert(TABLE_RETURN_PURCHASE, $data);
 		return $query;
 	}
 	function update_purchase($data, $id)
@@ -382,9 +395,9 @@ class Purchase_model extends CI_Model
 		$query = $this->db->update(TABLE_PURCHASE);
 		return $query;
 	}
-	function insert_purchase_product($data)
+	function insert_purchase_return_product($data)
 	{
-		$query = $this->db->insert(TABLE_PURCHASE_PRODUCT, $data);
+		$query = $this->db->insert(TABLE_RETURN_PURCHASE_PRODUCT, $data);
 		return $query;
 	}
 	function delete_purchase_products($where)
