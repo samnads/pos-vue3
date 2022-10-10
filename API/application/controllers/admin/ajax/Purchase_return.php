@@ -285,7 +285,9 @@ class Purchase_return extends CI_Controller
                             echo json_encode(array('success' => true, 'type' => 'notice', 'timeout' => '5000', 'message' => $this->lang->line('no_data_changed_after_query')));
                         }
                         break;
-                    default: // update purchase
+                    case 'update':
+                        break;
+                    default: // update purchase return
                         $_POST = $this->input->post('data');
                         $data = array(
                             'warehouse'         => $this->input->post('warehouse'),
@@ -418,16 +420,16 @@ class Purchase_return extends CI_Controller
                 break;
             default:
         }
-        switch ($job) { // dropdown jobs
-            case 'purchase_data':
-                $data = $this->Purchase_return_model->get_purchase_row_by_id(array('id' => $this->input->get('id'), 'deleted_at' => NULL));
+        switch ($job) { // jobs
+            case 'purchase_return_data':
+                $data = $this->Purchase_return_model->get_purchase_row_by_id(array('rp.id' => $this->input->get('id'), 'deleted_at' => NULL));
                 if ($data['id']) {
-                    $data['products'] = $this->Purchase_return_model->get_purchase_products_by_purchase_with_return(array('pp.purchase' => (int)$this->input->get('id')));
+                    $data['products'] = $this->Purchase_return_model->get_return_purchase_products(array('pp.purchase' => (int)$this->input->get('id')));
                     $data['units'] = $this->Unit_model->getall_active_4_frontend();
                     $data['tax_rates'] = $this->Tax_model->dropdown_active();
                     echo json_encode(array('success' => true, 'type' => 'success', 'data' => $data));
                 } else {
-                    echo json_encode(array('success' => false, 'type' => 'danger', 'message' => 'Purchase not found !', 'location' => "admin/purchase/list"));
+                    echo json_encode(array('success' => false, 'type' => 'danger', 'message' => 'Purchase return not found !', 'location' => "admin/purchase_return/list"));
                 }
                 break;
             default:

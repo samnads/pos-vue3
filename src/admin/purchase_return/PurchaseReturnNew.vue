@@ -1184,13 +1184,12 @@ export default {
   mounted() {
     var self = this;
     /************************************************************** GET DB DATA for editing */
-
     this.axiosAsyncCallReturnData(
       "GET",
       "purchase_return",
       {
-        action: "create",
-        job: "purchase_data",
+        action: "update",
+        job: "purchase_return_data",
         id: Number(self.route.params.id),
       },
       null,
