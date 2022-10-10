@@ -10,22 +10,22 @@ class Purchase_return_model extends CI_Model
 	function datatable_data($search, $offset, $limit, $order_by, $order)
 	{
 		/******************************************************/ // calculate total paid using all payment methods
-		$this->db->select('*,SUM(amount) as total_paid')->from(TABLE_PURCHASE_PAYMENT)->where(array('deleted_at' => NULL))->group_by('purchase');
+		$this->db->select('*,SUM(amount) as total_paid')->from(TABLE_RETURN_PURCHASE_PAYMENT)->where(array('deleted_at' => NULL))->group_by('return_purchase');
 		$subquery_payment = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($subquery_payment);
 		/******************************************************/ // calculate each product_total excluding tax rate
-		$this->db->select('*')->from(TABLE_PURCHASE_PRODUCT)->group_by(array('purchase', 'product'));
+		$this->db->select('`return_purchase`, `product`, `quantity`, `unit`, `unit_cost`, `unit_discount`, `tax_id`, `net_unit_cost`, `product_total_without_tax`')->from(TABLE_RETURN_PURCHASE_PRODUCT)->group_by(array('return_purchase', 'product'));
 		$subquery_product = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($subquery_product);
 		/******************************************************/ // calculate each product total tax
-		$this->db->select('*,
+		$this->db->select('`return_purchase`, `product`, `quantity`, `unit`, `unit_cost`, `unit_discount`, `tax_id`, `net_unit_cost`, `product_total_without_tax`,
 		tr.rate as tax_rate,
 		(IFNULL(tr.rate, 0) / 100) * psp.product_total_without_tax as product_total_tax');
-		$this->db->from(TABLE_PURCHASE_PRODUCT . ' as psp');
+		$this->db->from(TABLE_RETURN_PURCHASE_PRODUCT . ' as psp');
 		$this->db->join(TABLE_TAX_RATE . ' as tr',    'tr.id = psp.tax_id', 'left');
-		$this->db->group_by(array('psp.purchase', 'psp.product'));
+		$this->db->group_by(array('psp.return_purchase', 'psp.product'));
 		$product_total_tax = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($product_total_tax);
@@ -35,11 +35,9 @@ class Purchase_return_model extends CI_Model
 			'
 		p.id		as id,
 		p.reference_id		as reference_id,
-		p.warehouse		as warehouse,
 		p.status		as status,
 		p.created_by		as created_by,
 		p.updated_by	as updated_by,
-		p.supplier	as supplier,
 		p.date	as date,
 		p.discount	as discount,
 		p.shipping_charge	as shipping_charge,
@@ -51,8 +49,6 @@ class Purchase_return_model extends CI_Model
 		p.updated_at	as updated_at,
 		p.deleted_at	as deleted_at,
 		COUNT(case when pup.product then pup.product end) as product_count,
-		s.name as supplier_name,
-		w.name as warehouse_name,
 		st.name as status_name,
 		st.css_class as css_class,
 		SUM(pup.product_total_without_tax) as product_total_without_unit_tax,
@@ -141,16 +137,14 @@ class Purchase_return_model extends CI_Model
 		p.packing_charge -
 		p.round_off - IFNULL(ppy.total_paid, 0) as due'
 		);
-		$this->db->from(TABLE_PURCHASE . ' as p');
-		$this->db->join(TABLE_SUPPLIER . ' as s',    's.id = p.supplier', 'left');
-		$this->db->join(TABLE_WAREHOUSE . ' as w',    'w.id = p.warehouse', 'left');
+		$this->db->from(TABLE_RETURN_PURCHASE . ' as p');
 		$this->db->join(TABLE_STATUS . ' as st',    'st.id = p.status', 'left');
 		$this->db->join(TABLE_TAX_RATE . ' as tr_p',    'tr_p.id = p.purchase_tax', 'left');
 		$this->db->join(TABLE_TAX_RATE . ' as tr_s',    'tr_s.id = p.shipping_tax', 'left');
 		$this->db->join(TABLE_TAX_RATE . ' as tr_pk',    'tr_pk.id = p.packing_tax', 'left');
-		$this->db->join('(' . $subquery_payment . ')  as ppy', 'ppy.purchase = p.id', 'left');
-		$this->db->join('(' . $subquery_product . ') as pup', 'pup.purchase = p.id', 'left');
-		$this->db->join('(' . $product_total_tax . ') as ptt', 'ptt.purchase = p.id AND ptt.product = pup.product', 'left');
+		$this->db->join('(' . $subquery_payment . ')  as ppy', 'ppy.return_purchase = p.id', 'left');
+		$this->db->join('(' . $subquery_product . ') as pup', 'pup.return_purchase = p.id', 'left');
+		$this->db->join('(' . $product_total_tax . ') as ptt', 'ptt.return_purchase = p.id AND ptt.product = pup.product', 'left');
 		$this->db->order_by($order_by, $order);
 		$this->db->group_by('p.id');
 		$this->db->where(array('p.deleted_at' => NULL)); // select only not deleted rows
@@ -165,8 +159,6 @@ class Purchase_return_model extends CI_Model
 		$this->db->or_like('p.note',			$search);
 		$this->db->or_like('p.created_at',		$search);
 		$this->db->or_like('p.updated_at',		$search);
-		$this->db->or_like('w.name',			$search);
-		$this->db->or_like('s.name',			$search);
 		$this->db->or_like('st.name',			$search);
 		$this->db->or_like('st.name',			$search);
 		$this->db->or_like('ppy.total_paid',	$search);
@@ -177,8 +169,18 @@ class Purchase_return_model extends CI_Model
 	}
 	function suggestProdsForReturn($search, $offset, $limit, $order_by, $order, $where)
 	{
+		/******************************************************/ // calculate returned qty
+		$this->db->select('rpp.product as returned_product,,SUM(rpp.quantity) as returned_quantity');
+		$this->db->from(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp');
+		$this->db->join(TABLE_RETURN_PURCHASE . ' as rp',    'rp.id = rpp.return_purchase', 'left');
+		$this->db->where(array('rp.purchase' => $where['pp.purchase'], 'rp.deleted_at' => NULL));
+		$this->db->group_by(array('rpp.product'));
+		$return_purchase_product_count = $this->db->get_compiled_select();
+		$this->db->reset_query();
+		//die($return_purchase_product_count);
+		/******************************************************/
 		$search = trim($search);
-		$this->db->select('
+		$this->db->select("
 		p.id														as id,
 		p.code														as code,
 		p.name														as name,
@@ -188,13 +190,14 @@ class Purchase_return_model extends CI_Model
 		p.thumbnail													as thumbnail,
 		p.tax_method												as tax_method,
 		1															as quantity,
+
 		pp.quantity													as purchase_quantity,
-		1															as returned_quantity,
-		IFNULL((pp.quantity - 1),0) 								as to_be_return_quantity,
+		IFNULL(rppc.returned_quantity,0)							as returned_quantity,
+		IFNULL((pp.quantity - IFNULL(rppc.returned_quantity,0)),0)	as to_be_return_quantity,
 
 
-		DATE_FORMAT(p.mfg_date,"%d/%b/%Y")							as mfg_date,
-		DATE_FORMAT(p.exp_date,"%d/%b/%Y")							as exp_date,
+		DATE_FORMAT(p.mfg_date,'%d/%b/%Y')							as mfg_date,
+		DATE_FORMAT(p.exp_date,'%d/%b/%Y')							as exp_date,
 
 		pt.name														as type,
 
@@ -217,7 +220,7 @@ class Purchase_return_model extends CI_Model
 		tr.name														as tax_name,
 		tr.rate														as tax_rate,
 
-		CONCAT(p.name," | ",p.code," | Rs. ",TRUNCATE(p.price,2))	as label');
+		CONCAT('<span class=\'text-primary\'>',p.name,'</span>',' | ',p.code)	as label");
 		//$this->db->from(TABLE_PRODUCT . '				p');
 
 		$this->db->from(TABLE_PURCHASE_PRODUCT . '				pp');
@@ -230,6 +233,7 @@ class Purchase_return_model extends CI_Model
 		$this->db->join(TABLE_BRAND . '				b',	'b.id=p.brand',	'left');
 		$this->db->join(TABLE_UNIT . '				u',	'u.id=p.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . '			tr',	'tr.id=p.tax_rate',	'left');
+		$this->db->join('(' . $return_purchase_product_count . ')  as rppc', 'rppc.returned_product = pp.product', 'left');
 		$this->db->order_by($order_by, $order);
 		$this->db->or_like('p.code',	$search);
 		$this->db->or_like('p.name',	$search);
@@ -348,8 +352,18 @@ class Purchase_return_model extends CI_Model
 		//die($this->db->last_query());
 		return $query ? $query->result_array() : false;
 	}
-	function get_purchase_products_by_purchase($where)
+	function get_purchase_products_by_purchase_with_return($where)
 	{
+		/******************************************************/ // calculate returned qty
+		$this->db->select('rpp.product as returned_product,,SUM(rpp.quantity) as returned_quantity');
+		$this->db->from(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp');
+		$this->db->join(TABLE_RETURN_PURCHASE . ' as rp',    'rp.id = rpp.return_purchase', 'left');
+		$this->db->where(array('rp.purchase' => $where['pp.purchase'], 'rp.deleted_at' => NULL));
+		$this->db->group_by(array('rpp.product'));
+		$return_purchase_product_count = $this->db->get_compiled_select();
+		$this->db->reset_query();
+		//die($return_purchase_product_count);
+		/******************************************************/
 		$this->db->select('
 		p.id														as id,
 		p.code														as code,
@@ -361,8 +375,8 @@ class Purchase_return_model extends CI_Model
 		pp.tax_id													as tax_id,
 		0															as quantity,
 		pp.quantity													as purchase_quantity,
-		1															as returned_quantity,
-		IFNULL((pp.quantity - 1),0) 								as to_be_return_quantity,
+		IFNULL(rppc.returned_quantity,0)							as returned_quantity,
+		IFNULL((pp.quantity - IFNULL(rppc.returned_quantity,0)),0)	as to_be_return_quantity,
 		p.unit														as unit,
 		u.name														as unit_name,
 		u.code
@@ -372,6 +386,7 @@ class Purchase_return_model extends CI_Model
 		$this->db->join(TABLE_PRODUCT . ' p',	'p.id=pp.product',	'left');
 		$this->db->join(TABLE_UNIT . ' u',	'u.id=pp.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . ' tr',	'tr.id=pp.tax_id',	'left');
+		$this->db->join('(' . $return_purchase_product_count . ')  as rppc', 'rppc.returned_product = pp.product', 'left');
 		$this->db->where($where);
 		$query = $this->db->get();
 		//die($this->db->last_query());
@@ -392,7 +407,8 @@ class Purchase_return_model extends CI_Model
 	{
 		$this->db->where($where);
 		$this->db->set('deleted_at', 'NOW()', FALSE); // deleted rows have a timestamp
-		$query = $this->db->update(TABLE_PURCHASE);
+		$this->db->set('deleted_by', $this->session->id);
+		$query = $this->db->update(TABLE_RETURN_PURCHASE);
 		return $query;
 	}
 	function insert_purchase_return_product($data)

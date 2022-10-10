@@ -1,6 +1,6 @@
 <template>
   <PurchasePayment />
-  <PurchaseInfoModal />
+  <PurchaseRetunInfoModal />
   <PurchasePayInfoModal />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
@@ -45,7 +45,7 @@
           <th scope="col">Ref. No.</th>
           <th scope="col">Supplier</th>
           <th scope="col">Warehouse</th>
-          <th scope="col">Purchase Status</th>
+          <th scope="col">Return Status</th>
           <th scope="col">Products</th>
           <th scope="col">Payable</th>
           <th scope="col">Paid</th>
@@ -70,10 +70,10 @@ import { ref } from "vue";
 import admin from "@/mixins/admin.js";
 import { inject } from "vue";
 import PurchasePayment from "../purchase/PurchasePayment.vue";
-import PurchaseInfoModal from "../purchase/PurchaseInfoModal.vue";
+import PurchaseRetunInfoModal from "../purchase_return/PurchaseReturnInfoModal.vue";
 import PurchasePayInfoModal from "../purchase/PurchasePayInfoModal.vue";
 export default {
-  components: { PurchasePayment, PurchaseInfoModal, PurchasePayInfoModal },
+  components: { PurchasePayment, PurchaseRetunInfoModal, PurchasePayInfoModal },
   /* eslint-disable */
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
@@ -124,7 +124,7 @@ export default {
         order: [[0, "desc"]],
         ajax: {
           method: "GET",
-          url: process.env.VUE_APP_API_ROOT + "admin/ajax/purchase",
+          url: process.env.VUE_APP_API_ROOT + "admin/ajax/purchase_return",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {
@@ -321,11 +321,9 @@ export default {
               let purchaseDeatils =
                 '<li><a class="dropdown-item" href="#" id="details"><i class="fa-solid fa-circle-info fa-fw"></i>Details</a></li>';
               let purchaseEdit =
-                '<li><a class="dropdown-item" href="#" id="edit"><i class="fa-solid fa-pencil fa-fw"></i>Edit Purchase</a></li>';
+                '<li><a class="dropdown-item" href="#" id="edit"><i class="fa-solid fa-pencil fa-fw"></i>Edit Return</a></li>';
               let addPay =
                 '<li><a class="dropdown-item" href="#" id="addpay"><i class="fa-brands fa-paypal fa-fw"></i>Add Payment</a></li>';
-              let retPur =
-                '<li><a class="dropdown-item" href="#" id="return"><i class="fa-solid fa-rotate-left fa-fw"></i>Return Purchase</a></li>';
               return (
                 '<div class="row-btn-group btn-group btn-group-sm" role="group" aria-label="Button group with nested dropdown">' +
                 editBtn +
@@ -337,8 +335,7 @@ export default {
                 purchaseEdit +
                 '<li><a class="dropdown-item" href="#" id="payinfo"><i class="fa-solid fa-eye fa-fw"></i>Show Payments</a></li>' +
                 addPay +
-                retPur +
-                '<li><a class="dropdown-item" href="#" id="delete"><i class="fas fa-trash fa-fw"></i>Delete Purchase</a></li>' +
+                '<li><a class="dropdown-item" href="#" id="delete"><i class="fas fa-trash fa-fw"></i>Delete Return</a></li>' +
                 "</ul>" +
                 "</div>" +
                 "</div>"
@@ -460,7 +457,7 @@ export default {
             JSON.stringify(self.table.row($(this).parents("tr")).data())
           );
           // show single product info
-          self.emitter.emit("showPurchaseDetails", {
+          self.emitter.emit("showPurchaseReturnDetails", {
             title: null,
             body: null,
             data: data,
@@ -482,7 +479,7 @@ export default {
         );
         self.$router
           .push({
-            name: "adminPurchaseEdit",
+            name: "adminPurchaseReturnEdit",
             params: { id: data.id, data: data },
           })
           .catch(() => {});
@@ -507,9 +504,9 @@ export default {
         self.emitter.emit("deleteConfirmModal", {
           title: null,
           body:
-            "Delete purchase with Ref. No. <b>" + data.reference_id + "</b> ?",
+            "Delete return purchase with Ref. No. <b>" + data.reference_id + "</b> ?",
           data: data,
-          emit: "confirmDeletePurchase",
+          emit: "confirmDeletePurchaseReturn",
           hide: true,
           type: "danger",
         });
@@ -535,7 +532,7 @@ export default {
           self.table.search("").draw();
         });
     });
-    self.emitter.on("confirmDeletePurchase", (data) => {
+    self.emitter.on("confirmDeletePurchaseReturn", (data) => {
       // delete selected supplier stuff here
       if (self.controller_delete.value) {
         self.controller_delete.value.abort();
@@ -544,7 +541,7 @@ export default {
       self
         .axiosAsyncCallReturnData(
           "delete",
-          "purchase",
+          "purchase_return",
           {
             data: data,
             action: "delete",
@@ -575,7 +572,7 @@ export default {
   },
   beforeUnmount() {
     var self = this;
-    self.emitter.off("confirmDeletePurchase");
+    self.emitter.off("confirmDeletePurchaseReturn");
     self.emitter.off("refreshPurchaseTable");
     // turn off for duplicate calling
     // because its called multiple times when page loaded multiple times

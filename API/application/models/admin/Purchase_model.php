@@ -30,6 +30,11 @@ class Purchase_model extends CI_Model
 		$this->db->reset_query();
 		//die($product_total_tax);
 		/******************************************************/
+		$this->db->select('purchase,COUNT(purchase) as total_return')->from(TABLE_RETURN_PURCHASE)->where(array('deleted_at' => NULL))->group_by('purchase');
+		$subquery_return_count = $this->db->get_compiled_select();
+		$this->db->reset_query();
+		//die($subquery_return_count);
+		/******************************************************/ 
 		$search = trim($search);
 		$this->db->select(
 			'
@@ -50,6 +55,7 @@ class Purchase_model extends CI_Model
 		p.created_at	as created_at,
 		p.updated_at	as updated_at,
 		p.deleted_at	as deleted_at,
+		rc.total_return as total_return,
 		COUNT(case when pup.product then pup.product end) as product_count,
 		s.name as supplier_name,
 		w.name as warehouse_name,
@@ -151,6 +157,7 @@ class Purchase_model extends CI_Model
 		$this->db->join('(' . $subquery_payment . ')  as ppy', 'ppy.purchase = p.id', 'left');
 		$this->db->join('(' . $subquery_product . ') as pup', 'pup.purchase = p.id', 'left');
 		$this->db->join('(' . $product_total_tax . ') as ptt', 'ptt.purchase = p.id AND ptt.product = pup.product', 'left');
+		$this->db->join('(' . $subquery_return_count . ') as rc', 'rc.purchase = p.id', 'left');
 		$this->db->order_by($order_by, $order);
 		$this->db->group_by('p.id');
 		$this->db->where(array('p.deleted_at' => NULL)); // select only not deleted rows

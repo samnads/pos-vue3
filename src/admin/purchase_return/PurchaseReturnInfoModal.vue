@@ -1,9 +1,9 @@
 <template>
-  <div class="modal" id="purchaseInfoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal" id="purchaseReturnInfoModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header bg-info">
-          <h5 class="modal-title text-dark">Purchase Details</h5>
+          <h5 class="modal-title text-dark">Purchase Return Details</h5>
           <button
             type="button"
             class="btn-close"
@@ -156,7 +156,7 @@ export default {
     const product = ref({});
     const details = ref({});
     const controller = ref(undefined);
-    emitter.on("showPurchaseDetails", (data) => {
+    emitter.on("showPurchaseReturnDetails", (data) => {
       let row = data.data;
       product.value = row;
       details.value = {};
@@ -164,10 +164,10 @@ export default {
         controller.value.abort();
       }
       controller.value = new AbortController();
-      window.PURCHASE_INFO_MODAL.show();
+      window.PURCHASE_RETURN_INFO_MODAL.show();
       axiosAsyncCallReturnData(
         "get",
-        "purchase",
+        "purchase_return",
         {
           action: "details",
           id: row.id,
@@ -185,11 +185,11 @@ export default {
         } else {
           if (data.success == false) {
             // not ok
-            window.PURCHASE_INFO_MODAL.hide();
+            window.PURCHASE_RETURN_INFO_MODAL.hide();
           } else {
             // other error
             if (data.message != "canceled") {
-              window.PURCHASE_INFO_MODAL.hide();
+              window.PURCHASE_RETURN_INFO_MODAL.hide();
               notifyCatchResponse({ title: data.message });
             }
           }
@@ -197,7 +197,7 @@ export default {
       });
     });
     function deleteConfirm(data) {
-      window.PURCHASE_INFO_MODAL.hide();
+      window.PURCHASE_RETURN_INFO_MODAL.hide();
       emitter.emit("deleteConfirmModal", {
         title: null,
         body:
@@ -221,7 +221,7 @@ export default {
   methods: {
     edit(data) {
       var self = this;
-      window.PURCHASE_INFO_MODAL.hide();
+      window.PURCHASE_RETURN_INFO_MODAL.hide();
       self.$router
         .push({
           name: "adminPurchaseEdit",
@@ -231,14 +231,14 @@ export default {
     },
   },
   mounted() {
-    window.PURCHASE_INFO_MODAL = new Modal($("#purchaseInfoModal"), {
+    window.PURCHASE_RETURN_INFO_MODAL = new Modal($("#purchaseReturnInfoModal"), {
       backdrop: true,
       show: true,
     });
   },
   beforeUnmount() {
     var self = this;
-    self.emitter.off("showPurchaseDetails");
+    self.emitter.off("showPurchaseReturnDetails");
     // turn off for duplicate calling
     // because its called multiple times when page loaded multiple times
   },

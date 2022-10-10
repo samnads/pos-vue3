@@ -251,7 +251,7 @@ CREATE TABLE `module` (
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `module` (`id`, `name`, `description`, `added_at`, `updated_at`) VALUES
 (1,	'product',	NULL,	'2022-07-06 11:59:05',	'2022-08-24 05:43:27'),
@@ -271,7 +271,8 @@ INSERT INTO `module` (`id`, `name`, `description`, `added_at`, `updated_at`) VAL
 (15,	'stock_adjustment',	NULL,	'2022-07-06 11:59:05',	'2022-08-24 05:43:27'),
 (16,	'customer_group',	NULL,	'2022-07-06 11:59:05',	'2022-08-24 05:43:27'),
 (17,	'common',	NULL,	'2022-07-06 11:59:05',	'2022-08-24 05:43:27'),
-(18,	'purchase',	NULL,	'2022-08-24 05:42:37',	'2022-08-24 05:43:27');
+(18,	'purchase',	NULL,	'2022-08-24 05:42:37',	'2022-08-24 05:43:27'),
+(19,	'purchase_return',	NULL,	'2022-10-03 05:52:05',	NULL);
 
 DROP TABLE IF EXISTS `module_permission`;
 CREATE TABLE `module_permission` (
@@ -341,7 +342,11 @@ INSERT INTO `module_permission` (`module`, `permission`, `checked`, `read_only`,
 (18,	7,	NULL,	NULL,	'PURCHASE'),
 (18,	9,	NULL,	NULL,	'PURCHASE'),
 (18,	10,	NULL,	NULL,	'PURCHASE'),
-(18,	11,	NULL,	NULL,	'PURCHASE');
+(18,	11,	NULL,	NULL,	'PURCHASE'),
+(19,	1,	NULL,	NULL,	'PURCHASE RETURN'),
+(19,	4,	NULL,	NULL,	'PURCHASE RETURN'),
+(19,	6,	NULL,	NULL,	'PURCHASE RETURN'),
+(19,	7,	NULL,	NULL,	'PURCHASE RETURN');
 
 DROP TABLE IF EXISTS `payment_mode`;
 CREATE TABLE `payment_mode` (
@@ -540,7 +545,7 @@ INSERT INTO `product` (`id`, `type`, `code`, `symbology`, `name`, `slug`, `thumb
 (2,	1,	'62305684',	1,	'Long Book',	'long-book',	'https://3ner1e34iilsjdn1qohanunu-wpengine.netdna-ssl.com/wp-content/uploads/2014/11/82175.jpg',	NULL,	1,	3,	1,	NULL,	NULL,	'1',	12.0000,	50.0000,	0.0000,	45.0000,	1.0000,	NULL,	NULL,	'E',	2,	'1',	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:14:54',	'2022-08-27 21:23:09',	NULL,	NULL,	NULL),
 (3,	1,	'25171014',	1,	'Pen 0.7mm',	'pen-0-7mm',	'https://www.proimprint.com/image/cache/data/KEYCHAINS-OPENERS/Promotional-Keychains-Openers/Custom-Logo-Imprinted-Plastic-Keychains/Customized-Roslin-Stylus-Pens-500x500.jpg',	NULL,	1,	1,	1,	NULL,	NULL,	'1',	12.0000,	NULL,	0.0000,	5.0000,	NULL,	NULL,	'2021-01-28',	'E',	2,	'1',	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:15:37',	'2022-08-27 21:23:09',	NULL,	NULL,	NULL),
 (4,	1,	'80493457',	1,	'Stylish',	'stylish',	'https://5.imimg.com/data5/GK/JK/MY-45473441/stylish-pen-500x500.jpg',	NULL,	1,	NULL,	1,	NULL,	NULL,	'1',	12.0000,	5.0000,	0.0000,	5.0000,	NULL,	NULL,	'2021-01-06',	'E',	NULL,	'1',	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:17:04',	'2022-08-27 21:23:09',	NULL,	NULL,	NULL),
-(5,	1,	'38644788',	1,	'Couple Photo Frame',	'couple-photo-frame',	'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7iyBDZf-tfvjCrGwONFuvg3Wj33FJ8xrsBg&usqp=CAU',	NULL,	1,	1,	1,	NULL,	NULL,	'1',	12.0000,	300.0000,	0.0000,	200.0000,	10.0000,	NULL,	NULL,	'E',	2,	'1',	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:18:37',	'2022-08-27 21:23:09',	NULL,	NULL,	NULL),
+(5,	1,	'38644788',	1,	'Couple Photo Frame',	'couple-photo-frame',	'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7iyBDZf-tfvjCrGwONFuvg3Wj33FJ8xrsBg&usqp=CAU',	NULL,	1,	1,	1,	NULL,	NULL,	'1',	12.0000,	300.0000,	NULL,	200.0000,	10.0000,	NULL,	NULL,	'E',	2,	'1',	3,	0,	NULL,	2.0000,	NULL,	0,	0,	0,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:18:37',	'2022-10-03 11:17:16',	NULL,	NULL,	NULL),
 (6,	1,	'94426911',	1,	'Wall Clock',	'wall-clock',	'https://images-na.ssl-images-amazon.com/images/I/51VjOomhxoL._SY355_.jpg',	NULL,	1,	1,	1,	NULL,	NULL,	'0',	250.7500,	NULL,	0.0000,	570.0000,	170.2500,	NULL,	NULL,	'E',	2,	'1',	3,	NULL,	NULL,	1.0000,	10.0000,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:19:09',	'2022-08-27 23:07:12',	NULL,	NULL,	NULL),
 (10,	1,	'39741136',	1,	'Keyboard Mouse Combo',	'keyboard-mouse-combo',	'https://images-na.ssl-images-amazon.com/images/I/619gY3%2BheVL._SL1000_.jpg',	NULL,	1,	1,	6,	NULL,	NULL,	'1',	12.0000,	4500.0000,	0.0000,	1000.0000,	250.0000,	NULL,	NULL,	'I',	2,	'1',	3,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-01-24 20:23:19',	'2022-08-27 21:23:09',	NULL,	NULL,	NULL),
 (149,	1,	'56904366',	1,	'fhfgh',	'fghetrty',	NULL,	NULL,	1,	1,	1,	NULL,	NULL,	'1',	50.0000,	NULL,	50.0000,	75.0000,	0.0000,	NULL,	NULL,	'E',	1,	'1',	3,	0,	NULL,	NULL,	NULL,	0,	1,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	'2021-10-19 02:22:05',	'2022-07-30 20:12:14',	NULL,	NULL,	NULL),
@@ -644,7 +649,6 @@ DROP TABLE IF EXISTS `purchase`;
 CREATE TABLE `purchase` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `reference_id` varchar(150) NOT NULL,
-  `return_id` int(11) DEFAULT NULL,
   `warehouse` int(11) NOT NULL,
   `date` date NOT NULL,
   `time` time NOT NULL,
@@ -671,7 +675,6 @@ CREATE TABLE `purchase` (
   KEY `created_by` (`created_by`),
   KEY `updated_by` (`updated_by`),
   KEY `status` (`status`),
-  KEY `return_id` (`return_id`),
   KEY `shipping_tax` (`shipping_tax`),
   KEY `packing_tax` (`packing_tax`),
   KEY `tax` (`purchase_tax`),
@@ -681,19 +684,14 @@ CREATE TABLE `purchase` (
   CONSTRAINT `purchase_ibfk_3` FOREIGN KEY (`created_by`) REFERENCES `user` (`id`),
   CONSTRAINT `purchase_ibfk_4` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`),
   CONSTRAINT `purchase_ibfk_5` FOREIGN KEY (`status`) REFERENCES `status` (`id`),
-  CONSTRAINT `purchase_ibfk_6` FOREIGN KEY (`return_id`) REFERENCES `purchase` (`id`),
   CONSTRAINT `purchase_ibfk_8` FOREIGN KEY (`shipping_tax`) REFERENCES `tax_rate` (`id`),
   CONSTRAINT `purchase_ibfk_9` FOREIGN KEY (`packing_tax`) REFERENCES `tax_rate` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=198 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=206 DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `purchase` (`id`, `reference_id`, `return_id`, `warehouse`, `date`, `time`, `status`, `created_by`, `updated_by`, `supplier`, `discount`, `purchase_tax`, `shipping_charge`, `shipping_tax`, `packing_charge`, `packing_tax`, `round_off`, `payment_note`, `note`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(190,	'REF-PUR-00190',	NULL,	20,	'2022-09-12',	'22:41:20',	8,	1,	1,	88,	1.0000,	1,	10.0000,	1,	10.0000,	2,	0.0300,	NULL,	'sdsd',	'2022-09-06 17:11:41',	'2022-09-26 15:40:29',	NULL),
-(191,	'REF-PUR-00191',	NULL,	27,	'2022-08-31',	'22:53:26',	22,	1,	1,	89,	0.0000,	NULL,	50.0000,	NULL,	50.0000,	NULL,	0.5347,	'dsdsd',	'sdsd',	'2022-09-06 17:23:47',	'2022-09-22 17:57:21',	NULL),
-(192,	'REF-PUR-00192',	NULL,	27,	'2022-09-09',	'23:04:44',	22,	1,	1,	91,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.3466,	'bvn',	NULL,	'2022-09-06 17:34:46',	'2022-09-26 14:15:04',	NULL),
-(194,	'REF-PUR-00194',	NULL,	20,	'2022-09-02',	'12:24:08',	8,	1,	1,	88,	0.0000,	1,	1.0000,	1,	1.0000,	2,	0.7839,	'',	NULL,	'2022-09-10 06:54:34',	'2022-09-27 15:46:30',	NULL),
-(195,	'REF-PUR-00195',	NULL,	20,	'2022-09-01',	'19:13:38',	5,	1,	1,	89,	12.0000,	1,	0.0000,	NULL,	2.0000,	NULL,	0.2812,	'',	'fgfdg',	'2022-09-10 13:45:18',	'2022-09-27 15:31:52',	'2022-09-27 15:31:52'),
-(196,	'REF-PUR-00196',	NULL,	27,	'2022-09-15',	'00:29:24',	22,	1,	1,	91,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	'trtrt',	'2022-09-10 18:59:37',	'2022-09-26 15:38:49',	'2022-09-26 15:38:49'),
-(197,	'REF-PUR-00197',	NULL,	27,	'2022-09-27',	'21:02:07',	5,	1,	NULL,	89,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.6022,	NULL,	NULL,	'2022-09-27 15:32:19',	NULL,	NULL);
+INSERT INTO `purchase` (`id`, `reference_id`, `warehouse`, `date`, `time`, `status`, `created_by`, `updated_by`, `supplier`, `discount`, `purchase_tax`, `shipping_charge`, `shipping_tax`, `packing_charge`, `packing_tax`, `round_off`, `payment_note`, `note`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(203,	'REF-PUR-00203',	20,	'2022-10-10',	'11:58:07',	22,	1,	NULL,	89,	1.0000,	1,	1.0000,	1,	10.0000,	1,	0.1043,	NULL,	'tgggg',	'2022-10-10 06:28:43',	'2022-10-10 06:30:03',	NULL),
+(204,	'REF-PUR-00204',	33,	'2022-10-10',	'17:01:57',	22,	1,	1,	91,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.2556,	NULL,	NULL,	'2022-10-10 11:32:05',	'2022-10-10 13:58:35',	NULL),
+(205,	'REF-PUR-00205',	20,	'2022-10-10',	'18:51:25',	22,	1,	1,	89,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.2556,	NULL,	'ffdf',	'2022-10-10 13:21:32',	'2022-10-10 13:58:29',	NULL);
 
 DROP TABLE IF EXISTS `purchase_payment`;
 CREATE TABLE `purchase_payment` (
@@ -722,11 +720,10 @@ CREATE TABLE `purchase_payment` (
   CONSTRAINT `purchase_payment_ibfk_3` FOREIGN KEY (`deleted_by`) REFERENCES `user` (`id`),
   CONSTRAINT `purchase_payment_ibfk_4` FOREIGN KEY (`created_by`) REFERENCES `user` (`id`),
   CONSTRAINT `purchase_payment_ibfk_5` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=123 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=127 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `purchase_payment` (`id`, `purchase`, `payment_mode`, `amount`, `date_time`, `transaction_id`, `reference_no`, `note`, `created_by`, `created_at`, `updated_by`, `updated_at`, `deleted_by`, `deleted_at`) VALUES
-(121,	195,	1,	662.0000,	'2022-09-27 21:01:00',	NULL,	NULL,	NULL,	1,	'2022-09-27 15:31:06',	NULL,	NULL,	NULL,	NULL),
-(122,	194,	1,	313.0000,	'2022-09-27 21:16:00',	NULL,	NULL,	NULL,	1,	'2022-09-27 15:46:30',	NULL,	NULL,	NULL,	NULL);
+(126,	203,	2,	20000.0000,	'2022-10-10 11:59:00',	'',	'',	'',	1,	'2022-10-10 06:29:15',	1,	'2022-10-10 06:30:03',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `purchase_product`;
 CREATE TABLE `purchase_product` (
@@ -750,19 +747,12 @@ CREATE TABLE `purchase_product` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `purchase_product` (`purchase`, `product`, `quantity`, `unit`, `unit_cost`, `unit_discount`, `tax_id`, `net_unit_cost`, `product_total_without_tax`) VALUES
-(190,	215,	3.0000,	3,	4450.0000,	0.0000,	NULL,	4450.0000,	13350.0000),
-(190,	218,	1.0000,	3,	250.0000,	0.0000,	NULL,	250.0000,	250.0000),
-(191,	2,	1.0000,	3,	120.0000,	1.0000,	2,	119.0000,	119.0000),
-(192,	6,	1.0000,	1,	250.7500,	0.0000,	2,	250.7500,	250.7500),
-(192,	10,	1.0000,	6,	12.0000,	0.0000,	2,	12.0000,	12.0000),
-(194,	5,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000),
-(194,	6,	2.0000,	1,	250.7500,	1.2500,	2,	249.5000,	499.0000),
-(194,	10,	1.0000,	6,	12.0000,	0.0000,	2,	12.0000,	12.0000),
-(195,	1,	5.0000,	3,	120.0000,	0.0000,	NULL,	120.0000,	600.0000),
-(195,	2,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000),
-(196,	218,	1.0000,	1,	7878.0000,	0.0000,	NULL,	7878.0000,	7878.0000),
-(197,	6,	1.0000,	1,	250.7500,	0.0000,	2,	250.7500,	250.7500),
-(197,	10,	2.0000,	6,	12.0000,	0.0000,	2,	12.0000,	24.0000);
+(203,	5,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000),
+(203,	6,	3.0000,	90,	13289.7500,	0.0000,	2,	13289.7500,	39869.2500),
+(203,	10,	2.0000,	7,	60.0000,	0.0000,	2,	60.0000,	120.0000),
+(203,	215,	1.0000,	1,	445.0000,	0.0000,	NULL,	445.0000,	445.0000),
+(204,	10,	1.0000,	6,	12.0000,	0.0000,	2,	12.0000,	12.0000),
+(205,	5,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000);
 
 DROP TABLE IF EXISTS `rack`;
 CREATE TABLE `rack` (
@@ -784,8 +774,6 @@ CREATE TABLE `return_purchase` (
   `date` date NOT NULL,
   `time` time NOT NULL,
   `status` int(11) NOT NULL,
-  `created_by` int(11) NOT NULL,
-  `updated_by` int(11) DEFAULT NULL,
   `discount` decimal(12,4) DEFAULT 0.0000,
   `purchase_tax` int(11) DEFAULT NULL,
   `shipping_charge` decimal(12,4) DEFAULT 0.0000,
@@ -795,8 +783,11 @@ CREATE TABLE `return_purchase` (
   `round_off` decimal(12,4) DEFAULT 0.0000,
   `payment_note` varchar(150) DEFAULT NULL,
   `note` varchar(150) DEFAULT NULL,
+  `created_by` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_by` int(11) DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
+  `deleted_by` int(11) DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `reference_id` (`reference_id`),
@@ -807,27 +798,54 @@ CREATE TABLE `return_purchase` (
   KEY `shipping_tax` (`shipping_tax`),
   KEY `packing_tax` (`packing_tax`),
   KEY `tax` (`purchase_tax`),
-  CONSTRAINT `return_purchase_ibfk_1` FOREIGN KEY (`purchase`) REFERENCES `purchase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=196 DEFAULT CHARSET=utf8mb4;
+  KEY `deleted_by` (`deleted_by`),
+  CONSTRAINT `return_purchase_ibfk_1` FOREIGN KEY (`purchase`) REFERENCES `purchase` (`id`),
+  CONSTRAINT `return_purchase_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `user` (`id`),
+  CONSTRAINT `return_purchase_ibfk_3` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`),
+  CONSTRAINT `return_purchase_ibfk_4` FOREIGN KEY (`status`) REFERENCES `status` (`id`),
+  CONSTRAINT `return_purchase_ibfk_5` FOREIGN KEY (`purchase_tax`) REFERENCES `tax_rate` (`id`),
+  CONSTRAINT `return_purchase_ibfk_6` FOREIGN KEY (`shipping_tax`) REFERENCES `tax_rate` (`id`),
+  CONSTRAINT `return_purchase_ibfk_7` FOREIGN KEY (`packing_tax`) REFERENCES `tax_rate` (`id`),
+  CONSTRAINT `return_purchase_ibfk_8` FOREIGN KEY (`deleted_by`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=250 DEFAULT CHARSET=utf8mb4;
 
+INSERT INTO `return_purchase` (`id`, `reference_id`, `purchase`, `date`, `time`, `status`, `discount`, `purchase_tax`, `shipping_charge`, `shipping_tax`, `packing_charge`, `packing_tax`, `round_off`, `payment_note`, `note`, `created_by`, `created_at`, `updated_by`, `updated_at`, `deleted_by`, `deleted_at`) VALUES
+(248,	'REF-RET-PUR-00248',	203,	'2022-10-10',	'19:39:44',	5,	1.0000,	1,	1.0000,	1,	10.0000,	1,	0.4812,	NULL,	NULL,	1,	'2022-10-10 14:09:53',	NULL,	'2022-10-10 14:11:33',	1,	'2022-10-10 14:11:33'),
+(249,	'REF-RET-PUR-00249',	203,	'2022-10-10',	'19:39:58',	5,	1.0000,	1,	1.0000,	1,	10.0000,	1,	0.1038,	NULL,	NULL,	1,	'2022-10-10 14:10:05',	NULL,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `return_purchase_payment`;
 CREATE TABLE `return_purchase_payment` (
-  `purchase` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `return_purchase` int(11) NOT NULL,
   `payment_mode` int(11) NOT NULL,
   `amount` decimal(15,4) NOT NULL,
   `date_time` datetime NOT NULL DEFAULT current_timestamp(),
   `transaction_id` varchar(255) DEFAULT NULL,
   `reference_no` varchar(255) DEFAULT NULL,
   `note` varchar(255) DEFAULT NULL,
-  KEY `purchase` (`purchase`),
-  KEY `payment_mode` (`payment_mode`)
+  `created_by` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_by` int(11) DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
+  `deleted_by` int(11) DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `purchase` (`return_purchase`),
+  KEY `payment_mode` (`payment_mode`),
+  KEY `created_by` (`created_by`),
+  KEY `updated_by` (`updated_by`),
+  KEY `deleted_by` (`deleted_by`),
+  CONSTRAINT `return_purchase_payment_ibfk_1` FOREIGN KEY (`return_purchase`) REFERENCES `return_purchase` (`id`),
+  CONSTRAINT `return_purchase_payment_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `user` (`id`),
+  CONSTRAINT `return_purchase_payment_ibfk_3` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`),
+  CONSTRAINT `return_purchase_payment_ibfk_4` FOREIGN KEY (`deleted_by`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 DROP TABLE IF EXISTS `return_purchase_product`;
 CREATE TABLE `return_purchase_product` (
-  `purchase` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `return_purchase` int(11) NOT NULL,
   `product` int(11) NOT NULL,
   `quantity` decimal(12,4) NOT NULL,
   `unit` int(11) NOT NULL,
@@ -836,12 +854,21 @@ CREATE TABLE `return_purchase_product` (
   `tax_id` int(11) DEFAULT NULL,
   `net_unit_cost` decimal(12,4) GENERATED ALWAYS AS (`unit_cost` - `unit_discount`) VIRTUAL,
   `product_total_without_tax` decimal(12,4) GENERATED ALWAYS AS (`net_unit_cost` * `quantity`) VIRTUAL,
-  UNIQUE KEY `purchase_product` (`purchase`,`product`),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `purchase_product` (`return_purchase`,`product`),
   KEY `product` (`product`),
   KEY `unit` (`unit`),
-  KEY `tax_id` (`tax_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  KEY `tax_id` (`tax_id`),
+  CONSTRAINT `return_purchase_product_ibfk_1` FOREIGN KEY (`return_purchase`) REFERENCES `return_purchase` (`id`),
+  CONSTRAINT `return_purchase_product_ibfk_2` FOREIGN KEY (`product`) REFERENCES `product` (`id`),
+  CONSTRAINT `return_purchase_product_ibfk_3` FOREIGN KEY (`unit`) REFERENCES `unit` (`id`),
+  CONSTRAINT `return_purchase_product_ibfk_4` FOREIGN KEY (`tax_id`) REFERENCES `tax_rate` (`id`),
+  CONSTRAINT `return_quantity_check` CHECK (`quantity` > 0)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4;
 
+INSERT INTO `return_purchase_product` (`id`, `return_purchase`, `product`, `quantity`, `unit`, `unit_cost`, `unit_discount`, `tax_id`, `net_unit_cost`, `product_total_without_tax`) VALUES
+(15,	248,	5,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000),
+(16,	249,	6,	1.0000,	90,	13289.7500,	0.0000,	2,	13289.7500,	13289.7500);
 
 DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role` (
@@ -946,7 +973,11 @@ INSERT INTO `role_permission` (`role_id`, `module_id`, `permission_id`, `readonl
 (1,	18,	7,	1,	'PURCHASE - details',	1,	NULL),
 (1,	18,	9,	1,	'PURCHASE - payment',	1,	NULL),
 (1,	18,	10,	1,	'PURCHASE - payment details',	1,	NULL),
-(1,	18,	11,	1,	'PURCHASE - payment update',	1,	NULL);
+(1,	18,	11,	1,	'PURCHASE - payment update',	1,	NULL),
+(1,	19,	1,	1,	'PURCHASE RETURN - create',	1,	NULL),
+(1,	19,	4,	1,	'PURCHASE RETURN - delete',	1,	NULL),
+(1,	19,	6,	1,	'PURCHASE RETURN - datatable',	1,	NULL),
+(1,	19,	7,	1,	'PURCHASE RETURN - details',	1,	NULL);
 
 DROP TABLE IF EXISTS `status`;
 CREATE TABLE `status` (
@@ -961,35 +992,36 @@ CREATE TABLE `status` (
   `user_status` tinyint(1) DEFAULT NULL,
   `warehouse_status` tinyint(1) DEFAULT NULL,
   `pos_sale_status` tinyint(1) DEFAULT NULL,
-  `purchase_status` int(11) DEFAULT NULL,
+  `purchase_status` tinyint(1) DEFAULT NULL,
+  `purchase_return_status` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `purchase_status` (`purchase_status`)
 ) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `status` (`id`, `name`, `css_class`, `css_color`, `online_status`, `payment_status`, `order_status`, `role_status`, `user_status`, `warehouse_status`, `pos_sale_status`, `purchase_status`) VALUES
-(1,	'online',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(2,	'offline',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(3,	'active',	'bg-success',	NULL,	NULL,	NULL,	NULL,	1,	1,	NULL,	NULL,	NULL),
-(4,	'inactive',	'bg-danger',	NULL,	NULL,	NULL,	NULL,	1,	1,	NULL,	NULL,	NULL),
-(5,	'pending',	'bg-warning text-dark',	NULL,	NULL,	NULL,	NULL,	1,	1,	NULL,	NULL,	1),
-(6,	'paid',	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(7,	'unpaid',	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(8,	'ordered',	'bg-primary',	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	1),
-(9,	'packed',	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL),
-(10,	'shipped',	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL),
-(11,	'returned',	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	1,	NULL),
-(12,	'partially paid',	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(13,	'expired',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(14,	'away',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(15,	'blocked',	'bg-danger',	NULL,	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL),
-(16,	'open',	'bg-success',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL),
-(17,	'closed',	'bg-warning text-dark',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL),
-(18,	'permanently closed',	'bg-danger',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL),
-(19,	'temperorily closed',	'bg-info text-dark',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL),
-(20,	'completed',	'bg-success',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1,	NULL),
-(21,	'due',	'bg-danger',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
-(22,	'recieved ✓',	'bg-success',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1);
+INSERT INTO `status` (`id`, `name`, `css_class`, `css_color`, `online_status`, `payment_status`, `order_status`, `role_status`, `user_status`, `warehouse_status`, `pos_sale_status`, `purchase_status`, `purchase_return_status`) VALUES
+(1,	'online',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(2,	'offline',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(3,	'active',	'bg-success',	NULL,	NULL,	NULL,	NULL,	1,	1,	NULL,	NULL,	NULL,	NULL),
+(4,	'inactive',	'bg-danger',	NULL,	NULL,	NULL,	NULL,	1,	1,	NULL,	NULL,	NULL,	NULL),
+(5,	'pending',	'bg-warning text-dark',	NULL,	NULL,	NULL,	NULL,	1,	1,	NULL,	NULL,	1,	1),
+(6,	'paid',	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(7,	'unpaid',	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(8,	'ordered',	'bg-primary',	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	1,	NULL),
+(9,	'packed',	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(10,	'shipped',	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(11,	'returned',	'bg-success',	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	1,	NULL,	1),
+(12,	'partially paid',	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(13,	'expired',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(14,	'away',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(15,	'blocked',	'bg-danger',	NULL,	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL),
+(16,	'open',	'bg-success',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL),
+(17,	'closed',	'bg-warning text-dark',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL),
+(18,	'permanently closed',	'bg-danger',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL),
+(19,	'temperorily closed',	'bg-info text-dark',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL,	NULL),
+(20,	'completed',	'bg-success',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1,	NULL,	NULL),
+(21,	'due',	'bg-danger',	NULL,	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL),
+(22,	'recieved ✓',	'bg-success',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1,	NULL);
 
 DROP TABLE IF EXISTS `stock_adjustment`;
 CREATE TABLE `stock_adjustment` (
@@ -1165,7 +1197,7 @@ CREATE TABLE `unit` (
   UNIQUE KEY `base_step` (`base`,`step`),
   KEY `base` (`base`),
   CONSTRAINT `unit_ibfk_1` FOREIGN KEY (`base`) REFERENCES `unit` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=91 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `unit` (`id`, `base`, `code`, `name`, `step`, `allow_decimal`, `description`, `editable`, `deletable`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (1,	NULL,	'PC',	'Piece',	NULL,	1,	NULL,	NULL,	NULL,	'2022-07-20 14:13:31',	'2022-07-22 17:32:14',	NULL),
@@ -1177,7 +1209,8 @@ INSERT INTO `unit` (`id`, `base`, `code`, `name`, `step`, `allow_decimal`, `desc
 (8,	5,	'1/2 KG',	'Half KG',	500,	0,	NULL,	NULL,	NULL,	'2022-07-20 15:18:12',	'2022-08-29 11:08:27',	NULL),
 (9,	NULL,	'MTR',	'Meter',	NULL,	0,	NULL,	NULL,	NULL,	'2022-07-20 15:23:18',	'2022-07-23 15:59:45',	NULL),
 (88,	6,	'jk',	'14hjhgj',	14,	0,	NULL,	NULL,	NULL,	'2022-08-29 17:33:18',	'2022-09-11 07:25:23',	NULL),
-(89,	6,	'1 Ton',	'Ton',	1000,	1,	NULL,	NULL,	NULL,	'2022-08-29 17:34:29',	NULL,	NULL);
+(89,	6,	'1 Ton',	'Ton',	1000,	1,	NULL,	NULL,	NULL,	'2022-08-29 17:34:29',	NULL,	NULL),
+(90,	1,	'fgfg',	'53 gfg',	53,	1,	NULL,	NULL,	NULL,	'2022-10-08 07:35:00',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
@@ -1220,7 +1253,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-09-27 09:24:55',	'2022-09-16 15:18:20',	'2021-04-20 19:22:52',	'2022-09-27 09:24:55',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-10-10 09:41:56',	'2022-10-07 12:31:48',	'2021-04-20 19:22:52',	'2022-10-10 09:41:56',	NULL),
 (30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
 (31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
@@ -1285,4 +1318,4 @@ INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country
 (27,	'WARE0027',	'Ware House BBB',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	16,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-09-12 06:08:24',	NULL),
 (33,	'WARE0033',	' bvbv',	'nbnvbnvbn',	'2022-09-08',	NULL,	NULL,	NULL,	'45454545',	'bnvbn@qqwqw.ghg',	NULL,	NULL,	NULL,	NULL,	16,	NULL,	NULL,	NULL,	'2022-09-11 07:52:55',	NULL,	NULL);
 
--- 2022-09-27 16:07:36
+-- 2022-10-10 14:54:21

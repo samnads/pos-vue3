@@ -122,7 +122,7 @@
             :key="item.id"
             :value="item.name"
           >
-            {{ item.label }}
+            <span v-html="item.label"></span>
           </li>
         </ul>
       </div>
@@ -218,9 +218,11 @@
                 <i class="fa-solid fa-plus"></i>
               </button>
             </div>
-            <small class="text-center opacity-75 text-danger" v-show="product.to_be_return_quantity > 0">{{
-              errors["products[" + index + "].quantity"]
-            }}</small>
+            <small
+              class="text-center opacity-75 text-danger"
+              v-show="product.to_be_return_quantity > 0"
+              >{{ errors["products[" + index + "].quantity"] }}</small
+            >
           </td>
           <td>
             <div class="input-group is-invalid">
@@ -631,8 +633,7 @@ export default {
           .label("Tax Rate"),
       });
     });
-
-    if (route.name == "adminPurchaseReturnEdit") {
+    if (route.name == "adminPurchaseReturnNew") {
       formValues = {
         products: [],
         return_status: null,
@@ -644,7 +645,7 @@ export default {
         roundoff: 0,
         tax_rate: null,
       };
-    } else if (route.name == "adminPurchaseReturnNew") {
+    } else if (route.name == "adminPurchaseReturnEdit") {
       formValues = {
         products: [],
         return_status: null,

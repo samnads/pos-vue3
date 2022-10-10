@@ -214,6 +214,20 @@ export default {
           },
           {
             targets: [2],
+            render: function (data, type, row, meta) {
+              return (
+                data +
+                (row["total_return"]
+                  ? '<span class="float-end text-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="' +
+                    row["total_return"] +
+                    " Return" +
+                    (row["total_return"] > 1 ? "s" : "") +
+                    '"><i class="fa-solid fa-reply"></i>&nbsp;<span class="badge text-bg-secondary">' +
+                    row["total_return"] +
+                    "</span></span>"
+                  : "")
+              );
+            },
           },
           {
             targets: [3],

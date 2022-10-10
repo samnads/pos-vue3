@@ -111,7 +111,7 @@ class Purchase_return extends CI_Controller
                                 }
                             }
                             $this->db->trans_commit();
-                            echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully added new return purchase !', 'location' => "admin/purchase/list"));
+                            echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully added new return purchase !', 'location' => "admin/purchase_return/list"));
                         } else {
                             $error = $this->db->error();
                             $this->db->trans_rollback();
@@ -365,7 +365,7 @@ class Purchase_return extends CI_Controller
                 $query = $this->Purchase_return_model->set_deleted_at(array('id' => $id, 'deleted_at' => NULL));
                 $error = $this->db->error();
                 if ($this->db->affected_rows() == 1) {
-                    echo json_encode(array('success' => true, 'type' => 'success', 'id' => (int)$id, 'message' => 'Successfully deleted purchase !'));
+                    echo json_encode(array('success' => true, 'type' => 'success', 'id' => (int)$id, 'message' => 'Successfully deleted purchase return !'));
                 } else {
                     echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
                 }
@@ -422,7 +422,7 @@ class Purchase_return extends CI_Controller
             case 'purchase_data':
                 $data = $this->Purchase_return_model->get_purchase_row_by_id(array('id' => $this->input->get('id'), 'deleted_at' => NULL));
                 if ($data['id']) {
-                    $data['products'] = $this->Purchase_return_model->get_purchase_products_by_purchase(array('pp.purchase' => (int)$this->input->get('id')));
+                    $data['products'] = $this->Purchase_return_model->get_purchase_products_by_purchase_with_return(array('pp.purchase' => (int)$this->input->get('id')));
                     $data['units'] = $this->Unit_model->getall_active_4_frontend();
                     $data['tax_rates'] = $this->Tax_model->dropdown_active();
                     echo json_encode(array('success' => true, 'type' => 'success', 'data' => $data));

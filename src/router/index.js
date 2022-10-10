@@ -175,6 +175,11 @@ const routes = [
             name: 'adminPurchaseReturnNew',
             component: AdminPurchaseReturnNew,
           },
+          {
+            path: 'edit/:id',
+            name: 'adminPurchaseReturnEdit',
+            component: AdminPurchaseReturnNew,
+          },
         ],
       },
       {
