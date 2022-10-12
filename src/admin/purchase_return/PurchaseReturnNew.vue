@@ -1189,7 +1189,7 @@ export default {
       "purchase_return",
       {
         action: "update",
-        job: "purchase_return_data",
+        job: "purchase_with_return_data",
         id: Number(self.route.params.id),
       },
       null,

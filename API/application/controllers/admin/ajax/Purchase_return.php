@@ -421,10 +421,10 @@ class Purchase_return extends CI_Controller
             default:
         }
         switch ($job) { // jobs
-            case 'purchase_return_data':
-                $data = $this->Purchase_return_model->get_purchase_row_by_id(array('rp.id' => $this->input->get('id'), 'deleted_at' => NULL));
+            case 'purchase_with_return_data':
+                $data = $this->Purchase_return_model->get_purchase_row_by_id(array('p.id' => $this->input->get('id'), 'deleted_at' => NULL));
                 if ($data['id']) {
-                    $data['products'] = $this->Purchase_return_model->get_return_purchase_products(array('pp.purchase' => (int)$this->input->get('id')));
+                    $data['products'] = $this->Purchase_return_model->get_return_purchase_products(array('purchase' => (int)$this->input->get('id')));
                     $data['units'] = $this->Unit_model->getall_active_4_frontend();
                     $data['tax_rates'] = $this->Tax_model->dropdown_active();
                     echo json_encode(array('success' => true, 'type' => 'success', 'data' => $data));
