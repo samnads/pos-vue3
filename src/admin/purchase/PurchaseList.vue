@@ -324,18 +324,11 @@ export default {
             width: "1%",
             render: function (data, type, row, meta) {
               let editBtn =
-                '<button type="button" id="edit" class="btn btn-' +
-                (row["editable"] !== 0 ? "primary" : "secondary") +
-                '"' +
-                (row["editable"] !== 0
-                  ? 'data-bs-toggle="tooltip" data-bs-placement="left" title="Edit"'
-                  : "") +
-                (row["editable"] === 0 ? "disabled" : "") +
-                '><i class="fas fa-pencil-alt"></i></button> ';
+                '<button type="button" id="details" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="Details"><i class="fas fa-circle-info"></i></button> ';
               let purchaseDeatils =
                 '<li><a class="dropdown-item" href="#" id="details"><i class="fa-solid fa-circle-info fa-fw"></i>Details</a></li>';
               let purchaseEdit =
-                '<li><a class="dropdown-item" href="#" id="edit"><i class="fa-solid fa-pencil fa-fw"></i>Edit Purchase</a></li>';
+                row["total_return"] == 0 ? '<li><a class="dropdown-item" href="#" id="edit"><i class="fa-solid fa-pencil fa-fw"></i>Edit Purchase</a></li>' : '';
               let addPay =
                 '<li><a class="dropdown-item" href="#" id="addpay"><i class="fa-brands fa-paypal fa-fw"></i>Add Payment</a></li>';
               let retPur =
@@ -344,7 +337,7 @@ export default {
                 '<div class="row-btn-group btn-group btn-group-sm" role="group" aria-label="Button group with nested dropdown">' +
                 editBtn +
                 '<div class="btn-group btn-group-sm" role="group">' +
-                '<button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">' +
+                '<button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Action' +
                 "</button>" +
                 '<ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">' +
                 purchaseDeatils +

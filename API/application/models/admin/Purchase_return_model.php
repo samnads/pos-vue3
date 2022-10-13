@@ -225,8 +225,6 @@ class Purchase_return_model extends CI_Model
 
 		$this->db->from(TABLE_PURCHASE_PRODUCT . '				pp');
 		$this->db->join(TABLE_PRODUCT . '			p',	'p.id=pp.product',	'left');
-
-
 		$this->db->join(TABLE_PRODUCT_TYPE . '		pt',	'pt.id=p.type',	'left');
 		$this->db->join(TABLE_BARCODE_SYMBOLOGY . '	bs',	'bs.id=p.symbology',	'left');
 		$this->db->join(TABLE_CATEGORY . '			c',	'c.id=p.category',	'left');
@@ -275,6 +273,34 @@ class Purchase_return_model extends CI_Model
 		$this->db->from(TABLE_PURCHASE . ' p');
 		$this->db->where($where);
 		$query = $this->db->get();
+		return $query ? $query->row_array() : false;
+	}
+	function get_purchase_return_row_by_id($where)
+	{
+		$this->db->select('
+		`rp.id`,
+		`rp.reference_id as return_reference_id`,
+		`p.reference_id`,
+		`rp.date`,
+		`rp.time`,
+		`rp.status`,
+		`rp.created_by`,
+		`rp.updated_by`,
+		`rp.discount`,
+		`rp.purchase_tax`,
+		`rp.shipping_charge`,
+		`rp.shipping_tax`,
+		`rp.packing_charge`,
+		`rp.packing_tax`,
+		`rp.round_off`,
+		`rp.payment_note`,
+		`rp.note`,
+		');
+		$this->db->from(TABLE_RETURN_PURCHASE . ' as rp');
+		$this->db->join(TABLE_PURCHASE . ' as p',	'p.id=rp.purchase',	'left');
+		$this->db->where(array('rp.id' => $where['return_purchase']));
+		$query = $this->db->get();
+		//die($this->db->last_query());
 		return $query ? $query->row_array() : false;
 	}
 	function getPurchaseProductsDetails($where)
@@ -386,7 +412,7 @@ class Purchase_return_model extends CI_Model
 		$this->db->join(TABLE_UNIT . ' as u',	'u.id=pp.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . ' as tr',	'tr.id=pp.tax_id',	'left');
 		$this->db->join('(' . $return_purchase_product_count . ')  as rppc', 'rppc.returned_product = pp.product', 'left');
-		//$this->db->where($where);
+		$this->db->where(array('pp.purchase' => $where['purchase']));
 		$query = $this->db->get();
 		//die($this->db->last_query());
 		return $query ? $query->result() : false;

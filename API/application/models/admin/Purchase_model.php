@@ -34,7 +34,7 @@ class Purchase_model extends CI_Model
 		$subquery_return_count = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($subquery_return_count);
-		/******************************************************/ 
+		/******************************************************/
 		$search = trim($search);
 		$this->db->select(
 			'
@@ -55,7 +55,7 @@ class Purchase_model extends CI_Model
 		p.created_at	as created_at,
 		p.updated_at	as updated_at,
 		p.deleted_at	as deleted_at,
-		rc.total_return as total_return,
+		IFNULL(rc.total_return,0) as total_return,
 		COUNT(case when pup.product then pup.product end) as product_count,
 		s.name as supplier_name,
 		w.name as warehouse_name,
@@ -244,6 +244,12 @@ class Purchase_model extends CI_Model
 	}
 	function get_purchase_row_by_id($where)
 	{
+		/******************************************************/ // count purchase returns by purchase
+		$this->db->select('purchase,IFNULL(COUNT(purchase),0) as total_return')->from(TABLE_RETURN_PURCHASE)->where(array('purchase' => $where['purchase'], 'deleted_at' => NULL))->group_by('purchase');
+		$subquery_return_count = $this->db->get_compiled_select();
+		$this->db->reset_query();
+		//die($subquery_return_count);
+		/******************************************************/
 		$this->db->select('
 		`p.id`,
 		`p.reference_id`,
@@ -263,9 +269,11 @@ class Purchase_model extends CI_Model
 		`p.round_off`,
 		`p.payment_note`,
 		`p.note`,
+		`rc.total_return`
 		');
-		$this->db->from(TABLE_PURCHASE . ' p');
-		$this->db->where($where);
+		$this->db->from(TABLE_PURCHASE . ' as p');
+		$this->db->join('(' . $subquery_return_count . ') as rc', 'rc.purchase = p.id', 'left');
+		$this->db->where(array('p.id' => $where['purchase'], 'p.deleted_at' => NULL));
 		$query = $this->db->get();
 		return $query ? $query->row_array() : false;
 	}
@@ -356,17 +364,16 @@ class Purchase_model extends CI_Model
 		pp.unit_discount											as unit_discount,
 		pp.tax_id													as tax_id,
 		pp.quantity													as quantity,
-		
 		p.unit														as unit,
 		u.name														as unit_name,
-		u.code
-																	as unit_code,
+		u.code														as unit_code,
 		tr.rate														as tax_rate');
-		$this->db->from(TABLE_PURCHASE_PRODUCT . ' pp');
-		$this->db->join(TABLE_PRODUCT . ' p',	'p.id=pp.product',	'left');
-		$this->db->join(TABLE_UNIT . ' u',	'u.id=pp.unit',	'left');
-		$this->db->join(TABLE_TAX_RATE . ' tr',	'tr.id=pp.tax_id',	'left');
-		$this->db->where($where);
+		$this->db->from(TABLE_PURCHASE_PRODUCT . ' as pp');
+		$this->db->join(TABLE_PURCHASE . ' as pu',	'pu.id=pp.purchase',	'left');
+		$this->db->join(TABLE_PRODUCT . ' as p',	'p.id=pp.product',	'left');
+		$this->db->join(TABLE_UNIT . ' as u',	'u.id=pp.unit',	'left');
+		$this->db->join(TABLE_TAX_RATE . ' as tr',	'tr.id=pp.tax_id',	'left');
+		$this->db->where(array('pp.purchase' => $where['purchase'], 'pu.deleted_at' => NULL));
 		$query = $this->db->get();
 		//die($this->db->last_query());
 		return $query ? $query->result() : false;

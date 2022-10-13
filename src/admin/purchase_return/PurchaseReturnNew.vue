@@ -79,6 +79,19 @@
         </div>
         <div class="invalid-feedback">{{ errorNote }}</div>
       </div>
+      <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4" v-if="route.name == 'adminPurchaseReturnEdit'">
+        <label class="form-label">Return Ref. No.</label>
+        <div class="input-group is-invalid">
+          <input
+            v-if="DATA"
+            type="text"
+            class="form-control"
+            v-model="DATA.return_reference_id"
+            disabled
+          />
+        </div>
+        <div class="invalid-feedback">{{ errorNote }}</div>
+      </div>
       <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
         <label class="form-label">Return Note</label>
         <div class="input-group is-invalid">
@@ -1188,8 +1201,12 @@ export default {
       "GET",
       "purchase_return",
       {
-        action: "update",
-        job: "purchase_with_return_data",
+        action:
+          self.route.name == "adminPurchaseReturnNew" ? "create" : "update",
+        job:
+          self.route.name == "adminPurchaseReturnNew"
+            ? "purchase_with_return_data_for_add"
+            : "purchase_with_return_data_for_edit",
         id: Number(self.route.params.id),
       },
       null,
@@ -1268,13 +1285,17 @@ export default {
           };
           self.products.push(products[index]);
         });
-
-        var date_ = new Date(
-          Date.now() + new Date().getTimezoneOffset() * -60 * 1000
-        );
-        // slice(0, 19) includes seconds
-        self.setFieldValue("date", date_.toISOString().slice(0, 19));
-        self.setFieldValue("return_status", 5);
+        if (self.route.name == "adminPurchaseReturnNew") { // for new create show current time
+          var date_ = new Date(
+            Date.now() + new Date().getTimezoneOffset() * -60 * 1000
+          );
+          // slice(0, 19) includes seconds
+          self.setFieldValue("date", date_.toISOString().slice(0, 19));
+          self.setFieldValue("return_status", 5);
+        } else { // for edit show db time
+          self.setFieldValue("date", data.date + "T" + data.time);
+          self.setFieldValue("return_status", data.status);
+        }
         self.setFieldValue("discount", data.discount);
         self.setFieldValue("tax_rate", data.purchase_tax);
         self.setFieldValue("shipping", Number(data.shipping_charge));

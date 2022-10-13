@@ -290,6 +290,13 @@ class Purchase extends CI_Controller
                         break;
                     default: // update purchase
                         $_POST = $this->input->post('data');
+                        /****************************************************** */ // update only possible with 0 return record
+                        $where = array('purchase' => $this->input->post('id'));
+                        $data = $this->Purchase_model->get_purchase_row_by_id($where);
+                        if ($data['total_return'] > 0) {
+                            die(json_encode(array('success' => false, 'type' => 'danger', 'message' => 'Not allowed (return record found) !')));
+                        }
+                        /****************************************************** */
                         $data = array(
                             'warehouse'         => $this->input->post('warehouse'),
                             'date'              => $this->input->post('date'),
@@ -422,9 +429,12 @@ class Purchase extends CI_Controller
         }
         switch ($job) { // dropdown jobs
             case 'purchase_data':
-                $data = $this->Purchase_model->get_purchase_row_by_id(array('id' => $this->input->get('id'), 'deleted_at' => NULL));
-                if ($data['id']) {
-                    $data['products'] = $this->Purchase_model->get_purchase_products_by_purchase(array('pp.purchase' => (int)$this->input->get('id')));
+                $where = array('purchase' => $this->input->get('id'));
+                $data = $this->Purchase_model->get_purchase_row_by_id($where);
+                if ($data['total_return'] > 0) {
+                    echo json_encode(array('success' => false, 'type' => 'danger', 'message' => 'Not allowed (return record found) !', 'location' => "admin/purchase/list"));
+                } elseif ($data['id']) {
+                    $data['products'] = $this->Purchase_model->get_purchase_products_by_purchase($where);
                     $data['units'] = $this->Unit_model->getall_active_4_frontend();
                     $data['tax_rates'] = $this->Tax_model->dropdown_active();
                     echo json_encode(array('success' => true, 'type' => 'success', 'data' => $data));
