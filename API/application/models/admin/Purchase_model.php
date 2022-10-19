@@ -10,17 +10,27 @@ class Purchase_model extends CI_Model
 	function datatable_data($search, $offset, $limit, $order_by, $order)
 	{
 		/******************************************************/ // calculate total paid using all payment methods
-		$this->db->select('*,SUM(amount) as total_paid')->from(TABLE_PURCHASE_PAYMENT)->where(array('deleted_at' => NULL))->group_by('purchase');
+		$this->db->select('purchase,SUM(amount) as total_paid')->from(TABLE_PURCHASE_PAYMENT)->where(array('deleted_at' => NULL))->group_by('purchase');
 		$subquery_payment = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($subquery_payment);
 		/******************************************************/ // calculate each product_total excluding tax rate
-		$this->db->select('*')->from(TABLE_PURCHASE_PRODUCT)->group_by(array('purchase', 'product'));
+		$this->db->select('
+		purchase,
+		product,quantity,
+		unit,
+		unit_cost,
+		unit_discount,
+		tax_id,
+		net_unit_cost,
+		product_total_without_tax
+		')->from(TABLE_PURCHASE_PRODUCT)->group_by(array('purchase', 'product'));
 		$subquery_product = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($subquery_product);
 		/******************************************************/ // calculate each product total tax
-		$this->db->select('*,
+		$this->db->select('psp.purchase,
+		psp.product,
 		tr.rate as tax_rate,
 		(IFNULL(tr.rate, 0) / 100) * psp.product_total_without_tax as product_total_tax');
 		$this->db->from(TABLE_PURCHASE_PRODUCT . ' as psp');

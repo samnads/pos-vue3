@@ -170,11 +170,11 @@ class Purchase_return_model extends CI_Model
 	function suggestProdsForReturn($search, $offset, $limit, $order_by, $order, $where)
 	{
 		/******************************************************/ // calculate returned qty
-		$this->db->select('rpp.product as returned_product,,SUM(rpp.quantity) as returned_quantity');
+		$this->db->select('rpp.purchase_product as returned_product,,SUM(rpp.quantity) as returned_quantity');
 		$this->db->from(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp');
 		$this->db->join(TABLE_RETURN_PURCHASE . ' as rp',    'rp.id = rpp.return_purchase', 'left');
 		$this->db->where(array('rp.purchase' => $where['pp.purchase'], 'rp.deleted_at' => NULL));
-		$this->db->group_by(array('rpp.product'));
+		$this->db->group_by(array('rpp.purchase_product'));
 		$return_purchase_product_count = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($return_purchase_product_count);
@@ -381,17 +381,19 @@ class Purchase_return_model extends CI_Model
 	function get_return_purchase_products($where)
 	{
 		/******************************************************/
-		$this->db->select('rpp.product as returned_product,SUM(rpp.quantity) as returned_quantity');
+		$this->db->select('rpp.purchase_product as purchase_product,pp.product as product,SUM(rpp.quantity) as returned_quantity');
 		$this->db->from(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp');
 		$this->db->join(TABLE_RETURN_PURCHASE . ' as rp',    'rp.id = rpp.return_purchase', 'left');
+		$this->db->join(TABLE_PURCHASE_PRODUCT . ' as pp',    'pp.id = rpp.purchase_product', 'left');
 		$this->db->where(array('rp.purchase' => $where['purchase'], 'rp.deleted_at' => NULL));
-		$this->db->group_by(array('rpp.product', 'rpp.id'));
+		$this->db->group_by(array('rpp.purchase_product'));
 		$return_purchase_product_count = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($return_purchase_product_count);
 		/******************************************************/
 		$this->db->select('
 		p.id														as id,
+		pp.id														as purchase_product,
 		p.code														as code,
 		p.name														as name,
 		pp.unit														as p_unit,
@@ -408,11 +410,13 @@ class Purchase_return_model extends CI_Model
 		u.code														as unit_code,
 		tr.rate														as tax_rate');
 		$this->db->from(TABLE_PURCHASE_PRODUCT . ' as pp');
-		$this->db->join(TABLE_PRODUCT . ' as p',	'p.id=pp.product',	'left');
+		$this->db->join(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp',	'rpp.purchase_product = pp.id',	'left');
+		$this->db->join(TABLE_PRODUCT . ' as p',	'p.id = pp.product',	'left');
 		$this->db->join(TABLE_UNIT . ' as u',	'u.id=pp.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . ' as tr',	'tr.id=pp.tax_id',	'left');
-		$this->db->join('(' . $return_purchase_product_count . ')  as rppc', 'rppc.returned_product = pp.product', 'left');
+		$this->db->join('(' . $return_purchase_product_count . ')  as rppc', 'rppc.purchase_product = rpp.purchase_product', 'left');
 		$this->db->where(array('pp.purchase' => $where['purchase']));
+		$this->db->group_by(array('rpp.purchase_product'));
 		$query = $this->db->get();
 		//die($this->db->last_query());
 		return $query ? $query->result() : false;

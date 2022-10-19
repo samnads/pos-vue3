@@ -96,7 +96,7 @@ class Purchase_return extends CI_Controller
                             foreach ($products as $product) { // add products
                                 $data = array(
                                     'return_purchase' => $purchase_id,
-                                    'product' => $product['id'],
+                                    'purchase_product' => $product['purchase_product'],
                                     'quantity' =>  $product['quantity'],
                                     'unit' =>  $product['p_unit'],
                                     'unit_cost' => $product['cost'],

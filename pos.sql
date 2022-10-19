@@ -674,12 +674,10 @@ CREATE TABLE `purchase` (
   CONSTRAINT `purchase_ibfk_5` FOREIGN KEY (`status`) REFERENCES `status` (`id`),
   CONSTRAINT `purchase_ibfk_8` FOREIGN KEY (`shipping_tax`) REFERENCES `tax_rate` (`id`),
   CONSTRAINT `purchase_ibfk_9` FOREIGN KEY (`packing_tax`) REFERENCES `tax_rate` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=214 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=216 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `purchase` (`id`, `reference_id`, `warehouse`, `date`, `time`, `status`, `created_by`, `updated_by`, `supplier`, `discount`, `purchase_tax`, `shipping_charge`, `shipping_tax`, `packing_charge`, `packing_tax`, `round_off`, `payment_note`, `note`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(211,	'REF-PUR-00211',	33,	'2022-10-13',	'17:05:15',	22,	1,	1,	88,	1.0000,	1,	1.0000,	1,	1.0000,	2,	0.0518,	NULL,	'sdsds',	'2022-10-13 11:35:56',	'2022-10-13 13:57:29',	NULL),
-(212,	'REF-PUR-00212',	20,	'2022-09-29',	'17:37:06',	5,	1,	NULL,	89,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.9000,	NULL,	'sdsd',	'2022-10-13 12:07:19',	NULL,	NULL),
-(213,	'REF-PUR-00213',	20,	'2022-10-01',	'19:21:59',	8,	1,	NULL,	91,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.9712,	NULL,	'ddfsdsd',	'2022-10-13 13:52:05',	NULL,	NULL);
+(215,	'REF-PUR-00215',	20,	'2022-10-14',	'20:04:35',	5,	1,	NULL,	88,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.2043,	'',	'adsdsd',	'2022-10-19 14:34:49',	'2022-10-19 14:36:20',	NULL);
 
 DROP TABLE IF EXISTS `purchase_payment`;
 CREATE TABLE `purchase_payment` (
@@ -709,13 +707,18 @@ CREATE TABLE `purchase_payment` (
   CONSTRAINT `purchase_payment_ibfk_4` FOREIGN KEY (`created_by`) REFERENCES `user` (`id`),
   CONSTRAINT `purchase_payment_ibfk_5` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`),
   CONSTRAINT `amount_check` CHECK (`amount` > 0)
-) ENGINE=InnoDB AUTO_INCREMENT=130 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=136 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `purchase_payment` (`id`, `purchase`, `payment_mode`, `amount`, `date_time`, `transaction_id`, `reference_no`, `note`, `created_by`, `created_at`, `updated_by`, `updated_at`, `deleted_by`, `deleted_at`) VALUES
-(129,	211,	1,	100.0000,	'2022-10-13 17:07:00',	NULL,	NULL,	NULL,	1,	'2022-10-13 11:37:36',	NULL,	NULL,	NULL,	NULL);
+(131,	215,	1,	10.0000,	'2022-10-19 20:06:00',	NULL,	NULL,	NULL,	1,	'2022-10-19 14:36:20',	NULL,	NULL,	NULL,	NULL),
+(132,	215,	1,	10.0000,	'2022-10-19 20:06:00',	NULL,	NULL,	NULL,	1,	'2022-10-19 14:36:24',	NULL,	NULL,	NULL,	NULL),
+(133,	215,	1,	10.0000,	'2022-10-19 20:06:00',	NULL,	NULL,	NULL,	1,	'2022-10-19 14:36:27',	NULL,	NULL,	NULL,	NULL),
+(134,	215,	1,	10.0000,	'2022-10-19 20:06:00',	NULL,	NULL,	NULL,	1,	'2022-10-19 14:36:31',	NULL,	NULL,	NULL,	NULL),
+(135,	215,	1,	10.0000,	'2022-10-19 20:06:00',	NULL,	NULL,	NULL,	1,	'2022-10-19 14:36:41',	NULL,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `purchase_product`;
 CREATE TABLE `purchase_product` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `purchase` int(11) NOT NULL,
   `product` int(11) NOT NULL,
   `quantity` decimal(12,4) NOT NULL,
@@ -725,6 +728,7 @@ CREATE TABLE `purchase_product` (
   `tax_id` int(11) DEFAULT NULL,
   `net_unit_cost` decimal(12,4) GENERATED ALWAYS AS (`unit_cost` - `unit_discount`) VIRTUAL,
   `product_total_without_tax` decimal(12,4) GENERATED ALWAYS AS (`net_unit_cost` * `quantity`) VIRTUAL,
+  PRIMARY KEY (`id`),
   UNIQUE KEY `purchase_product` (`purchase`,`product`),
   KEY `product` (`product`),
   KEY `unit` (`unit`),
@@ -734,18 +738,12 @@ CREATE TABLE `purchase_product` (
   CONSTRAINT `purchase_product_ibfk_3` FOREIGN KEY (`unit`) REFERENCES `unit` (`id`),
   CONSTRAINT `purchase_product_ibfk_4` FOREIGN KEY (`tax_id`) REFERENCES `tax_rate` (`id`),
   CONSTRAINT `quantity_check` CHECK (`quantity` > 0)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `purchase_product` (`purchase`, `product`, `quantity`, `unit`, `unit_cost`, `unit_discount`, `tax_id`, `net_unit_cost`, `product_total_without_tax`) VALUES
-(211,	5,	1.0000,	1,	12.0000,	1.0000,	2,	11.0000,	11.0000),
-(211,	6,	1.0000,	1,	250.7500,	3.0000,	2,	247.7500,	247.7500),
-(211,	10,	1.0000,	6,	12.0000,	2.0000,	2,	10.0000,	10.0000),
-(212,	10,	50.0000,	7,	60.0000,	0.0000,	2,	60.0000,	3000.0000),
-(213,	3,	5.0000,	1,	12.0000,	0.0000,	2,	12.0000,	60.0000),
-(213,	4,	2.0000,	1,	12.0000,	0.0000,	NULL,	12.0000,	24.0000),
-(213,	5,	2.0000,	1,	12.0000,	0.0000,	2,	12.0000,	24.0000),
-(213,	6,	2.0000,	1,	250.7500,	0.0000,	2,	250.7500,	501.5000),
-(213,	215,	3.0000,	1,	445.0000,	0.0000,	NULL,	445.0000,	1335.0000);
+INSERT INTO `purchase_product` (`id`, `purchase`, `product`, `quantity`, `unit`, `unit_cost`, `unit_discount`, `tax_id`, `net_unit_cost`, `product_total_without_tax`) VALUES
+(1,	215,	5,	2.0000,	1,	12.0000,	0.0000,	2,	12.0000,	24.0000),
+(2,	215,	6,	2.0000,	1,	250.7500,	0.0000,	2,	250.7500,	501.5000),
+(3,	215,	10,	2.0000,	6,	12.0000,	0.0000,	2,	12.0000,	24.0000);
 
 DROP TABLE IF EXISTS `rack`;
 CREATE TABLE `rack` (
@@ -800,10 +798,11 @@ CREATE TABLE `return_purchase` (
   CONSTRAINT `return_purchase_ibfk_6` FOREIGN KEY (`shipping_tax`) REFERENCES `tax_rate` (`id`),
   CONSTRAINT `return_purchase_ibfk_7` FOREIGN KEY (`packing_tax`) REFERENCES `tax_rate` (`id`),
   CONSTRAINT `return_purchase_ibfk_8` FOREIGN KEY (`deleted_by`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=259 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=272 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `return_purchase` (`id`, `reference_id`, `purchase`, `date`, `time`, `status`, `discount`, `purchase_tax`, `shipping_charge`, `shipping_tax`, `packing_charge`, `packing_tax`, `round_off`, `payment_note`, `note`, `created_by`, `created_at`, `updated_by`, `updated_at`, `deleted_by`, `deleted_at`) VALUES
-(258,	'REF-RET-PUR-00258',	211,	'2022-10-13',	'17:12:31',	5,	1.0000,	1,	1.0000,	1,	1.0000,	2,	0.0518,	NULL,	NULL,	1,	'2022-10-13 11:42:42',	NULL,	'2022-10-13 13:58:21',	NULL,	NULL);
+(270,	'REF-RET-PUR-00270',	215,	'2022-10-19',	'20:57:43',	5,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.6022,	NULL,	NULL,	1,	'2022-10-19 15:27:46',	NULL,	NULL,	NULL,	NULL),
+(271,	'REF-RET-PUR-00271',	215,	'2022-10-19',	'21:30:06',	5,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.6022,	NULL,	NULL,	1,	'2022-10-19 16:00:11',	NULL,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `return_purchase_payment`;
 CREATE TABLE `return_purchase_payment` (
@@ -838,7 +837,7 @@ DROP TABLE IF EXISTS `return_purchase_product`;
 CREATE TABLE `return_purchase_product` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `return_purchase` int(11) NOT NULL,
-  `product` int(11) NOT NULL,
+  `purchase_product` int(11) NOT NULL,
   `quantity` decimal(12,4) NOT NULL,
   `unit` int(11) NOT NULL,
   `unit_cost` decimal(12,4) NOT NULL,
@@ -847,21 +846,24 @@ CREATE TABLE `return_purchase_product` (
   `net_unit_cost` decimal(12,4) GENERATED ALWAYS AS (`unit_cost` - `unit_discount`) VIRTUAL,
   `product_total_without_tax` decimal(12,4) GENERATED ALWAYS AS (`net_unit_cost` * `quantity`) VIRTUAL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `purchase_product` (`return_purchase`,`product`),
-  KEY `product` (`product`),
+  UNIQUE KEY `purchase_product` (`return_purchase`,`purchase_product`),
+  KEY `product` (`purchase_product`),
   KEY `unit` (`unit`),
   KEY `tax_id` (`tax_id`),
   CONSTRAINT `return_purchase_product_ibfk_1` FOREIGN KEY (`return_purchase`) REFERENCES `return_purchase` (`id`),
-  CONSTRAINT `return_purchase_product_ibfk_2` FOREIGN KEY (`product`) REFERENCES `product` (`id`),
   CONSTRAINT `return_purchase_product_ibfk_3` FOREIGN KEY (`unit`) REFERENCES `unit` (`id`),
   CONSTRAINT `return_purchase_product_ibfk_4` FOREIGN KEY (`tax_id`) REFERENCES `tax_rate` (`id`),
+  CONSTRAINT `return_purchase_product_ibfk_5` FOREIGN KEY (`purchase_product`) REFERENCES `purchase_product` (`id`),
   CONSTRAINT `return_quantity_check` CHECK (`quantity` > 0)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `return_purchase_product` (`id`, `return_purchase`, `product`, `quantity`, `unit`, `unit_cost`, `unit_discount`, `tax_id`, `net_unit_cost`, `product_total_without_tax`) VALUES
-(29,	258,	5,	1.0000,	1,	12.0000,	1.0000,	2,	11.0000,	11.0000),
-(30,	258,	6,	1.0000,	1,	250.7500,	3.0000,	2,	247.7500,	247.7500),
-(31,	258,	10,	1.0000,	6,	12.0000,	2.0000,	2,	10.0000,	10.0000);
+INSERT INTO `return_purchase_product` (`id`, `return_purchase`, `purchase_product`, `quantity`, `unit`, `unit_cost`, `unit_discount`, `tax_id`, `net_unit_cost`, `product_total_without_tax`) VALUES
+(52,	270,	1,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000),
+(53,	270,	2,	1.0000,	1,	250.7500,	0.0000,	2,	250.7500,	250.7500),
+(54,	270,	3,	1.0000,	6,	12.0000,	0.0000,	2,	12.0000,	12.0000),
+(55,	271,	1,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000),
+(56,	271,	2,	1.0000,	1,	250.7500,	0.0000,	2,	250.7500,	250.7500),
+(57,	271,	3,	1.0000,	6,	12.0000,	0.0000,	2,	12.0000,	12.0000);
 
 DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role` (
@@ -1237,7 +1239,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-10-13 11:26:26',	'2022-10-07 12:31:48',	'2021-04-20 19:22:52',	'2022-10-13 11:26:26',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-10-19 12:36:10',	'2022-10-07 12:31:48',	'2021-04-20 19:22:52',	'2022-10-19 12:36:10',	NULL),
 (30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
 (31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
@@ -1302,4 +1304,4 @@ INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country
 (27,	'WARE0027',	'Ware House BBB',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	16,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-09-12 06:08:24',	NULL),
 (33,	'WARE0033',	' bvbv',	'nbnvbnvbn',	'2022-09-08',	NULL,	NULL,	NULL,	'45454545',	'bnvbn@qqwqw.ghg',	NULL,	NULL,	NULL,	NULL,	16,	NULL,	NULL,	NULL,	'2022-09-11 07:52:55',	NULL,	NULL);
 
--- 2022-10-13 14:18:08
+-- 2022-10-19 16:04:30
