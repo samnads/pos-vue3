@@ -332,7 +332,7 @@ export default {
               let addPay =
                 '<li><a class="dropdown-item" href="#" id="addpay"><i class="fa-brands fa-paypal fa-fw"></i>Add Payment</a></li>';
               let retPur =
-                '<li><a class="dropdown-item" href="#" id="return"><i class="fa-solid fa-rotate-left fa-fw"></i>Return Purchase</a></li>';
+                row["status"] == 22 && (row["total_purchase_quantity"] != row["total_return_quantity"]) ? '<li><a class="dropdown-item" href="#" id="return"><i class="fa-solid fa-rotate-left fa-fw"></i>Return Purchase</a></li>' : '';
               return (
                 '<div class="row-btn-group btn-group btn-group-sm" role="group" aria-label="Button group with nested dropdown">' +
                 editBtn +

@@ -123,6 +123,7 @@
             type="button"
             class="btn btn-warning"
             :disabled="!Object.keys(details).length"
+            v-if="details.purchase && details.purchase.total_return == 0"
             v-on:click="edit(product)"
           >
             <i class="fa-solid fa-pen-to-square"></i>Edit

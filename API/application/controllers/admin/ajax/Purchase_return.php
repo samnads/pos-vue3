@@ -58,6 +58,15 @@ class Purchase_return extends CI_Controller
                 $_POST = $this->input->post('data');
                 switch ($action) {
                     case 'create':
+                        /************************************************** */
+                        $data = $this->Purchase_return_model->get_purchase_row_by_id(array('p.id' => $this->input->post('purchase'), 'deleted_at' => NULL));
+                        if ($data['id'] && $data['status'] == 22) {
+                        } else if ($data['id'] && $data['status'] != 22) {
+                            die(json_encode(array('success' => false, 'type' => 'danger', 'message' => 'Purchase not received for return !')));
+                        } else {
+                            die(json_encode(array('success' => false, 'type' => 'danger', 'message' => 'Purchase not found !', 'location' => "admin/purchase/list")));
+                        }
+                        /************************************************** */
                         $auto_id = $this->Purchase_return_model->get_AUTO_INCREMENT();
                         $auto_id = trim(reduce_multiples(sprintf("REF-RET-PUR-%05s", $auto_id), " "));
                         $data = array(
@@ -97,11 +106,7 @@ class Purchase_return extends CI_Controller
                                 $data = array(
                                     'return_purchase' => $purchase_id,
                                     'purchase_product' => $product['purchase_product'],
-                                    'quantity' =>  $product['quantity'],
-                                    'unit' =>  $product['p_unit'],
-                                    'unit_cost' => $product['cost'],
-                                    'unit_discount' => $product['discount'],
-                                    'tax_id' => $product['tax_id'] ?: null,
+                                    'quantity' =>  $product['quantity']
                                 );
                                 $this->Purchase_return_model->insert_purchase_return_product($data);
                                 if ($this->db->affected_rows() != 1) {
@@ -409,7 +414,7 @@ class Purchase_return extends CI_Controller
                 $query["order_by"] = 'label';
                 $query["order"] = 'asc';
                 $query["query"] = $this->input->get('query');
-                $where = array('pp.purchase' => $this->input->get('purchase'));
+                $where = array('purchase' => $this->input->get('purchase'));
                 $query = $this->Purchase_return_model->suggestProdsForReturn($query["query"], $query["offset"], $query["limit"], $query["order_by"], $query["order"], $where);
                 $error = $this->db->error();
                 if ($error['code'] == 0) {
@@ -423,11 +428,13 @@ class Purchase_return extends CI_Controller
         switch ($job) { // jobs
             case 'purchase_with_return_data_for_add':
                 $data = $this->Purchase_return_model->get_purchase_row_by_id(array('p.id' => $this->input->get('id'), 'deleted_at' => NULL));
-                if ($data['id']) {
+                if ($data['id'] && $data['status'] == 22) {
                     $data['products'] = $this->Purchase_return_model->get_return_purchase_products(array('purchase' => (int)$this->input->get('id')));
                     $data['units'] = $this->Unit_model->getall_active_4_frontend();
                     $data['tax_rates'] = $this->Tax_model->dropdown_active();
                     echo json_encode(array('success' => true, 'type' => 'success', 'data' => $data));
+                } else if ($data['id'] && $data['status'] != 22) {
+                    echo json_encode(array('success' => false, 'type' => 'danger', 'message' => 'Purchase not received for return !', 'location' => "admin/purchase/list"));
                 } else {
                     echo json_encode(array('success' => false, 'type' => 'danger', 'message' => 'Purchase not found !', 'location' => "admin/purchase/list"));
                 }

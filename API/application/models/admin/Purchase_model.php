@@ -14,10 +14,26 @@ class Purchase_model extends CI_Model
 		$subquery_payment = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($subquery_payment);
+		/******************************************************/ // calculate product purchase quantity
+		$this->db->select('pp.purchase,SUM(pp.quantity) as total_purchase_quantity');
+		$this->db->from(TABLE_PURCHASE_PRODUCT . ' as pp');
+		$this->db->group_by(array('purchase'));
+		$subquery_p_quantity = $this->db->get_compiled_select();
+		$this->db->reset_query();
+		//die($subquery_p_quantity);
+		/******************************************************/ // calculate product return quantity
+		$this->db->select('rp.purchase,SUM(rpp.quantity) as total_return_quantity');
+		$this->db->from(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp');
+		$this->db->join(TABLE_RETURN_PURCHASE . ' as rp',    'rp.id = rpp.return_purchase', 'left');
+		$this->db->group_by(array('rp.purchase'));
+		$subquery_pr_quantity = $this->db->get_compiled_select();
+		$this->db->reset_query();
+		//die($subquery_pr_quantity);
 		/******************************************************/ // calculate each product_total excluding tax rate
 		$this->db->select('
 		purchase,
-		product,quantity,
+		product,
+		quantity,
 		unit,
 		unit_cost,
 		unit_discount,
@@ -73,6 +89,8 @@ class Purchase_model extends CI_Model
 		st.css_class as css_class,
 		SUM(pup.product_total_without_tax) as product_total_without_unit_tax,
 		SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) as product_total_with_unit_tax,
+		ppq.total_purchase_quantity as total_purchase_quantity,
+		IFNULL(prq.total_return_quantity,0) as total_return_quantity,
 
 
 		(CASE 
@@ -168,6 +186,8 @@ class Purchase_model extends CI_Model
 		$this->db->join('(' . $subquery_product . ') as pup', 'pup.purchase = p.id', 'left');
 		$this->db->join('(' . $product_total_tax . ') as ptt', 'ptt.purchase = p.id AND ptt.product = pup.product', 'left');
 		$this->db->join('(' . $subquery_return_count . ') as rc', 'rc.purchase = p.id', 'left');
+		$this->db->join('(' . $subquery_p_quantity . ') as ppq', 'ppq.purchase = p.id', 'left');
+		$this->db->join('(' . $subquery_pr_quantity . ') as prq', 'prq.purchase = p.id', 'left');
 		$this->db->order_by($order_by, $order);
 		$this->db->group_by('p.id');
 		$this->db->where(array('p.deleted_at' => NULL)); // select only not deleted rows
@@ -299,17 +319,15 @@ class Purchase_model extends CI_Model
 		pp.unit_discount											as unit_discount,
 		pp.tax_id													as tax_id,
 		pp.quantity													as quantity,
-		
 		p.unit														as unit,
 		u.name														as unit_name,
-		u.code
-																	as unit_code,
+		u.code														as unit_code,
 		tr.rate														as tax_rate');
-		$this->db->from(TABLE_PURCHASE_PRODUCT . ' pp');
-		$this->db->join(TABLE_PRODUCT . ' p',	'p.id=pp.product',	'left');
-		$this->db->join(TABLE_UNIT . ' u',	'u.id=pp.unit',	'left');
-		$this->db->join(TABLE_TAX_RATE . ' tr',	'tr.id=pp.tax_id',	'left');
-		$this->db->where($where);
+		$this->db->from(TABLE_PURCHASE_PRODUCT .' as pp');
+		$this->db->join(TABLE_PRODUCT . 		' as p',	'p.id=pp.product',	'left');
+		$this->db->join(TABLE_UNIT . 			' as u',	'u.id=pp.unit',	'left');
+		$this->db->join(TABLE_TAX_RATE . 		' as tr',	'tr.id=pp.tax_id',	'left');
+		$this->db->where(array('pp.purchase' => $where['purchase']));
 		$query = $this->db->get();
 		//die($this->db->last_query());
 		return $query ? $query->result() : false;
@@ -330,14 +348,16 @@ class Purchase_model extends CI_Model
 		CONCAT(cu.first_name," ",cu.last_name)				as created_by_name,
 		CONCAT(uu.first_name," ",uu.last_name)				as updated_by_name,
 		sp.name												as supplier_name,
-		s.css_class											as status_css_class');
-		$this->db->from(TABLE_PURCHASE . ' p');
-		$this->db->join(TABLE_WAREHOUSE . ' w',	'w.id=p.warehouse',	'left');
-		$this->db->join(TABLE_STATUS . ' s',	's.id=p.status',	'left');
-		$this->db->join(TABLE_USER . ' cu',	'cu.id=p.created_by',	'left');
-		$this->db->join(TABLE_USER . ' uu',	'uu.id=p.updated_by',	'left');
-		$this->db->join(TABLE_SUPPLIER . ' sp',	'sp.id=p.supplier',	'left');
-		$this->db->where($where);
+		s.css_class											as status_css_class,
+		IFNULL(COUNT(rp.purchase),0) 						as total_return');
+		$this->db->from(TABLE_PURCHASE . 		' as p');
+		$this->db->join(TABLE_RETURN_PURCHASE . ' as rp',	'rp.purchase=p.id',	'left');
+		$this->db->join(TABLE_WAREHOUSE . 		' as w',	'w.id=p.warehouse',	'left');
+		$this->db->join(TABLE_STATUS . 			' as s',	's.id=p.status',	'left');
+		$this->db->join(TABLE_USER . 			' as cu',	'cu.id=p.created_by',	'left');
+		$this->db->join(TABLE_USER . 			' as uu',	'uu.id=p.updated_by',	'left');
+		$this->db->join(TABLE_SUPPLIER . 		' as sp',	'sp.id=p.supplier',	'left');
+		$this->db->where(array('p.id' => $where['purchase']));
 		$query = $this->db->get();
 		//die($this->db->last_query());
 		return $query ? $query->row_array() : false;
