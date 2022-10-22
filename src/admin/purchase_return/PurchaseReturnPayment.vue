@@ -1,6 +1,6 @@
 <template>
   <!-- Checkout Modal -->
-  <div class="modal" id="purchasePayModal" tabindex="-1" aria-hidden="true">
+  <div class="modal" id="purchaseReturnPayModal" tabindex="-1" aria-hidden="true">
     <div
       class="
         modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable
@@ -9,7 +9,7 @@
       <div class="modal-content">
         <div class="modal-header bg-success">
           <h5 class="modal-title">
-            <i class="fa-solid fa-money-bill"></i>Purchase Payment
+            <i class="fa-solid fa-money-bill"></i>Purchase Return Payment
           </h5>
         </div>
         <div class="modal-body">
@@ -380,14 +380,14 @@ export default {
           note: null,
         };
         payments.value.push(payMethod);
-        window.PURCHASE_PAY_MODAL.show();
+        window.PURCHASE_RETURN_PAY_MODAL.show();
       }
     }
     function removePayment(payment) {
       let index = payments.value.findIndex((item) => item.id === payment.id);
       payments.value.splice(index, 1);
     }
-    emitter.on("purchasePayModal", (data) => {
+    emitter.on("purchaseReturnPayModal", (data) => {
       // Show payment form for purchase
       //console.log(data);
       payment_note.value = data.payment_note; // show from db
@@ -399,7 +399,7 @@ export default {
           data.payments[index].amount = parseFloat(element.amount).toFixed(2);
         });
         payments.value = data.payments;
-        window.PURCHASE_PAY_MODAL.show();
+        window.PURCHASE_RETURN_PAY_MODAL.show();
         //
         DATA.value = data;
       } else {
@@ -427,7 +427,7 @@ export default {
         }
       ).then(function (data) {
         if (data.success == true) {
-          window.PURCHASE_PAY_MODAL.hide();
+          window.PURCHASE_RETURN_PAY_MODAL.hide();
           resetForm();
           emitter.emit("refreshPurchaseTable", data);
         } else if (data.success == false) {
@@ -476,7 +476,7 @@ export default {
   methods: {},
   created() {},
   mounted() {
-    window.PURCHASE_PAY_MODAL = new Modal($("#purchasePayModal"), {
+    window.PURCHASE_RETURN_PAY_MODAL = new Modal($("#purchaseReturnPayModal"), {
       backdrop: "static",
       show: true,
     });
@@ -491,7 +491,7 @@ export default {
   },
   beforeUnmount() {
     var self = this;
-    self.emitter.off("purchasePayModal");
+    self.emitter.off("purchaseReturnPayModal");
     // turn off for duplicate calling
     // because its called multiple times when page loaded multiple times
   },

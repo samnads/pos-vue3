@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header bg-primary">
-          <h5 class="modal-title">Payment Details</h5>
+          <h5 class="modal-title">Purchase Return Payment Details</h5>
           <button
             type="button"
             class="btn-close"

@@ -1,7 +1,7 @@
 <template>
-  <PurchasePayment />
+  <PurchaseReturnPayment />
   <PurchaseRetunInfoModal />
-  <PurchasePayInfoModal />
+  <PurchaseReturnPayInfoModal />
   <div class="form-inline menubar" id="menubar">
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
@@ -43,6 +43,7 @@
           <th scope="col" class="d-none">ID</th>
           <th scope="col">Date</th>
           <th scope="col">Ref. No.</th>
+          <th scope="col">Purchase Ref. No.</th>
           <th scope="col">Supplier</th>
           <th scope="col">Warehouse</th>
           <th scope="col">Return Status</th>
@@ -69,11 +70,11 @@
 import { ref } from "vue";
 import admin from "@/mixins/admin.js";
 import { inject } from "vue";
-import PurchasePayment from "../purchase/PurchasePayment.vue";
+import PurchaseReturnPayment from "../purchase_return/PurchaseReturnPayment.vue";
 import PurchaseRetunInfoModal from "../purchase_return/PurchaseReturnInfoModal.vue";
-import PurchasePayInfoModal from "../purchase/PurchasePayInfoModal.vue";
+import PurchaseReturnPayInfoModal from "../purchase_return/PurchaseReturnPayInfoModal.vue";
 export default {
-  components: { PurchasePayment, PurchaseRetunInfoModal, PurchasePayInfoModal },
+  components: { PurchaseReturnPayment, PurchaseRetunInfoModal, PurchaseReturnPayInfoModal },
   /* eslint-disable */
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`
@@ -172,6 +173,9 @@ export default {
           {
             data: "reference_id",
           },
+           {
+            data: "purchase_reference_id",
+          },
           {
             data: "supplier_name",
           },
@@ -210,19 +214,7 @@ export default {
             searchable: false,
           },
           {
-            targets: [1],
-          },
-          {
-            targets: [2],
-          },
-          {
-            targets: [3],
-          },
-          {
-            targets: [4],
-          },
-          {
-            targets: [5],
+            targets: [6],
             className: "text-capitalize text-center",
             render: function (data, type, row, meta) {
               return (
@@ -235,10 +227,8 @@ export default {
             },
           },
           {
-            targets: [6],
-          },
-          {
-            targets: [7],
+            // Payable
+            targets: [8],
             render: function (data, type, row, meta) {
               return (
                 '<span class="text-primary fw-bold">' +
@@ -248,7 +238,8 @@ export default {
             },
           },
           {
-            targets: [8],
+            // Paid
+            targets: [9],
             render: function (data, type, row, meta) {
               if (data > 0) {
                 return (
@@ -261,7 +252,8 @@ export default {
             },
           },
           {
-            targets: [9],
+            // Balance Return
+            targets: [10],
             render: function (data, type, row, meta) {
               if (parseFloat(data).toFixed(2) < 0) {
                 return (
@@ -274,7 +266,8 @@ export default {
             },
           },
           {
-            targets: [10],
+            // Due
+            targets: [11],
             render: function (data, type, row, meta) {
               if (parseFloat(data).toFixed(2) > 0) {
                 return (
@@ -287,7 +280,8 @@ export default {
             },
           },
           {
-            targets: [11],
+            // Payment Status
+            targets: [12],
             className: "text-capitalize text-center",
             render: function (data, type, row, meta) {
               if (Number(row["total_paid"]) == Number(row["total_payable"])) {
@@ -303,7 +297,8 @@ export default {
             },
           },
           {
-            targets: [12],
+            // Action Menu
+            targets: [13],
             orderable: false,
             className: "text-center",
             searchable: false,
@@ -323,7 +318,7 @@ export default {
               let purchaseEdit =
                 '<li><a class="dropdown-item" href="#" id="edit"><i class="fa-solid fa-pencil fa-fw"></i>Edit Return</a></li>';
               let addPay =
-                '<li><a class="dropdown-item" href="#" id="addpay"><i class="fa-brands fa-paypal fa-fw"></i>Add Payment</a></li>';
+                '<li><a class="dropdown-item" href="#" id="addpay"><i class="fa-brands fa-paypal fa-fw"></i>Receive Payment</a></li>';
               return (
                 '<div class="row-btn-group btn-group btn-group-sm" role="group" aria-label="Button group with nested dropdown">' +
                 editBtn +
@@ -515,7 +510,7 @@ export default {
         let data = JSON.parse(
           JSON.stringify(self.table.row($(this).parents("tr")).data())
         );
-        self.emitter.emit("purchasePayModal", data);
+        self.emitter.emit("purchaseReturnPayModal", data);
       });
       $("#search").keyup(function () {
         // custom search box

@@ -66,8 +66,8 @@
         </div>
         <div class="invalid-feedback">{{ errorReturnStatus }}</div>
       </div>
-      <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
-        <label class="form-label">Purchase Ref. No.</label>
+      <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4" v-if="route.name == 'adminPurchaseReturnEdit'">
+        <label class="form-label">Return Ref. No.</label>
         <div class="input-group is-invalid">
           <input
             v-if="DATA"
@@ -79,14 +79,14 @@
         </div>
         <div class="invalid-feedback">{{ errorNote }}</div>
       </div>
-      <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4" v-if="route.name == 'adminPurchaseReturnEdit'">
-        <label class="form-label">Return Ref. No.</label>
+      <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+        <label class="form-label">Purchase Ref. No.</label>
         <div class="input-group is-invalid">
           <input
             v-if="DATA"
             type="text"
             class="form-control"
-            v-model="DATA.return_reference_id"
+            v-model="DATA.purchase_reference_id"
             disabled
           />
         </div>
@@ -817,7 +817,7 @@ export default {
         return packing.value;
       },
       round_off: function () {
-        var round_off = this.total_payable() - Math.floor(this.total_payable());
+        var round_off = this.total_payable() - Math.round(this.total_payable());
         return round_off;
       },
       total_payable_round: function () {

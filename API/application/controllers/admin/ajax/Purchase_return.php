@@ -77,7 +77,7 @@ class Purchase_return extends CI_Controller
                             'status'            => $this->input->post('return_status'),
                             'created_by'        => $this->session->id,
                             'discount'          => $this->input->post('discount'),
-                            'purchase_tax'      => $this->input->post('tax_rate') ?: NULL,
+                            'return_tax'      => $this->input->post('tax_rate') ?: NULL,
                             'shipping_charge'   => $this->input->post('shipping'),
                             'shipping_tax'      => $this->input->post('shipping_tax') ?: NULL,
                             'packing_charge'    => $this->input->post('packing'),
@@ -440,9 +440,9 @@ class Purchase_return extends CI_Controller
                 }
                 break;
             case 'purchase_with_return_data_for_edit':
-                $data = $this->Purchase_return_model->get_purchase_return_row_by_id(array('return_purchase' => $this->input->get('id'), 'deleted_at' => NULL));
+                $data = $this->Purchase_return_model->get_purchase_return_row_by_id(array('return_purchase' => $this->input->get('id')));
                 if ($data['id']) {
-                    $data['products'] = $this->Purchase_return_model->get_return_purchase_products(array('purchase' => (int)$this->input->get('id')));
+                    $data['products'] = $this->Purchase_return_model->get_return_purchase_products_for_edit(array('return_purchase' => (int)$this->input->get('id')));
                     $data['units'] = $this->Unit_model->getall_active_4_frontend();
                     $data['tax_rates'] = $this->Tax_model->dropdown_active();
                     echo json_encode(array('success' => true, 'type' => 'success', 'data' => $data));

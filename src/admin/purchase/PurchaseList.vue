@@ -330,7 +330,7 @@ export default {
               let purchaseEdit =
                 row["total_return"] == 0 ? '<li><a class="dropdown-item" href="#" id="edit"><i class="fa-solid fa-pencil fa-fw"></i>Edit Purchase</a></li>' : '';
               let addPay =
-                '<li><a class="dropdown-item" href="#" id="addpay"><i class="fa-brands fa-paypal fa-fw"></i>Add Payment</a></li>';
+                '<li><a class="dropdown-item" href="#" id="addpay"><i class="fa-brands fa-paypal fa-fw"></i>Send Payment</a></li>';
               let retPur =
                 row["status"] == 22 && (row["total_purchase_quantity"] != row["total_return_quantity"]) ? '<li><a class="dropdown-item" href="#" id="return"><i class="fa-solid fa-rotate-left fa-fw"></i>Return Purchase</a></li>' : '';
               return (
