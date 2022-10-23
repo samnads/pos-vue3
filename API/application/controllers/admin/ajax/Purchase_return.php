@@ -125,13 +125,13 @@ class Purchase_return extends CI_Controller
                         /************************************************************ */
                         break;
                     case 'payment':
-                        $purchase = $this->input->post('purchase');
+                        $return_purchase = $this->input->post('return_purchase');
                         $payments = $this->input->post('payments');
-                        $this->Purchase_return_model->update_purchase(array('payment_note' => $this->input->post('payment_note')), $purchase['id']);
+                        $this->Purchase_return_model->update_return_purchase(array('payment_note' => $this->input->post('payment_note')), $return_purchase['id']);
                         $this->db->trans_begin();
                         foreach ($payments as $payment) { // add payments
                             $data = array(
-                                'purchase' => $purchase['id'],
+                                'return_purchase' => $return_purchase['id'],
                                 'payment_mode' => $payment['mode'],
                                 'amount' =>  $payment['amount'],
                                 'date_time' => $payment['date_time'],
@@ -170,7 +170,7 @@ class Purchase_return extends CI_Controller
                                 $this->db->trans_rollback();
                                 die(json_encode(array('success' => false, 'errors' => $this->form_validation->error_array())));
                             }
-                            $this->Purchase_return_model->create_purchase_payment($data);
+                            $this->Purchase_return_model->create_return_purchase_payment($data);
                             if ($this->db->affected_rows() != 1) {
                                 $error = $this->db->error();
                                 $this->db->trans_rollback();
@@ -178,7 +178,7 @@ class Purchase_return extends CI_Controller
                             }
                         }
                         $this->db->trans_commit();
-                        echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully Added Purchase Payment !'));
+                        echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully Added Return Purchase Payment !'));
                         break;
                     default:
                 }
@@ -442,7 +442,7 @@ class Purchase_return extends CI_Controller
             case 'purchase_with_return_data_for_edit':
                 $data = $this->Purchase_return_model->get_purchase_return_row_by_id(array('return_purchase' => $this->input->get('id')));
                 if ($data['id']) {
-                    $data['products'] = $this->Purchase_return_model->get_return_purchase_products_for_edit(array('return_purchase' => (int)$this->input->get('id')));
+                    $data['products'] = $this->Purchase_return_model->get_return_purchase_products_for_edit(array('return_purchase' => (int)$this->input->get('id'), 'purchase' => $data['purchase']));
                     $data['units'] = $this->Unit_model->getall_active_4_frontend();
                     $data['tax_rates'] = $this->Tax_model->dropdown_active();
                     echo json_encode(array('success' => true, 'type' => 'success', 'data' => $data));

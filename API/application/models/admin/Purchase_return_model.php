@@ -213,6 +213,7 @@ class Purchase_return_model extends CI_Model
 	{
 		$this->db->select('
 		`rp.id as id`,
+		`rp.purchase as purchase`,
 		`rp.reference_id as reference_id`,
 		`p.reference_id as purchase_reference_id`,
 		`rp.date`,
@@ -224,6 +225,7 @@ class Purchase_return_model extends CI_Model
 		`rp.shipping_tax`,
 		`rp.packing_charge`,
 		`rp.packing_tax`,
+		`rp.return_tax`,
 		`rp.round_off`,
 		`rp.payment_note`,
 		`rp.note`,
@@ -356,44 +358,33 @@ class Purchase_return_model extends CI_Model
 	}
 	function get_return_purchase_products_for_edit($where)
 	{
-		/******************************************************/
-		$this->db->select('pp.product as product,rpp.purchase_product as purchase_product,SUM(rpp.quantity) as returned_quantity');
-		$this->db->from(TABLE_PURCHASE_PRODUCT . ' as pp');
-		$this->db->join(TABLE_PURCHASE . ' as p',    'p.id = pp.purchase', 'left');
-		$this->db->join(TABLE_RETURN_PURCHASE . ' as rp',    'rp.id = pp.purchase', 'left');
-		$this->db->join(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp',    'rpp.purchase_product = pp.id', 'left');
-		$this->db->where(array('pp.purchase' => $where['return_purchase'], 'rp.deleted_at' => NULL));
-		$this->db->group_by(array('pp.id', 'rpp.purchase_product'));
-		$return_purchase_product_count = $this->db->get_compiled_select();
-		$this->db->reset_query();
-		//die($return_purchase_product_count);
-		/******************************************************/
 		$this->db->select('
-		p.id														as id,
-		pp.id														as purchase_product,
-		p.code														as code,
-		p.name														as name,
-		pp.unit														as p_unit,
-		pp.unit_cost												as unit_cost,
-		(pp.unit_cost / IFNULL(u.step,1))							as db_cost,
-		pp.unit_discount											as unit_discount,
-		pp.tax_id													as tax_id,
-		0															as quantity,
-		pp.quantity													as purchase_quantity,
-		IFNULL(rppc.returned_quantity,0)							as returned_quantity,
-		IFNULL((pp.quantity - IFNULL(rppc.returned_quantity,0)),0)	as to_be_return_quantity,
-		p.unit														as unit,
-		u.name														as unit_name,
-		u.code														as unit_code,
-		tr.rate														as tax_rate');
-		$this->db->from(TABLE_PURCHASE_PRODUCT . ' as pp');
-		$this->db->join(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp',	'rpp.purchase_product = pp.id',	'left');
-		$this->db->join(TABLE_PRODUCT . ' as p',	'p.id = pp.product',	'left');
+		pr.id as																id,
+		rpp.purchase_product as													purchase_product,
+		SUM(rpp.quantity) as													returned_quantity,
+		SUM(DISTINCT(pp.quantity)) as											purchase_quantity,
+		IFNULL(SUM(DISTINCT(pp.quantity)) - IFNULL(SUM(rpp.quantity),0),0)	as	to_be_return_quantity,
+		pr.code	as																code,
+		pr.name	as																name,
+		0 as																	quantity,
+		pp.unit as																unit,
+		pp.unit	as																p_unit,
+		pp.unit_cost	as														unit_cost,
+		(pp.unit_cost / IFNULL(u.step,1)) as									db_cost,
+		IFNULL(u.step,1) as														step,
+		pp.unit_discount as														unit_discount,
+		pp.tax_id as															tax_id,
+		tr.rate as																tax_rate,
+		');
+		$this->db->from(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp');
+		$this->db->join(TABLE_RETURN_PURCHASE . ' as rp',    'rp.id = rpp.return_purchase AND rp.id != ' . $where['return_purchase'], 'left');
+		$this->db->join(TABLE_PURCHASE_PRODUCT . ' as pp',    'pp.id = rpp.purchase_product', 'left');
+		$this->db->join(TABLE_PURCHASE . ' as p',    'p.id = rp.purchase', 'left');
+		$this->db->join(TABLE_PRODUCT . ' as pr',    'pr.id = pp.product', 'left');
 		$this->db->join(TABLE_UNIT . ' as u',	'u.id=pp.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . ' as tr',	'tr.id=pp.tax_id',	'left');
-		$this->db->join('(' . $return_purchase_product_count . ')  as rppc', 'rppc.purchase_product = rpp.purchase_product', 'left');
-		$this->db->where(array('rp.return_purchase' => $where['return_purchase']));
-		$this->db->group_by(array('pp.id'));
+		$this->db->where(array('rp.purchase' => $where['purchase'], 'p.deleted_at' => NULL, 'rp.deleted_at' => NULL));
+		$this->db->group_by(array('rpp.purchase_product','p.id'));
 		$query = $this->db->get();
 		//die($this->db->last_query());
 		return $query ? $query->result() : false;
@@ -403,10 +394,10 @@ class Purchase_return_model extends CI_Model
 		$query = $this->db->insert(TABLE_RETURN_PURCHASE, $data);
 		return $query;
 	}
-	function update_purchase($data, $id)
+	function update_return_purchase($data, $id)
 	{
 		$this->db->where(array('id' => $id, 'deleted_at' => NULL));
-		$query = $this->db->update(TABLE_PURCHASE, $data);
+		$query = $this->db->update(TABLE_RETURN_PURCHASE, $data);
 		return $query;
 	}
 	function set_deleted_at($where) // mark as deleted
@@ -428,9 +419,9 @@ class Purchase_return_model extends CI_Model
 		$query = $this->db->delete(TABLE_PURCHASE_PRODUCT);
 		return $query;
 	}
-	function create_purchase_payment($data) // for add payment option
+	function create_return_purchase_payment($data) // for add payment option
 	{
-		$query = $this->db->insert(TABLE_PURCHASE_PAYMENT, $data);
+		$query = $this->db->insert(TABLE_RETURN_PURCHASE_PAYMENT, $data);
 		return $query;
 	}
 	function update_purchase_payment($data, $where)

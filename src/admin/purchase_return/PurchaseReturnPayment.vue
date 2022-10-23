@@ -417,10 +417,10 @@ export default {
       }
     }
     const onSubmit = handleSubmit((values) => {
-      values.purchase = DATA.value;
+      values.return_purchase = DATA.value;
       return axiosAsyncCallReturnData(
         DATA.value.payments ? "PUT" : "POST",
-        "purchase",
+        "purchase_return",
         {
           action: DATA.value.payments ? "update_payment" : "payment",
           data: values,

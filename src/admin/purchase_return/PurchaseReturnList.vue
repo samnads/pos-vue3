@@ -255,7 +255,7 @@ export default {
             // Balance Return
             targets: [10],
             render: function (data, type, row, meta) {
-              if (parseFloat(data).toFixed(2) < 0) {
+              if (parseFloat(data).toFixed(2) > 0) {
                 return (
                   '<span class="text-info fw-bold">' +
                   parseFloat(data).toFixed(2) +

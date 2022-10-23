@@ -83,10 +83,17 @@
         <label class="form-label">Purchase Ref. No.</label>
         <div class="input-group is-invalid">
           <input
-            v-if="DATA"
+            v-if="DATA && route.name == 'adminPurchaseReturnEdit'"
             type="text"
             class="form-control"
             v-model="DATA.purchase_reference_id"
+            disabled
+          />
+          <input
+            v-if="DATA && route.name == 'adminPurchaseReturnNew'"
+            type="text"
+            class="form-control"
+            v-model="DATA.reference_id"
             disabled
           />
         </div>
@@ -1292,12 +1299,13 @@ export default {
           // slice(0, 19) includes seconds
           self.setFieldValue("date", date_.toISOString().slice(0, 19));
           self.setFieldValue("return_status", 5);
+          self.setFieldValue("tax_rate", data.purchase_tax);
         } else { // for edit show db time
           self.setFieldValue("date", data.date + "T" + data.time);
           self.setFieldValue("return_status", data.status);
+          self.setFieldValue("tax_rate", data.return_tax);
         }
         self.setFieldValue("discount", data.discount);
-        self.setFieldValue("tax_rate", data.purchase_tax);
         self.setFieldValue("shipping", Number(data.shipping_charge));
         self.setFieldValue("shipping_tax", data.shipping_tax);
         self.setFieldValue("packing", Number(data.packing_charge));
