@@ -10,14 +10,17 @@ class Purchase_model extends CI_Model
 	function datatable_data($search, $offset, $limit, $order_by, $order)
 	{
 		/******************************************************/ // calculate total paid using all payment methods
-		$this->db->select('purchase,SUM(amount) as total_paid')->from(TABLE_PURCHASE_PAYMENT)->where(array('deleted_at' => NULL))->group_by('purchase');
+		$this->db->select('purchase,SUM(amount) as total_paid');
+		$this->db->from(TABLE_PURCHASE_PAYMENT);
+		$this->db->where(array('deleted_at' => NULL));
+		$this->db->group_by('purchase');
 		$subquery_payment = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($subquery_payment);
 		/******************************************************/ // calculate product purchase quantity
 		$this->db->select('pp.purchase,SUM(pp.quantity) as total_purchase_quantity');
 		$this->db->from(TABLE_PURCHASE_PRODUCT . ' as pp');
-		$this->db->group_by(array('purchase'));
+		$this->db->group_by(array('pp.purchase'));
 		$subquery_p_quantity = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($subquery_p_quantity);
@@ -25,6 +28,7 @@ class Purchase_model extends CI_Model
 		$this->db->select('rp.purchase,SUM(rpp.quantity) as total_return_quantity');
 		$this->db->from(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp');
 		$this->db->join(TABLE_RETURN_PURCHASE . ' as rp',    'rp.id = rpp.return_purchase', 'left');
+		$this->db->where(array('rp.deleted_at' => NULL));
 		$this->db->group_by(array('rp.purchase'));
 		$subquery_pr_quantity = $this->db->get_compiled_select();
 		$this->db->reset_query();
@@ -48,7 +52,11 @@ class Purchase_model extends CI_Model
 		$this->db->select('psp.purchase,
 		psp.product,
 		tr.rate as tax_rate,
-		(IFNULL(tr.rate, 0) / 100) * psp.product_total_without_tax as product_total_tax');
+		(CASE 
+			WHEN tr.type = "P" THEN (IFNULL(tr.rate, 0) / 100) * psp.product_total_without_tax
+			ELSE IFNULL(tr.rate, 0) * psp.quantity
+		END) product_total_tax,
+		');
 		$this->db->from(TABLE_PURCHASE_PRODUCT . ' as psp');
 		$this->db->join(TABLE_TAX_RATE . ' as tr',    'tr.id = psp.tax_id', 'left');
 		$this->db->group_by(array('psp.purchase', 'psp.product'));
@@ -136,13 +144,14 @@ class Purchase_model extends CI_Model
 			WHEN tr_pk.type = "P" THEN (IFNULL(tr_pk.rate, 0) / 100) * p.packing_charge
 			ELSE IFNULL(tr_pk.rate, 0)
 		END) +
-		p.packing_charge -
+		p.packing_charge +
 		p.round_off,2) as total_payable,
 
 		ROUND(IFNULL(ppy.total_paid, 0)) as total_paid,
 		
 		
-		(CASE 
+		IFNULL(ppy.total_paid, 0) -
+		((CASE 
 			WHEN tr_p.type = "P" THEN (IFNULL(tr_p.rate, 0) / 100) * (SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) - p.discount)
 			ELSE IFNULL(tr_p.rate, 0)
 		END) + (SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) - p.discount) +
@@ -155,8 +164,8 @@ class Purchase_model extends CI_Model
 			WHEN tr_pk.type = "P" THEN (IFNULL(tr_pk.rate, 0) / 100) * p.packing_charge
 			ELSE IFNULL(tr_pk.rate, 0)
 		END) +
-		p.packing_charge -
-		p.round_off - IFNULL(ppy.total_paid, 0) as balance_return,
+		p.packing_charge +
+		p.round_off) as balance_return,
 		
 		
 		(CASE 
@@ -173,7 +182,7 @@ class Purchase_model extends CI_Model
 			ELSE IFNULL(tr_pk.rate, 0)
 		END) +
 		p.packing_charge -
-		p.round_off - IFNULL(ppy.total_paid, 0) as due'
+		IFNULL(ppy.total_paid, 0) + p.round_off as due'
 		);
 		$this->db->from(TABLE_PURCHASE . ' as p');
 		$this->db->join(TABLE_SUPPLIER . ' as s',    's.id = p.supplier', 'left');

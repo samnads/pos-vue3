@@ -5,7 +5,10 @@
     <div class="d-flex bd-highlight align-items-baseline">
       <div class="p-2 flex-grow-1 bd-highlight">
         <h5 class="title">
-          <i class="fa-sharp fa-solid fa-truck-fast"></i><span>{{route.name != "adminPurchaseEdit" ? 'New Purchase' : 'Edit Purchase'}}</span>
+          <i class="fa-sharp fa-solid fa-truck-fast"></i
+          ><span>{{
+            route.name != "adminPurchaseEdit" ? "New Purchase" : "Edit Purchase"
+          }}</span>
         </h5>
       </div>
       <div class="p-2 bd-highlight"></div>
@@ -383,9 +386,7 @@
               </td>
               <td class="bg-dark bg-opacity-75">After Dsc.</td>
               <td class="bg-secondary text-end">
-                {{
-                  calc.total_product_sub_total_after_cart_discount()
-                }}
+                {{ calc.total_product_sub_total_after_cart_discount() }}
               </td>
             </tr>
             <tr>
@@ -512,7 +513,7 @@
               <td class="bg-dark bg-opacity-75"></td>
               <td class="bg-dark bg-opacity-75">Round Off</td>
               <td class="bg-secondary text-end">
-                {{ "- " + calc.round_off() }}
+                {{ calc.round_off() }}
               </td>
             </tr>
             <tr>
@@ -525,7 +526,10 @@
               >
                 <div class="d-flex justify-content-between">
                   <div class="text-muted">₹</div>
-                  <div>{{ calc.total_payable_round() }}</div>
+                  <div>
+                    {{ calc.total_payable_round() }}<br />(
+                    {{ calc.total_payable() }} )
+                  </div>
                 </div>
               </td>
             </tr>
@@ -839,11 +843,11 @@ export default {
         return packing.value;
       },
       round_off: function () {
-        var round_off = this.total_payable() - Math.floor(this.total_payable());
-        return round_off;
+        var round_off = this.total_payable() - Math.round(this.total_payable());
+        return -round_off;
       },
       total_payable_round: function () {
-        return this.total_payable() - this.round_off();
+        return this.total_payable() + this.round_off();
       },
     };
     /************************************************************************* */
@@ -869,7 +873,6 @@ export default {
         action: action,
       }).then(function (data) {
         if (data.success == true) {
-
         } else if (data.success == false) {
           // valid error
           if (data.errors) {
@@ -922,11 +925,23 @@ export default {
           );
         };
         product.total_tax_ = function () {
-          return Number(
+          /*return Number(
             parseFloat(
               x_percentage_of_y(
                 product.tax_rate,
                 product.total_cost_after_discount_()
+              )
+            )
+          );*/
+
+          return (
+            product.quantity *
+            Number(
+              tax_value_calc(
+                taxes.value.find((obj) => {
+                  return obj.id == product.tax_id;
+                }),
+                product.cost_after_discount_()
               )
             )
           );
@@ -1236,6 +1251,7 @@ export default {
           self.DATA = data; // store db data
           var products = data.products;
           var units = data.units;
+          var tax_rates = data.tax_rates;
           products.forEach((element, index) => {
             products[index].hsn = "000";
             products[index].quantity = Number(element.quantity); //item quantity
@@ -1280,11 +1296,14 @@ export default {
               );
             };
             products[index].total_tax_ = function () {
-              return Number(
-                parseFloat(
-                  self.x_percentage_of_y(
-                    products[index].tax_rate,
-                    products[index].total_cost_after_discount_()
+              return (
+                products[index].quantity *
+                Number(
+                  self.tax_value_calc(
+                    tax_rates.find((obj) => {
+                      return obj.id == products[index].tax_id;
+                    }),
+                    products[index].cost_after_discount_()
                   )
                 )
               );

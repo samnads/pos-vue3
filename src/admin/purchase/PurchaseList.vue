@@ -277,14 +277,11 @@ export default {
           {
             targets: [9],
             render: function (data, type, row, meta) {
-              if (parseFloat(data).toFixed(2) < 0) {
-                return (
+              return (
                   '<span class="text-info fw-bold">' +
                   parseFloat(data).toFixed(2) +
                   "</span>"
                 );
-              }
-              return '<span class="text-muted small">-</span>';
             },
           },
           {
@@ -328,11 +325,16 @@ export default {
               let purchaseDeatils =
                 '<li><a class="dropdown-item" href="#" id="details"><i class="fa-solid fa-circle-info fa-fw"></i>Details</a></li>';
               let purchaseEdit =
-                row["total_return"] == 0 ? '<li><a class="dropdown-item" href="#" id="edit"><i class="fa-solid fa-pencil fa-fw"></i>Edit Purchase</a></li>' : '';
+                row["total_return"] == 0
+                  ? '<li><a class="dropdown-item" href="#" id="edit"><i class="fa-solid fa-pencil fa-fw"></i>Edit Purchase</a></li>'
+                  : "";
               let addPay =
                 '<li><a class="dropdown-item" href="#" id="addpay"><i class="fa-brands fa-paypal fa-fw"></i>Send Payment</a></li>';
               let retPur =
-                row["status"] == 22 && (row["total_purchase_quantity"] != row["total_return_quantity"]) ? '<li><a class="dropdown-item" href="#" id="return"><i class="fa-solid fa-rotate-left fa-fw"></i>Return Purchase</a></li>' : '';
+                row["status"] == 22 &&
+                row["total_purchase_quantity"] != row["total_return_quantity"]
+                  ? '<li><a class="dropdown-item" href="#" id="return"><i class="fa-solid fa-rotate-left fa-fw"></i>Return Purchase</a></li>'
+                  : "";
               return (
                 '<div class="row-btn-group btn-group btn-group-sm" role="group" aria-label="Button group with nested dropdown">' +
                 editBtn +

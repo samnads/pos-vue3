@@ -315,16 +315,16 @@ class Purchase_return_model extends CI_Model
 	function get_return_purchase_products($where)
 	{
 		/******************************************************/
-		$this->db->select('pp.product as product,rpp.purchase_product as purchase_product,SUM(rpp.quantity) as returned_quantity');
-		$this->db->from(TABLE_PURCHASE_PRODUCT . ' as pp');
-		$this->db->join(TABLE_PURCHASE . ' as p',    'p.id = pp.purchase', 'left');
-		$this->db->join(TABLE_RETURN_PURCHASE . ' as rp',    'rp.id = pp.purchase', 'left');
-		$this->db->join(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp',    'rpp.purchase_product = pp.id', 'left');
-		$this->db->where(array('pp.purchase' => $where['purchase'], 'rp.deleted_at' => NULL));
-		$this->db->group_by(array('pp.id', 'rpp.purchase_product'));
+		$this->db->select('rpp.purchase_product as purchase_product,SUM(rpp.quantity) as returned_quantity');
+		$this->db->from(TABLE_RETURN_PURCHASE . ' as rp');
+		$this->db->join(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp',    'rpp.return_purchase = rp.id', 'left');
+		$this->db->where(array('rp.deleted_at' => NULL, 'rp.purchase' => $where['purchase']));
+		$this->db->group_by(array('rpp.purchase_product'));
 		$return_purchase_product_count = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($return_purchase_product_count);
+		/******************************************************/
+
 		/******************************************************/
 		$this->db->select('
 		p.id														as id,
