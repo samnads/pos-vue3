@@ -358,15 +358,51 @@ class Purchase_return_model extends CI_Model
 	}
 	function get_return_purchase_products_for_edit($where)
 	{
+		/******************************************** */ // get return count except this return
 		$this->db->select('
-		pr.id as																id,
-		rpp.purchase_product as													purchase_product,
-		SUM(rpp.quantity) as													returned_quantity,
-		SUM(DISTINCT(pp.quantity)) as											purchase_quantity,
-		IFNULL(SUM(DISTINCT(pp.quantity)) - IFNULL(SUM(rpp.quantity),0),0)	as	to_be_return_quantity,
+		rpp.purchase_product	as	id,
+		SUM(rpp.quantity)		as	returned_quantity,
+		rpp.quantity			as	quantity,
+		');
+		$this->db->from(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp');
+		$this->db->join(TABLE_RETURN_PURCHASE . ' as rp',    'rp.id = rpp.return_purchase', 'left');
+		$this->db->join(TABLE_PURCHASE . ' as p',    'p.id = rp.purchase', 'left');
+		$this->db->where(array('rp.purchase' => $where['purchase'], 'rp.deleted_at' => NULL, 'p.deleted_at' => NULL));
+		$this->db->where(array('rp.id !=' => $where['return_purchase'])); // edits dont count self data
+		$this->db->group_by(array('rpp.purchase_product'));
+		$return_purchase_product_count = $this->db->get_compiled_select();
+		$this->db->reset_query();
+		//die($return_purchase_product_count);
+		/******************************************** */ // get return count for this return
+		$this->db->select('
+		rpp.purchase_product	as	id,
+		IFNULL(rpp.quantity,0)			as	quantity,
+		');
+		$this->db->from(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp');
+		$this->db->join(TABLE_RETURN_PURCHASE . ' as rp',    'rp.id = rpp.return_purchase', 'left');
+		$this->db->join(TABLE_PURCHASE . ' as p',    'p.id = rp.purchase', 'left');
+		$this->db->where(array('rp.purchase' => $where['purchase'], 'rp.deleted_at' => NULL, 'p.deleted_at' => NULL));
+		$this->db->where(array('rp.id' => $where['return_purchase'])); // count self data
+		$this->db->group_by(array('rpp.purchase_product'));
+		$get_this_return_count = $this->db->get_compiled_select();
+		$this->db->reset_query();
+		//die($get_this_return_count);
+		/******************************************** */ // get purchase product count
+		$this->db->select('
+		pp.id as 																id,
+		(CASE 
+			WHEN pp.quantity - IFNULL(rppc.returned_quantity,0) = 0
+			THEN
+				0
+			ELSE
+				gtrc.quantity
+		END) as 																quantity,
+		IFNULL(rppc.returned_quantity,0)	as 									returned_quantity,
+		pp.quantity - IFNULL(rppc.returned_quantity,0) as 						to_be_return_quantity,
+		pp.product as															product,
+		pp.quantity as															purchase_quantity,
 		pr.code	as																code,
 		pr.name	as																name,
-		0 as																	quantity,
 		pp.unit as																unit,
 		pp.unit	as																p_unit,
 		pp.unit_cost	as														unit_cost,
@@ -376,15 +412,15 @@ class Purchase_return_model extends CI_Model
 		pp.tax_id as															tax_id,
 		tr.rate as																tax_rate,
 		');
-		$this->db->from(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp');
-		$this->db->join(TABLE_RETURN_PURCHASE . ' as rp',    'rp.id = rpp.return_purchase AND rp.id != ' . $where['return_purchase'], 'left');
-		$this->db->join(TABLE_PURCHASE_PRODUCT . ' as pp',    'pp.id = rpp.purchase_product', 'left');
-		$this->db->join(TABLE_PURCHASE . ' as p',    'p.id = rp.purchase', 'left');
+		$this->db->from(TABLE_PURCHASE_PRODUCT . ' as pp');
+		$this->db->join(TABLE_PURCHASE . ' as p',    'p.id = pp.purchase', 'left');
 		$this->db->join(TABLE_PRODUCT . ' as pr',    'pr.id = pp.product', 'left');
 		$this->db->join(TABLE_UNIT . ' as u',	'u.id=pp.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . ' as tr',	'tr.id=pp.tax_id',	'left');
-		$this->db->where(array('rp.purchase' => $where['purchase'], 'p.deleted_at' => NULL, 'rp.deleted_at' => NULL));
-		$this->db->group_by(array('rpp.purchase_product','p.id'));
+		$this->db->join('(' . $return_purchase_product_count . ')  as rppc', 'rppc.id = pp.id', 'left');
+		$this->db->join('(' . $get_this_return_count . ')  as gtrc', 'gtrc.id = rppc.id', 'left');
+		$this->db->where(array('p.id' => $where['purchase'],'p.deleted_at' => NULL));
+		$this->db->group_by(array('pp.id'));
 		$query = $this->db->get();
 		//die($this->db->last_query());
 		return $query ? $query->result() : false;
