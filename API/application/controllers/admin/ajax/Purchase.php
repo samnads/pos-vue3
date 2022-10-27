@@ -340,7 +340,12 @@ class Purchase extends CI_Controller
                             $products = $this->input->post('products'); // list of purchased products for updating (may contain new and edited or old deleted)
                             // its best to delete previous all from db then insert new data from request
                             /***************************************** */
-                            $this->Purchase_model->delete_purchase_products(array('purchase' => $purchase_id));
+                            $this->Purchase_model->delete_purchase_products_SET_TIME(array('purchase' => $purchase_id, 'deleted_at' => NULL));
+                            if ($this->db->affected_rows() <= 0) {
+                                $error = $this->db->error();
+                                $this->db->trans_rollback();
+                                die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                            }
                             /***************************************** */
                             foreach ($products as $product) { // add products
                                 $data = array(
@@ -366,7 +371,6 @@ class Purchase extends CI_Controller
                             echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
                         }
                         /************************************************************ */
-                        break;
                 }
                 break;
             case 'DELETE':

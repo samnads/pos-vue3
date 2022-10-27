@@ -319,21 +319,23 @@ class Purchase_return extends CI_Controller
                         if ($this->form_validation->run() == FALSE) { // check data fields
                             die(json_encode(array('success' => false, 'errors' => $this->form_validation->error_array())));
                         }
-                        $changed_db1 = false;
-                        $changed_db2 = false;
                         /************************************************************ */
                         $this->db->trans_begin();
                         $return_purchase_id = $this->input->post('id');
                         $this->Purchase_return_model->update_return_purchase($data, $return_purchase_id);
                         $error = $this->db->error();
-                        if ($this->db->affected_rows() == 1 || $error['code'] == 0) { // // success or no change - update purchase
+                        if ($this->db->affected_rows() == 1 || $error['code'] == 0) { // success or no change - update return purchase
                             if ($this->db->affected_rows() == 1) { // data changed
-                                $changed_db1 = true;
                             }
                             $products = $this->input->post('products'); // list of purchased products for updating (may contain new and edited or old deleted)
                             // its best to delete previous all from db then insert new data from request
                             /***************************************** */
-                            $this->Purchase_return_model->delete_return_purchase_products(array('return_purchase' => $return_purchase_id));
+                            $this->Purchase_return_model->delete_return_purchase_products_SET_TIME(array('return_purchase' => $return_purchase_id, 'deleted_at' => NULL));
+                            if ($this->db->affected_rows() <= 0) {
+                                $error = $this->db->error();
+                                $this->db->trans_rollback();
+                                die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                            }
                             /***************************************** */
                             foreach ($products as $product) { // add products
                                 $data = array(
@@ -355,7 +357,6 @@ class Purchase_return extends CI_Controller
                             echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
                         }
                         /************************************************************ */
-                        break;
                 }
                 break;
             case 'DELETE':

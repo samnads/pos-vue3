@@ -20,6 +20,7 @@ class Purchase_model extends CI_Model
 		/******************************************************/ // calculate product purchase quantity
 		$this->db->select('pp.purchase,SUM(pp.quantity) as total_purchase_quantity');
 		$this->db->from(TABLE_PURCHASE_PRODUCT . ' as pp');
+		$this->db->where(array('pp.deleted_at' => NULL));
 		$this->db->group_by(array('pp.purchase'));
 		$subquery_p_quantity = $this->db->get_compiled_select();
 		$this->db->reset_query();
@@ -28,7 +29,7 @@ class Purchase_model extends CI_Model
 		$this->db->select('rp.purchase,SUM(rpp.quantity) as total_return_quantity');
 		$this->db->from(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp');
 		$this->db->join(TABLE_RETURN_PURCHASE . ' as rp',    'rp.id = rpp.return_purchase', 'left');
-		$this->db->where(array('rp.deleted_at' => NULL));
+		$this->db->where(array('rp.deleted_at' => NULL, 'rpp.deleted_at' => NULL));
 		$this->db->group_by(array('rp.purchase'));
 		$subquery_pr_quantity = $this->db->get_compiled_select();
 		$this->db->reset_query();
@@ -44,7 +45,10 @@ class Purchase_model extends CI_Model
 		tax_id,
 		net_unit_cost,
 		product_total_without_tax
-		')->from(TABLE_PURCHASE_PRODUCT)->group_by(array('purchase', 'product'));
+		');
+		$this->db->from(TABLE_PURCHASE_PRODUCT);
+		$this->db->where(array('deleted_at' => NULL));
+		$this->db->group_by(array('purchase', 'product'));
 		$subquery_product = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($subquery_product);
@@ -59,6 +63,7 @@ class Purchase_model extends CI_Model
 		');
 		$this->db->from(TABLE_PURCHASE_PRODUCT . ' as psp');
 		$this->db->join(TABLE_TAX_RATE . ' as tr',    'tr.id = psp.tax_id', 'left');
+		$this->db->where(array('psp.deleted_at' => NULL));
 		$this->db->group_by(array('psp.purchase', 'psp.product'));
 		$product_total_tax = $this->db->get_compiled_select();
 		$this->db->reset_query();
@@ -332,11 +337,11 @@ class Purchase_model extends CI_Model
 		u.name														as unit_name,
 		u.code														as unit_code,
 		tr.rate														as tax_rate');
-		$this->db->from(TABLE_PURCHASE_PRODUCT .' as pp');
+		$this->db->from(TABLE_PURCHASE_PRODUCT . ' as pp');
 		$this->db->join(TABLE_PRODUCT . 		' as p',	'p.id=pp.product',	'left');
 		$this->db->join(TABLE_UNIT . 			' as u',	'u.id=pp.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . 		' as tr',	'tr.id=pp.tax_id',	'left');
-		$this->db->where(array('pp.purchase' => $where['purchase']));
+		$this->db->where(array('pp.purchase' => $where['purchase'], 'pp.deleted_at' => NULL));
 		$query = $this->db->get();
 		//die($this->db->last_query());
 		return $query ? $query->result() : false;
@@ -412,7 +417,7 @@ class Purchase_model extends CI_Model
 		$this->db->join(TABLE_PRODUCT . ' as p',	'p.id=pp.product',	'left');
 		$this->db->join(TABLE_UNIT . ' as u',	'u.id=pp.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . ' as tr',	'tr.id=pp.tax_id',	'left');
-		$this->db->where(array('pp.purchase' => $where['purchase'], 'pu.deleted_at' => NULL));
+		$this->db->where(array('pp.purchase' => $where['purchase'], 'pp.deleted_at' => NULL, 'pu.deleted_at' => NULL));
 		$query = $this->db->get();
 		//die($this->db->last_query());
 		return $query ? $query->result() : false;
@@ -440,10 +445,11 @@ class Purchase_model extends CI_Model
 		$query = $this->db->insert(TABLE_PURCHASE_PRODUCT, $data);
 		return $query;
 	}
-	function delete_purchase_products($where)
+	function delete_purchase_products_SET_TIME($where)
 	{
 		$this->db->where($where);
-		$query = $this->db->delete(TABLE_PURCHASE_PRODUCT);
+		$this->db->set('deleted_at', 'NOW()', FALSE); // deleted rows have a timestamp
+		$query = $this->db->update(TABLE_PURCHASE_PRODUCT);
 		return $query;
 	}
 	function create_purchase_payment($data) // for add payment option
