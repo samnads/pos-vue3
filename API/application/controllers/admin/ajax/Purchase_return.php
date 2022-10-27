@@ -364,7 +364,7 @@ class Purchase_return extends CI_Controller
                 $query = $this->Purchase_return_model->set_deleted_at(array('id' => $id, 'deleted_at' => NULL));
                 $error = $this->db->error();
                 if ($this->db->affected_rows() == 1) {
-                    echo json_encode(array('success' => true, 'type' => 'success', 'id' => (int)$id, 'message' => 'Successfully deleted purchase return !'));
+                    echo json_encode(array('success' => true, 'type' => 'success', 'id' => (int)$id, 'message' => 'Successfully deleted return purchase !'));
                 } else {
                     echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
                 }

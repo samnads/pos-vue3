@@ -881,9 +881,9 @@ export default {
           // qty not available
           product.quantity = 0;
         }
-        product.discount = 0; // always 0 for new
         /******************************* */
-        product.db_cost = parseFloat(product.cost);
+        product.db_cost = parseFloat(product.unit_cost);
+        product.discount = parseFloat(product.unit_discount);
         product.db_unit = parseFloat(product.unit);
         product.unit = product.db_unit;
         /******************************* purchase unit cost calculation */
