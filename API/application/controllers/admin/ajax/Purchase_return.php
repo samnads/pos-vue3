@@ -408,14 +408,30 @@ class Purchase_return extends CI_Controller
             default:
         }
         switch ($search) { // dropdown jobs
-            case 'product':
+            case 'product_for_add':
                 $query["offset"] = 0;
                 $query["limit"] = 100;
                 $query["order_by"] = 'label';
                 $query["order"] = 'asc';
                 $query["query"] = $this->input->get('query');
                 $where = array('purchase' => $this->input->get('purchase'));
-                $query = $this->Purchase_return_model->suggestProdsForReturn($query["query"], $query["offset"], $query["limit"], $query["order_by"], $query["order"], $where);
+                $query = $this->Purchase_return_model->suggestProdsForReturnAdd($query["query"], $query["offset"], $query["limit"], $query["order_by"], $query["order"], $where);
+                $error = $this->db->error();
+                if ($error['code'] == 0) {
+                    echo json_encode(array('success' => true, 'type' => 'success', 'data' => $query->result()));
+                } else {
+                    echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
+                }
+                break;
+            case 'product_for_edit':
+                $query["offset"] = 0;
+                $query["limit"] = 100;
+                $query["order_by"] = 'label';
+                $query["order"] = 'asc';
+                $query["query"] = $this->input->get('query');
+                $data = $this->Purchase_return_model->get_purchase_return_row_by_id(array('return_purchase' => $this->input->get('purchase_return')));
+                $where = array('purchase' => $data['purchase'], 'return_purchase' => $data['id']);
+                $query = $this->Purchase_return_model->suggestProdsForReturnEdit($query["query"], $query["offset"], $query["limit"], $query["order_by"], $query["order"], $where);
                 $error = $this->db->error();
                 if ($error['code'] == 0) {
                     echo json_encode(array('success' => true, 'type' => 'success', 'data' => $query->result()));

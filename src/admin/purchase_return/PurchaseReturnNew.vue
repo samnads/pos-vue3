@@ -66,7 +66,10 @@
         </div>
         <div class="invalid-feedback">{{ errorReturnStatus }}</div>
       </div>
-      <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4" v-if="route.name == 'adminPurchaseReturnEdit'">
+      <div
+        class="col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4"
+        v-if="route.name == 'adminPurchaseReturnEdit'"
+      >
         <label class="form-label">Return Ref. No.</label>
         <div class="input-group is-invalid">
           <input
@@ -933,7 +936,7 @@ export default {
         // update
         let index = this.products.findIndex((item) => item.id === product.id);
         if (
-          product.to_be_return_quantity >=
+          this.products[index].to_be_return_quantity >=
           this.products[index].quantity + 1
         ) {
           // return qty available
@@ -1083,10 +1086,21 @@ export default {
           "get",
           "purchase_return",
           {
-            action: "create",
-            search: "product",
+            action:
+              self.route.name == "adminPurchaseReturnNew" ? "create" : "update",
+            search:
+              self.route.name == "adminPurchaseReturnNew"
+                ? "product_for_add"
+                : "product_for_edit",
             query: query,
-            purchase: DATA.value.id,
+            purchase:
+              self.route.name == "adminPurchaseReturnNew"
+                ? DATA.value.id
+                : undefined,
+            purchase_return:
+              self.route.name == "adminPurchaseReturnEdit"
+                ? DATA.value.id
+                : undefined,
           },
           self.controller,
           {
@@ -1292,7 +1306,8 @@ export default {
           };
           self.products.push(products[index]);
         });
-        if (self.route.name == "adminPurchaseReturnNew") { // for new create show current time
+        if (self.route.name == "adminPurchaseReturnNew") {
+          // for new create show current time
           var date_ = new Date(
             Date.now() + new Date().getTimezoneOffset() * -60 * 1000
           );
@@ -1300,7 +1315,8 @@ export default {
           self.setFieldValue("date", date_.toISOString().slice(0, 19));
           self.setFieldValue("return_status", 5);
           self.setFieldValue("tax_rate", data.purchase_tax);
-        } else { // for edit show db time
+        } else {
+          // for edit show db time
           self.setFieldValue("date", data.date + "T" + data.time);
           self.setFieldValue("return_status", data.status);
           self.setFieldValue("tax_rate", data.return_tax);
