@@ -677,10 +677,8 @@ CREATE TABLE `purchase` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `purchase` (`id`, `reference_id`, `warehouse`, `date`, `time`, `status`, `created_by`, `updated_by`, `supplier`, `discount`, `purchase_tax`, `shipping_charge`, `shipping_tax`, `packing_charge`, `packing_tax`, `round_off`, `payment_note`, `note`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(227,	'REF-PUR-00227',	20,	'2022-09-29',	'11:22:20',	22,	1,	1,	89,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.4728,	NULL,	'ssdfdfs',	'2022-10-27 05:52:34',	'2022-10-27 09:52:26',	NULL),
-(229,	'REF-PUR-00229',	20,	'2022-10-11',	'15:21:39',	22,	1,	1,	91,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.3978,	NULL,	'aas',	'2022-10-27 09:51:41',	'2022-10-27 09:51:48',	NULL),
-(230,	'REF-PUR-00230',	20,	'2022-10-01',	'15:47:17',	22,	1,	NULL,	108,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.1080,	NULL,	'fertt',	'2022-10-27 10:17:30',	NULL,	NULL),
-(231,	'REF-PUR-00231',	20,	'2022-10-06',	'20:28:47',	22,	1,	NULL,	89,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	-0.2343,	NULL,	'sffdfd',	'2022-10-27 14:59:03',	NULL,	NULL);
+(232,	'REF-PUR-00232',	27,	'2022-09-29',	'23:42:05',	22,	1,	1,	89,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	-0.4686,	NULL,	'adsadad',	'2022-10-27 18:12:12',	'2022-10-27 19:01:14',	NULL),
+(233,	'REF-PUR-00233',	20,	'2022-09-16',	'00:43:06',	22,	1,	NULL,	91,	1.0000,	1,	1.0000,	1,	1.0000,	1,	0.3563,	NULL,	'qwqwqw',	'2022-10-27 19:13:32',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `purchase_payment`;
 CREATE TABLE `purchase_payment` (
@@ -725,8 +723,9 @@ CREATE TABLE `purchase_product` (
   `tax_id` int(11) DEFAULT NULL,
   `net_unit_cost` decimal(12,4) GENERATED ALWAYS AS (`unit_cost` - `unit_discount`) VIRTUAL,
   `product_total_without_tax` decimal(12,4) GENERATED ALWAYS AS (`net_unit_cost` * `quantity`) VIRTUAL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `purchase_product` (`purchase`,`product`),
+  UNIQUE KEY `purchase_product_deleted_at` (`purchase`,`product`,`deleted_at`),
   KEY `product` (`product`),
   KEY `unit` (`unit`),
   KEY `tax_id` (`tax_id`),
@@ -737,15 +736,32 @@ CREATE TABLE `purchase_product` (
   CONSTRAINT `quantity_check` CHECK (`quantity` > 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `purchase_product` (`id`, `purchase`, `product`, `quantity`, `unit`, `unit_cost`, `unit_discount`, `tax_id`, `net_unit_cost`, `product_total_without_tax`) VALUES
-(101,	229,	5,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000),
-(102,	229,	10,	1.0000,	6,	12.0000,	0.0000,	2,	12.0000,	12.0000),
-(103,	229,	6,	1.0000,	1,	250.7500,	0.0000,	2,	250.7500,	250.7500),
-(107,	227,	5,	12.0000,	1,	12.0000,	0.0000,	2,	12.0000,	144.0000),
-(108,	227,	10,	5.0000,	6,	12.0000,	0.0000,	2,	12.0000,	60.0000),
-(109,	227,	6,	2.0000,	1,	250.7500,	0.0000,	2,	250.7500,	501.5000),
-(110,	230,	10,	70.0000,	6,	12.0000,	0.0000,	2,	12.0000,	840.0000),
-(111,	231,	5,	1.0000,	1,	12.0000,	1.0000,	2,	11.0000,	11.0000);
+INSERT INTO `purchase_product` (`id`, `purchase`, `product`, `quantity`, `unit`, `unit_cost`, `unit_discount`, `tax_id`, `net_unit_cost`, `product_total_without_tax`, `deleted_at`) VALUES
+(134,	232,	5,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000,	'2022-10-27 18:12:15'),
+(135,	232,	5,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000,	'2022-10-27 18:14:49'),
+(136,	232,	6,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000,	'2022-10-27 18:15:01'),
+(137,	232,	5,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000,	'2022-10-27 18:15:39'),
+(138,	232,	5,	2.0000,	1,	12.0000,	0.0000,	2,	12.0000,	24.0000,	'2022-10-27 18:16:15'),
+(139,	232,	5,	2.0000,	1,	12.0000,	0.0000,	2,	12.0000,	24.0000,	'2022-10-27 18:20:39'),
+(140,	232,	5,	50.0000,	1,	12.0000,	0.0000,	2,	12.0000,	600.0000,	'2022-10-27 18:28:30'),
+(141,	232,	5,	50.0000,	1,	12.0000,	0.0000,	2,	12.0000,	600.0000,	'2022-10-27 18:32:05'),
+(142,	232,	6,	1.0000,	1,	250.7500,	0.0000,	2,	250.7500,	250.7500,	'2022-10-27 18:32:05'),
+(143,	232,	5,	50.0000,	1,	12.0000,	0.0000,	2,	12.0000,	600.0000,	'2022-10-27 18:32:17'),
+(144,	232,	6,	1.0000,	1,	250.7500,	0.0000,	2,	250.7500,	250.7500,	'2022-10-27 18:32:17'),
+(145,	232,	5,	50.0000,	1,	12.0000,	0.0000,	2,	12.0000,	600.0000,	'2022-10-27 18:39:07'),
+(146,	232,	5,	50.0000,	1,	12.0000,	0.0000,	2,	12.0000,	600.0000,	'2022-10-27 18:40:17'),
+(147,	232,	5,	50.0000,	1,	12.0000,	0.0000,	2,	12.0000,	600.0000,	'2022-10-27 18:40:42'),
+(148,	232,	6,	5.0000,	1,	250.7500,	0.0000,	2,	250.7500,	1253.7500,	'2022-10-27 18:41:08'),
+(149,	232,	6,	5.0000,	1,	250.7500,	0.0000,	2,	250.7500,	1253.7500,	'2022-10-27 18:42:22'),
+(150,	232,	5,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000,	'2022-10-27 18:43:01'),
+(151,	232,	5,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000,	'2022-10-27 18:43:12'),
+(152,	232,	5,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000,	'2022-10-27 19:01:02'),
+(153,	232,	5,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000,	'2022-10-27 19:01:06'),
+(154,	232,	5,	2.0000,	1,	12.0000,	0.0000,	2,	12.0000,	24.0000,	'2022-10-27 19:01:14'),
+(155,	232,	5,	2.0000,	1,	12.0000,	1.0000,	2,	11.0000,	22.0000,	NULL),
+(156,	233,	5,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000,	NULL),
+(157,	233,	10,	2.0000,	6,	12.0000,	0.0000,	2,	12.0000,	24.0000,	NULL),
+(158,	233,	6,	3.0000,	1,	250.7500,	0.0000,	2,	250.7500,	752.2500,	NULL);
 
 DROP TABLE IF EXISTS `rack`;
 CREATE TABLE `rack` (
@@ -803,8 +819,10 @@ CREATE TABLE `return_purchase` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `return_purchase` (`id`, `reference_id`, `purchase`, `date`, `time`, `status`, `discount`, `return_tax`, `shipping_charge`, `shipping_tax`, `packing_charge`, `packing_tax`, `round_off`, `payment_note`, `note`, `created_by`, `created_at`, `updated_by`, `updated_at`, `deleted_by`, `deleted_at`) VALUES
-(340,	'REF-RET-PUR-00340',	231,	'2022-10-27',	'20:44:59',	5,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.2343,	NULL,	NULL,	1,	'2022-10-27 15:15:07',	NULL,	'2022-10-27 15:18:19',	1,	'2022-10-27 15:18:19'),
-(341,	'REF-RET-PUR-00341',	231,	'2022-10-27',	'20:49:02',	5,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.2343,	NULL,	NULL,	1,	'2022-10-27 15:19:05',	NULL,	'2022-10-27 15:19:56',	1,	'2022-10-27 15:19:56');
+(347,	'REF-RET-PUR-00347',	233,	'2022-10-28',	'00:55:31',	5,	1.0000,	1,	1.0000,	1,	1.0000,	1,	-0.0564,	NULL,	NULL,	1,	'2022-10-27 19:25:33',	1,	'2022-10-27 19:46:35',	NULL,	NULL),
+(348,	'REF-RET-PUR-00348',	233,	'2022-10-28',	'01:16:39',	5,	1.0000,	1,	1.0000,	1,	1.0000,	1,	-0.1999,	NULL,	NULL,	1,	'2022-10-27 19:46:46',	NULL,	NULL,	NULL,	NULL),
+(349,	'REF-RET-PUR-00349',	232,	'2022-10-28',	'01:17:19',	5,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.2343,	NULL,	NULL,	1,	'2022-10-27 19:47:21',	1,	'2022-10-27 19:47:58',	NULL,	NULL),
+(350,	'REF-RET-PUR-00350',	232,	'2022-10-28',	'01:18:03',	5,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.2343,	NULL,	NULL,	1,	'2022-10-27 19:48:07',	NULL,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `return_purchase_payment`;
 CREATE TABLE `return_purchase_payment` (
@@ -841,17 +859,39 @@ CREATE TABLE `return_purchase_product` (
   `return_purchase` int(11) NOT NULL,
   `purchase_product` int(11) NOT NULL,
   `quantity` decimal(12,4) NOT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `purchase_product` (`return_purchase`,`purchase_product`),
+  UNIQUE KEY `return_purchase_purchase_product_deleted_at` (`return_purchase`,`purchase_product`,`deleted_at`),
   KEY `product` (`purchase_product`),
   CONSTRAINT `return_purchase_product_ibfk_1` FOREIGN KEY (`return_purchase`) REFERENCES `return_purchase` (`id`),
   CONSTRAINT `return_purchase_product_ibfk_5` FOREIGN KEY (`purchase_product`) REFERENCES `purchase_product` (`id`),
   CONSTRAINT `return_quantity_check` CHECK (`quantity` > 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `return_purchase_product` (`id`, `return_purchase`, `purchase_product`, `quantity`) VALUES
-(247,	340,	111,	1.0000),
-(248,	341,	111,	1.0000);
+INSERT INTO `return_purchase_product` (`id`, `return_purchase`, `purchase_product`, `quantity`, `deleted_at`) VALUES
+(273,	347,	156,	1.0000,	'2022-10-27 19:25:42'),
+(274,	347,	157,	1.0000,	'2022-10-27 19:25:42'),
+(275,	347,	158,	1.0000,	'2022-10-27 19:25:42'),
+(276,	347,	156,	1.0000,	'2022-10-27 19:26:26'),
+(277,	347,	157,	1.0000,	'2022-10-27 19:26:26'),
+(278,	347,	158,	1.0000,	'2022-10-27 19:26:26'),
+(279,	347,	156,	1.0000,	'2022-10-27 19:32:32'),
+(280,	347,	157,	1.0000,	'2022-10-27 19:32:32'),
+(281,	347,	158,	1.0000,	'2022-10-27 19:32:32'),
+(282,	347,	156,	1.0000,	'2022-10-27 19:32:46'),
+(283,	347,	157,	1.0000,	'2022-10-27 19:32:46'),
+(284,	347,	158,	1.0000,	'2022-10-27 19:32:46'),
+(285,	347,	156,	1.0000,	'2022-10-27 19:46:35'),
+(286,	347,	157,	2.0000,	'2022-10-27 19:46:35'),
+(287,	347,	158,	3.0000,	'2022-10-27 19:46:35'),
+(288,	347,	156,	1.0000,	NULL),
+(289,	347,	157,	2.0000,	NULL),
+(290,	347,	158,	2.0000,	NULL),
+(291,	348,	158,	1.0000,	NULL),
+(292,	349,	155,	2.0000,	'2022-10-27 19:47:45'),
+(293,	349,	155,	2.0000,	'2022-10-27 19:47:58'),
+(294,	349,	155,	1.0000,	NULL),
+(295,	350,	155,	1.0000,	NULL);
 
 DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role` (
@@ -1227,7 +1267,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-10-27 13:28:59',	'2022-10-07 12:31:48',	'2021-04-20 19:22:52',	'2022-10-27 13:28:59',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-10-27 17:42:43',	'2022-10-27 17:42:33',	'2021-04-20 19:22:52',	'2022-10-27 17:42:43',	NULL),
 (30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
 (31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
@@ -1292,4 +1332,4 @@ INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country
 (27,	'WARE0027',	'Ware House BBB',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	16,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-09-12 06:08:24',	NULL),
 (33,	'WARE0033',	' bvbv',	'nbnvbnvbn',	'2022-09-08',	NULL,	NULL,	NULL,	'45454545',	'bnvbn@qqwqw.ghg',	NULL,	NULL,	NULL,	NULL,	16,	NULL,	NULL,	NULL,	'2022-09-11 07:52:55',	NULL,	NULL);
 
--- 2022-10-27 15:45:50
+-- 2022-10-27 19:50:37
