@@ -59,7 +59,7 @@ class Purchase_return extends CI_Controller
                 switch ($action) {
                     case 'create':
                         /************************************************** */
-                        $data = $this->Purchase_return_model->get_purchase_row_by_id(array('p.id' => $this->input->post('purchase'), 'deleted_at' => NULL));
+                        $data = $this->Purchase_return_model->get_purchase_row_by_id(array('purchase' => $this->input->post('purchase')));
                         if ($data['id'] && $data['status'] == 22) {
                         } else if ($data['id'] && $data['status'] != 22) {
                             die(json_encode(array('success' => false, 'type' => 'danger', 'message' => 'Purchase not received for return !')));
@@ -116,7 +116,7 @@ class Purchase_return extends CI_Controller
                                 }
                             }
                             $this->db->trans_commit();
-                            echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully added new return purchase !', 'location' => "admin/purchase_return/list"));
+                            echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully added new return purchase !', 'location' => "admin/purchase/list"));
                         } else {
                             $error = $this->db->error();
                             $this->db->trans_rollback();
@@ -290,19 +290,15 @@ class Purchase_return extends CI_Controller
                             echo json_encode(array('success' => true, 'type' => 'notice', 'timeout' => '5000', 'message' => $this->lang->line('no_data_changed_after_query')));
                         }
                         break;
-                    case 'update':
-                        break;
                     default: // update purchase return
                         $_POST = $this->input->post('data');
                         $data = array(
-                            'warehouse'         => $this->input->post('warehouse'),
                             'date'              => $this->input->post('date'),
                             'time'              => $this->input->post('date'),
-                            'status'            => $this->input->post('purchase_status'),
+                            'status'            => $this->input->post('return_status'),
                             'updated_by'        => $this->session->id,
-                            'supplier'          => $this->input->post('supplier'),
                             'discount'          => $this->input->post('discount'),
-                            'purchase_tax'      => $this->input->post('tax_rate') ?: NULL,
+                            'return_tax'      => $this->input->post('tax_rate') ?: NULL,
                             'shipping_charge'   => $this->input->post('shipping'),
                             'shipping_tax'      => $this->input->post('shipping_tax') ?: NULL,
                             'packing_charge'    => $this->input->post('packing'),
@@ -314,8 +310,8 @@ class Purchase_return extends CI_Controller
                         $this->form_validation->set_data($data);
                         $config = array(
                             array(
-                                'field' => 'warehouse',
-                                'label' => 'Warehouse',
+                                'field' => 'status',
+                                'label' => 'Status',
                                 'rules' => 'required|trim|numeric|xss_clean',
                             )
                         );
@@ -327,8 +323,8 @@ class Purchase_return extends CI_Controller
                         $changed_db2 = false;
                         /************************************************************ */
                         $this->db->trans_begin();
-                        $purchase_id = $this->input->post('id');
-                        $this->Purchase_return_model->update_purchase($data, $purchase_id);
+                        $return_purchase_id = $this->input->post('id');
+                        $this->Purchase_return_model->update_return_purchase($data, $return_purchase_id);
                         $error = $this->db->error();
                         if ($this->db->affected_rows() == 1 || $error['code'] == 0) { // // success or no change - update purchase
                             if ($this->db->affected_rows() == 1) { // data changed
@@ -337,19 +333,15 @@ class Purchase_return extends CI_Controller
                             $products = $this->input->post('products'); // list of purchased products for updating (may contain new and edited or old deleted)
                             // its best to delete previous all from db then insert new data from request
                             /***************************************** */
-                            $this->Purchase_return_model->delete_purchase_products(array('purchase' => $purchase_id));
+                            $this->Purchase_return_model->delete_return_purchase_products(array('return_purchase' => $return_purchase_id));
                             /***************************************** */
                             foreach ($products as $product) { // add products
                                 $data = array(
-                                    'purchase' => $purchase_id,
-                                    'product' => $product['id'],
+                                    'return_purchase' => $return_purchase_id,
+                                    'purchase_product' => $product['id'],
                                     'quantity' =>  $product['quantity'],
-                                    'unit' =>  $product['p_unit'],
-                                    'unit_cost' => $product['cost'],
-                                    'unit_discount' => $product['discount'],
-                                    'tax_id' => $product['tax_id'] ?: null,
                                 );
-                                $this->Purchase_return_model->insert_purchase_product($data);
+                                $this->Purchase_return_model->insert_purchase_return_product($data);
                                 if ($this->db->affected_rows() != 1) {
                                     $error = $this->db->error();
                                     $this->db->trans_rollback();
@@ -357,7 +349,7 @@ class Purchase_return extends CI_Controller
                                 }
                             }
                             $this->db->trans_commit();
-                            echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully updated purchase !', 'location' => "admin/purchase/list"));
+                            echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully updated return purchase !', 'location' => "admin/purchase_return/list"));
                         } else {
                             $this->db->trans_rollback();
                             echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
@@ -414,7 +406,8 @@ class Purchase_return extends CI_Controller
                 $query["order_by"] = 'label';
                 $query["order"] = 'asc';
                 $query["query"] = $this->input->get('query');
-                $where = array('purchase' => $this->input->get('purchase'));
+                $data = $this->Purchase_return_model->get_purchase_row_by_id(array('purchase' => $this->input->get('purchase')));
+                $where = array('purchase' => $data['id']);
                 $query = $this->Purchase_return_model->suggestProdsForReturnAdd($query["query"], $query["offset"], $query["limit"], $query["order_by"], $query["order"], $where);
                 $error = $this->db->error();
                 if ($error['code'] == 0) {
@@ -443,9 +436,9 @@ class Purchase_return extends CI_Controller
         }
         switch ($job) { // jobs
             case 'purchase_with_return_data_for_add':
-                $data = $this->Purchase_return_model->get_purchase_row_by_id(array('p.id' => $this->input->get('id'), 'deleted_at' => NULL));
+                $data = $this->Purchase_return_model->get_purchase_row_by_id(array('purchase' => $this->input->get('id')));
                 if ($data['id'] && $data['status'] == 22) {
-                    $data['products'] = $this->Purchase_return_model->get_return_purchase_products(array('purchase' => (int)$this->input->get('id')));
+                    $data['products'] = $this->Purchase_return_model->get_return_purchase_products_for_add(array('purchase' => (int)$this->input->get('id')));
                     $data['units'] = $this->Unit_model->getall_active_4_frontend();
                     $data['tax_rates'] = $this->Tax_model->dropdown_active();
                     echo json_encode(array('success' => true, 'type' => 'success', 'data' => $data));
