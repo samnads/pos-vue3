@@ -105,7 +105,7 @@ class Purchase_return extends CI_Controller
                             foreach ($products as $product) { // add products
                                 $data = array(
                                     'return_purchase' => $purchase_id,
-                                    'purchase_product' => $product['purchase_product'],
+                                    'purchase_product' => $product['id'],
                                     'quantity' =>  $product['quantity']
                                 );
                                 $this->Purchase_return_model->insert_purchase_return_product($data);

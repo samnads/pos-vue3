@@ -935,6 +935,7 @@ export default {
       } else {
         // update
         let index = this.products.findIndex((item) => item.id === product.id);
+        this.products[index].to_be_return_quantity = Number(product.to_be_return_quantity); // if sometimes changed on db
         if (
           this.products[index].to_be_return_quantity >=
           this.products[index].quantity + 1

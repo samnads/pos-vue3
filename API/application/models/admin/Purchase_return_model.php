@@ -39,18 +39,16 @@ class Purchase_return_model extends CI_Model
 		$total_payable_decimal = "(" . $product_total_with_tax_after_discount . "+" . $order_tax . "+" . $shipping_total . "+" . $packing_total . ")";
 		$total_payable = "(ROUND(" . $product_total_with_tax_after_discount . "+" . $order_tax . "+" . $shipping_total . "+" . $packing_total . ",0))";
 		$rounf_off = "(" . $total_payable_decimal . "-" . $total_payable . ")";
-		$balance_return = "(SUM(rppy.amount)-" . $total_payable . ")";
-		$due = "(" . $total_payable . "-SUM(rppy.amount))";
+		$balance_return = "(IFNULL((SUM(rppy.amount)-" . $total_payable . "),0))";
+		$due = "(IFNULL(" . $total_payable . "-SUM(rppy.amount),0))";
 		$this->db->select('rp.id as id,
 		rp.reference_id as reference_id,
 		rp.purchase as purchase,
 		rp.date as date,
 		pc.reference_id as purchase_reference_id,
-		SUM(rpp.quantity) as total_return_quantity,
 		COUNT(DISTINCT(pp.product)) as product_count,
 		st.name as status_name,
 		st.css_class as css_class,
-		SUM(pp.quantity) as total_purchase_quantity,
 		' . $product_total_without_tax . ' as product_total_without_tax,
 		' . $product_total_tax . ' as product_total_tax,
 		' . $product_total_with_tax . ' as product_total_with_tax,
@@ -70,8 +68,7 @@ class Purchase_return_model extends CI_Model
 		rp.created_at as created_at,
 		' . $total_payable . ' as total_payable,
 		' . $rounf_off . ' as rounf_off,
-		SUM(rppy.amount) as total_paid,
-		SUM(rppy.amount),
+		IFNULL(SUM(rppy.amount),0) as total_paid,
 		' . $balance_return . ' as balance_return,
 		' . $due . ' as due	
 		');
@@ -118,6 +115,7 @@ class Purchase_return_model extends CI_Model
 		/******************************************** */ // get purchase product count
 		$this->db->select("
 		pp.id as 																id,
+		pp.product as 															product,
 		1 as 																	quantity,
 		0 as 																	returned_quantity,
 		pp.quantity	as									 						to_be_return_quantity,
