@@ -41,9 +41,13 @@ class Purchase_return extends CI_Controller
                         break;
                     case 'details':
                         $data = array();
-                        $data['products'] = $this->Purchase_return_model->getPurchaseProductsDetails(array('pp.purchase' => (int)$this->input->get('id')));
-                        $data['purchase'] = $this->Purchase_return_model->getPurchaseDetails(array('p.id' => (int)$this->input->get('id')));
-                        echo json_encode(array('success' => true, 'type' => 'success', 'data' => $data));
+                        $data['products'] = $this->Purchase_return_model->getPurchaseReturnProductsDetails(array('return_purchase' => (int)$this->input->get('id')));
+                        $data['purchase'] = $this->Purchase_return_model->getPurchaseReturnDetails(array('return_purchase' => (int)$this->input->get('id')));
+                        if ($data['purchase']) {
+                            echo json_encode(array('success' => true, 'type' => 'success', 'data' => $data));
+                        } else {
+                            echo json_encode(array('success' => false, 'type' => 'danger', 'message' => 'Purchase return not found !', 'location' => "admin/purchase_return/list"));
+                        }
                         break;
                     case 'payment_details':
                         $data = array();

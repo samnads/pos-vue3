@@ -17,7 +17,46 @@
             <div class="row row-cols-1 row-cols-md-2 g-3">
               <div class="col">
                 <div class="card border-dark border-opacity-25 h-100">
-                  <div class="card-header">Supplier</div>
+                  <div class="card-header"><i class="fa-solid fa-reply text-danger"></i>&nbsp;&nbsp;Purchase Return</div>
+                  <div class="card-body text-dark">
+                    <h5 class="card-title text-primary">
+                      {{ details.purchase.warehouse_name }}
+                      <span class="fs-6 text-secondary">(Warehouse)</span>
+                    </h5>
+                    <p class="m-0">
+                      Ref. No. : <b>{{ details.purchase.reference_id }}</b>
+                    </p>
+                    <p class="m-0">
+                      Purchase Ref. No. : <b>{{ details.purchase.purchase_reference_id }}</b>
+                    </p>
+                    <p class="m-0">
+                      Date : {{ details.purchase.date }} <i class="fa-regular fa-clock"></i>
+                      {{ details.purchase.time }}
+                    </p>
+                    <p class="m-0" v-if="details.purchase.return_id">
+                      Return ID : {{ details.purchase.return_id }}
+                    </p>
+                    <p class="m-0">
+                      Return Status :
+                      <span
+                        class="
+                          badge
+                          rounded-pill
+                          text-bg-success text-capitalize
+                        "
+                        v-bind:class="[details.purchase.status_css_class]"
+                        >{{ details.purchase.status_name }}</span
+                      >
+                    </p>
+                    <p class="m-0">
+                      Created By : {{ details.purchase.created_by_name }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="card border-dark border-opacity-25 h-100">
+                  <div class="card-header"><i class="fa-solid fa-reply text-danger"></i>&nbsp;&nbsp;Return to </div>
                   <div class="card-body text-dark">
                     <h5 class="card-title text-primary">
                       {{ details.purchase.supplier_name }}
@@ -37,45 +76,9 @@
                   </div>
                 </div>
               </div>
-              <div class="col">
-                <div class="card border-dark border-opacity-25 h-100">
-                  <div class="card-header">Purchase</div>
-                  <div class="card-body text-dark">
-                    <h5 class="card-title text-primary">
-                      {{ details.purchase.warehouse_name }}
-                      <span class="fs-6 text-secondary">(Warehouse)</span>
-                    </h5>
-                    <p class="m-0">
-                      Ref. No. : <b>{{ details.purchase.reference_id }}</b>
-                    </p>
-                    <p class="m-0">
-                      Date : {{ details.purchase.date }} <i class="fa-regular fa-clock"></i>
-                      {{ details.purchase.time }}
-                    </p>
-                    <p class="m-0" v-if="details.purchase.return_id">
-                      Return ID : {{ details.purchase.return_id }}
-                    </p>
-                    <p class="m-0">
-                      Order Status :
-                      <span
-                        class="
-                          badge
-                          rounded-pill
-                          text-bg-success text-capitalize
-                        "
-                        v-bind:class="[details.purchase.status_css_class]"
-                        >{{ details.purchase.status_name }}</span
-                      >
-                    </p>
-                    <p class="m-0">
-                      Created By : {{ details.purchase.created_by_name }}
-                    </p>
-                  </div>
-                </div>
-              </div>
             </div>
             <div class="col">
-              <p class="h5 mt-2">Products</p>
+              <p class="h5 mt-2">Returned Products</p>
               <hr class="border border-dark border-1 mt-0" />
               <table
                 class="
@@ -87,7 +90,7 @@
                   <tr>
                     <th scope="col">#</th>
                     <th scope="col">Code | Name</th>
-                    <th scope="col">Quantity</th>
+                    <th scope="col">Returned</th>
                     <th scope="col">Unit</th>
                   </tr>
                 </thead>
@@ -95,7 +98,7 @@
                   <tr v-for="(item, index) in details.products" :key="index">
                     <td>{{ index + 1 }}</td>
                     <td>{{ item.code }} | {{ item.name }}</td>
-                    <td>{{ item.quantity }}</td>
+                    <td>{{ parseFloat(item.quantity).toFixed(2) }}</td>
                     <td>{{ item.unit_name }}</td>
                   </tr>
                 </tbody>
@@ -201,7 +204,7 @@ export default {
       emitter.emit("deleteConfirmModal", {
         title: null,
         body:
-          "Delete purchase with Ref. No. <b>" + data.reference_id + "</b> ?",
+          "Delete return purchase with Ref. No. <b>" + data.reference_id + "</b> ?",
         data: data,
         emit: "confirmDeletePurchase",
         hide: true,
@@ -224,7 +227,7 @@ export default {
       window.PURCHASE_RETURN_INFO_MODAL.hide();
       self.$router
         .push({
-          name: "adminPurchaseEdit",
+          name: "adminPurchaseReturnEdit",
           params: { id: data.id, data: JSON.stringify(data) },
         })
         .catch(() => {});
