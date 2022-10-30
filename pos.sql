@@ -347,7 +347,9 @@ INSERT INTO `module_permission` (`module`, `permission`, `checked`, `read_only`,
 (19,	3,	NULL,	NULL,	'PURCHASE RETURN'),
 (19,	4,	NULL,	NULL,	'PURCHASE RETURN'),
 (19,	6,	NULL,	NULL,	'PURCHASE RETURN'),
-(19,	7,	NULL,	NULL,	'PURCHASE RETURN');
+(19,	7,	NULL,	NULL,	'PURCHASE RETURN'),
+(19,	9,	NULL,	NULL,	'PURCHASE RETURN'),
+(19,	10,	NULL,	NULL,	'PURCHASE RETURN');
 
 DROP TABLE IF EXISTS `payment_mode`;
 CREATE TABLE `payment_mode` (
@@ -799,8 +801,8 @@ CREATE TABLE `return_purchase` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `return_purchase` (`id`, `reference_id`, `purchase`, `date`, `time`, `status`, `discount`, `return_tax`, `shipping_charge`, `shipping_tax`, `packing_charge`, `packing_tax`, `round_off`, `payment_note`, `note`, `created_by`, `created_at`, `updated_by`, `updated_at`, `deleted_by`, `deleted_at`) VALUES
-(363,	'REF-RET-PUR-00363',	236,	'2022-10-28',	'23:57:18',	5,	1.0000,	1,	1.0000,	1,	1.0000,	1,	0.3921,	NULL,	NULL,	1,	'2022-10-28 18:27:23',	1,	'2022-10-28 19:41:14',	NULL,	NULL),
-(364,	'REF-RET-PUR-00364',	236,	'2022-10-28',	'23:57:35',	5,	1.0000,	1,	1.0000,	1,	1.0000,	1,	0.3921,	NULL,	NULL,	1,	'2022-10-28 18:27:40',	1,	'2022-10-28 19:41:34',	NULL,	NULL);
+(372,	'REF-RET-PUR-00372',	236,	'2022-10-31',	'01:24:35',	5,	1.0000,	1,	1.0000,	1,	1.0000,	1,	0.4577,	NULL,	NULL,	1,	'2022-10-30 19:54:39',	1,	'2022-10-30 19:59:12',	NULL,	NULL),
+(373,	'REF-RET-PUR-00373',	236,	'2022-10-31',	'01:24:46',	5,	1.0000,	1,	1.0000,	1,	1.0000,	1,	0.3921,	NULL,	NULL,	1,	'2022-10-30 19:54:49',	NULL,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `return_purchase_payment`;
 CREATE TABLE `return_purchase_payment` (
@@ -847,46 +849,15 @@ CREATE TABLE `return_purchase_product` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `return_purchase_product` (`id`, `return_purchase`, `purchase_product`, `quantity`, `deleted_at`) VALUES
-(320,	363,	169,	1.0000,	'2022-10-28 18:28:05'),
-(321,	363,	170,	1.0000,	'2022-10-28 18:28:05'),
-(322,	364,	169,	1.0000,	'2022-10-28 18:27:49'),
-(323,	364,	170,	1.0000,	'2022-10-28 18:27:49'),
-(324,	364,	171,	1.0000,	'2022-10-28 18:27:49'),
-(325,	364,	169,	1.0000,	'2022-10-28 18:27:57'),
-(326,	364,	170,	1.0000,	'2022-10-28 18:27:57'),
-(327,	364,	171,	1.0000,	'2022-10-28 18:27:57'),
-(328,	364,	169,	1.0000,	'2022-10-28 18:28:33'),
-(329,	364,	170,	1.0000,	'2022-10-28 18:28:33'),
-(330,	364,	171,	1.0000,	'2022-10-28 18:28:33'),
-(331,	363,	169,	1.0000,	'2022-10-28 18:29:00'),
-(332,	363,	170,	1.0000,	'2022-10-28 18:29:00'),
-(333,	364,	169,	1.0000,	'2022-10-28 19:04:06'),
-(334,	364,	170,	1.0000,	'2022-10-28 19:04:06'),
-(335,	363,	169,	1.0000,	'2022-10-28 19:01:47'),
-(336,	363,	170,	1.0000,	'2022-10-28 19:01:47'),
-(337,	363,	171,	2.0000,	'2022-10-28 19:01:47'),
-(338,	363,	169,	1.0000,	'2022-10-28 19:02:33'),
-(339,	363,	170,	1.0000,	'2022-10-28 19:02:33'),
-(340,	363,	171,	1.0000,	'2022-10-28 19:02:33'),
-(341,	363,	169,	1.0000,	'2022-10-28 19:03:20'),
-(342,	363,	170,	1.0000,	'2022-10-28 19:03:20'),
-(343,	363,	171,	2.0000,	'2022-10-28 19:03:20'),
-(344,	363,	169,	1.0000,	'2022-10-28 19:03:38'),
-(345,	363,	170,	1.0000,	'2022-10-28 19:03:38'),
-(346,	363,	169,	1.0000,	'2022-10-28 19:41:14'),
-(347,	363,	170,	1.0000,	'2022-10-28 19:41:14'),
-(348,	363,	171,	2.0000,	'2022-10-28 19:41:14'),
-(349,	364,	169,	1.0000,	'2022-10-28 19:05:03'),
-(350,	364,	170,	1.0000,	'2022-10-28 19:05:03'),
-(351,	364,	171,	2.0000,	'2022-10-28 19:05:03'),
-(352,	364,	169,	1.0000,	'2022-10-28 19:41:34'),
-(353,	364,	170,	1.0000,	'2022-10-28 19:41:34'),
-(354,	363,	169,	1.0000,	NULL),
-(355,	363,	170,	1.0000,	NULL),
-(356,	363,	171,	1.0000,	NULL),
-(357,	364,	169,	1.0000,	NULL),
-(358,	364,	170,	1.0000,	NULL),
-(359,	364,	171,	1.0000,	NULL);
+(401,	372,	169,	1.0000,	'2022-10-30 19:58:54'),
+(402,	372,	170,	1.0000,	'2022-10-30 19:58:54'),
+(403,	372,	171,	1.0000,	'2022-10-30 19:58:54'),
+(404,	373,	169,	1.0000,	NULL),
+(405,	373,	170,	1.0000,	NULL),
+(406,	373,	171,	1.0000,	NULL),
+(407,	372,	169,	1.0000,	'2022-10-30 19:59:12'),
+(408,	372,	170,	1.0000,	'2022-10-30 19:59:12'),
+(409,	372,	169,	1.0000,	NULL);
 
 DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role` (
@@ -996,7 +967,9 @@ INSERT INTO `role_permission` (`role_id`, `module_id`, `permission_id`, `readonl
 (1,	19,	3,	1,	'PURCHASE RETURN - update',	1,	NULL),
 (1,	19,	4,	1,	'PURCHASE RETURN - delete',	1,	NULL),
 (1,	19,	6,	1,	'PURCHASE RETURN - datatable',	1,	NULL),
-(1,	19,	7,	1,	'PURCHASE RETURN - details',	1,	NULL);
+(1,	19,	7,	1,	'PURCHASE RETURN - details',	1,	NULL),
+(1,	19,	9,	1,	'PURCHASE RETURN - payment add',	1,	NULL),
+(1,	19,	10,	1,	'PURCHASE RETURN - payment details',	1,	NULL);
 
 DROP TABLE IF EXISTS `status`;
 CREATE TABLE `status` (
@@ -1262,7 +1235,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-10-28 18:12:50',	'2022-10-27 17:42:33',	'2021-04-20 19:22:52',	'2022-10-28 18:12:50',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-10-30 17:41:30',	'2022-10-27 17:42:33',	'2021-04-20 19:22:52',	'2022-10-30 17:41:30',	NULL),
 (30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
 (31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
@@ -1327,4 +1300,4 @@ INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country
 (27,	'WARE0027',	'Ware House BBB',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	16,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-09-12 06:08:24',	NULL),
 (33,	'WARE0033',	' bvbv',	'nbnvbnvbn',	'2022-09-08',	NULL,	NULL,	NULL,	'45454545',	'bnvbn@qqwqw.ghg',	NULL,	NULL,	NULL,	NULL,	16,	NULL,	NULL,	NULL,	'2022-09-11 07:52:55',	NULL,	NULL);
 
--- 2022-10-28 20:20:07
+-- 2022-10-30 20:00:03
