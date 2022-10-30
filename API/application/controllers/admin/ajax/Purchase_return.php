@@ -51,7 +51,7 @@ class Purchase_return extends CI_Controller
                         break;
                     case 'payment_details':
                         $data = array();
-                        $data['payments'] = $this->Purchase_return_model->getPurchasePayments(array('pp.purchase' => (int)$this->input->get('id')));
+                        $data['payments'] = $this->Purchase_return_model->getPurchaseReturnPayments(array('purchase_return' => (int)$this->input->get('id')));
                         echo json_encode(array('success' => true, 'type' => 'success', 'data' => $data));
                         break;
                     default:

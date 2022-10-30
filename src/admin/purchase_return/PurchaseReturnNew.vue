@@ -1321,6 +1321,7 @@ export default {
           self.setFieldValue("date", data.date + "T" + data.time);
           self.setFieldValue("return_status", data.status);
           self.setFieldValue("tax_rate", data.return_tax);
+          self.setFieldValue("note", data.note);
         }
         self.setFieldValue("discount", data.discount);
         self.setFieldValue("shipping", Number(data.shipping_charge));

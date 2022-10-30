@@ -146,7 +146,7 @@ export default {
         } else {
           if (data.success == false) {
             // not ok
-            window.PURCHASE_INFO_MODAL.hide();
+            window.PURCHASE_PAY_INFO_MODAL.hide();
           } else {
             // other error
             if (data.message != "canceled") {

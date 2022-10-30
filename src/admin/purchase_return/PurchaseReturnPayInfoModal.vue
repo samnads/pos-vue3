@@ -1,5 +1,5 @@
 <template>
-  <div class="modal" id="purchasePayInfoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal" id="purchaseReturnPayInfoModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header bg-primary">
@@ -117,7 +117,7 @@ export default {
     const purchaseData = ref({}); // purchase data
     const detailsPurchase = ref({}); // payment details
     const controller = ref(undefined);
-    emitter.on("showPurchasePayDetails", (row) => {
+    emitter.on("showPurchaseReturnPayDetails", (row) => {
       //console.log(row)
       purchaseData.value = row;
       detailsPurchase.value = {}; // rest details for purchase
@@ -125,10 +125,10 @@ export default {
         controller.value.abort();
       }
       controller.value = new AbortController();
-      window.PURCHASE_PAY_INFO_MODAL.show();
+      window.PURCHASE_RETURN_PAY_INFO_MODAL.show();
       axiosAsyncCallReturnData(
         "get",
-        "purchase",
+        "purchase_return",
         {
           action: "payment_details",
           id: purchaseData.value.id,
@@ -146,11 +146,11 @@ export default {
         } else {
           if (data.success == false) {
             // not ok
-            window.PURCHASE_INFO_MODAL.hide();
+            window.PURCHASE_RETURN_PAY_INFO_MODAL.hide();
           } else {
             // other error
             if (data.message != "canceled") {
-              window.PURCHASE_PAY_INFO_MODAL.hide();
+              window.PURCHASE_RETURN_PAY_INFO_MODAL.hide();
               notifyCatchResponse({ title: data.message });
             }
           }
@@ -158,7 +158,7 @@ export default {
       });
     });
     function deleteConfirm(data) {
-      window.PURCHASE_PAY_INFO_MODAL.hide();
+      window.PURCHASE_RETURN_PAY_INFO_MODAL.hide();
       emitter.emit("deleteConfirmModal", {
         title: null,
         body:
@@ -171,12 +171,12 @@ export default {
     }
     function editPay(data) {
       data.payments = detailsPurchase.value.payments; // add payment data
-      window.PURCHASE_PAY_INFO_MODAL.hide();
-      emitter.emit("purchasePayModal", JSON.parse(JSON.stringify(data)));
+      window.PURCHASE_RETURN_PAY_INFO_MODAL.hide();
+      emitter.emit("purchaseReturnPayModal", JSON.parse(JSON.stringify(data)));
     }
     function addPay() {
-      window.PURCHASE_PAY_INFO_MODAL.hide();
-      emitter.emit("purchasePayModal", purchaseData.value);
+      window.PURCHASE_RETURN_PAY_INFO_MODAL.hide();
+      emitter.emit("purchaseReturnPayModal", purchaseData.value);
     }
     return {
       purchaseData,
@@ -192,14 +192,14 @@ export default {
   },
   methods: {},
   mounted() {
-    window.PURCHASE_PAY_INFO_MODAL = new Modal($("#purchasePayInfoModal"), {
+    window.PURCHASE_RETURN_PAY_INFO_MODAL = new Modal($("#purchaseReturnPayInfoModal"), {
       backdrop: true,
       show: true,
     });
   },
   beforeUnmount() {
     var self = this;
-    self.emitter.off("showPurchasePayDetails");
+    self.emitter.off("showPurchaseReturnPayDetails");
     // turn off for duplicate calling
     // because its called multiple times when page loaded multiple times
   },

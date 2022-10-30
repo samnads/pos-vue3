@@ -1,5 +1,10 @@
 <template>
-  <div class="modal" id="purchaseReturnInfoModal" tabindex="-1" aria-hidden="true">
+  <div
+    class="modal"
+    id="purchaseReturnInfoModal"
+    tabindex="-1"
+    aria-hidden="true"
+  >
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header bg-info">
@@ -17,62 +22,115 @@
             <div class="row row-cols-1 row-cols-md-2 g-3">
               <div class="col">
                 <div class="card border-dark border-opacity-25 h-100">
-                  <div class="card-header"><i class="fa-solid fa-reply text-danger"></i>&nbsp;&nbsp;Purchase Return</div>
+                  <div class="card-header">
+                    <i class="fa-solid fa-circle-info"></i>&nbsp;&nbsp;Purchase Return
+                  </div>
                   <div class="card-body text-dark">
-                    <h5 class="card-title text-primary">
-                      {{ details.purchase.warehouse_name }}
-                      <span class="fs-6 text-secondary">(Warehouse)</span>
-                    </h5>
-                    <p class="m-0">
-                      Ref. No. : <b>{{ details.purchase.reference_id }}</b>
-                    </p>
-                    <p class="m-0">
-                      Purchase Ref. No. : <b>{{ details.purchase.purchase_reference_id }}</b>
-                    </p>
-                    <p class="m-0">
-                      Date : {{ details.purchase.date }} <i class="fa-regular fa-clock"></i>
-                      {{ details.purchase.time }}
-                    </p>
-                    <p class="m-0" v-if="details.purchase.return_id">
-                      Return ID : {{ details.purchase.return_id }}
-                    </p>
-                    <p class="m-0">
-                      Return Status :
-                      <span
-                        class="
-                          badge
-                          rounded-pill
-                          text-bg-success text-capitalize
-                        "
-                        v-bind:class="[details.purchase.status_css_class]"
-                        >{{ details.purchase.status_name }}</span
-                      >
-                    </p>
-                    <p class="m-0">
-                      Created By : {{ details.purchase.created_by_name }}
-                    </p>
+                    <table class="table table-borderess data_lines">
+                      <tbody>
+                        <tr>
+                          <td>Warehouse</td>
+                          <td>:&emsp;</td>
+                          <td>
+                            <h5 class="card-title text-primary">
+                              {{ details.purchase.warehouse_name }}
+                            </h5>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Ref. No.</td>
+                          <td>:&emsp;</td>
+                          <td>
+                            <input
+                              class="form-control form-control-sm fw-bold border-0 p-0"
+                              :value="details.purchase.reference_id"
+                              readonly
+                            />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Purchase Ref. No.</td>
+                          <td>:&emsp;</td>
+                          <td>
+                            <input
+                              class="form-control form-control-sm fw-bold border-0 p-0"
+                              :value="details.purchase.purchase_reference_id"
+                              readonly
+                            />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Date</td>
+                          <td>:&emsp;</td>
+                          <td>
+                            {{ details.purchase.date }}
+                            <i class="fa-regular fa-clock"></i>
+                            {{ details.purchase.time }}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Return Status</td>
+                          <td>:&emsp;</td>
+                          <td>
+                            <span
+                              class="
+                                badge
+                                rounded-pill
+                                text-bg-success text-capitalize
+                              "
+                              v-bind:class="[details.purchase.status_css_class]"
+                              >{{ details.purchase.status_name }}</span
+                            >
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Created By</td>
+                          <td>:&emsp;</td>
+                          <td>{{ details.purchase.created_by_name }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
               <div class="col">
                 <div class="card border-dark border-opacity-25 h-100">
-                  <div class="card-header"><i class="fa-solid fa-reply text-danger"></i>&nbsp;&nbsp;Return to </div>
+                  <div class="card-header">
+                    <i class="fa-solid fa-reply text-danger"></i
+                    >&nbsp;&nbsp;Return to
+                  </div>
                   <div class="card-body text-dark">
-                    <h5 class="card-title text-primary">
-                      {{ details.purchase.supplier_name }}
-                    </h5>
-                    <p class="m-0">
-                      {{ details.purchase.supplier_email }}
-                    </p>
-                    <p class="m-0">
-                      {{ details.purchase.supplier_phone }}
-                    </p>
-                    <p class="m-0">
-                      {{ details.purchase.supplier_place }}
-                    </p>
-                    <p class="m-0">
-                      {{ details.purchase.supplier_city }}
-                    </p>
+                    <table class="table table-borderess data_lines">
+                      <tbody>
+                        <tr>
+                          <td>Supplier</td>
+                          <td>:&emsp;</td>
+                          <td>
+                            <h5 class="card-title text-primary">
+                              {{ details.purchase.supplier_name }}
+                            </h5>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Address</td>
+                          <td>:&emsp;</td>
+                          <td>
+                            <p class="m-0">
+                              {{ details.purchase.supplier_email }}
+                            </p>
+                            <p class="m-0">
+                              {{ details.purchase.supplier_phone }}
+                            </p>
+                            <p class="m-0">
+                              {{ details.purchase.supplier_place }}
+                            </p>
+                            <p class="m-0">
+                              {{ details.purchase.supplier_city }}
+                            </p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
@@ -204,9 +262,11 @@ export default {
       emitter.emit("deleteConfirmModal", {
         title: null,
         body:
-          "Delete return purchase with Ref. No. <b>" + data.reference_id + "</b> ?",
+          "Delete return purchase with Ref. No. <b>" +
+          data.reference_id +
+          "</b> ?",
         data: data,
-        emit: "confirmDeletePurchase",
+        emit: "confirmDeletePurchaseReturn",
         hide: true,
         type: "danger",
       });
@@ -234,10 +294,13 @@ export default {
     },
   },
   mounted() {
-    window.PURCHASE_RETURN_INFO_MODAL = new Modal($("#purchaseReturnInfoModal"), {
-      backdrop: true,
-      show: true,
-    });
+    window.PURCHASE_RETURN_INFO_MODAL = new Modal(
+      $("#purchaseReturnInfoModal"),
+      {
+        backdrop: true,
+        show: true,
+      }
+    );
   },
   beforeUnmount() {
     var self = this;

@@ -465,7 +465,7 @@ export default {
         let data = JSON.parse(
           JSON.stringify(self.table.row($(this).parents("tr")).data())
         );
-        self.emitter.emit("showPurchasePayDetails", data);
+        self.emitter.emit("showPurchaseReturnPayDetails", data);
       });
       $("#datatable tbody").on("click", "#edit", function () {
         // edit from action menu

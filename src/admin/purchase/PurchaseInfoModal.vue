@@ -45,18 +45,27 @@
                       {{ details.purchase.warehouse_name }}
                       <span class="fs-6 text-secondary">(Warehouse)</span>
                     </h5>
+                    <div class="row g-3 align-items-center">
+                      <div class="col-auto">
+                        <label class="col-form-label" for="reference_id">
+                          Ref. No.&emsp;:</label
+                        >
+                      </div>
+                      <div class="col-auto">
+                        <input
+                          id="reference_id"
+                          class="form-control form-control-sm"
+                          :value="details.purchase.reference_id"
+                          readonly
+                        />
+                      </div>
+                    </div>
                     <p class="m-0">
-                      Ref. No. : <b>{{ details.purchase.reference_id }}</b>
-                    </p>
-                    <p class="m-0">
-                      Date : {{ details.purchase.date }} <i class="fa-regular fa-clock"></i>
+                      Date&emsp;:&emsp;{{ details.purchase.date }} <i class="fa-regular fa-clock"></i>
                       {{ details.purchase.time }}
                     </p>
-                    <p class="m-0" v-if="details.purchase.return_id">
-                      Return ID : {{ details.purchase.return_id }}
-                    </p>
                     <p class="m-0">
-                      Order Status :
+                      Order Status&emsp;:&emsp;
                       <span
                         class="
                           badge
@@ -68,7 +77,7 @@
                       >
                     </p>
                     <p class="m-0">
-                      Created By : {{ details.purchase.created_by_name }}
+                      Created By&emsp;:&emsp;{{ details.purchase.created_by_name }}
                     </p>
                   </div>
                 </div>

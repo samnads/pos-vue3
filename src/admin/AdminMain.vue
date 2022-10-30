@@ -449,6 +449,11 @@ input[type="number"].no-arrow {
   padding-right: 0.5em;
   border-right: 1px solid #000;
 }
+/***************************************************************  display tabbed data */
+.data_lines tr td{
+  padding: 0 !important;
+  margin: 0 !important;
+}
 </style>
 <script>
 import "datatables.net-bs5/js/dataTables.bootstrap5";
