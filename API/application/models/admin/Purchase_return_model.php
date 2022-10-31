@@ -9,16 +9,34 @@ class Purchase_return_model extends CI_Model
 	}
 	function datatable_data($search, $offset, $limit, $order_by, $order)
 	{
-		$product_total_without_tax = "(SUM(((pp.unit_cost - pp.unit_discount) * rpp.quantity)))";
+		/******************************************** */ // get return purchase payment
+		$this->db->select('
+		rp.id as	id,
+		SUM(rppy.amount) as amount
+		');
+		$this->db->from(TABLE_RETURN_PURCHASE_PAYMENT . ' as rppy');
+		$this->db->join(TABLE_RETURN_PURCHASE . ' as rp',    'rp.id = rppy.return_purchase', 'left');
+		$this->db->where(array('rppy.deleted_at' => NULL, 'rp.deleted_at' => NULL));
+		$this->db->group_by(array('rp.id'));
+		$return_purchase_payment = $this->db->get_compiled_select();
+		$this->db->reset_query();
+		//die($return_purchase_payment);
+		/******************************************** */
+		$product_total_without_tax = "(SUM((pp.unit_cost - pp.unit_discount) * rpp.quantity))";
 		$product_total_tax = "(CASE 
 			WHEN tr_pp.type = 'P' 
 			THEN
-				(IFNULL(tr_pp.rate, 0) / 100) * SUM(((pp.unit_cost - pp.unit_discount) * rpp.quantity))
+				(IFNULL(tr_pp.rate, 0) / 100) * (SUM((pp.unit_cost - pp.unit_discount) * rpp.quantity))
 			ELSE
 				IFNULL(tr_pp.rate, 0)
 		END)";
 		$product_total_with_tax = "(" . $product_total_without_tax . " + " . $product_total_tax . ")";
 		$product_total_with_tax_after_discount = "((" . $product_total_without_tax . " + " . $product_total_tax . ") - rp.discount)";
+		$shipping_tax_value = "(CASE 
+			WHEN tr_rp_s.type = 'P' THEN (IFNULL(tr_rp_s.rate, 0) / 100) * rp.shipping_charge
+			ELSE IFNULL(tr_rp_s.rate, 0)
+		END)";
+		$shipping_total = "(" . $shipping_tax_value . " + rp.shipping_charge)";
 		$order_tax = "(CASE 
 			WHEN tr_o.type = 'P' 
 			THEN
@@ -26,11 +44,6 @@ class Purchase_return_model extends CI_Model
 			ELSE
 				IFNULL(tr_o.rate, 0)
 		END)";
-		$shipping_tax_value = "(CASE 
-			WHEN tr_rp_s.type = 'P' THEN (IFNULL(tr_rp_s.rate, 0) / 100) * rp.shipping_charge
-			ELSE IFNULL(tr_rp_s.rate, 0)
-		END)";
-		$shipping_total = "(" . $shipping_tax_value . " + rp.shipping_charge)";
 		$packing_tax_value = "(CASE 
 			WHEN tr_rp_p.type = 'P' THEN (IFNULL(tr_rp_p.rate, 0) / 100) * rp.packing_charge
 			ELSE IFNULL(tr_rp_p.rate, 0)
@@ -39,72 +52,56 @@ class Purchase_return_model extends CI_Model
 		$total_payable_decimal = "(" . $product_total_with_tax_after_discount . "+" . $order_tax . "+" . $shipping_total . "+" . $packing_total . ")";
 		$total_payable = "(ROUND(" . $product_total_with_tax_after_discount . "+" . $order_tax . "+" . $shipping_total . "+" . $packing_total . ",0))";
 		$rounf_off = "(" . $total_payable_decimal . "-" . $total_payable . ")";
-		$balance_return = "(IFNULL(rppy.amount-" . $total_payable . ",0))";
-		$due = "(IFNULL(" . $total_payable . "-rppy.amount,0))";
-		$this->db->select('rp.id as id,
+		$balance_return = "(IFNULL(rppy.amount,0) - " . $total_payable . ")";
+		$due = "(IFNULL(" . $total_payable . " - IFNULL(rppy.amount,0),0))";
+
+		$this->db->select('
+		rp.id as id,
 		rp.reference_id as reference_id,
+		pc.reference_id as purchase_reference_id,
 		rp.purchase as purchase,
 		rp.date as date,
-		pc.reference_id as purchase_reference_id,
-		COUNT(DISTINCT(pp.product)) as product_count,
-		st.name as status_name,
-		st.css_class as css_class,
-		' . $product_total_without_tax . ' as product_total_without_tax,
-		' . $product_total_tax . ' as product_total_tax,
-		' . $product_total_with_tax . ' as product_total_with_tax,
-		' . $order_tax . ' as order_tax,
+		COUNT(DISTINCT(pp.id)) as product_count,
 		rp.discount as discount,
-		rp.shipping_charge			as shipping_charge,
-		' . $shipping_tax_value . '	as shipping_tax_value,
-		' . $shipping_total . '		as shipping_total,
-		rp.packing_charge			as packing_charge,
-		' . $packing_tax_value . '	as packing_tax_value,
-		' . $packing_total . '		as packing_total,
-		' . $product_total_with_tax_after_discount . ' as product_total_with_tax_after_discount,
-		uc.first_name as created_by,
-		uu.first_name as updated_by,
+		rp.created_at as created_at,
 		s.name as supplier_name,
 		w.name as warehouse_name,
-		rp.created_at as created_at,
-		' . $total_payable . ' as total_payable,
-		' . $rounf_off . ' as rounf_off,
+		st.name as status_name,
+		st.css_class as css_class,
 		IFNULL(rppy.amount,0) as total_paid,
+		' . $product_total_without_tax .' as product_total_without_tax,
+		' . $product_total_tax .' as product_total_tax,
+		' . $product_total_with_tax .' as product_total_with_tax,
+		' . $product_total_with_tax_after_discount .' as product_total_with_tax_after_discount,
+		' . $shipping_tax_value . '	as shipping_tax_value,
+		' . $shipping_total .' as shipping_total,
+		' . $packing_total .' as packing_total,
+		' . $total_payable .' as total_payable,
+		' . $rounf_off .' as rounf_off,
 		' . $balance_return . ' as balance_return,
-		' . $due . ' as due	
-		');
-		$this->db->from(TABLE_RETURN_PURCHASE .			' as rp');
+		' . $due . ' as due');
+		$this->db->from(TABLE_RETURN_PURCHASE . ' as rp');
 		$this->db->join(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp',	'rpp.return_purchase = rp.id', 'left');
-		$this->db->join(TABLE_PURCHASE_PRODUCT . 		' as pp',	'pp.id = rpp.purchase_product', 'left');
-		$this->db->join(TABLE_PURCHASE . 				' as pc',	'pc.id = pp.purchase', 'left');
-		$this->db->join(TABLE_PRODUCT . 				' as p',	'p.id = pp.product', 'left');
-		$this->db->join(TABLE_TAX_RATE . 				' as tr_pp', 'tr_pp.id = pp.tax_id', 'left');
+		$this->db->join(TABLE_PURCHASE_PRODUCT . ' as pp',	'pp.id = rpp.purchase_product', 'left');
+		$this->db->join(TABLE_PURCHASE . ' as pc',	'pc.id = rp.purchase', 'left');
+		$this->db->join(TABLE_TAX_RATE . ' as tr_pp', 'tr_pp.id = pp.tax_id', 'left');
 		$this->db->join(TABLE_TAX_RATE . 				' as tr_rp_s', 'tr_rp_s.id = rp.shipping_tax', 'left');
 		$this->db->join(TABLE_TAX_RATE . 				' as tr_rp_p', 'tr_rp_p.id = rp.packing_tax', 'left');
 		$this->db->join(TABLE_TAX_RATE . 				' as tr_o', 'tr_o.id = rp.return_tax', 'left');
 		$this->db->join(TABLE_STATUS . 					' as st',	'st.id = rp.status', 'left');
-		$this->db->join(TABLE_USER . 					' as uc',	'uc.id = rp.created_by', 'left');
-		$this->db->join(TABLE_USER . 					' as uu',	'uc.id = rp.updated_by', 'left');
 		$this->db->join(TABLE_SUPPLIER . 				' as s',	's.id = pc.supplier', 'left');
 		$this->db->join(TABLE_WAREHOUSE . 				' as w',	'w.id = pc.warehouse', 'left');
-		$this->db->join(TABLE_RETURN_PURCHASE_PAYMENT .	' as rppy',	'rppy.return_purchase = rp.id', 'left');
+		$this->db->join('(' . $return_purchase_payment . ')  as rppy', 'rppy.id = rp.id', 'left');
 		$this->db->group_start();
 		$this->db->or_like('rp.reference_id',	$search);
 		$this->db->or_like('pc.reference_id',	$search);
-		$this->db->or_like('rp.date',			$search);
-		$this->db->or_like('rp.discount',		$search);
-		$this->db->or_like('rp.shipping_charge', $search);
-		$this->db->or_like('rp.packing_charge',	$search);
-		$this->db->or_like('rp.round_off',		$search);
-		$this->db->or_like('rp.payment_note',	$search);
-		$this->db->or_like('rp.note',			$search);
-		$this->db->or_like('rp.created_at',		$search);
-		$this->db->or_like('rp.updated_at',		$search);
-		$this->db->or_like('st.name',			$search);
-		//$this->db->or_like('rppy.amount',		$search);
+		$this->db->or_like('w.name',	$search);
+		$this->db->or_like('s.name',	$search);
+		$this->db->or_like('st.name',	$search);
+		$this->db->or_like('rppy.amount',	$search);
 		$this->db->group_end();
-		$this->db->where(array('rp.deleted_at' => NULL, 'pc.deleted_at' => NULL, 'rppy.deleted_at' => NULL));
-		$this->db->where(array('rpp.deleted_at' => NULL, 'pp.deleted_at' => NULL));
-		$this->db->group_by(array('rp.purchase'));
+		$this->db->where(array('rp.deleted_at' => NULL,'rpp.deleted_at' => NULL, 'pp.deleted_at' => NULL));
+		$this->db->group_by(array('rp.id'));
 		$this->db->order_by($order_by, $order);
 		$query = $this->db->get('', $limit, $offset);
 		//die($this->db->last_query());
@@ -322,7 +319,7 @@ class Purchase_return_model extends CI_Model
 		$this->db->join(TABLE_PRODUCT . ' as p',	'p.id=pp.product',	'left');
 		$this->db->join(TABLE_UNIT . ' as u',	'u.id=pp.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . ' as tr',	'tr.id=pp.tax_id',	'left');
-		$this->db->where(array('rp.id'=>$where['return_purchase'],'rp.deleted_at' => NULL, 'pc.deleted_at' => NULL, 'rpp.deleted_at' => NULL));
+		$this->db->where(array('rp.id' => $where['return_purchase'], 'rp.deleted_at' => NULL, 'pc.deleted_at' => NULL, 'rpp.deleted_at' => NULL));
 		$query = $this->db->get();
 		//die($this->db->last_query());
 		return $query ? $query->result() : false;
