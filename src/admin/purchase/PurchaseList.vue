@@ -456,7 +456,7 @@ export default {
         },
         drawCallback: function (settings) {},
         createdRow: function (row, data, dataIndex) {
-          if (data["deleted_at"] || data["total_return_quantity"] > data["total_purchase_quantity"]) {
+          if (data["deleted_at"] || parseFloat(data["total_return_quantity"]) > parseFloat(data["total_purchase_quantity"])) {
             $(row).addClass("bg-danger");
           }
         },
