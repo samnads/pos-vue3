@@ -26,7 +26,7 @@
                     <i class="fa-solid fa-circle-info"></i>&nbsp;&nbsp;Purchase Return
                   </div>
                   <div class="card-body text-dark">
-                    <table class="table table-borderess data_lines">
+                    <table class="table table-borderless data_lines">
                       <tbody>
                         <tr>
                           <td>Warehouse</td>
@@ -40,23 +40,15 @@
                         <tr>
                           <td>Ref. No.</td>
                           <td>:&emsp;</td>
-                          <td>
-                            <input
-                              class="form-control form-control-sm fw-bold border-0 p-0"
-                              :value="details.purchase.reference_id"
-                              readonly
-                            />
+                          <td class="fw-bold">
+                            {{details.purchase.reference_id}}
                           </td>
                         </tr>
                         <tr>
                           <td>Purchase Ref. No.</td>
                           <td>:&emsp;</td>
-                          <td>
-                            <input
-                              class="form-control form-control-sm fw-bold border-0 p-0"
-                              :value="details.purchase.purchase_reference_id"
-                              readonly
-                            />
+                          <td class="fw-bold">
+                            {{details.purchase.purchase_reference_id}}
                           </td>
                         </tr>
                         <tr>
@@ -100,7 +92,7 @@
                     >&nbsp;&nbsp;Return to
                   </div>
                   <div class="card-body text-dark">
-                    <table class="table table-borderess data_lines">
+                    <table class="table table-borderless data_lines">
                       <tbody>
                         <tr>
                           <td>Supplier</td>
