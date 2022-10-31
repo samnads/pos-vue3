@@ -19,21 +19,37 @@
                 <div class="card border-dark border-opacity-25 h-100">
                   <div class="card-header">Supplier</div>
                   <div class="card-body text-dark">
-                    <h5 class="card-title text-primary">
-                      {{ details.purchase.supplier_name }}
-                    </h5>
-                    <p class="m-0">
-                      {{ details.purchase.supplier_email }}
-                    </p>
-                    <p class="m-0">
-                      {{ details.purchase.supplier_phone }}
-                    </p>
-                    <p class="m-0">
-                      {{ details.purchase.supplier_place }}
-                    </p>
-                    <p class="m-0">
-                      {{ details.purchase.supplier_city }}
-                    </p>
+                    <table class="table table-borderless data_lines">
+                      <tbody>
+                        <tr>
+                          <td>Name</td>
+                          <td>:&emsp;</td>
+                          <td>
+                            <h5 class="card-title text-primary">
+                              {{ details.purchase.supplier_name }}
+                            </h5>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Address</td>
+                          <td>:&emsp;</td>
+                          <td>
+                            <p class="m-0">
+                              {{ details.purchase.supplier_email }}
+                            </p>
+                            <p class="m-0">
+                              {{ details.purchase.supplier_phone }}
+                            </p>
+                            <p class="m-0">
+                              {{ details.purchase.supplier_place }}
+                            </p>
+                            <p class="m-0">
+                              {{ details.purchase.supplier_city }}
+                            </p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
@@ -41,44 +57,57 @@
                 <div class="card border-dark border-opacity-25 h-100">
                   <div class="card-header">Purchase</div>
                   <div class="card-body text-dark">
-                    <h5 class="card-title text-primary">
-                      {{ details.purchase.warehouse_name }}
-                      <span class="fs-6 text-secondary">(Warehouse)</span>
-                    </h5>
-                    <div class="row g-3 align-items-center">
-                      <div class="col-auto">
-                        <label class="col-form-label" for="reference_id">
-                          Ref. No.&emsp;:</label
-                        >
-                      </div>
-                      <div class="col-auto">
-                        <input
-                          id="reference_id"
-                          class="form-control form-control-sm"
-                          :value="details.purchase.reference_id"
-                          readonly
-                        />
-                      </div>
-                    </div>
-                    <p class="m-0">
-                      Date&emsp;:&emsp;{{ details.purchase.date }} <i class="fa-regular fa-clock"></i>
-                      {{ details.purchase.time }}
-                    </p>
-                    <p class="m-0">
-                      Order Status&emsp;:&emsp;
-                      <span
-                        class="
-                          badge
-                          rounded-pill
-                          text-bg-success text-capitalize
-                        "
-                        v-bind:class="[details.purchase.status_css_class]"
-                        >{{ details.purchase.status_name }}</span
-                      >
-                    </p>
-                    <p class="m-0">
-                      Created By&emsp;:&emsp;{{ details.purchase.created_by_name }}
-                    </p>
+                    <table class="table table-borderless data_lines">
+                      <tbody>
+                        <tr>
+                          <td>Warehouse</td>
+                          <td>:&emsp;</td>
+                          <td>
+                            <h5 class="card-title text-primary">
+                              {{ details.purchase.warehouse_name }}
+                            </h5>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Ref. No.</td>
+                          <td>:&emsp;</td>
+                          <td class="fw-bold">
+                            {{ details.purchase.reference_id }}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Date</td>
+                          <td>:&emsp;</td>
+                          <td>
+                            {{ details.purchase.date }}
+                            <i class="fa-regular fa-clock"></i>
+                            {{ details.purchase.time }}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Order Status</td>
+                          <td>:&emsp;</td>
+                          <td>
+                            <span
+                              class="
+                                badge
+                                rounded-pill
+                                text-bg-success text-capitalize
+                              "
+                              v-bind:class="[details.purchase.status_css_class]"
+                              >{{ details.purchase.status_name }}</span
+                            >
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Created By</td>
+                          <td>:&emsp;</td>
+                          <td>
+                            {{ details.purchase.created_by_name }}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
