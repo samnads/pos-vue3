@@ -14,16 +14,14 @@ class Product_model extends CI_Model
 	}
 	function getInfo($id)
 	{
-		/********************************************************************************************/ // warehouse based stock calculation
 		/******************************************************/ // calc quantity using stock adjustments
 		$this->db->select('p.id as p_id,sa.id as sa_id,wh.id as wh_id,wh.name as wh_name,SUM(sap.quantity) as total_sap_quantity');
 		$this->db->from(TABLE_WAREHOUSE . ' as wh');
 		$this->db->join(TABLE_STOCK_ADJUSTMENT . ' as sa',    'sa.warehouse = wh.id', 'left');
 		$this->db->join(TABLE_STOCK_ADJUSTMENT_PRODUCT . ' as sap',    'sap.stock_adjustment = sa.id', 'left');
 		$this->db->join(TABLE_PRODUCT . ' as p',    'p.id = sap.product', 'left');
-		$this->db->where(array('p.id' => $id));
-		$this->db->group_by('p_id');
-		$this->db->group_by('wh.id');
+		$this->db->where(array('p.id' => $id, 'wh.status' => 16, 'wh.deleted_at' => NULL, 'sa.deleted_at' => NULL));
+		$this->db->group_by(array('p_id', 'wh.id'));
 		$query_sap = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($query_sap);
@@ -33,9 +31,8 @@ class Product_model extends CI_Model
 		$this->db->join(TABLE_POS_SALE . ' as ps',    'ps.warehouse = wh.id', 'left');
 		$this->db->join(TABLE_POS_SALE_PRODUCT . ' as psp',    'psp.pos_sale = ps.id', 'left');
 		$this->db->join(TABLE_PRODUCT . ' as p',    'p.id = psp.product', 'left');
-		$this->db->where(array('p.id' => $id));
-		$this->db->group_by('p_id');
-		$this->db->group_by('wh.id');
+		$this->db->where(array('p.id' => $id, 'wh.status' => 16, 'wh.deleted_at' => NULL, 'ps.deleted_at' => NULL));
+		$this->db->group_by(array('p_id', 'wh.id'));
 		$query_psp = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($query_psp);
@@ -46,23 +43,33 @@ class Product_model extends CI_Model
 		$this->db->join(TABLE_PURCHASE_PRODUCT . ' as pp',    'pp.purchase = pc.id', 'left');
 		$this->db->join(TABLE_PRODUCT . ' as p',    'p.id = pp.product', 'left');
 		$this->db->join(TABLE_UNIT . ' as u',    'u.id = pp.unit', 'left'); // useful for bulk quantity calc
-		$this->db->where('pc.deleted_at', NULL); // select only not deleted rows
-		$this->db->where('pc.status', 22); // 22 - for received status
-		$this->db->where(array('p.id' => $id));
-		$this->db->group_by('p.id');
-		$this->db->group_by('wh.id');
-		//$this->db->where('pc.warehouse', 27); // change this for warehouse based stock, remove for all warehouse
-		$this->db->group_by('pp.product');
+		$this->db->where(array('p.id' => $id, 'wh.status' => 16, 'pc.deleted_at' => NULL, 'pc.status' => 22));
+		$this->db->group_by(array('p.id', 'wh.id'));
 		$query_pur_product = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($query_pur_product);
+		/******************************************************/ // calc quantity using purchase return - received status
+		$this->db->select('wh.id as warehouse,SUM(IFNULL(u.step,1) * rpp.quantity) as total_pr_quantity');
+		$this->db->from(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp');
+		$this->db->join(TABLE_RETURN_PURCHASE . ' as rp',    'rp.id = rpp.return_purchase', 'left');
+		$this->db->join(TABLE_PURCHASE_PRODUCT . ' as pp',    'pp.id = rpp.purchase_product', 'left');
+		$this->db->join(TABLE_PURCHASE . ' as pc',    'pc.id = pp.purchase', 'left');
+		$this->db->join(TABLE_WAREHOUSE . ' as wh',    'wh.id = pc.warehouse', 'left');
+		$this->db->join(TABLE_PRODUCT . ' as p',    'p.id = pp.product', 'left');
+		$this->db->join(TABLE_UNIT . ' as u',    'u.id = pp.unit', 'left');
+		$this->db->where(array('p.id' => $id, 'rpp.deleted_at' => NULL, 'rp.deleted_at' => NULL, 'pp.deleted_at' => NULL, 'pc.deleted_at' => NULL, 'pc.status' => 22, 'wh.status' => 16));
+		$this->db->group_by(array('pp.id', 'wh.id'));
+		$query_pur_ret_product = $this->db->get_compiled_select();
+		$this->db->reset_query();
+		//die($query_pur_ret_product);
 		/******************************************************/ // join all
-		$this->db->select('wh.name as warehouse_name,qsap.p_id as sap_product,qpsp.p_id as psp_product,total_sap_quantity,total_psp_quantity,(IFNULL(qsap.total_sap_quantity,0) - IFNULL(qpsp.total_psp_quantity,0) + IFNULL(qpp.total_pp_quantity,0)) total_wh_quantity');
+		$this->db->select('wh.name as warehouse_name,qsap.p_id as sap_product,qpsp.p_id as psp_product,total_sap_quantity,total_psp_quantity,(IFNULL(qsap.total_sap_quantity,0) - IFNULL(qpsp.total_psp_quantity,0) + IFNULL(qpp.total_pp_quantity,0) - IFNULL(qpr.total_pr_quantity,0)) total_wh_quantity');
 		$this->db->from(TABLE_WAREHOUSE . ' as wh');
 		$this->db->join('(' . $query_sap . ') as qsap', 'qsap.wh_id = wh.id', 'left');
 		$this->db->join('(' . $query_psp . ') as qpsp', 'qpsp.wh_id = wh.id', 'left');
 		$this->db->join('(' . $query_pur_product . ') as qpp', 'qpp.wh_id = wh.id', 'left');
-		$this->db->where(array('wh.deleted_at' => NULL));
+		$this->db->join('(' . $query_pur_ret_product . ') as qpr', 'qpr.warehouse = wh.id', 'left');
+		$this->db->where(array('wh.deleted_at' => NULL, 'wh.status' => 16));
 		$query_stock = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($query_stock);
@@ -246,10 +253,11 @@ class Product_model extends CI_Model
 		$this->db->join(TABLE_RETURN_PURCHASE . ' as rp',    'rp.id = rpp.return_purchase', 'left');
 		$this->db->join(TABLE_PURCHASE_PRODUCT . ' as pp',    'pp.id = rpp.purchase_product', 'left');
 		$this->db->join(TABLE_PURCHASE . ' as pc',    'pc.id = pp.purchase', 'left');
+		$this->db->join(TABLE_WAREHOUSE . ' as wh',    'wh.id = pc.warehouse', 'left');
 		$this->db->join(TABLE_PRODUCT . ' as p',    'p.id = pp.product', 'left');
 		$this->db->join(TABLE_UNIT . ' as u',    'u.id = pp.unit', 'left'); // useful for bulk quantity calc
-		$this->db->where(array('rp.deleted_at' => NULL, 'rpp.deleted_at' => NULL, 'pc.deleted_at' => NULL, 'pp.deleted_at' => NULL,'pc.status'=> 22));
-		$this->db->group_by('pp.id');
+		$this->db->where(array('rp.deleted_at' => NULL, 'rpp.deleted_at' => NULL, 'pc.deleted_at' => NULL, 'pp.deleted_at' => NULL, 'pc.status' => 22, 'wh.status' => 16));
+		$this->db->group_by('p.id');
 		$query_pur_ret_product = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($query_pur_ret_product);

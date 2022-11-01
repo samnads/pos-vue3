@@ -101,7 +101,7 @@ class Purchase_return_model extends CI_Model
 		$this->db->or_like('st.name',	$search);
 		$this->db->or_like('rppy.amount',	$search);
 		$this->db->group_end();
-		$this->db->where(array('rp.deleted_at' => NULL,'rpp.deleted_at' => NULL, 'pp.deleted_at' => NULL));
+		$this->db->where(array('rp.deleted_at' => NULL,'rpp.deleted_at' => NULL, 'pc.deleted_at' => NULL, 'pp.deleted_at' => NULL));
 		$this->db->group_by(array('rp.id'));
 		$this->db->order_by($order_by, $order);
 		$query = $this->db->get('', $limit, $offset);
