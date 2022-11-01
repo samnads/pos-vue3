@@ -371,7 +371,7 @@ class Purchase_return_model extends CI_Model
 		$this->db->join(TABLE_PURCHASE . ' as p',	'p.id=rp.purchase',	'left');
 		$this->db->where(array('rpp.return_purchase' => $where['purchase_return'], 'rpp.deleted_at' => NULL, 'rp.deleted_at' => NULL, 'p.deleted_at' => NULL));
 		$this->db->order_by("rpp.date_time", "desc");
-		$this->db->group_by(array('rpp.return_purchase'));
+		$this->db->group_by(array('rpp.id'));
 		$query = $this->db->get();
 		//die($this->db->last_query());
 		return $query ? $query->result_array() : false;
@@ -522,31 +522,31 @@ class Purchase_return_model extends CI_Model
 		$query = $this->db->insert(TABLE_RETURN_PURCHASE_PAYMENT, $data);
 		return $query;
 	}
-	function update_purchase_payment($data, $where)
+	function update_return_purchase_payment($data, $where)
 	{
 		$this->db->set($data);
 		$this->db->where($where);
-		$query = $this->db->update(TABLE_PURCHASE_PAYMENT . ' pp');
+		$query = $this->db->update(TABLE_RETURN_PURCHASE_PAYMENT . ' as rpp');
 		return $query;
 	}
-	function create_purchase_payment_batch($data) // for batch add payment option
+	function create_purchase_return_payment_batch($data) // for batch add payment option
 	{
-		$query = $this->db->insert_batch(TABLE_PURCHASE_PAYMENT, $data);
+		$query = $this->db->insert_batch(TABLE_RETURN_PURCHASE_PAYMENT, $data);
 		return $query;
 	}
-	function set_deleted_at_purchase_payment_ids($ids)
+	function set_deleted_at_purchase_return_payment_ids($ids)
 	{
 		$this->db->where_in('id', $ids);
 		$this->db->set('deleted_at', 'NOW()', FALSE); // deleted rows have a timestamp
 		$this->db->set('deleted_by', $this->session->id);
-		$query = $this->db->update(TABLE_PURCHASE_PAYMENT . ' pp');
+		$query = $this->db->update(TABLE_RETURN_PURCHASE_PAYMENT);
 		return $query;
 	}
-	function get_purchase_payment_row($where)
+	function get_purchase_return_payment_row($where)
 	{
 		$this->db->select('*');
-		$this->db->from(TABLE_PURCHASE_PAYMENT . ' pp');
-		$this->db->where($where);
+		$this->db->from(TABLE_RETURN_PURCHASE_PAYMENT . ' as rpp');
+		$this->db->where(array('rpp.id'=>$where['id'], 'rpp.return_purchase'=> $where['return_purchase']));
 		$query = $this->db->get();
 		//die($this->db->last_query());
 		return $query ? $query->row_array() : false;

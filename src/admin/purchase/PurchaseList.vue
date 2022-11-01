@@ -275,13 +275,17 @@ export default {
             },
           },
           {
+            // Balance Return
             targets: [9],
-            render: function (data, type, row, meta) {
-              return (
+             render: function (data, type, row, meta) {
+              if (parseFloat(data).toFixed(2) > 0) {
+                return (
                   '<span class="text-info fw-bold">' +
                   parseFloat(data).toFixed(2) +
                   "</span>"
                 );
+              }
+              return '<span class="text-muted small">-</span>';
             },
           },
           {

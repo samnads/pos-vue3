@@ -191,24 +191,25 @@ class Purchase_return extends CI_Controller
                 switch ($action) {
                     case 'update_payment':
                         $_POST = $this->input->post('data');
-                        $purchase = $this->input->post('purchase');
+                        $purchase = $this->input->post('return_purchase');
                         $ui_payments = $this->input->post('payments');
                         $changed_db1 = false; // purchase
                         $changed_db2 = false; // purchase payment
-                        //$this->db->trans_begin();
+                        $this->db->trans_begin();
                         // update payment note
-                        $this->Purchase_return_model->update_purchase(array('payment_note' => $this->input->post('payment_note') ?: NULL), $purchase['id']);
+                        $this->Purchase_return_model->update_return_purchase(array('payment_note' => $this->input->post('payment_note') ?: NULL), $purchase['id']);
                         if ($this->db->affected_rows() == 1) {
                             $changed_db1 = true;
                         } else if ($this->db->affected_rows() == 0) {
                             //
+                            //die(json_encode(array('success' => true, 'type' => 'notice', 'message' => 'OK')));
                         } else {
                             $error = $this->db->error();
                             $this->db->trans_rollback();
                             die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
                         }
                         // get all payment for the purchase
-                        $db_payments = $this->Purchase_return_model->getPurchasePayments(array('pp.purchase' => (int)$purchase['id']));
+                        $db_payments = $this->Purchase_return_model->getPurchaseReturnPayments(array('purchase_return' => (int)$purchase['id']));
                         if (!$db_payments) {
                             $error = $this->db->error();
                             $this->db->trans_rollback();
@@ -219,21 +220,32 @@ class Purchase_return extends CI_Controller
                         $delete_ids = array(); // id exist in db only -  for deleting
                         foreach ($ui_payments as $ui_payment) { // loop through ui payments - update existing id, remove from ui array
                             // check and get same from db
-                            $db_payment = $this->Purchase_return_model->get_purchase_payment_row(array('pp.id' => $ui_payment['id'], 'pp.purchase' => (int)$purchase['id']));
+                            $db_payment = $this->Purchase_return_model->get_purchase_return_payment_row(array('id' => $ui_payment['id'], 'return_purchase' => (int)$purchase['id']));
                             if ($db_payment['id']) { // same id exist in db
                                 array_push($existing_ids, $db_payment['id']); // add to existing array
                                 // update on db using unique id
                                 /* prepare for db data */
-                                unset($ui_payment['purchase']);
                                 unset($ui_payment['id']);
                                 unset($ui_payment['payment_mode_name']);
                                 $ui_payment['payment_mode'] = $ui_payment['mode'];
                                 unset($ui_payment['mode']);
-                                $ui_payment['updated_by'] = $this->session->id;
-                                $this->Purchase_return_model->update_purchase_payment($ui_payment, array('id' => $db_payment['id'], 'purchase' => (int)$purchase['id'])); // UPDATE pay row
-                                if ($this->db->affected_rows() == 1) {
+                                $ui_payment['transaction_id'] = $ui_payment['transaction_id'] ?: NULL;
+                                $ui_payment['reference_no'] = $ui_payment['reference_no'] ?: NULL;
+                                $ui_payment['note'] = $ui_payment['note'] ?: NULL;
+                                $this->Purchase_return_model->update_return_purchase_payment($ui_payment, array('id' => $db_payment['id'], 'return_purchase' => (int)$purchase['id'])); // UPDATE pay row
+                                if ($this->db->affected_rows() == 1) { // updated found and updated but not changed updated_by, so change again
                                     $changed_db2 = true;
-                                } else if ($this->db->affected_rows() == 0) {
+                                    $ui_payment['updated_by'] = $this->session->id;
+                                    $this->Purchase_return_model->update_return_purchase_payment($ui_payment, array('id' => $db_payment['id'], 'return_purchase' => (int)$purchase['id'])); // UPDATE pay row
+                                    if ($this->db->affected_rows() == 1) { // updated updated_by
+                                    } else if ($this->db->affected_rows() == 0) { // same updated_by found
+                                        //
+                                    } else {
+                                        $error = $this->db->error();
+                                        $this->db->trans_rollback();
+                                        die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                                    }
+                                } else if ($this->db->affected_rows() == 0) { // no changed on row
                                     //
                                 } else {
                                     $error = $this->db->error();
@@ -243,7 +255,7 @@ class Purchase_return extends CI_Controller
                             } else { // new payment found
                                 // add to db
                                 /* prepare for db data */
-                                $ui_payment['purchase'] = $purchase['id'];
+                                $ui_payment['return_purchase'] = $purchase['id'];
                                 unset($ui_payment['id']);
                                 $ui_payment['payment_mode'] = $ui_payment['mode'];
                                 unset($ui_payment['mode']);
@@ -254,7 +266,7 @@ class Purchase_return extends CI_Controller
                                 $new_pays[] = $ui_payment;
                             }
                         }
-                        $affected_rows = $this->Purchase_return_model->create_purchase_payment_batch($new_pays); // ADD new pays (batch add)
+                        $affected_rows = $this->Purchase_return_model->create_purchase_return_payment_batch($new_pays); // ADD new pays (batch add)
                         if ($affected_rows >= 1) {
                             $changed_db2 = true;
                         } else if ($affected_rows == 0) {
@@ -264,7 +276,7 @@ class Purchase_return extends CI_Controller
                             $this->db->trans_rollback();
                             die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
                         }
-                        // DELETE ui reomved payment
+                        // DELETE ui removed payment
                         foreach ($db_payments as $db_payment) { // loop through db payments - delete not that not exist in ui pays
                             // check with existing_ids
                             if (array_search($db_payment['id'], $existing_ids) !== false) { // same exist in ui
@@ -275,7 +287,7 @@ class Purchase_return extends CI_Controller
                             }
                         }
                         if (count($delete_ids) > 0) {
-                            $this->Purchase_return_model->set_deleted_at_purchase_payment_ids($delete_ids); // DELETE not exist pays
+                            $this->Purchase_return_model->set_deleted_at_purchase_return_payment_ids($delete_ids); // DELETE not exist pays
                         }
                         //print_r($this->db->last_query());
                         if ($this->db->affected_rows() >= 1) {
@@ -287,10 +299,11 @@ class Purchase_return extends CI_Controller
                             $this->db->trans_rollback();
                             die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
                         }
-
                         if ($changed_db1 == true || $changed_db2 == true) {
+                            $this->db->trans_commit();
                             echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully Updated Purchase Payment !'));
                         } else {
+                            $this->db->trans_rollback();
                             echo json_encode(array('success' => true, 'type' => 'notice', 'timeout' => '5000', 'message' => $this->lang->line('no_data_changed_after_query')));
                         }
                         break;
