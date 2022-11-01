@@ -64,6 +64,7 @@ class Purchase_return_model extends CI_Model
 		COUNT(DISTINCT(pp.id)) as product_count,
 		rp.discount as discount,
 		rp.created_at as created_at,
+		rp.payment_note as payment_note,
 		s.name as supplier_name,
 		w.name as warehouse_name,
 		st.name as status_name,

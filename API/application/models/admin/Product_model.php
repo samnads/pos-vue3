@@ -240,6 +240,19 @@ class Product_model extends CI_Model
 		$query_pur_product = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($query_pur_product);
+		/******************************************************/ // calc quantity using purchase return - received status
+		$this->db->select('pp.product as pr_product,SUM(IFNULL(u.step,1) * rpp.quantity) as total_pr_quantity');
+		$this->db->from(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp');
+		$this->db->join(TABLE_RETURN_PURCHASE . ' as rp',    'rp.id = rpp.return_purchase', 'left');
+		$this->db->join(TABLE_PURCHASE_PRODUCT . ' as pp',    'pp.id = rpp.purchase_product', 'left');
+		$this->db->join(TABLE_PURCHASE . ' as pc',    'pc.id = pp.purchase', 'left');
+		$this->db->join(TABLE_PRODUCT . ' as p',    'p.id = pp.product', 'left');
+		$this->db->join(TABLE_UNIT . ' as u',    'u.id = pp.unit', 'left'); // useful for bulk quantity calc
+		$this->db->where(array('rp.deleted_at' => NULL, 'rpp.deleted_at' => NULL, 'pc.deleted_at' => NULL, 'pp.deleted_at' => NULL,'pc.status'=> 22));
+		$this->db->group_by('pp.id');
+		$query_pur_ret_product = $this->db->get_compiled_select();
+		$this->db->reset_query();
+		//die($query_pur_ret_product);
 		/******************************************************/
 		$search = trim($search);
 		$this->db->select(
@@ -297,7 +310,7 @@ class Product_model extends CI_Model
 		tr.id		as tax_rate,
 		tr.code		as tax_code,
 		tr.name		as tax_name,
-		IFNULL(qsap.total_sap_quantity, 0) + IFNULL(qpsp.total_psp_quantity, 0) + IFNULL(qpp.total_pp_quantity, 0) as quantity'
+		IFNULL(qsap.total_sap_quantity, 0) + IFNULL(qpsp.total_psp_quantity, 0) + IFNULL(qpp.total_pp_quantity, 0) - IFNULL(qpr.total_pr_quantity, 0) as quantity'
 		);
 		$this->db->from(TABLE_PRODUCT . ' as p');
 		$this->db->join(TABLE_PRODUCT_TYPE . ' as t',		't.id=p.type',			'left');
@@ -309,6 +322,7 @@ class Product_model extends CI_Model
 		$this->db->join('(' . $query_stock_adj_product . ') as qsap', 'qsap.sap_product = p.id', 'left');
 		$this->db->join('(' . $query_pos_sale_product . ') as qpsp', 'qpsp.psp_product = p.id', 'left');
 		$this->db->join('(' . $query_pur_product . ') as qpp', 'qpp.pp_product = p.id', 'left');
+		$this->db->join('(' . $query_pur_ret_product . ') as qpr', 'qpr.pr_product = p.id', 'left');
 		$this->db->order_by($order_by, $order);
 		$this->db->group_by('p.id');
 		$this->db->where(array('p.deleted_at' => NULL)); // select only not deleted rows

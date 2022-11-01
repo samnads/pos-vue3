@@ -10,7 +10,8 @@ class Warehouse_model extends CI_Model
     function dropdown_active()
     {
         $this->db->select('wh.id,wh.name');
-        $this->db->from(TABLE_WAREHOUSE . ' wh');
+        $this->db->from(TABLE_WAREHOUSE . ' as wh');
+        $this->db->where(array('wh.deleted_at' => NULL, 'wh.status' => 16));
         $query = $this->db->get();
         return $query->result();
     }

@@ -415,24 +415,7 @@ export default {
               "data-bs-toggle": "tooltip",
               title: "Copy to clipboard",
             },
-          },
-          {
-            text: '<i class="fa-solid fa-plus"></i>',
-            className: "btn-light",
-            action: function () {
-              self.$router.push({ name: "adminPurchaseNew" }).catch((e) => {});
-            },
-            attr: {
-              "data-bs-toggle": "tooltip",
-              title: "Add New",
-              id: "new",
-            },
-            key: {
-              key: "d",
-              shiftKey: true,
-            },
-            init: function (api, node, config) {},
-          },
+          }
         ],
         initComplete: function (settings) {
           $("#buttons").html(self.table.buttons().container());
