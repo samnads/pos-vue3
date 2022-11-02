@@ -280,7 +280,7 @@
             <input
               type="number"
               step="any"
-              :value="product.cost.toFixed(2)"
+              :value="product.unit_cost.toFixed(2)"
               @change="costChange(product, $event.target.value)"
               class="form-control form-control-sm no-arrow text-center"
               @focus="$event.target.select()"
@@ -290,7 +290,7 @@
             <input
               type="number"
               step="any"
-              :value="product.discount.toFixed(2)"
+              :value="product.unit_discount.toFixed(2)"
               @change="discountChange(product, $event.target.value)"
               class="form-control form-control-sm no-arrow text-center"
               @focus="$event.target.select()"
@@ -890,9 +890,9 @@ export default {
       if (!this.products.some((data) => data.id === product.id)) {
         // new
         product.quantity = 1; // always 1 for new
-        product.discount = 0; // always 0 for new
+        product.unit_discount = 0; // always 0 for new
         /******************************* */
-        product.db_cost = parseFloat(product.cost);
+        product.db_cost = parseFloat(product.unit_cost);
         product.db_unit = parseFloat(product.unit);
         product.unit = product.db_unit;
         /******************************* purchase unit cost calculation */
@@ -900,15 +900,15 @@ export default {
           (item) => item.id == product.p_unit
         );
         let step = this.units[p_unit_index].step;
-        product.cost = product.db_cost * step;
+        product.unit_cost = product.db_cost * step;
         /******************************* */
         product.cost_after_discount_ = function () {
           // net unit cost after discount
-          return Number(product.cost - product.discount);
+          return Number(product.unit_cost - product.unit_discount);
         };
         product.total_cost_before_discount_ = function () {
           // total quantity cost aft
-          return Number(parseFloat(product.quantity * product.cost));
+          return Number(parseFloat(product.quantity * product.unit_cost));
         };
         product.total_cost_after_discount_ = function () {
           // total quantity cost aft
@@ -1040,7 +1040,7 @@ export default {
       );
       let step = this.units[p_unit_index].step;
       //
-      this.products[index].cost = this.products[index].db_cost * step;
+      this.products[index].unit_cost = this.products[index].db_cost * step;
     }
     function costChange(product, cost) {
       cost = Number(parseFloat(cost));
@@ -1053,7 +1053,7 @@ export default {
         let step = this.units[p_unit_index].step;
         // change on cart data
         this.products[index].db_cost = cost / step;
-        this.products[index].cost = cost;
+        this.products[index].unit_cost = cost;
       } else {
         emitter.emit("showAlert", {
           title: "Invalid cost !",
@@ -1070,10 +1070,10 @@ export default {
     }
     function discountChange(product, discount) {
       discount = Number(discount);
-      if (discount >= 0 && discount <= product.cost) {
+      if (discount >= 0 && discount <= product.unit_cost) {
         let index = this.products.findIndex((item) => item.id === product.id);
         // change on cart data
-        this.products[index].discount = discount;
+        this.products[index].unit_discount = discount;
       } else {
         emitter.emit("showAlert", {
           title: "Invalid discount !",
@@ -1255,7 +1255,7 @@ export default {
           products.forEach((element, index) => {
             products[index].hsn = "000";
             products[index].quantity = Number(element.quantity); //item quantity
-            products[index].discount = Number(element.unit_discount); // unit (per p_unit) discount
+            products[index].unit_discount = Number(element.unit_discount); // unit (per p_unit) discount
             products[index].db_cost = Number(element.db_cost); // base unit cost
             products[index].db_unit = Number(element.p_unit); // base unit
             products[index].unit = Number(element.unit); // purchase unit
@@ -1265,17 +1265,17 @@ export default {
               (item) => item.id == products[index].p_unit
             );
             let step = units[p_unit_index].step;
-            products[index].cost = products[index].db_cost * step; // calc p_unit cost
+            products[index].unit_cost = products[index].db_cost * step; // calc p_unit cost
             /******************************* */
             products[index].tax_rate = Number(element.tax_rate);
             products[index].cost_after_discount_ = function () {
               // net unit cost after discount
-              return Number(products[index].cost - products[index].discount);
+              return Number(products[index].unit_cost - products[index].unit_discount);
             };
             products[index].total_cost_before_discount_ = function () {
               // total quantity cost aft
               return Number(
-                parseFloat(products[index].quantity * products[index].cost)
+                parseFloat(products[index].quantity * products[index].unit_cost)
               );
             };
             products[index].total_cost_after_discount_ = function () {
@@ -1321,7 +1321,7 @@ export default {
           self.setFieldValue("warehouse", data.warehouse);
           self.setFieldValue("purchase_status", data.status);
           self.setFieldValue("note", data.note);
-          self.setFieldValue("discount", data.discount);
+          self.setFieldValue("discount", data.unit_discount);
           self.setFieldValue("tax_rate", data.purchase_tax);
           self.setFieldValue("shipping", Number(data.shipping_charge));
           self.setFieldValue("shipping_tax", data.shipping_tax);

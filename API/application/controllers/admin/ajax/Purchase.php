@@ -99,10 +99,10 @@ class Purchase extends CI_Controller
                             foreach ($products as $product) { // add products
                                 $data = array(
                                     'purchase' => $purchase_id,
-                                    'product' => $product['id'],
+                                    'product' => $product['product'],
                                     'quantity' =>  $product['quantity'],
                                     'unit' =>  $product['p_unit'],
-                                    'unit_cost' => $product['cost'],
+                                    'unit_cost' => $product['unit_cost'],
                                     'unit_discount' => $product['discount'],
                                     'tax_id' => $product['tax_id'] ?: null,
                                 );
@@ -226,7 +226,7 @@ class Purchase extends CI_Controller
                                 $ui_payment['updated_by'] = $this->session->id;
                                 $ui_payment['transaction_id'] = trim($ui_payment['transaction_id']) ? trim($ui_payment['transaction_id']) : NULL;
                                 $ui_payment['reference_no'] = trim($ui_payment['reference_no']) ? trim($ui_payment['reference_no']) : NULL;
-                                $ui_payment['note'] = trim( $ui_payment['note']) ? trim($ui_payment['note']) : NULL;
+                                $ui_payment['note'] = trim($ui_payment['note']) ? trim($ui_payment['note']) : NULL;
                                 $this->Purchase_model->update_purchase_payment($ui_payment, array('id' => $db_payment['id'], 'purchase' => (int)$purchase['id'])); // UPDATE pay row
                                 if ($this->db->affected_rows() == 1) {
                                     $changed_db2 = true;
@@ -294,8 +294,7 @@ class Purchase extends CI_Controller
                     default: // update purchase
                         $_POST = $this->input->post('data');
                         /****************************************************** */ // update only possible with 0 return record
-                        $where = array('purchase' => $this->input->post('id'));
-                        $data = $this->Purchase_model->get_purchase_row_by_id($where);
+                        $data = $this->Purchase_model->get_purchase_row_by_id(array('purchase' => $this->input->post('id')));
                         if ($data['total_return'] > 0) {
                             die(json_encode(array('success' => false, 'type' => 'danger', 'message' => 'Not allowed (return record found) !')));
                         }
@@ -305,7 +304,6 @@ class Purchase extends CI_Controller
                             'date'              => $this->input->post('date'),
                             'time'              => $this->input->post('date'),
                             'status'            => $this->input->post('purchase_status'),
-                            'updated_by'        => $this->session->id,
                             'supplier'          => $this->input->post('supplier'),
                             'discount'          => $this->input->post('discount'),
                             'purchase_tax'      => $this->input->post('tax_rate') ?: NULL,
@@ -329,51 +327,173 @@ class Purchase extends CI_Controller
                         if ($this->form_validation->run() == FALSE) { // check data fields
                             die(json_encode(array('success' => false, 'errors' => $this->form_validation->error_array())));
                         }
-                        $changed_db1 = false;
-                        $changed_db2 = false;
-                        /************************************************************ */
-                        $this->db->trans_begin();
+                        $changed_db1 = false; // purchase
+                        $changed_db2 = false; // purchase product
                         $purchase_id = $this->input->post('id');
+                        $this->db->trans_begin();
+                        /************************************************************ */ // first update purchase table
                         $this->Purchase_model->update_purchase($data, $purchase_id);
-                        $error = $this->db->error();
-                        if ($this->db->affected_rows() == 1 || $error['code'] == 0) { // // success or no change - update purchase
-                            if ($this->db->affected_rows() == 1) { // data changed
-                                $changed_db1 = true;
-                            }
-                            $products = $this->input->post('products'); // list of purchased products for updating (may contain new and edited or old deleted)
-                            // its best to delete previous all from db then insert new data from request
-                            /***************************************** */
-                            $this->Purchase_model->delete_purchase_products_SET_TIME(array('purchase' => $purchase_id, 'deleted_at' => NULL));
-                            if ($this->db->affected_rows() <= 0) {
+                        if ($this->db->affected_rows() == 1) { // updated found and updated but not changed updated_by, so change again
+                            $changed_db1 = true;
+                            $data['updated_by'] = $this->session->id;
+                            $this->Purchase_model->update_purchase($data, $purchase_id); // UPDATE
+                            if ($this->db->affected_rows() == 1) { // updated updated_by
+                            } else if ($this->db->affected_rows() == 0) { // same updated_by found
+                                //
+                            } else {
                                 $error = $this->db->error();
                                 $this->db->trans_rollback();
                                 die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
                             }
-                            /***************************************** */
-                            foreach ($products as $product) { // add products
-                                $data = array(
-                                    'purchase' => $purchase_id,
-                                    'product' => $product['id'],
-                                    'quantity' =>  $product['quantity'],
-                                    'unit' =>  $product['p_unit'],
-                                    'unit_cost' => $product['cost'],
-                                    'unit_discount' => $product['discount'],
-                                    'tax_id' => $product['tax_id'] ?: null,
-                                );
-                                $this->Purchase_model->insert_purchase_product($data);
-                                if ($this->db->affected_rows() != 1) {
+                        } else if ($this->db->affected_rows() == 0) { // no changed on row
+                            //
+                        } else {
+                            $error = $this->db->error();
+                            $this->db->trans_rollback();
+                            die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                        }
+                        /************************************************************ */ // do for products
+                        $ui_products = $this->input->post('products'); // list of purchased products for updating (may contain new and edited or old deleted)
+                        // compare one by one and take action
+                        $db_products = $this->Purchase_model->getPurchaseProductsDetails(array('purchase' => $purchase_id)); // all products for this purchase from db
+                        if (!$db_products) { // nothing retrieved means error
+                            $error = $this->db->error();
+                            $this->db->trans_rollback();
+                            die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                        }
+                        $existing_ids = array(); // id exist in both -  ui & db (for updating)
+                        $new_products = array(); // exist in ui only - new (for adding)
+                        $delete_ids = array(); // id exist in db only -  for deleting
+                        foreach ($ui_products as $ui_product) { // loop through ui products - update existing id, remove from ui array
+                            // check and get same from db
+                            $db_product = $this->Purchase_model->get_purchase_product_row(array('id' => $ui_product['id'], 'purchase' => $purchase_id));
+                            if ($db_product['id']) { // same ui id exist in db
+                                array_push($existing_ids, $db_product['id']); // add to existing array
+                                // update on db using unique id
+                                /* prepare for db data */
+                                unset($ui_product['id']);
+                                unset($ui_product['code']);
+                                unset($ui_product['name']);
+                                unset($ui_product['p_unit']);
+                                unset($ui_product['db_cost']);
+                                unset($ui_product['unit_name']);
+                                unset($ui_product['unit_code']);
+                                unset($ui_product['tax_rate']);
+                                unset($ui_product['hsn']);
+                                unset($ui_product['discount']);
+                                unset($ui_product['db_unit']);
+                                unset($ui_product['brand']);
+                                unset($ui_product['brand_code']);
+                                unset($ui_product['brand_name']);
+                                unset($ui_product['category']);
+                                unset($ui_product['category_name']);
+                                unset($ui_product['exp_date']);
+                                unset($ui_product['label']);
+                                unset($ui_product['mfg_date']);
+                                unset($ui_product['mrp']);
+                                unset($ui_product['symbology']);
+                                unset($ui_product['tax_code']);
+                                unset($ui_product['tax_code']);
+                                unset($ui_product['tax_method']);
+                                unset($ui_product['tax_name']);
+                                unset($ui_product['thumbnail']);
+                                unset($ui_product['type']);
+                                $this->Purchase_model->update_purchase_product($ui_product, array('id' => (int)$db_product['id'])); // UPDATE product row
+                                if ($this->db->affected_rows() == 1) { // updated found and updated but not changed updated_by, so change again
+                                    $changed_db2 = true;
+                                    $ui_product['updated_by'] = $this->session->id;
+                                    $this->Purchase_model->update_purchase_product($ui_product, array('id' => (int)$db_product['id'])); // UPDATE product row updated_by
+                                    if ($this->db->affected_rows() == 1) { // updated updated_by
+                                    } else if ($this->db->affected_rows() == 0) { // same updated_by found
+                                        //
+                                    } else {
+                                        $error = $this->db->error();
+                                        $this->db->trans_rollback();
+                                        die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                                    }
+                                } else if ($this->db->affected_rows() == 0) { // no data changed on both
+                                    //
+                                } else {
                                     $error = $this->db->error();
                                     $this->db->trans_rollback();
                                     die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
                                 }
+                            } else { // new product found
+                                // add to db
+                                /* prepare for db data */
+                                $ui_product['purchase'] = $purchase_id;
+                                unset($ui_product['id']);
+                                unset($ui_product['code']);
+                                unset($ui_product['name']);
+                                unset($ui_product['p_unit']);
+                                unset($ui_product['db_cost']);
+                                unset($ui_product['unit_name']);
+                                unset($ui_product['unit_code']);
+                                unset($ui_product['tax_rate']);
+                                unset($ui_product['hsn']);
+                                unset($ui_product['discount']);
+                                unset($ui_product['db_unit']);
+                                unset($ui_product['brand']);
+                                unset($ui_product['brand_code']);
+                                unset($ui_product['brand_name']);
+                                unset($ui_product['category']);
+                                unset($ui_product['category_name']);
+                                unset($ui_product['exp_date']);
+                                unset($ui_product['label']);
+                                unset($ui_product['mfg_date']);
+                                unset($ui_product['mrp']);
+                                unset($ui_product['symbology']);
+                                unset($ui_product['tax_code']);
+                                unset($ui_product['tax_code']);
+                                unset($ui_product['tax_method']);
+                                unset($ui_product['tax_name']);
+                                unset($ui_product['thumbnail']);
+                                unset($ui_product['type']);
+                                $ui_product['created_by'] = $this->session->id;
+                                $new_products[] = $ui_product;
                             }
+                        }
+                        $affected_rows = $this->Purchase_model->create_purchase_product_batch($new_products); // ADD new products (batch add)
+                        if ($affected_rows >= 1) {
+                            $changed_db2 = true;
+                        } else if ($affected_rows == 0) {
+                            //
+                        } else {
+                            $error = $this->db->error();
+                            $this->db->trans_rollback();
+                            die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                        }
+                        // DELETE ui removed payment
+                        foreach ($db_products as $db_product) { // loop through db products - delete that not exist in ui products
+                            // check with existing_ids
+                            if (array_search($db_product['id'], $existing_ids) !== false) { // same exist in ui
+                                // don't delete from db
+                            } else {
+                                // delete from db
+                                array_push($delete_ids, $db_product['id']); // save ids for delete
+                            }
+                        }
+                        if (count($delete_ids) > 0) { // products need to be set deleted on db
+                            $this->Purchase_model->set_deleted_at_purchase_product_ids($delete_ids); // DELETE not exist products
+                        }
+                        //print_r($this->db->last_query());
+                        if ($this->db->affected_rows() >= 1) {
+                            $changed_db2 = true;
+                        } else if ($this->db->affected_rows() == 0) {
+                            //
+                        } else {
+                            $error = $this->db->error();
+                            $this->db->trans_rollback();
+                            die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                        }
+                        if ($changed_db1 == true || $changed_db2 == true
+                        ) {
                             $this->db->trans_commit();
-                            echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully updated purchase !', 'location' => "admin/purchase/list"));
+                            echo json_encode(array('success' => true, 'type' => 'success', 'message' =>'Successfully Updated Purchase !', 'location' => "admin/purchase/list"));
                         } else {
                             $this->db->trans_rollback();
-                            echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
+                            echo json_encode(array('success' => true, 'type' => 'notice', 'timeout' => '5000', 'message' => $this->lang->line('no_data_changed_after_query')));
                         }
-                        /************************************************************ */
                 }
                 break;
             case 'DELETE':
@@ -419,6 +539,7 @@ class Purchase extends CI_Controller
         }
         switch ($search) { // dropdown jobs
             case 'product_for_add':
+            case 'product_for_edit':
                 $query["offset"] = 0;
                 $query["limit"] = 100;
                 $query["order_by"] = 'label';

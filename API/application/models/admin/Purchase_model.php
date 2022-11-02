@@ -273,8 +273,8 @@ class Purchase_model extends CI_Model
 		$this->db->join(TABLE_TAX_RATE . ' as tr',	'tr.id=p.tax_rate',	'left');
 		$this->db->order_by($order_by, $order);
 		$this->db->group_start();
-		$this->db->or_like('p.code',$search);
-		$this->db->or_like('p.name',$search);
+		$this->db->or_like('p.code', $search);
+		$this->db->or_like('p.name', $search);
 		$this->db->group_end();
 		$query = $this->db->get('', $limit, $offset);
 		return $query;
@@ -326,7 +326,8 @@ class Purchase_model extends CI_Model
 	function getPurchaseProductsDetails($where)
 	{
 		$this->db->select('
-		p.id														as id,
+		pp.id														as id,
+		p.id														as product,
 		p.code														as code,
 		p.name														as name,
 		pp.unit														as p_unit,
@@ -346,7 +347,7 @@ class Purchase_model extends CI_Model
 		$this->db->where(array('pp.purchase' => $where['purchase'], 'pp.deleted_at' => NULL));
 		$query = $this->db->get();
 		//die($this->db->last_query());
-		return $query ? $query->result() : false;
+		return $query ? $query->result_array() : false;
 	}
 	function getPurchaseDetails($where)
 	{
@@ -488,5 +489,35 @@ class Purchase_model extends CI_Model
 		$query = $this->db->get();
 		//die($this->db->last_query());
 		return $query ? $query->row_array() : false;
+	}
+	function get_purchase_product_row($where)
+	{
+		$this->db->select('*');
+		$this->db->from(TABLE_PURCHASE_PRODUCT);
+		$this->db->where($where);
+		$this->db->where(array('deleted_at' => NULL));
+		$query = $this->db->get();
+		//die($this->db->last_query());
+		return $query ? $query->row_array() : false;
+	}
+	function update_purchase_product($data, $where)
+	{
+		$this->db->set($data);
+		$this->db->where($where);
+		$query = $this->db->update(TABLE_PURCHASE_PRODUCT);
+		return $query;
+	}
+	function create_purchase_product_batch($data) // for batch add products option
+	{
+		$query = $this->db->insert_batch(TABLE_PURCHASE_PRODUCT, $data);
+		return $query;
+	}
+	function set_deleted_at_purchase_product_ids($ids)
+	{
+		$this->db->where_in('id', $ids);
+		$this->db->set('deleted_at', 'NOW()', FALSE); // deleted rows have a timestamp
+		$this->db->set('deleted_by', $this->session->id);
+		$query = $this->db->update(TABLE_PURCHASE_PRODUCT);
+		return $query;
 	}
 }
