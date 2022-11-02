@@ -349,7 +349,8 @@ INSERT INTO `module_permission` (`module`, `permission`, `checked`, `read_only`,
 (19,	6,	NULL,	NULL,	'PURCHASE RETURN'),
 (19,	7,	NULL,	NULL,	'PURCHASE RETURN'),
 (19,	9,	NULL,	NULL,	'PURCHASE RETURN'),
-(19,	10,	NULL,	NULL,	'PURCHASE RETURN');
+(19,	10,	NULL,	NULL,	'PURCHASE RETURN'),
+(19,	11,	NULL,	NULL,	'PURCHASE RETURN');
 
 DROP TABLE IF EXISTS `payment_mode`;
 CREATE TABLE `payment_mode` (
@@ -679,7 +680,8 @@ CREATE TABLE `purchase` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `purchase` (`id`, `reference_id`, `warehouse`, `date`, `time`, `status`, `created_by`, `updated_by`, `supplier`, `discount`, `purchase_tax`, `shipping_charge`, `shipping_tax`, `packing_charge`, `packing_tax`, `round_off`, `payment_note`, `note`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(236,	'REF-PUR-00236',	20,	'2022-10-06',	'23:56:40',	22,	1,	1,	89,	1.0000,	1,	1.0000,	1,	1.0000,	1,	0.3158,	NULL,	'qqewe',	'2022-10-28 18:27:00',	'2022-10-28 18:27:13',	NULL);
+(239,	'REF-PUR-00239',	20,	'2022-11-11',	'10:37:16',	22,	1,	1,	91,	1.0000,	1,	1.0000,	1,	1.0000,	1,	0.0237,	NULL,	'sdsd',	'2022-11-02 05:07:39',	'2022-11-02 10:53:00',	NULL),
+(240,	'REF-PUR-00240',	27,	'2022-11-10',	'16:59:21',	5,	1,	NULL,	88,	0.0000,	NULL,	0.0000,	NULL,	0.0000,	NULL,	0.3978,	NULL,	NULL,	'2022-11-02 11:29:25',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `purchase_payment`;
 CREATE TABLE `purchase_payment` (
@@ -711,6 +713,10 @@ CREATE TABLE `purchase_payment` (
   CONSTRAINT `amount_check` CHECK (`amount` > 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+INSERT INTO `purchase_payment` (`id`, `purchase`, `payment_mode`, `amount`, `date_time`, `transaction_id`, `reference_no`, `note`, `created_by`, `created_at`, `updated_by`, `updated_at`, `deleted_by`, `deleted_at`) VALUES
+(6,	239,	2,	10.0000,	'2022-11-29 16:22:00',	'tyuty',	'tyt',	NULL,	1,	'2022-11-02 10:52:16',	1,	'2022-11-02 10:54:19',	1,	'2022-11-02 10:54:19'),
+(7,	239,	5,	100.0000,	'2022-11-18 16:24:00',	't',	't6',	'e',	1,	'2022-11-02 10:54:09',	1,	'2022-11-02 10:54:19',	NULL,	NULL),
+(8,	239,	6,	817.0000,	'2022-11-02 16:25:00',	NULL,	NULL,	NULL,	1,	'2022-11-02 10:55:16',	NULL,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `purchase_product`;
 CREATE TABLE `purchase_product` (
@@ -726,10 +732,10 @@ CREATE TABLE `purchase_product` (
   `product_total_without_tax` decimal(12,4) GENERATED ALWAYS AS (`net_unit_cost` * `quantity`) VIRTUAL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `purchase_product_deleted_at` (`purchase`,`product`,`deleted_at`),
   KEY `product` (`product`),
   KEY `unit` (`unit`),
   KEY `tax_id` (`tax_id`),
+  KEY `purchase` (`purchase`),
   CONSTRAINT `purchase_product_ibfk_1` FOREIGN KEY (`purchase`) REFERENCES `purchase` (`id`),
   CONSTRAINT `purchase_product_ibfk_2` FOREIGN KEY (`product`) REFERENCES `product` (`id`),
   CONSTRAINT `purchase_product_ibfk_3` FOREIGN KEY (`unit`) REFERENCES `unit` (`id`),
@@ -738,12 +744,18 @@ CREATE TABLE `purchase_product` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `purchase_product` (`id`, `purchase`, `product`, `quantity`, `unit`, `unit_cost`, `unit_discount`, `tax_id`, `net_unit_cost`, `product_total_without_tax`, `deleted_at`) VALUES
-(166,	236,	5,	2.0000,	1,	12.0000,	1.0000,	2,	11.0000,	22.0000,	'2022-10-28 18:27:13'),
-(167,	236,	10,	2.0000,	6,	12.0000,	1.0000,	2,	11.0000,	22.0000,	'2022-10-28 18:27:13'),
-(168,	236,	6,	2.0000,	1,	250.7500,	1.0000,	2,	249.7500,	499.5000,	'2022-10-28 18:27:13'),
-(169,	236,	5,	2.0000,	1,	12.0000,	1.0000,	2,	11.0000,	22.0000,	NULL),
-(170,	236,	6,	2.0000,	1,	250.7500,	1.0000,	2,	249.7500,	499.5000,	NULL),
-(171,	236,	10,	2.0000,	6,	12.0000,	1.0000,	2,	11.0000,	22.0000,	NULL);
+(190,	239,	5,	3.0000,	1,	12.0000,	1.0000,	2,	11.0000,	33.0000,	'2022-11-02 05:08:00'),
+(191,	239,	10,	3.0000,	6,	12.0000,	1.0000,	2,	11.0000,	33.0000,	'2022-11-02 05:08:00'),
+(192,	239,	6,	3.0000,	1,	250.7500,	1.0000,	2,	249.7500,	749.2500,	'2022-11-02 05:08:00'),
+(193,	239,	5,	3.0000,	1,	12.0000,	1.0000,	2,	11.0000,	33.0000,	'2022-11-02 10:56:31'),
+(194,	239,	10,	3.0000,	6,	12.0000,	1.0000,	2,	11.0000,	33.0000,	'2022-11-02 10:56:31'),
+(195,	239,	6,	3.0000,	1,	250.7500,	1.0000,	2,	249.7500,	749.2500,	'2022-11-02 10:56:31'),
+(196,	239,	5,	3.0000,	1,	12.0000,	1.0000,	2,	11.0000,	33.0000,	NULL),
+(197,	239,	10,	3.0000,	6,	12.0000,	1.0000,	2,	11.0000,	33.0000,	NULL),
+(198,	239,	6,	3.0000,	1,	250.7500,	1.0000,	2,	249.7500,	749.2500,	NULL),
+(204,	240,	5,	1.0000,	1,	12.0000,	0.0000,	2,	12.0000,	12.0000,	NULL),
+(205,	240,	10,	1.0000,	6,	12.0000,	0.0000,	2,	12.0000,	12.0000,	NULL),
+(206,	240,	6,	1.0000,	1,	250.7500,	0.0000,	2,	250.7500,	250.7500,	NULL);
 
 DROP TABLE IF EXISTS `rack`;
 CREATE TABLE `rack` (
@@ -800,9 +812,6 @@ CREATE TABLE `return_purchase` (
   CONSTRAINT `return_purchase_ibfk_8` FOREIGN KEY (`deleted_by`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `return_purchase` (`id`, `reference_id`, `purchase`, `date`, `time`, `status`, `discount`, `return_tax`, `shipping_charge`, `shipping_tax`, `packing_charge`, `packing_tax`, `round_off`, `payment_note`, `note`, `created_by`, `created_at`, `updated_by`, `updated_at`, `deleted_by`, `deleted_at`) VALUES
-(372,	'REF-RET-PUR-00372',	236,	'2022-10-31',	'01:24:35',	5,	1.0000,	1,	1.0000,	1,	1.0000,	1,	0.4577,	NULL,	NULL,	1,	'2022-10-30 19:54:39',	1,	'2022-10-30 19:59:12',	NULL,	NULL),
-(373,	'REF-RET-PUR-00373',	236,	'2022-10-31',	'01:24:46',	5,	1.0000,	1,	1.0000,	1,	1.0000,	1,	0.3921,	NULL,	NULL,	1,	'2022-10-30 19:54:49',	NULL,	NULL,	NULL,	NULL);
 
 DROP TABLE IF EXISTS `return_purchase_payment`;
 CREATE TABLE `return_purchase_payment` (
@@ -848,16 +857,6 @@ CREATE TABLE `return_purchase_product` (
   CONSTRAINT `return_quantity_check` CHECK (`quantity` > 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `return_purchase_product` (`id`, `return_purchase`, `purchase_product`, `quantity`, `deleted_at`) VALUES
-(401,	372,	169,	1.0000,	'2022-10-30 19:58:54'),
-(402,	372,	170,	1.0000,	'2022-10-30 19:58:54'),
-(403,	372,	171,	1.0000,	'2022-10-30 19:58:54'),
-(404,	373,	169,	1.0000,	NULL),
-(405,	373,	170,	1.0000,	NULL),
-(406,	373,	171,	1.0000,	NULL),
-(407,	372,	169,	1.0000,	'2022-10-30 19:59:12'),
-(408,	372,	170,	1.0000,	'2022-10-30 19:59:12'),
-(409,	372,	169,	1.0000,	NULL);
 
 DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role` (
@@ -969,7 +968,8 @@ INSERT INTO `role_permission` (`role_id`, `module_id`, `permission_id`, `readonl
 (1,	19,	6,	1,	'PURCHASE RETURN - datatable',	1,	NULL),
 (1,	19,	7,	1,	'PURCHASE RETURN - details',	1,	NULL),
 (1,	19,	9,	1,	'PURCHASE RETURN - payment add',	1,	NULL),
-(1,	19,	10,	1,	'PURCHASE RETURN - payment details',	1,	NULL);
+(1,	19,	10,	1,	'PURCHASE RETURN - payment details',	1,	NULL),
+(1,	19,	11,	1,	'PURCHASE RETURN - update payment',	1,	NULL);
 
 DROP TABLE IF EXISTS `status`;
 CREATE TABLE `status` (
@@ -1235,7 +1235,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `user` (`id`, `code`, `role`, `username`, `password`, `first_name`, `last_name`, `company_name`, `date_of_birth`, `email`, `phone`, `avatar`, `gender`, `country`, `city`, `place`, `pin_code`, `address`, `description`, `status`, `deletable`, `editable`, `client_ip`, `login_at`, `logout_at`, `added_at`, `updated_at`, `deleted_at`) VALUES
-(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-10-30 17:41:30',	'2022-10-27 17:42:33',	'2021-04-20 19:22:52',	'2022-10-30 17:41:30',	NULL),
+(1,	'C1',	1,	'admin',	'$2y$10$6XeS4Sx0lGQzUWsqoSqaDOsaoM2wSVQAmDQg4viwBD4b5WAFw4SBu',	'Samnad',	'S',	'Cna',	'1992-10-30',	'admin@example.com',	'+91-0000000012',	NULL,	1,	'India',	'TVM',	'Trivandrum',	'695505',	'CyberLikes Pvt. Ltd.',	'something',	3,	0,	0,	'::1',	'2022-11-02 10:47:46',	'2022-10-27 17:42:33',	'2021-04-20 19:22:52',	'2022-11-02 10:47:46',	NULL),
 (30,	'C2',	1,	'neo',	'$2y$10$KcBcIiTPhlaPmKDiuQmz/OzryKE4ZPgWf/ddgyCvmkXSHevNGeqL6',	'Neo',	'Andrew',	'And & Co.',	'2022-07-06',	'and@eff.c',	'5641511',	NULL,	1,	'Indo',	'Jarka',	'Imania',	'6950505',	'Feans Palace\r\nNew York',	'Something special',	15,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:20:23',	'2022-07-12 12:18:23',	NULL),
 (31,	'C3',	1,	'markz',	'$2y$10$MwP6iXVdi0VrykbSVOq0EeL7L5x2YOnyrOUZZMIsPPLUjRgO2jLv.',	'Mark',	'Zuck',	'Meta',	'2022-07-20',	'mark@fb.com',	'61515141466',	NULL,	3,	'USA',	'Los Angels',	NULL,	NULL,	NULL,	NULL,	5,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-02 15:26:49',	'2022-07-12 12:18:17',	NULL),
 (32,	'C4',	3,	'errerer',	'$2y$10$w/w8b2bLPzlFFw9mb3.abuYyyRhoQfGh24YPRwYhdWVNX5lbQV5Ja',	'ytyty',	'tytyty',	NULL,	'2022-07-14',	'gfgfg@f.ghgh',	'4454545445',	NULL,	1,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	3,	NULL,	NULL,	NULL,	NULL,	NULL,	'2022-07-03 10:38:07',	'2022-07-04 13:43:00',	'2022-07-04 13:43:00'),
@@ -1298,6 +1298,7 @@ CREATE TABLE `warehouse` (
 INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country`, `city`, `pin_code`, `phone`, `email`, `address`, `longitude`, `latitude`, `description`, `status`, `status_reason`, `editable`, `deletable`, `added_at`, `updated_at`, `deleted_at`) VALUES
 (20,	'WARE0020',	'Ware House AAA',	'dsds',	'2020-02-12',	'India',	'TVM',	'695505',	'+91-9745451448',	'tewest@gmail.com',	'TVM',	NULL,	NULL,	'lklkl',	16,	'Flood',	NULL,	NULL,	'2021-04-14 19:54:53',	'2022-08-27 06:30:31',	NULL),
 (27,	'WARE0027',	'Ware House BBB',	'KMD',	'2022-07-01',	'Innnn',	'Ciiiii',	NULL,	'9745451448',	'sdsds@g.ghh',	'Addddddd',	NULL,	NULL,	'Desssssssssss',	16,	'Some',	NULL,	NULL,	'2022-07-05 12:01:17',	'2022-09-12 06:08:24',	NULL),
-(33,	'WARE0033',	' bvbv',	'nbnvbnvbn',	'2022-09-08',	NULL,	NULL,	NULL,	'45454545',	'bnvbn@qqwqw.ghg',	NULL,	NULL,	NULL,	NULL,	16,	NULL,	NULL,	NULL,	'2022-09-11 07:52:55',	NULL,	NULL);
+(33,	'WARE0033',	' bvbv',	'nbnvbnvbn',	'2022-09-08',	NULL,	NULL,	NULL,	'45454545',	'bnvbn@qqwqw.ghg',	NULL,	NULL,	NULL,	NULL,	17,	NULL,	NULL,	NULL,	'2022-09-11 07:52:55',	'2022-11-01 11:50:03',	'2022-11-01 11:50:03'),
+(34,	'WARE0034',	'Closed Ware house',	'ddfgdfdf',	'2022-11-29',	NULL,	NULL,	NULL,	'54545435',	'fdf@fff.tyytry',	NULL,	NULL,	NULL,	NULL,	17,	NULL,	NULL,	NULL,	'2022-11-01 11:50:50',	NULL,	NULL);
 
--- 2022-10-30 20:00:03
+-- 2022-11-02 14:23:37

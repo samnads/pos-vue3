@@ -224,6 +224,9 @@ class Purchase extends CI_Controller
                                 $ui_payment['payment_mode'] = $ui_payment['mode'];
                                 unset($ui_payment['mode']);
                                 $ui_payment['updated_by'] = $this->session->id;
+                                $ui_payment['transaction_id'] = trim($ui_payment['transaction_id']) ? trim($ui_payment['transaction_id']) : NULL;
+                                $ui_payment['reference_no'] = trim($ui_payment['reference_no']) ? trim($ui_payment['reference_no']) : NULL;
+                                $ui_payment['note'] = trim( $ui_payment['note']) ? trim($ui_payment['note']) : NULL;
                                 $this->Purchase_model->update_purchase_payment($ui_payment, array('id' => $db_payment['id'], 'purchase' => (int)$purchase['id'])); // UPDATE pay row
                                 if ($this->db->affected_rows() == 1) {
                                     $changed_db2 = true;
@@ -415,13 +418,13 @@ class Purchase extends CI_Controller
             default:
         }
         switch ($search) { // dropdown jobs
-            case 'product':
+            case 'product_for_add':
                 $query["offset"] = 0;
                 $query["limit"] = 100;
                 $query["order_by"] = 'label';
                 $query["order"] = 'asc';
                 $query["query"] = $this->input->get('query');
-                $query = $this->Purchase_model->suggestProdsForPurchase($query["query"], $query["offset"], $query["limit"], $query["order_by"], $query["order"]);
+                $query = $this->Purchase_model->suggestProdsForNewPurchase($query["query"], $query["offset"], $query["limit"], $query["order_by"], $query["order"]);
                 $error = $this->db->error();
                 if ($error['code'] == 0) {
                     echo json_encode(array('success' => true, 'type' => 'success', 'data' => $query->result()));

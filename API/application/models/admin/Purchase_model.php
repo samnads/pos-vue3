@@ -226,14 +226,14 @@ class Purchase_model extends CI_Model
 		//die($this->db->last_query());
 		return $query;
 	}
-	function suggestProdsForPurchase($search, $offset, $limit, $order_by, $order)
+	function suggestProdsForNewPurchase($search, $offset, $limit, $order_by, $order)
 	{
 		$search = trim($search);
 		$this->db->select('
-		p.id														as id,
+		RAND()														as id,
+		p.id														as product,
 		p.code														as code,
 		p.name														as name,
-		p.name														as value,
 		p.cost														as cost,
 		p.mrp														as mrp,
 		p.thumbnail													as thumbnail,
@@ -264,16 +264,18 @@ class Purchase_model extends CI_Model
 		tr.rate														as tax_rate,
 
 		CONCAT(p.name," | ",p.code," | Rs. ",TRUNCATE(p.price,2))	as label');
-		$this->db->from(TABLE_PRODUCT . '				p');
-		$this->db->join(TABLE_PRODUCT_TYPE . '		pt',	'pt.id=p.type',	'left');
-		$this->db->join(TABLE_BARCODE_SYMBOLOGY . '	bs',	'bs.id=p.symbology',	'left');
-		$this->db->join(TABLE_CATEGORY . '			c',	'c.id=p.category',	'left');
-		$this->db->join(TABLE_BRAND . '				b',	'b.id=p.brand',	'left');
-		$this->db->join(TABLE_UNIT . '				u',	'u.id=p.unit',	'left');
-		$this->db->join(TABLE_TAX_RATE . '			tr',	'tr.id=p.tax_rate',	'left');
+		$this->db->from(TABLE_PRODUCT . ' as p');
+		$this->db->join(TABLE_PRODUCT_TYPE . ' as pt',	'pt.id=p.type',	'left');
+		$this->db->join(TABLE_BARCODE_SYMBOLOGY . ' as bs',	'bs.id=p.symbology',	'left');
+		$this->db->join(TABLE_CATEGORY . ' as c',	'c.id=p.category',	'left');
+		$this->db->join(TABLE_BRAND . ' as b',	'b.id=p.brand',	'left');
+		$this->db->join(TABLE_UNIT . ' as u',	'u.id=p.unit',	'left');
+		$this->db->join(TABLE_TAX_RATE . ' as tr',	'tr.id=p.tax_rate',	'left');
 		$this->db->order_by($order_by, $order);
-		$this->db->or_like('p.code',	$search);
-		$this->db->or_like('p.name',	$search);
+		$this->db->group_start();
+		$this->db->or_like('p.code',$search);
+		$this->db->or_like('p.name',$search);
+		$this->db->group_end();
 		$query = $this->db->get('', $limit, $offset);
 		return $query;
 	}
@@ -399,7 +401,8 @@ class Purchase_model extends CI_Model
 	function get_purchase_products_by_purchase($where)
 	{
 		$this->db->select('
-		p.id														as id,
+		pp.id														as id,
+		p.id														as product,
 		p.code														as code,
 		p.name														as name,
 		pp.unit														as p_unit,

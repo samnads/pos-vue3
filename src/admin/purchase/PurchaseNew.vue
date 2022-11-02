@@ -1101,7 +1101,7 @@ export default {
           "purchase",
           {
             action: "create",
-            search: "product",
+            search: self.route.name == "adminPurchaseNew" ? "product_for_add" : "product_for_edit",
             query: query,
           },
           self.controller,
