@@ -200,17 +200,12 @@ class Purchase_model extends CI_Model
 		$this->db->group_start();
 		$this->db->or_like('p.reference_id',	$search);
 		$this->db->or_like('p.date',			$search);
-		$this->db->or_like('p.discount',		$search);
-		$this->db->or_like('p.shipping_charge',	$search);
-		$this->db->or_like('p.packing_charge',	$search);
-		$this->db->or_like('p.round_off',		$search);
 		$this->db->or_like('p.payment_note',	$search);
 		$this->db->or_like('p.note',			$search);
 		$this->db->or_like('p.created_at',		$search);
 		$this->db->or_like('p.updated_at',		$search);
 		$this->db->or_like('w.name',			$search);
 		$this->db->or_like('s.name',			$search);
-		$this->db->or_like('st.name',			$search);
 		$this->db->or_like('st.name',			$search);
 		$this->db->or_like('ppy.total_paid',	$search);
 		$this->db->group_end();

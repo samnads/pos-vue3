@@ -125,6 +125,7 @@
                   <tr>
                     <th scope="col">#</th>
                     <th scope="col">Code | Name</th>
+                    <th scope="col">Batch</th>
                     <th scope="col">Quantity</th>
                     <th scope="col">Unit</th>
                   </tr>
@@ -133,6 +134,7 @@
                   <tr v-for="(item, index) in details.products" :key="index">
                     <td>{{ index + 1 }}</td>
                     <td>{{ item.code }} | {{ item.name }}</td>
+                    <td>-</td>
                     <td>{{ parseFloat(item.quantity).toFixed(2) }}</td>
                     <td>{{ item.unit_name }}</td>
                   </tr>
