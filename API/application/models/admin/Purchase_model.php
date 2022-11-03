@@ -18,7 +18,7 @@ class Purchase_model extends CI_Model
 		$this->db->reset_query();
 		//die($subquery_payment);
 		/******************************************************/ // calculate product purchase quantity
-		$this->db->select('pp.purchase,SUM(pp.quantity) as total_purchase_quantity');
+		$this->db->select('pp.purchase,SUM(pp.quantity) as total_purchase_quantity,COUNT(pp.id) as total_purchase_product');
 		$this->db->from(TABLE_PURCHASE_PRODUCT . ' as pp');
 		$this->db->where(array('pp.deleted_at' => NULL));
 		$this->db->group_by(array('pp.purchase'));
@@ -37,38 +37,29 @@ class Purchase_model extends CI_Model
 		/******************************************************/ // calculate each product_total excluding tax rate
 		$this->db->select('
 		purchase,
-		product,
-		quantity,
-		unit,
-		unit_cost,
-		unit_discount,
-		tax_id,
-		net_unit_cost,
-		product_total_without_tax
+		SUM(product_total_without_tax) as product_total_without_tax
 		');
 		$this->db->from(TABLE_PURCHASE_PRODUCT);
 		$this->db->where(array('deleted_at' => NULL));
-		$this->db->group_by(array('purchase', 'product'));
+		$this->db->group_by(array('purchase'));
 		$subquery_product = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($subquery_product);
 		/******************************************************/ // calculate each product total tax
 		$this->db->select('psp.purchase,
-		psp.product,
-		tr.rate as tax_rate,
-		(CASE 
+		SUM((CASE 
 			WHEN tr.type = "P" THEN (IFNULL(tr.rate, 0) / 100) * psp.product_total_without_tax
 			ELSE IFNULL(tr.rate, 0) * psp.quantity
-		END) product_total_tax,
+		END)) product_total_tax,
 		');
 		$this->db->from(TABLE_PURCHASE_PRODUCT . ' as psp');
 		$this->db->join(TABLE_TAX_RATE . ' as tr',    'tr.id = psp.tax_id', 'left');
 		$this->db->where(array('psp.deleted_at' => NULL));
-		$this->db->group_by(array('psp.purchase', 'psp.product'));
+		$this->db->group_by(array('psp.purchase'));
 		$product_total_tax = $this->db->get_compiled_select();
 		$this->db->reset_query();
 		//die($product_total_tax);
-		/******************************************************/
+		/******************************************************/ // return count
 		$this->db->select('purchase,COUNT(purchase) as total_return')->from(TABLE_RETURN_PURCHASE)->where(array('deleted_at' => NULL))->group_by('purchase');
 		$subquery_return_count = $this->db->get_compiled_select();
 		$this->db->reset_query();
@@ -95,27 +86,28 @@ class Purchase_model extends CI_Model
 		p.updated_at	as updated_at,
 		p.deleted_at	as deleted_at,
 		IFNULL(rc.total_return,0) as total_return,
-		COUNT(case when pup.product then pup.product end) as product_count,
+
 		s.name as supplier_name,
 		w.name as warehouse_name,
 		st.name as status_name,
 		st.css_class as css_class,
-		SUM(pup.product_total_without_tax) as product_total_without_unit_tax,
-		SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) as product_total_with_unit_tax,
+		pup.product_total_without_tax as product_total_without_unit_tax,
+		(pup.product_total_without_tax + ptt.product_total_tax) as product_total_with_unit_tax,
 		ppq.total_purchase_quantity as total_purchase_quantity,
+		ppq.total_purchase_product as product_count,
 		IFNULL(prq.total_return_quantity,0) as total_return_quantity,
 
 
 		(CASE 
-			WHEN tr_p.type = "P" THEN (IFNULL(tr_p.rate, 0) / 100) * (SUM(ptt.product_total_tax) + SUM(pup.product_total_without_tax)-p.discount)
+			WHEN tr_p.type = "P" THEN (IFNULL(tr_p.rate, 0) / 100) * (ptt.product_total_tax + pup.product_total_without_tax - p.discount)
 			ELSE IFNULL(tr_p.rate, 0)
 		END) as purchase_tax_value,
 
 
 		(CASE 
-			WHEN tr_p.type = "P" THEN (IFNULL(tr_p.rate, 0) / 100) * (SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) - p.discount)
+			WHEN tr_p.type = "P" THEN (IFNULL(tr_p.rate, 0) / 100) * (pup.product_total_without_tax + ptt.product_total_tax - p.discount)
 			ELSE IFNULL(tr_p.rate, 0)
-		END) + (SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) - p.discount) as product_total_with_tax,
+		END) + (pup.product_total_without_tax + ptt.product_total_tax - p.discount) as product_total_with_tax,
 
 
 		p.shipping_charge as shipping_charge,
@@ -137,9 +129,9 @@ class Purchase_model extends CI_Model
 
 
 		ROUND((CASE 
-			WHEN tr_p.type = "P" THEN (IFNULL(tr_p.rate, 0) / 100) * (SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) - p.discount)
+			WHEN tr_p.type = "P" THEN (IFNULL(tr_p.rate, 0) / 100) * (pup.product_total_without_tax + ptt.product_total_tax - p.discount)
 			ELSE IFNULL(tr_p.rate, 0)
-		END) + (SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) - p.discount) +
+		END) + (pup.product_total_without_tax + ptt.product_total_tax - p.discount) +
 		(CASE 
 			WHEN tr_s.type = "P" THEN (IFNULL(tr_s.rate, 0) / 100) * p.shipping_charge
 			ELSE IFNULL(tr_s.rate, 0)
@@ -157,9 +149,9 @@ class Purchase_model extends CI_Model
 		
 		IFNULL(ppy.total_paid, 0) -
 		((CASE 
-			WHEN tr_p.type = "P" THEN (IFNULL(tr_p.rate, 0) / 100) * (SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) - p.discount)
+			WHEN tr_p.type = "P" THEN (IFNULL(tr_p.rate, 0) / 100) * (pup.product_total_without_tax + ptt.product_total_tax - p.discount)
 			ELSE IFNULL(tr_p.rate, 0)
-		END) + (SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) - p.discount) +
+		END) + (pup.product_total_without_tax + ptt.product_total_tax - p.discount) +
 		(CASE 
 			WHEN tr_s.type = "P" THEN (IFNULL(tr_s.rate, 0) / 100) * p.shipping_charge
 			ELSE IFNULL(tr_s.rate, 0)
@@ -174,9 +166,9 @@ class Purchase_model extends CI_Model
 		
 		
 		(CASE 
-			WHEN tr_p.type = "P" THEN (IFNULL(tr_p.rate, 0) / 100) * (SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) - p.discount)
+			WHEN tr_p.type = "P" THEN (IFNULL(tr_p.rate, 0) / 100) * (pup.product_total_without_tax + ptt.product_total_tax - p.discount)
 			ELSE IFNULL(tr_p.rate, 0)
-		END) + (SUM(pup.product_total_without_tax) + SUM(ptt.product_total_tax) - p.discount) +
+		END) + (pup.product_total_without_tax + ptt.product_total_tax - p.discount) +
 		(CASE 
 			WHEN tr_s.type = "P" THEN (IFNULL(tr_s.rate, 0) / 100) * p.shipping_charge
 			ELSE IFNULL(tr_s.rate, 0)
@@ -198,7 +190,7 @@ class Purchase_model extends CI_Model
 		$this->db->join(TABLE_TAX_RATE . ' as tr_pk',    'tr_pk.id = p.packing_tax', 'left');
 		$this->db->join('(' . $subquery_payment . ')  as ppy', 'ppy.purchase = p.id', 'left');
 		$this->db->join('(' . $subquery_product . ') as pup', 'pup.purchase = p.id', 'left');
-		$this->db->join('(' . $product_total_tax . ') as ptt', 'ptt.purchase = p.id AND ptt.product = pup.product', 'left');
+		$this->db->join('(' . $product_total_tax . ') as ptt', 'ptt.purchase = p.id', 'left');
 		$this->db->join('(' . $subquery_return_count . ') as rc', 'rc.purchase = p.id', 'left');
 		$this->db->join('(' . $subquery_p_quantity . ') as ppq', 'ppq.purchase = p.id', 'left');
 		$this->db->join('(' . $subquery_pr_quantity . ') as prq', 'prq.purchase = p.id', 'left');
@@ -225,6 +217,7 @@ class Purchase_model extends CI_Model
 		$query = $this->db->get('', $limit, $offset);
 		//die($this->db->last_query());
 		return $query;
+		//COUNT(case when pup.product then pup.product end) as product_count,
 	}
 	function suggestProdsForNewPurchase($search, $offset, $limit, $order_by, $order)
 	{
@@ -234,7 +227,7 @@ class Purchase_model extends CI_Model
 		p.id														as product,
 		p.code														as code,
 		p.name														as name,
-		p.cost														as cost,
+		p.cost														as unit_cost,
 		p.mrp														as mrp,
 		p.thumbnail													as thumbnail,
 		p.tax_method												as tax_method,

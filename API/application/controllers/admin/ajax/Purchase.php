@@ -103,8 +103,9 @@ class Purchase extends CI_Controller
                                     'quantity' =>  $product['quantity'],
                                     'unit' =>  $product['p_unit'],
                                     'unit_cost' => $product['unit_cost'],
-                                    'unit_discount' => $product['discount'],
+                                    'unit_discount' => $product['unit_discount'],
                                     'tax_id' => $product['tax_id'] ?: null,
+                                    'created_by'        => $this->session->id
                                 );
                                 $this->Purchase_model->insert_purchase_product($data);
                                 if ($this->db->affected_rows() != 1) {

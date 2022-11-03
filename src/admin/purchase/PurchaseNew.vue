@@ -1321,7 +1321,7 @@ export default {
           self.setFieldValue("warehouse", data.warehouse);
           self.setFieldValue("purchase_status", data.status);
           self.setFieldValue("note", data.note);
-          self.setFieldValue("discount", data.unit_discount);
+          self.setFieldValue("discount", data.discount);
           self.setFieldValue("tax_rate", data.purchase_tax);
           self.setFieldValue("shipping", Number(data.shipping_charge));
           self.setFieldValue("shipping_tax", data.shipping_tax);
