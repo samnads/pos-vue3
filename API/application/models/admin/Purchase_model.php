@@ -217,7 +217,7 @@ class Purchase_model extends CI_Model
 	function suggestProdsForNewPurchase($search, $offset, $limit, $order_by, $order)
 	{
 		$search = trim($search);
-		$this->db->select('
+		$this->db->select("
 		RAND()														as id,
 		p.id														as product,
 		p.code														as code,
@@ -227,8 +227,8 @@ class Purchase_model extends CI_Model
 		p.thumbnail													as thumbnail,
 		p.tax_method												as tax_method,
 		1															as quantity,
-		DATE_FORMAT(p.mfg_date,"%d/%b/%Y")							as mfg_date,
-		DATE_FORMAT(p.exp_date,"%d/%b/%Y")							as exp_date,
+		DATE_FORMAT(p.mfg_date,'%d/%b/%Y')							as mfg_date,
+		DATE_FORMAT(p.exp_date,'%d/%b/%Y')							as exp_date,
 
 		pt.name														as type,
 
@@ -251,7 +251,8 @@ class Purchase_model extends CI_Model
 		tr.name														as tax_name,
 		tr.rate														as tax_rate,
 
-		CONCAT(p.name," | ",p.code," | Rs. ",TRUNCATE(p.price,2))	as label');
+
+		CONCAT('<span class=\'text-primary\'>',p.name,'</span>','<span class=\'text-danger\'> | </span>','<span class=\'text-secondary\'>',p.code,'</span>','<span class=\'text-danger\'> | </span>','Price. : ',TRUNCATE(p.price,2))	as label");
 		$this->db->from(TABLE_PRODUCT . ' as p');
 		$this->db->join(TABLE_PRODUCT_TYPE . ' as pt',	'pt.id=p.type',	'left');
 		$this->db->join(TABLE_BARCODE_SYMBOLOGY . ' as bs',	'bs.id=p.symbology',	'left');
@@ -429,6 +430,7 @@ class Purchase_model extends CI_Model
 	{
 		$this->db->where($where);
 		$this->db->set('deleted_at', 'NOW()', FALSE); // deleted rows have a timestamp
+		$this->db->set('deleted_by', $this->session->id);
 		$query = $this->db->update(TABLE_PURCHASE);
 		return $query;
 	}

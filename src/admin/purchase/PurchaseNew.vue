@@ -170,11 +170,11 @@
             @click="checkAndPush(item)"
             role="button"
             class="list-group-item list-group-item-action"
-            v-for="item in autocompleteList"
+            v-for="(item,index) in autocompleteList"
             :key="item.id"
             :value="item.name"
           >
-            {{ item.label }}
+            <span>{{index+1}}&nbsp;.&nbsp;</span><span v-html="item.label"></span>
           </li>
         </ul>
       </div>
