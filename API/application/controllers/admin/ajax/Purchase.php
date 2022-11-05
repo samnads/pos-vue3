@@ -299,61 +299,11 @@ class Purchase extends CI_Controller
                         if ($data['total_return'] > 0) {
                             die(json_encode(array('success' => false, 'type' => 'danger', 'message' => 'Not allowed (return record found) !')));
                         }
-                        /****************************************************** */
-                        $data = array(
-                            'warehouse'         => $this->input->post('warehouse'),
-                            'date'              => $this->input->post('date'),
-                            'time'              => $this->input->post('date'),
-                            'status'            => $this->input->post('purchase_status'),
-                            'supplier'          => $this->input->post('supplier'),
-                            'discount'          => $this->input->post('discount'),
-                            'purchase_tax'      => $this->input->post('tax_rate') ?: NULL,
-                            'shipping_charge'   => $this->input->post('shipping'),
-                            'shipping_tax'      => $this->input->post('shipping_tax') ?: NULL,
-                            'packing_charge'    => $this->input->post('packing'),
-                            'packing_tax'       => $this->input->post('packing_tax') ?: NULL,
-                            'round_off'         => $this->input->post('roundoff'),
-                            'payment_note'      => $this->input->post('payment_note') ?: NULL,
-                            'note'               => $this->input->post('note') ?: NULL,
-                        );
-                        $this->form_validation->set_data($data);
-                        $config = array(
-                            array(
-                                'field' => 'warehouse',
-                                'label' => 'Warehouse',
-                                'rules' => 'required|trim|numeric|xss_clean',
-                            )
-                        );
-                        $this->form_validation->set_rules($config);
-                        if ($this->form_validation->run() == FALSE) { // check data fields
-                            die(json_encode(array('success' => false, 'errors' => $this->form_validation->error_array())));
-                        }
-                        $changed_db1 = false; // purchase
-                        $changed_db2 = false; // purchase product
-                        $purchase_id = $this->input->post('id');
+                        /************************************************************ */ // first update product table
                         $this->db->trans_begin();
-                        /************************************************************ */ // first update purchase table
-                        $this->Purchase_model->update_purchase($data, $purchase_id);
-                        if ($this->db->affected_rows() == 1) { // updated found and updated but not changed updated_by, so change again
-                            $changed_db1 = true;
-                            $data['updated_by'] = $this->session->id;
-                            $this->Purchase_model->update_purchase($data, $purchase_id); // UPDATE
-                            if ($this->db->affected_rows() == 1) { // updated updated_by
-                            } else if ($this->db->affected_rows() == 0) { // same updated_by found
-                                //
-                            } else {
-                                $error = $this->db->error();
-                                $this->db->trans_rollback();
-                                die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
-                            }
-                        } else if ($this->db->affected_rows() == 0) { // no changed on row
-                            //
-                        } else {
-                            $error = $this->db->error();
-                            $this->db->trans_rollback();
-                            die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
-                        }
-                        /************************************************************ */ // do for products
+                        $db_products_updated = false; // purchase product
+                        $db_purchase_updated = false; // purchase
+                        $purchase_id = $this->input->post('id');
                         $ui_products = $this->input->post('products'); // list of purchased products for updating (may contain new and edited or old deleted)
                         // compare one by one and take action
                         $db_products = $this->Purchase_model->getPurchaseProductsDetails(array('purchase' => $purchase_id)); // all products for this purchase from db
@@ -401,7 +351,7 @@ class Purchase extends CI_Controller
                                 unset($ui_product['type']);
                                 $this->Purchase_model->update_purchase_product($ui_product, array('id' => (int)$db_product['id'])); // UPDATE product row
                                 if ($this->db->affected_rows() == 1) { // updated found and updated but not changed updated_by, so change again
-                                    $changed_db2 = true;
+                                    $db_products_updated = true;
                                     $ui_product['updated_by'] = $this->session->id;
                                     $this->Purchase_model->update_purchase_product($ui_product, array('id' => (int)$db_product['id'])); // UPDATE product row updated_by
                                     if ($this->db->affected_rows() == 1) { // updated updated_by
@@ -456,7 +406,7 @@ class Purchase extends CI_Controller
                         }
                         $affected_rows = $this->Purchase_model->create_purchase_product_batch($new_products); // ADD new products (batch add)
                         if ($affected_rows >= 1) {
-                            $changed_db2 = true;
+                            $db_products_updated = true;
                         } else if ($affected_rows == 0) {
                             //
                         } else {
@@ -464,7 +414,7 @@ class Purchase extends CI_Controller
                             $this->db->trans_rollback();
                             die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
                         }
-                        // DELETE ui removed payment
+                        // DELETE ui removed products
                         foreach ($db_products as $db_product) { // loop through db products - delete that not exist in ui products
                             // check with existing_ids
                             if (array_search($db_product['id'], $existing_ids) !== false) { // same exist in ui
@@ -476,21 +426,75 @@ class Purchase extends CI_Controller
                         }
                         if (count($delete_ids) > 0) { // products need to be set deleted on db
                             $this->Purchase_model->set_deleted_at_purchase_product_ids($delete_ids); // DELETE not exist products
+                            if ($this->db->affected_rows() >= 1) {
+                                $db_products_updated = true;
+                            } else if ($this->db->affected_rows() == 0) {
+                                //
+                            } else {
+                                $error = $this->db->error();
+                                $this->db->trans_rollback();
+                                die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                            }
                         }
-                        //print_r($this->db->last_query());
-                        if ($this->db->affected_rows() >= 1) {
-                            $changed_db2 = true;
-                        } else if ($this->db->affected_rows() == 0) {
+                        // product update completed !
+                        /******************************************************************************* */ // update purchase table start
+                        $data = array(
+                            'warehouse'         => $this->input->post('warehouse'),
+                            'date'              => $this->input->post('date'),
+                            'time'              => $this->input->post('date'),
+                            'status'            => $this->input->post('purchase_status'),
+                            'supplier'          => $this->input->post('supplier'),
+                            'discount'          => $this->input->post('discount'),
+                            'purchase_tax'      => $this->input->post('tax_rate') ?: NULL,
+                            'shipping_charge'   => $this->input->post('shipping'),
+                            'shipping_tax'      => $this->input->post('shipping_tax') ?: NULL,
+                            'packing_charge'    => $this->input->post('packing'),
+                            'packing_tax'       => $this->input->post('packing_tax') ?: NULL,
+                            'round_off'         => $this->input->post('roundoff'),
+                            'payment_note'      => $this->input->post('payment_note') ?: NULL,
+                            'note'               => $this->input->post('note') ?: NULL,
+                        );
+                        if($db_products_updated == true){
+                            $data['updated_by'] = $this->session->id;
+                        }
+                        $this->form_validation->set_data($data);
+                        $config = array(
+                            array(
+                                'field' => 'warehouse',
+                                'label' => 'Warehouse',
+                                'rules' => 'required|trim|numeric|xss_clean',
+                            )
+                        );
+                        $this->form_validation->set_rules($config);
+                        if ($this->form_validation->run() == FALSE) { // check data fields
+                            die(json_encode(array('success' => false, 'errors' => $this->form_validation->error_array())));
+                        }
+                        $this->Purchase_model->update_purchase($data, $purchase_id);
+                        if ($this->db->affected_rows() == 1) { // updated found and updated but not changed updated_by, so change again
+                            $db_purchase_updated = true;
+                            $data['updated_by'] = $this->session->id;
+                            $this->Purchase_model->update_purchase($data, $purchase_id); // UPDATE
+                            if ($this->db->affected_rows() == 1) { // updated updated_by
+                            } else if ($this->db->affected_rows() == 0) { // same updated_by found
+                                //
+                            } else {
+                                $error = $this->db->error();
+                                $this->db->trans_rollback();
+                                die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                            }
+                        } else if ($this->db->affected_rows() == 0) { // no changed on row
                             //
                         } else {
                             $error = $this->db->error();
                             $this->db->trans_rollback();
                             die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
                         }
-                        if ($changed_db1 == true || $changed_db2 == true
+                        /******************************************************************************* */
+                        if (
+                            $db_purchase_updated == true || $db_products_updated == true
                         ) {
                             $this->db->trans_commit();
-                            echo json_encode(array('success' => true, 'type' => 'success', 'message' =>'Successfully Updated Purchase !', 'location' => "admin/purchase/list"));
+                            echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully Updated Purchase !', 'location' => "admin/purchase/list"));
                         } else {
                             $this->db->trans_rollback();
                             echo json_encode(array('success' => true, 'type' => 'notice', 'timeout' => '5000', 'message' => $this->lang->line('no_data_changed_after_query')));
