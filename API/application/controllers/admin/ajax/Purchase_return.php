@@ -291,7 +291,6 @@ class Purchase_return extends CI_Controller
                         if (count($delete_ids) > 0) {
                             $this->Purchase_return_model->set_deleted_at_purchase_return_payment_ids($delete_ids); // DELETE not exist pays
                         }
-                        //print_r($this->db->last_query());
                         if ($this->db->affected_rows() >= 1) {
                             $changed_db2 = true;
                         } else if ($this->db->affected_rows() == 0) {
@@ -310,15 +309,15 @@ class Purchase_return extends CI_Controller
                         }
                         break;
                     default: // update purchase return
+                        $this->db->trans_begin();
                         $_POST = $this->input->post('data');
                         /************************************************************ */ // first update return purchase product table
-                        $this->db->trans_begin();
                         $db_products_updated = false; // purchase_return_product
                         $db_return_updated = false; // return_purchase
-                        $return_purchase_id = $this->input->post('id');
+                        $return_purchase = $this->input->post('id');
                         $ui_products = $this->input->post('products'); // list of returned products for updating (may contain new and edited or old deleted)
                         // compare one by one and take action
-                        $db_products = $this->Purchase_return_model->getPurchaseReturnProductsDetails(array('return_purchase' => $return_purchase_id)); // all products for this retuin purchase from db
+                        $db_products = $this->Purchase_return_model->getPurchaseReturnProductsDetails(array('return_purchase' => $return_purchase)); // all products for this retuin purchase from db
                         if (!$db_products) { // nothing retrieved means error
                             $error = $this->db->error();
                             $this->db->trans_rollback();
@@ -329,13 +328,32 @@ class Purchase_return extends CI_Controller
                         $delete_ids = array(); // id exist in db only -  for deleting
                         foreach ($ui_products as $ui_product) { // loop through ui products - update existing id, remove from ui array
                             // check and get same from db
-                            $db_product = $this->Purchase_return_model->get_return_purchase_product_row(array('id' => $ui_product['id'], 'return_purchase' => $return_purchase_id));
+                            $db_product = $this->Purchase_return_model->get_return_purchase_product_row(array('id' => $ui_product['id'], 'return_purchase' => $return_purchase));
                             if ($db_product['id']) { // same ui id exist in db
                                 array_push($existing_ids, $db_product['id']); // add to existing array
                                 // update on db using unique id
                                 /* prepare for db data */
                                 unset($ui_product['id']);
+                                unset($ui_product['product']);
+                                unset($ui_product['returned_quantity']);
+                                unset($ui_product['to_be_return_quantity']);
+                                unset($ui_product['purchase_quantity']);
                                 unset($ui_product['code']);
+                                unset($ui_product['name']);
+                                unset($ui_product['unit']);
+                                unset($ui_product['p_unit']);
+                                unset($ui_product['unit_cost']);
+                                unset($ui_product['db_cost']);
+                                unset($ui_product['step']);
+                                unset($ui_product['discount']);
+                                unset($ui_product['cost']);
+                                unset($ui_product['tax_id']);
+                                unset($ui_product['tax_rate']);
+                                unset($ui_product['hsn']);
+                                unset($ui_product['unit_discount']);
+                                unset($ui_product['db_unit']);
+                                unset($ui_product['tax_method']);
+                                unset($ui_product['label']);
                                 $this->Purchase_return_model->update_return_purchase_product($ui_product, array('id' => (int)$db_product['id'])); // UPDATE product row
                                 if ($this->db->affected_rows() == 1) { // updated found and updated but not changed updated_by, so change again
                                     $db_products_updated = true;
@@ -359,36 +377,70 @@ class Purchase_return extends CI_Controller
                             } else { // new product found
                                 // add to db
                                 /* prepare for db data */
-                                $ui_product['return_purchase'] = $return_purchase_id;
+                                $ui_product['return_purchase'] = $return_purchase;
                                 unset($ui_product['id']);
+                                unset($ui_product['product']);
+                                unset($ui_product['returned_quantity']);
+                                unset($ui_product['to_be_return_quantity']);
+                                unset($ui_product['purchase_quantity']);
                                 unset($ui_product['code']);
+                                unset($ui_product['name']);
+                                unset($ui_product['unit']);
+                                unset($ui_product['p_unit']);
+                                unset($ui_product['unit_cost']);
+                                unset($ui_product['db_cost']);
+                                unset($ui_product['step']);
+                                unset($ui_product['discount']);
+                                unset($ui_product['cost']);
+                                unset($ui_product['tax_id']);
+                                unset($ui_product['tax_rate']);
+                                unset($ui_product['hsn']);
+                                unset($ui_product['unit_discount']);
+                                unset($ui_product['db_unit']);
+                                unset($ui_product['tax_method']);
+                                unset($ui_product['label']);
                                 $ui_product['created_by'] = $this->session->id;
                                 $new_products[] = $ui_product;
                             }
                         }
-
-
-                        die();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        $_POST = $this->input->post('data');
+                        $affected_rows = $this->Purchase_return_model->create_return_purchase_product_batch($new_products); // ADD new products (batch add)
+                        if ($affected_rows >= 1) {
+                            $db_products_updated = true;
+                        } else if ($affected_rows == 0) {
+                            //
+                        } else {
+                            $error = $this->db->error();
+                            $this->db->trans_rollback();
+                            die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                        }
+                        // DELETE ui removed products
+                        foreach ($db_products as $db_product) { // loop through db products - delete that not exist in ui products
+                            // check with existing_ids
+                            if (array_search($db_product['id'], $existing_ids) !== false) { // same exist in ui
+                                // don't delete from db
+                            } else {
+                                // delete from db
+                                array_push($delete_ids, $db_product['id']); // save ids for delete
+                            }
+                        }
+                        if (count($delete_ids) > 0) { // products need to be set deleted on db
+                            $this->Purchase_return_model->set_deleted_at_return_purchase_product_ids($delete_ids); // DELETE not exist products
+                            if ($this->db->affected_rows() >= 1) {
+                                $db_products_updated = true;
+                            } else if ($this->db->affected_rows() == 0) {
+                                //
+                            } else {
+                                $error = $this->db->error();
+                                $this->db->trans_rollback();
+                                die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                            }
+                        }
+                        // product update completed !
+                        /******************************************************************************* */ // update return purchase table start
                         $data = array(
                             'date'              => $this->input->post('date'),
                             'time'              => $this->input->post('date'),
                             'status'            => $this->input->post('return_status'),
-                            'updated_by'        => $this->session->id,
                             'discount'          => $this->input->post('discount'),
                             'return_tax'        => $this->input->post('tax_rate') ?: NULL,
                             'shipping_charge'   => $this->input->post('shipping'),
@@ -399,6 +451,9 @@ class Purchase_return extends CI_Controller
                             'payment_note'      => $this->input->post('payment_note') ?: NULL,
                             'note'              => $this->input->post('note') ?: NULL,
                         );
+                        if ($db_products_updated == true) {
+                            $data['updated_by'] = $this->session->id;
+                        }
                         $this->form_validation->set_data($data);
                         $config = array(
                             array(
@@ -411,45 +466,36 @@ class Purchase_return extends CI_Controller
                         if ($this->form_validation->run() == FALSE) { // check data fields
                             die(json_encode(array('success' => false, 'errors' => $this->form_validation->error_array())));
                         }
-                        /************************************************************ */
-                        $this->db->trans_begin();
-                        $return_purchase_id = $this->input->post('id');
-                        $this->Purchase_return_model->update_return_purchase($data, $return_purchase_id);
-                        $error = $this->db->error();
-                        if ($this->db->affected_rows() == 1 || $error['code'] == 0) { // success or no change - update return purchase
-                            if ($this->db->affected_rows() == 1) { // data changed
-                            }
-                            $products = $this->input->post('products'); // list of purchased products for updating (may contain new and edited or old deleted)
-                            // its best to delete previous all from db then insert new data from request
-                            /***************************************** */
-                            $this->Purchase_return_model->delete_return_purchase_products_SET_TIME(array('return_purchase' => $return_purchase_id, 'deleted_at' => NULL));
-                            if ($this->db->affected_rows() <= 0) {
+                        $this->Purchase_return_model->update_return_purchase($data, $return_purchase);
+                        if ($this->db->affected_rows() == 1) { // updated found and updated but not changed updated_by, so change again
+                            $db_return_updated = true;
+                            $data['updated_by'] = $this->session->id;
+                            $this->Purchase_return_model->update_return_purchase($data, $return_purchase); // UPDATE
+                            if ($this->db->affected_rows() == 1) { // updated updated_by
+                            } else if ($this->db->affected_rows() == 0) { // same updated_by found
+                                //
+                            } else {
                                 $error = $this->db->error();
                                 $this->db->trans_rollback();
                                 die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
                             }
-                            /***************************************** */
-                            foreach ($products as $product) { // add products
-                                $data = array(
-                                    'return_purchase'   => $return_purchase_id,
-                                    'purchase_product'  => $product['id'],
-                                    'quantity'          =>  $product['quantity'],
-                                    'created_by'        =>  $this->session->id
-                                );
-                                $this->Purchase_return_model->insert_purchase_return_product($data);
-                                if ($this->db->affected_rows() != 1) {
-                                    $error = $this->db->error();
-                                    $this->db->trans_rollback();
-                                    die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
-                                }
-                            }
+                        } else if ($this->db->affected_rows() == 0) { // no changed on row
+                            //
+                        } else {
+                            $error = $this->db->error();
+                            $this->db->trans_rollback();
+                            die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                        }
+                        /******************************************************************************* */
+                        if (
+                            $db_return_updated == true || $db_products_updated == true
+                        ) {
                             $this->db->trans_commit();
-                            echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully updated return purchase !', 'location' => "admin/purchase_return/list"));
+                            echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully Updated Return Purchase !', 'location' => "admin/purchase_return/list"));
                         } else {
                             $this->db->trans_rollback();
-                            echo json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error")));
+                            echo json_encode(array('success' => true, 'type' => 'notice', 'timeout' => '5000', 'message' => $this->lang->line('no_data_changed_after_query')));
                         }
-                        /************************************************************ */
                 }
                 break;
             case 'DELETE':

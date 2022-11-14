@@ -164,7 +164,7 @@ class Purchase_return_model extends CI_Model
 	{
 		/******************************************** */ // get return count except this return
 		$this->db->select('
-		rpp.purchase_product	as	id,
+		rpp.purchase_product	as	purchase_product,
 		SUM(rpp.quantity)		as	returned_quantity
 		');
 		$this->db->from(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp');
@@ -178,7 +178,8 @@ class Purchase_return_model extends CI_Model
 		//die($return_purchase_product_count);
 		/******************************************** */ // get return count for this return
 		$this->db->select('
-		rpp.purchase_product	as	id,
+		rpp.id	as	id,
+		rpp.purchase_product	as	purchase_product,
 		IFNULL(rpp.quantity,0)			as	quantity,
 		');
 		$this->db->from(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp');
@@ -192,7 +193,9 @@ class Purchase_return_model extends CI_Model
 		//die($get_this_return_count);
 		/******************************************** */ // get purchase product count
 		$this->db->select("
-		pp.id as 																id,
+		gtrc.id	as id,
+		pp.id as 																purchase_product,
+		pr.id as 																product,
 		(CASE 
 			WHEN pp.quantity - IFNULL(rppc.returned_quantity,0) = 0
 			THEN
@@ -220,8 +223,8 @@ class Purchase_return_model extends CI_Model
 		$this->db->join(TABLE_PRODUCT . ' as pr',    'pr.id = pp.product', 'left');
 		$this->db->join(TABLE_UNIT . ' as u',	'u.id=pp.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . ' as tr',	'tr.id=pp.tax_id',	'left');
-		$this->db->join('(' . $return_purchase_product_count . ')  as rppc', 'rppc.id = pp.id', 'left');
-		$this->db->join('(' . $get_this_return_count . ')  as gtrc', 'gtrc.id = pp.id', 'left');
+		$this->db->join('(' . $get_this_return_count . ')  as gtrc', 'gtrc.purchase_product = pp.id', 'left');
+		$this->db->join('(' . $return_purchase_product_count . ')  as rppc', 'rppc.purchase_product = pp.id', 'left');
 		$this->db->where(array('p.id' => $where['purchase'], 'p.deleted_at' => NULL, 'pp.deleted_at' => NULL));
 		$this->db->group_by(array('pp.id'));
 		$this->db->group_start();
@@ -325,7 +328,7 @@ class Purchase_return_model extends CI_Model
 		$this->db->where(array('rp.id' => $where['return_purchase'], 'rp.deleted_at' => NULL, 'pc.deleted_at' => NULL, 'rpp.deleted_at' => NULL));
 		$query = $this->db->get();
 		//die($this->db->last_query());
-		return $query ? $query->result() : false;
+		return $query ? $query->result_array() : false;
 	}
 	function getPurchaseReturnDetails($where)
 	{
@@ -425,7 +428,7 @@ class Purchase_return_model extends CI_Model
 	{
 		/******************************************** */ // get return count except this return
 		$this->db->select('
-		rpp.purchase_product	as	id,
+		rpp.purchase_product	as	purchase_product,
 		SUM(rpp.quantity)		as	returned_quantity
 		');
 		$this->db->from(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp');
@@ -439,7 +442,8 @@ class Purchase_return_model extends CI_Model
 		//die($return_purchase_product_count);
 		/******************************************** */ // get return count for this return
 		$this->db->select('
-		rpp.purchase_product	as	id,
+		rpp.id	as	id,
+		rpp.purchase_product	as	purchase_product,
 		IFNULL(rpp.quantity,0)			as	quantity,
 		');
 		$this->db->from(TABLE_RETURN_PURCHASE_PRODUCT . ' as rpp');
@@ -453,7 +457,9 @@ class Purchase_return_model extends CI_Model
 		//die($get_this_return_count);
 		/******************************************** */ // get purchase product count
 		$this->db->select('
-		pp.id as 																id,
+		gtrc.id as											id,
+		pp.id as											purchase_product,
+		pr.id as											product,
 		(CASE 
 			WHEN pp.quantity - IFNULL(rppc.returned_quantity,0) = 0
 			THEN
@@ -481,8 +487,8 @@ class Purchase_return_model extends CI_Model
 		$this->db->join(TABLE_PRODUCT . ' as pr',    'pr.id = pp.product', 'left');
 		$this->db->join(TABLE_UNIT . ' as u',	'u.id=pp.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . ' as tr',	'tr.id=pp.tax_id',	'left');
-		$this->db->join('(' . $return_purchase_product_count . ')  as rppc', 'rppc.id = pp.id', 'left');
-		$this->db->join('(' . $get_this_return_count . ')  as gtrc', 'gtrc.id = pp.id', 'left');
+		$this->db->join('(' . $get_this_return_count . ')  as gtrc', 'gtrc.purchase_product = pp.id', 'left');
+		$this->db->join('(' . $return_purchase_product_count . ')  as rppc', 'rppc.purchase_product = pp.id', 'left');
 		$this->db->where(array('p.id' => $where['purchase'], 'p.deleted_at' => NULL, 'pp.deleted_at' => NULL));
 		$this->db->group_by(array('pp.id'));
 		$query = $this->db->get();
@@ -568,6 +574,20 @@ class Purchase_return_model extends CI_Model
 	{
 		$this->db->set($data);
 		$this->db->where($where);
+		$this->db->where(array('deleted_at' => NULL));
+		$query = $this->db->update(TABLE_RETURN_PURCHASE_PRODUCT);
+		return $query;
+	}
+	function create_return_purchase_product_batch($data) // for batch add products option
+	{
+		$query = $this->db->insert_batch(TABLE_RETURN_PURCHASE_PRODUCT, $data);
+		return $query;
+	}
+	function set_deleted_at_return_purchase_product_ids($ids)
+	{
+		$this->db->where_in('id', $ids);
+		$this->db->set('deleted_at', 'NOW()', FALSE); // deleted rows have a timestamp
+		$this->db->set('deleted_by', $this->session->id);
 		$query = $this->db->update(TABLE_RETURN_PURCHASE_PRODUCT);
 		return $query;
 	}
