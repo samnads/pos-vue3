@@ -65,6 +65,7 @@ class Purchase_return extends CI_Controller
                         /************************************************** */
                         $data = $this->Purchase_return_model->get_purchase_row_by_id(array('purchase' => $this->input->post('purchase')));
                         if ($data['id'] && $data['status'] == 22) {
+                            // purchase found && it's status is received
                         } else if ($data['id'] && $data['status'] != 22) {
                             die(json_encode(array('success' => false, 'type' => 'danger', 'message' => 'Purchase not received for return !')));
                         } else {
@@ -75,20 +76,20 @@ class Purchase_return extends CI_Controller
                         $auto_id = trim(reduce_multiples(sprintf("REF-RET-PUR-%05s", $auto_id), " "));
                         $data = array(
                             'reference_id'      => $auto_id,
-                            'purchase'         => $this->input->post('purchase'),
+                            'purchase'          => $this->input->post('purchase'),
                             'date'              => $this->input->post('date'),
                             'time'              => $this->input->post('date'),
                             'status'            => $this->input->post('return_status'),
                             'created_by'        => $this->session->id,
                             'discount'          => $this->input->post('discount'),
-                            'return_tax'      => $this->input->post('tax_rate') ?: NULL,
+                            'return_tax'        => $this->input->post('tax_rate') ?: NULL,
                             'shipping_charge'   => $this->input->post('shipping'),
                             'shipping_tax'      => $this->input->post('shipping_tax') ?: NULL,
                             'packing_charge'    => $this->input->post('packing'),
                             'packing_tax'       => $this->input->post('packing_tax') ?: NULL,
                             'round_off'         => $this->input->post('roundoff'),
                             'payment_note'      => $this->input->post('payment_note') ?: NULL,
-                            'note'               => $this->input->post('note') ?: NULL,
+                            'note'              => $this->input->post('note') ?: NULL,
                         );
                         $this->form_validation->set_data($data);
                         $config = array(array(
@@ -104,13 +105,14 @@ class Purchase_return extends CI_Controller
                         $this->db->trans_begin();
                         $this->Purchase_return_model->insert_purchase_return($data);
                         if ($this->db->affected_rows() == 1) { // success - add purchase
-                            $purchase_id = $this->db->insert_id();
+                            $return_purchase = $this->db->insert_id();
                             $products = $this->input->post('products'); // list of purchased products
                             foreach ($products as $product) { // add products
                                 $data = array(
-                                    'return_purchase' => $purchase_id,
-                                    'purchase_product' => $product['id'],
-                                    'quantity' =>  $product['quantity']
+                                    'return_purchase' => $return_purchase,
+                                    'purchase_product' => $product['purchase_product'],
+                                    'quantity' =>  $product['quantity'],
+                                    'created_by' =>  $this->session->id
                                 );
                                 $this->Purchase_return_model->insert_purchase_return_product($data);
                                 if ($this->db->affected_rows() != 1) {
@@ -309,20 +311,93 @@ class Purchase_return extends CI_Controller
                         break;
                     default: // update purchase return
                         $_POST = $this->input->post('data');
+                        /************************************************************ */ // first update return purchase product table
+                        $this->db->trans_begin();
+                        $db_products_updated = false; // purchase_return_product
+                        $db_return_updated = false; // return_purchase
+                        $return_purchase_id = $this->input->post('id');
+                        $ui_products = $this->input->post('products'); // list of returned products for updating (may contain new and edited or old deleted)
+                        // compare one by one and take action
+                        $db_products = $this->Purchase_return_model->getPurchaseReturnProductsDetails(array('return_purchase' => $return_purchase_id)); // all products for this retuin purchase from db
+                        if (!$db_products) { // nothing retrieved means error
+                            $error = $this->db->error();
+                            $this->db->trans_rollback();
+                            die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                        }
+                        $existing_ids = array(); // id exist in both -  ui & db (for updating)
+                        $new_products = array(); // exist in ui only - new (for adding)
+                        $delete_ids = array(); // id exist in db only -  for deleting
+                        foreach ($ui_products as $ui_product) { // loop through ui products - update existing id, remove from ui array
+                            // check and get same from db
+                            $db_product = $this->Purchase_return_model->get_return_purchase_product_row(array('id' => $ui_product['id'], 'return_purchase' => $return_purchase_id));
+                            if ($db_product['id']) { // same ui id exist in db
+                                array_push($existing_ids, $db_product['id']); // add to existing array
+                                // update on db using unique id
+                                /* prepare for db data */
+                                unset($ui_product['id']);
+                                unset($ui_product['code']);
+                                $this->Purchase_return_model->update_return_purchase_product($ui_product, array('id' => (int)$db_product['id'])); // UPDATE product row
+                                if ($this->db->affected_rows() == 1) { // updated found and updated but not changed updated_by, so change again
+                                    $db_products_updated = true;
+                                    $ui_product['updated_by'] = $this->session->id;
+                                    $this->Purchase_return_model->update_return_purchase_product($ui_product, array('id' => (int)$db_product['id'])); // UPDATE product row updated_by
+                                    if ($this->db->affected_rows() == 1) { // updated updated_by
+                                    } else if ($this->db->affected_rows() == 0) { // same updated_by found
+                                        //
+                                    } else {
+                                        $error = $this->db->error();
+                                        $this->db->trans_rollback();
+                                        die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                                    }
+                                } else if ($this->db->affected_rows() == 0) { // no data changed on both
+                                    //
+                                } else {
+                                    $error = $this->db->error();
+                                    $this->db->trans_rollback();
+                                    die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                                }
+                            } else { // new product found
+                                // add to db
+                                /* prepare for db data */
+                                $ui_product['return_purchase'] = $return_purchase_id;
+                                unset($ui_product['id']);
+                                unset($ui_product['code']);
+                                $ui_product['created_by'] = $this->session->id;
+                                $new_products[] = $ui_product;
+                            }
+                        }
+
+
+                        die();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        $_POST = $this->input->post('data');
                         $data = array(
                             'date'              => $this->input->post('date'),
                             'time'              => $this->input->post('date'),
                             'status'            => $this->input->post('return_status'),
                             'updated_by'        => $this->session->id,
                             'discount'          => $this->input->post('discount'),
-                            'return_tax'      => $this->input->post('tax_rate') ?: NULL,
+                            'return_tax'        => $this->input->post('tax_rate') ?: NULL,
                             'shipping_charge'   => $this->input->post('shipping'),
                             'shipping_tax'      => $this->input->post('shipping_tax') ?: NULL,
                             'packing_charge'    => $this->input->post('packing'),
                             'packing_tax'       => $this->input->post('packing_tax') ?: NULL,
                             'round_off'         => $this->input->post('roundoff'),
                             'payment_note'      => $this->input->post('payment_note') ?: NULL,
-                            'note'               => $this->input->post('note') ?: NULL,
+                            'note'              => $this->input->post('note') ?: NULL,
                         );
                         $this->form_validation->set_data($data);
                         $config = array(
@@ -356,9 +431,10 @@ class Purchase_return extends CI_Controller
                             /***************************************** */
                             foreach ($products as $product) { // add products
                                 $data = array(
-                                    'return_purchase' => $return_purchase_id,
-                                    'purchase_product' => $product['id'],
-                                    'quantity' =>  $product['quantity'],
+                                    'return_purchase'   => $return_purchase_id,
+                                    'purchase_product'  => $product['id'],
+                                    'quantity'          =>  $product['quantity'],
+                                    'created_by'        =>  $this->session->id
                                 );
                                 $this->Purchase_return_model->insert_purchase_return_product($data);
                                 if ($this->db->affected_rows() != 1) {
