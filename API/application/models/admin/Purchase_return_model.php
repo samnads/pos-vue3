@@ -300,7 +300,9 @@ class Purchase_return_model extends CI_Model
 	function getPurchaseReturnProductsDetails($where)
 	{
 		$this->db->select('
-		p.id														as id,
+		rpp.id														as id,
+		p.id														as product,
+		pp.id														as purchase_product,
 		p.code														as code,
 		p.name														as name,
 		pp.unit														as p_unit,
@@ -551,5 +553,22 @@ class Purchase_return_model extends CI_Model
 		$query = $this->db->get();
 		//die($this->db->last_query());
 		return $query ? $query->row_array() : false;
+	}
+	function get_return_purchase_product_row($where)
+	{
+		$this->db->select('*');
+		$this->db->from(TABLE_RETURN_PURCHASE_PRODUCT);
+		$this->db->where($where);
+		$this->db->where(array('deleted_at' => NULL));
+		$query = $this->db->get();
+		//die($this->db->last_query());
+		return $query ? $query->row_array() : false;
+	}
+	function update_return_purchase_product($data, $where)
+	{
+		$this->db->set($data);
+		$this->db->where($where);
+		$query = $this->db->update(TABLE_RETURN_PURCHASE_PRODUCT);
+		return $query;
 	}
 }
