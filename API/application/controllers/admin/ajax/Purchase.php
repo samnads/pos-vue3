@@ -322,6 +322,7 @@ class Purchase extends CI_Controller
                                 array_push($existing_ids, $db_product['id']); // add to existing array
                                 // update on db using unique id
                                 /* prepare for db data */
+                                $ui_product['unit'] = $ui_product['p_unit'];
                                 unset($ui_product['id']);
                                 unset($ui_product['code']);
                                 unset($ui_product['name']);
@@ -373,6 +374,7 @@ class Purchase extends CI_Controller
                                 // add to db
                                 /* prepare for db data */
                                 $ui_product['purchase'] = $purchase_id;
+                                $ui_product['unit'] = $ui_product['p_unit'];
                                 unset($ui_product['id']);
                                 unset($ui_product['code']);
                                 unset($ui_product['name']);

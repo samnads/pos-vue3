@@ -133,8 +133,8 @@ class Purchase_return extends CI_Controller
                     case 'payment':
                         $return_purchase = $this->input->post('return_purchase');
                         $payments = $this->input->post('payments');
-                        $this->Purchase_return_model->update_return_purchase(array('payment_note' => $this->input->post('payment_note')), $return_purchase['id']);
                         $this->db->trans_begin();
+                        $this->Purchase_return_model->update_return_purchase(array('payment_note' => $this->input->post('payment_note')), $return_purchase['id']);
                         foreach ($payments as $payment) { // add payments
                             $data = array(
                                 'return_purchase' => $return_purchase['id'],
@@ -231,9 +231,9 @@ class Purchase_return extends CI_Controller
                                 unset($ui_payment['payment_mode_name']);
                                 $ui_payment['payment_mode'] = $ui_payment['mode'];
                                 unset($ui_payment['mode']);
-                                $ui_payment['transaction_id'] = $ui_payment['transaction_id'] ?: NULL;
-                                $ui_payment['reference_no'] = $ui_payment['reference_no'] ?: NULL;
-                                $ui_payment['note'] = $ui_payment['note'] ?: NULL;
+                                $ui_payment['transaction_id'] = trim($ui_payment['transaction_id']) ?: NULL;
+                                $ui_payment['reference_no'] = trim($ui_payment['reference_no']) ?: NULL;
+                                $ui_payment['note'] = trim($ui_payment['note']) ?: NULL;
                                 $this->Purchase_return_model->update_return_purchase_payment($ui_payment, array('id' => $db_payment['id'], 'return_purchase' => (int)$purchase['id'])); // UPDATE pay row
                                 if ($this->db->affected_rows() == 1) { // updated found and updated but not changed updated_by, so change again
                                     $changed_db2 = true;
@@ -261,9 +261,9 @@ class Purchase_return extends CI_Controller
                                 unset($ui_payment['id']);
                                 $ui_payment['payment_mode'] = $ui_payment['mode'];
                                 unset($ui_payment['mode']);
-                                $ui_payment['transaction_id'] = $ui_payment['transaction_id'] ?: NULL;
-                                $ui_payment['reference_no'] = $ui_payment['reference_no'] ?: NULL;
-                                $ui_payment['note'] = $ui_payment['note'] ?: NULL;
+                                $ui_payment['transaction_id'] = trim($ui_payment['transaction_id']) ?: NULL;
+                                $ui_payment['reference_no'] = trim($ui_payment['reference_no']) ?: NULL;
+                                $ui_payment['note'] = trim($ui_payment['note']) ?: NULL;
                                 $ui_payment['created_by'] = $this->session->id;
                                 $new_pays[] = $ui_payment;
                             }
