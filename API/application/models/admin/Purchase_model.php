@@ -334,6 +334,7 @@ class Purchase_model extends CI_Model
 		$this->db->join(TABLE_UNIT . 			' as u',	'u.id=pp.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . 		' as tr',	'tr.id=pp.tax_id',	'left');
 		$this->db->where(array('pp.purchase' => $where['purchase'], 'pp.deleted_at' => NULL));
+		$this->db->order_by("p.name", "asc");
 		$query = $this->db->get();
 		//die($this->db->last_query());
 		return $query ? $query->result_array() : false;
@@ -411,6 +412,7 @@ class Purchase_model extends CI_Model
 		$this->db->join(TABLE_UNIT . ' as u',	'u.id=pp.unit',	'left');
 		$this->db->join(TABLE_TAX_RATE . ' as tr',	'tr.id=pp.tax_id',	'left');
 		$this->db->where(array('pp.purchase' => $where['purchase'], 'pp.deleted_at' => NULL, 'pu.deleted_at' => NULL));
+		$this->db->order_by("p.name", "asc");
 		$query = $this->db->get();
 		//die($this->db->last_query());
 		return $query ? $query->result() : false;

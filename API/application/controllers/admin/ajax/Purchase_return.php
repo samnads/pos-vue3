@@ -223,7 +223,7 @@ class Purchase_return extends CI_Controller
                         foreach ($ui_payments as $ui_payment) { // loop through ui payments - update existing id, remove from ui array
                             // check and get same from db
                             $db_payment = $this->Purchase_return_model->get_purchase_return_payment_row(array('id' => $ui_payment['id'], 'return_purchase' => (int)$purchase['id']));
-                            if ($db_payment['id']) { // same id exist in db
+                            if (isset($db_payment['id'])) { // same id exist in db
                                 array_push($existing_ids, $db_payment['id']); // add to existing array
                                 // update on db using unique id
                                 /* prepare for db data */
@@ -329,7 +329,7 @@ class Purchase_return extends CI_Controller
                         foreach ($ui_products as $ui_product) { // loop through ui products - update existing id, remove from ui array
                             // check and get same from db
                             $db_product = $this->Purchase_return_model->get_return_purchase_product_row(array('id' => $ui_product['id'], 'return_purchase' => $return_purchase));
-                            if ($db_product['id']) { // same ui id exist in db
+                            if (isset($db_product['id'])) { // same ui id exist in db
                                 array_push($existing_ids, $db_product['id']); // add to existing array
                                 // update on db using unique id
                                 /* prepare for db data */
