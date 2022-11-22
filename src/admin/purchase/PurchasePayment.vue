@@ -427,9 +427,14 @@ export default {
         }
       ).then(function (data) {
         if (data.success == true) {
-          window.PURCHASE_PAY_MODAL.hide();
-          resetForm();
-          emitter.emit("refreshPurchaseTable", data);
+          if (data.location) {
+            window.PURCHASE_PAY_MODAL.hide();
+            emitter.emit("refreshPurchaseTable", data);
+          } else {
+             //window.PURCHASE_PAY_MODAL.hide();
+            //resetForm();
+            //emitter.emit("refreshPurchaseTable", data);
+          }
         } else if (data.success == false) {
           // valid error
           if (data.errors) {
@@ -470,7 +475,7 @@ export default {
       isSubmitting,
       DATA,
       isDirty,
-      isValid
+      isValid,
     };
   },
   methods: {},

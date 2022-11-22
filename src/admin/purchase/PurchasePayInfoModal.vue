@@ -47,7 +47,7 @@
                   >
                     <td>{{ index + 1 }}</td>
                     <td>{{ item.date_time }}</td>
-                    <td>{{ item.reference_no || "NIL" }}</td>
+                    <td><span v-if="item.reference_no">{{ item.reference_no }}</span><span class="text-muted fst-italic" v-else>-</span></td>
                     <td class="text-end">
                       {{ parseFloat(item.amount).toFixed(2) }}
                     </td>
@@ -68,7 +68,7 @@
             "
             v-on:click="addPay()"
           >
-            <i class="fa-solid fa-plus"></i>Add
+            <i class="fa-solid fa-plus"></i>Send Payment
           </button>
           <button
             type="button"

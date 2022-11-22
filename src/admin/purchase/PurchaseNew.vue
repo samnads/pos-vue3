@@ -144,6 +144,19 @@
           </textarea>
         </div>
         <div class="invalid-feedback">{{ errorNote }}</div>
+      </div><div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+        <label class="form-label">Payment Note</label>
+        <div class="input-group is-invalid">
+          <textarea
+            type="text"
+            name="payment_note"
+            v-model="payment_note"
+            class="form-control"
+            rows="1"
+          >
+          </textarea>
+        </div>
+        <div class="invalid-feedback">{{ errorPaymentNote }}</div>
       </div>
     </div>
     <hr />
@@ -633,6 +646,7 @@ export default {
           .nullable(true)
           .label("Purchase Status"),
         note: yup.string().nullable(true).label("Note"),
+        payment_note: yup.string().nullable(true).label("Payment Note"),
         date: yup
           .date()
           .required()
@@ -714,6 +728,7 @@ export default {
     const { value: purchase_status, errorMessage: errorPurchaseStatus } =
       useField("purchase_status");
     const { value: note, errorMessage: errorNote } = useField("note");
+     const { value: payment_note, errorMessage: errorPaymentNote } = useField("payment_note");
     const { value: date, errorMessage: errorDate } = useField("date");
     const { value: products, errorMessage: errorProducts } =
       useField("products");
@@ -1181,6 +1196,8 @@ export default {
       errorDate,
       note,
       errorNote,
+      payment_note,
+      errorPaymentNote,
       onSubmit,
       isDirty,
       isValid,
@@ -1321,6 +1338,7 @@ export default {
           self.setFieldValue("warehouse", data.warehouse);
           self.setFieldValue("purchase_status", data.status);
           self.setFieldValue("note", data.note);
+          self.setFieldValue("payment_note", data.payment_note);
           self.setFieldValue("discount", data.discount);
           self.setFieldValue("tax_rate", data.purchase_tax);
           self.setFieldValue("shipping", Number(data.shipping_charge));

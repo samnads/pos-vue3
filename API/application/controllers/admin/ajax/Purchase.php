@@ -75,8 +75,8 @@ class Purchase extends CI_Controller
                             'packing_charge'    => $this->input->post('packing'),
                             'packing_tax'       => $this->input->post('packing_tax') ?: NULL,
                             'round_off'         => $this->input->post('roundoff'),
-                            'payment_note'      => $this->input->post('payment_note') ?: NULL,
-                            'note'               => $this->input->post('note') ?: NULL,
+                            'payment_note'      => trim($this->input->post('payment_note')) ?: NULL,
+                            'note'              => trim($this->input->post('note')) ?: NULL,
                         );
                         $this->form_validation->set_data($data);
                         $config = array(
@@ -177,7 +177,7 @@ class Purchase extends CI_Controller
                             }
                         }
                         $this->db->trans_commit();
-                        echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully Added Purchase Payment !'));
+                        echo json_encode(array('success' => true, 'type' => 'success', 'message' =>'Successfully Added Purchase Payment !', 'location' => "admin/purchase/list"));
                         break;
                     default:
                 }
@@ -190,7 +190,7 @@ class Purchase extends CI_Controller
                         $ui_payments = $this->input->post('payments');
                         $changed_purchase = false; // purchase
                         $changed_payment = false; // purchase payment
-                        // get all payment for the purchase
+                        // get all payments for the purchase
                         $db_payments = $this->Purchase_model->getPurchasePayments(array('pp.purchase' => (int)$purchase['id']));
                         if (!$db_payments) { // error
                             $error = $this->db->error();
@@ -240,7 +240,7 @@ class Purchase extends CI_Controller
                                     }
                                 } else { // new payment found
                                     // add to db
-                                    /* prepare for db data */
+                                    /* prepare for db data - FOR BATCH ADDING  */
                                     $ui_payment['purchase'] = $purchase['id'];
                                     unset($ui_payment['id']);
                                     $ui_payment['payment_mode'] = $ui_payment['mode'];
@@ -285,8 +285,9 @@ class Purchase extends CI_Controller
                                 $this->db->trans_rollback();
                                 die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
                             }
+                            // payments updated
                             /********************* update payment note ****************/
-                            $this->Purchase_model->update_purchase(array('payment_note' => trim($this->input->post('payment_note')) ?: NULL), $purchase['id']);
+                            $this->Purchase_model->update_purchase(array('payment_note' => trim($this->input->post('payment_note')) ? trim($this->input->post('payment_note')) : NULL), $purchase['id']);
                             if ($this->db->affected_rows() == 1) { // payment note changed
                                 $changed_purchase = true;
                                 $this->Purchase_model->update_purchase(array('updated_by' => $this->session->id), $purchase['id']);
@@ -306,9 +307,13 @@ class Purchase extends CI_Controller
                                 die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
                             }
                             //
-                            if ($changed_purchase == true || $changed_payment == true) {
+                            if ($changed_payment == true) {
                                 $this->db->trans_commit();
-                                echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully Updated Purchase Payment !'));
+                                echo json_encode(array('success' => true, 'type' => 'success', 'message' =>'Successfully Updated Purchase Payment !', 'location' => "admin/purchase/list"));
+                            }
+                            else if ($changed_purchase == true) {
+                                $this->db->trans_commit();
+                                echo json_encode(array('success' => true, 'type' => 'success', 'message' =>'Successfully Updated Purchase Payment Note !', 'location' => "admin/purchase/list"));
                             } else {
                                 $this->db->trans_rollback();
                                 echo json_encode(array('success' => true, 'type' => 'notice', 'timeout' => '5000', 'message' => $this->lang->line('no_data_changed_after_query')));
@@ -476,8 +481,8 @@ class Purchase extends CI_Controller
                             'packing_charge'    => $this->input->post('packing'),
                             'packing_tax'       => $this->input->post('packing_tax') ?: NULL,
                             'round_off'         => $this->input->post('roundoff'),
-                            'payment_note'      => $this->input->post('payment_note') ?: NULL,
-                            'note'               => $this->input->post('note') ?: NULL,
+                            'payment_note'      => trim($this->input->post('payment_note')) ?: NULL,
+                            'note'              => trim($this->input->post('note')) ?: NULL,
                         );
                         if ($db_products_updated == true) {
                             $data['updated_by'] = $this->session->id;
@@ -585,7 +590,7 @@ class Purchase extends CI_Controller
                 break;
             default:
         }
-        switch ($job) { // dropdown jobs
+        switch ($job) {
             case 'purchase_data':
                 $where = array('purchase' => $this->input->get('id'));
                 $data = $this->Purchase_model->get_purchase_row_by_id($where);

@@ -88,8 +88,8 @@ class Purchase_return extends CI_Controller
                             'packing_charge'    => $this->input->post('packing'),
                             'packing_tax'       => $this->input->post('packing_tax') ?: NULL,
                             'round_off'         => $this->input->post('roundoff'),
-                            'payment_note'      => $this->input->post('payment_note') ?: NULL,
-                            'note'              => $this->input->post('note') ?: NULL,
+                            'payment_note'      => trim($this->input->post('payment_note')) ?: NULL,
+                            'note'              => trim($this->input->post('note')) ?: NULL,
                         );
                         $this->form_validation->set_data($data);
                         $config = array(array(
@@ -448,8 +448,8 @@ class Purchase_return extends CI_Controller
                             'packing_charge'    => $this->input->post('packing'),
                             'packing_tax'       => $this->input->post('packing_tax') ?: NULL,
                             'round_off'         => $this->input->post('roundoff'),
-                            'payment_note'      => $this->input->post('payment_note') ?: NULL,
-                            'note'              => $this->input->post('note') ?: NULL,
+                            'payment_note'      => trim($this->input->post('payment_note')) ?: NULL,
+                            'note'              => trim($this->input->post('note')) ?: NULL,
                         );
                         if ($db_products_updated == true) {
                             $data['updated_by'] = $this->session->id;
