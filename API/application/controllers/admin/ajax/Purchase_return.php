@@ -130,11 +130,35 @@ class Purchase_return extends CI_Controller
                         }
                         /************************************************************ */
                         break;
-                    case 'payment':
+                    case 'payment': // new return payment
                         $return_purchase = $this->input->post('return_purchase');
                         $payments = $this->input->post('payments');
                         $this->db->trans_begin();
-                        $this->Purchase_return_model->update_return_purchase(array('payment_note' => $this->input->post('payment_note')), $return_purchase['id']);
+                        $payment_note_updated = false;
+                        $payment_added = false;
+                        /******************************************************* */ // update payment return table
+                        $this->Purchase_return_model->update_return_purchase(array('payment_note' => trim($this->input->post('payment_note'))), $return_purchase['id']);
+                        if ($this->db->affected_rows() == 1) {
+                            $payment_note_updated = true;
+                            // pay note changed
+                            $this->Purchase_return_model->update_return_purchase(array('updated_by' =>$this->session->id), $return_purchase['id']);
+                            if ($this->db->affected_rows() == 1) {
+                                // updated updated_by
+                            } else if ($this->db->affected_rows() == 0) {
+                                // same updated_by found
+                            } else {
+                                $error = $this->db->error();
+                                $this->db->trans_rollback();
+                                die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                            }
+                        } else if ($this->db->affected_rows() == 0) {
+                            // no change
+                        } else {
+                            $error = $this->db->error();
+                            $this->db->trans_rollback();
+                            die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                        }
+                        /******************************************************* */ // update payment table
                         foreach ($payments as $payment) { // add payments
                             $data = array(
                                 'return_purchase' => $return_purchase['id'],
@@ -182,9 +206,16 @@ class Purchase_return extends CI_Controller
                                 $this->db->trans_rollback();
                                 die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
                             }
+                            $payment_added = true;
                         }
                         $this->db->trans_commit();
-                        echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully Added Return Purchase Payment !'));
+                        if ($payment_added) {
+                            echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully Added Return Purchase Payment !'));
+                        } else if ($payment_note_updated) {
+                            echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully Added Return Purchase Payment Note !'));
+                        } else {
+                            echo json_encode(array('success' => true, 'type' => 'notice', 'timeout' => '5000', 'message' => $this->lang->line('no_data_changed_after_query')));
+                        }
                         break;
                     default:
                 }
@@ -199,12 +230,21 @@ class Purchase_return extends CI_Controller
                         $changed_db2 = false; // purchase payment
                         $this->db->trans_begin();
                         // update payment note
-                        $this->Purchase_return_model->update_return_purchase(array('payment_note' => $this->input->post('payment_note') ?: NULL), $purchase['id']);
+                        $this->Purchase_return_model->update_return_purchase(array('payment_note' => trim($this->input->post('payment_note')) ?: NULL), $purchase['id']);
                         if ($this->db->affected_rows() == 1) {
                             $changed_db1 = true;
+                            $this->Purchase_return_model->update_return_purchase(array('updated_by' => $this->session->id), $purchase['id']);
+                            if ($this->db->affected_rows() == 1) {
+                                // updated updated_by
+                            } else if ($this->db->affected_rows() == 0) {
+                                // same updated_by found
+                            } else {
+                                $error = $this->db->error();
+                                $this->db->trans_rollback();
+                                die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
+                            }
                         } else if ($this->db->affected_rows() == 0) {
                             //
-                            //die(json_encode(array('success' => true, 'type' => 'notice', 'message' => 'OK')));
                         } else {
                             $error = $this->db->error();
                             $this->db->trans_rollback();
@@ -300,17 +340,19 @@ class Purchase_return extends CI_Controller
                             $this->db->trans_rollback();
                             die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
                         }
-                        if ($changed_db1 == true || $changed_db2 == true) {
-                            $this->db->trans_commit();
+                        $this->db->trans_commit();
+                        if ($changed_db2 == true) {
                             echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully Updated Purchase Payment !'));
+                        }
+                        else if ($changed_db1 == true) {
+                            echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully Updated Purchase Payment Note !'));
                         } else {
-                            $this->db->trans_rollback();
                             echo json_encode(array('success' => true, 'type' => 'notice', 'timeout' => '5000', 'message' => $this->lang->line('no_data_changed_after_query')));
                         }
                         break;
                     default: // update purchase return
-                        $this->db->trans_begin();
                         $_POST = $this->input->post('data');
+                        $this->db->trans_begin();
                         /************************************************************ */ // first update return purchase product table
                         $db_products_updated = false; // purchase_return_product
                         $db_return_updated = false; // return_purchase
@@ -451,9 +493,6 @@ class Purchase_return extends CI_Controller
                             'payment_note'      => trim($this->input->post('payment_note')) ?: NULL,
                             'note'              => trim($this->input->post('note')) ?: NULL,
                         );
-                        if ($db_products_updated == true) {
-                            $data['updated_by'] = $this->session->id;
-                        }
                         $this->form_validation->set_data($data);
                         $config = array(
                             array(
@@ -487,9 +526,7 @@ class Purchase_return extends CI_Controller
                             die(json_encode(array('success' => false, 'type' => 'danger', 'message' => '<strong>Database error , </strong>' . ($error['message'] ? $error['message'] : "Unknown error"))));
                         }
                         /******************************************************************************* */
-                        if (
-                            $db_return_updated == true || $db_products_updated == true
-                        ) {
+                        if ($db_return_updated == true || $db_products_updated == true) {
                             $this->db->trans_commit();
                             echo json_encode(array('success' => true, 'type' => 'success', 'message' => 'Successfully Updated Return Purchase !', 'location' => "admin/purchase_return/list"));
                         } else {

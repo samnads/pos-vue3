@@ -116,6 +116,20 @@
         </div>
         <div class="invalid-feedback">{{ errorNote }}</div>
       </div>
+      <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+        <label class="form-label">Payment Note</label>
+        <div class="input-group is-invalid">
+          <textarea
+            type="text"
+            name="payment_note"
+            v-model="payment_note"
+            class="form-control"
+            rows="1"
+          >
+          </textarea>
+        </div>
+        <div class="invalid-feedback">{{ errorPaymentNote }}</div>
+      </div>
     </div>
     <hr />
     <div class="col">
@@ -614,6 +628,7 @@ export default {
           .nullable(true)
           .label("Purchase Status"),
         note: yup.string().nullable(true).label("Note"),
+        payment_note: yup.string().nullable(true).label("Payment Note"),
         date: yup
           .date()
           .required()
@@ -634,7 +649,6 @@ export default {
           .required()
           .min(1, "Atleast one return product required !")
           .label("Products"),
-
         packing: yup.number().required().min(0).label("Packing"),
         shipping: yup.number().required().min(0).label("Shipping"),
         shipping_tax: yup
@@ -698,6 +712,7 @@ export default {
     const { value: return_status, errorMessage: errorReturnStatus } =
       useField("return_status");
     const { value: note, errorMessage: errorNote } = useField("note");
+    const { value: payment_note, errorMessage: errorPaymentNote } = useField("payment_note");
     const { value: date, errorMessage: errorDate } = useField("date");
     const { value: products, errorMessage: errorProducts } =
       useField("products");
@@ -1170,7 +1185,9 @@ export default {
       date,
       errorDate,
       note,
+      payment_note,
       errorNote,
+      errorPaymentNote,
       onSubmit,
       isDirty,
       isValid,
@@ -1322,6 +1339,7 @@ export default {
           self.setFieldValue("return_status", data.status);
           self.setFieldValue("tax_rate", data.return_tax);
           self.setFieldValue("note", data.note);
+          self.setFieldValue("payment_note", data.payment_note);
         }
         self.setFieldValue("discount", data.discount);
         self.setFieldValue("shipping", Number(data.shipping_charge));
