@@ -1339,4 +1339,4 @@ INSERT INTO `warehouse` (`id`, `code`, `name`, `place`, `date_of_open`, `country
 (33,	'WARE0033',	' bvbv',	'nbnvbnvbn',	'2022-09-08',	NULL,	NULL,	NULL,	'45454545',	'bnvbn@qqwqw.ghg',	NULL,	NULL,	NULL,	NULL,	17,	NULL,	NULL,	NULL,	'2022-09-11 07:52:55',	'2022-11-01 11:50:03',	'2022-11-01 11:50:03'),
 (34,	'WARE0034',	'Closed Ware house',	'ddfgdfdf',	'2022-11-29',	NULL,	NULL,	NULL,	'54545435',	'fdf@fff.tyytry',	NULL,	NULL,	NULL,	NULL,	17,	NULL,	NULL,	NULL,	'2022-11-01 11:50:50',	NULL,	NULL);
 
--- 2022-11-23 20:54:07
+-- 2022-11-30 14:13:25
