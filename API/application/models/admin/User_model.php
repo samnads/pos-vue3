@@ -38,7 +38,7 @@ class User_model extends CI_Model
         $cnt = $query->row_array();
         return $cnt['count(id)'];
     }
-    function datatable_data($columns = null, $search, $offset, $limit, $order_by, $order)
+    function datatable_data($columns, $search, $offset, $limit, $order_by, $order)
     {
         $search = trim($search);
 
