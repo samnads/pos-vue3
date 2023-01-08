@@ -1,6 +1,7 @@
 const { defineConfig } = require('@vue/cli-service')
 const webpack = require("webpack");
 module.exports = defineConfig({
+  outputDir: '../pos-vue3-build/',
   transpileDependencies: true,
   publicPath: (process.env.VUE_APP_ENV == "development") ? "/" : "",
   devServer: {
