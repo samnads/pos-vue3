@@ -39,7 +39,7 @@
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <li>
-                  <router-link class="dropdown-item" to="/admin/product/list"
+                  <router-link class="dropdown-item" :to="{ name: 'adminProductList'}"
                     >List All</router-link
                   >
                 </li>
@@ -133,15 +133,17 @@
                   >
                 </li>
                 <li>
-                  <router-link class="dropdown-item" to="/admin/purchase_return/list"
+                  <router-link
+                    class="dropdown-item"
+                    to="/admin/purchase_return/list"
                     >Return List</router-link
                   >
                 </li>
               </ul>
             </li>
             <li>
-              <router-link class="nav-link" to="/admin/purchase_return/list"
-                > Purchase Returns</router-link
+              <router-link class="nav-link" to="/admin/purchase_return/list">
+                Purchase Returns</router-link
               >
             </li>
             <li class="nav-item dropdown">
@@ -450,7 +452,7 @@ input[type="number"].no-arrow {
   border-right: 1px solid #000;
 }
 /***************************************************************  display tabbed data */
-.data_lines tr td{
+.data_lines tr td {
   padding: 0 !important;
   margin: 0 !important;
 }

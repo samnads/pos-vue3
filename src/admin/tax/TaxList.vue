@@ -107,7 +107,7 @@ export default {
         order: [[0, "desc"]],
         ajax: {
           method: "GET",
-          url: process.env.VUE_APP_API_ROOT + "admin/ajax/tax",
+          url: config.VUE_APP_API_ROOT + "admin/ajax/tax",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {

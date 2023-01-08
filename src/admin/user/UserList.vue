@@ -112,7 +112,7 @@ export default {
         order: [[1, "asc"]],
         ajax: {
           method: "GET",
-          url: process.env.VUE_APP_API_ROOT + "admin/ajax/user",
+          url: config.VUE_APP_API_ROOT + "admin/ajax/user",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {

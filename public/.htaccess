@@ -3,10 +3,11 @@
 </IfModule>
 
 <IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-  RewriteRule ^index\.html$ - [L]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /index.html [L]
+RewriteEngine On
+RewriteBase /pos-vue3-build
+RewriteRule "^(.*)\.js$" - [END]
+RewriteRule ^pos-vue3-build/index\.html$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /pos-vue3-build/index.html [L]
 </IfModule>

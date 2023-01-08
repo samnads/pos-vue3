@@ -358,9 +358,8 @@ const routes = [
     ],
   },
 ]
-import { Tooltip } from "bootstrap";
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(config.VUE_APP_SUB_PATH),
   routes
 })
 router.beforeEach((to, from, next) => {

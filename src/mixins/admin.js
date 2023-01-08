@@ -3,7 +3,7 @@ import { useStore } from "vuex";
 import axios from "axios";
 import router from "@/router";
 import { getCurrentInstance } from "vue";
-const endpoint = process.env.VUE_APP_API_ROOT + "admin/ajax/";
+const endpoint = config.VUE_APP_API_ROOT + "admin/ajax/";
 const env = process.env.VUE_APP_ENV;
 const timeout = 8000;
 export default function () {

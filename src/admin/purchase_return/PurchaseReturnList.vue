@@ -125,7 +125,7 @@ export default {
         order: [[0, "desc"]],
         ajax: {
           method: "GET",
-          url: process.env.VUE_APP_API_ROOT + "admin/ajax/purchase_return",
+          url: config.VUE_APP_API_ROOT + "admin/ajax/purchase_return",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {

@@ -113,7 +113,7 @@ export default {
         order: [[1, "asc"]],
         ajax: {
           method: "GET",
-          url: process.env.VUE_APP_API_ROOT + "admin/ajax/warehouse",
+          url: config.VUE_APP_API_ROOT + "admin/ajax/warehouse",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {

@@ -173,7 +173,7 @@ export default {
         order: [[1, "desc"]],
         ajax: {
           method: "GET",
-          url: process.env.VUE_APP_API_ROOT + "admin/ajax/stock_adjustment",
+          url: config.VUE_APP_API_ROOT + "admin/ajax/stock_adjustment",
           contentType: "application/json",
           xhrFields: { withCredentials: true },
           error: function (xhr, error, code) {
