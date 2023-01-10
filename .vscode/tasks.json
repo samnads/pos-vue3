@@ -5,8 +5,15 @@
 			"type": "npm",
 			"script": "serve",
 			"problemMatcher": [],
-			"label": "Run POS",
+			"label": "Run POS Task",
 			"detail": "vue-cli-service serve --port 8082"
+		},
+		{
+			"type": "npm",
+			"script": "build",
+			"problemMatcher": [],
+			"label": "Run Build Task",
+			"detail": "vue-cli-service build --port 8082"
 		}
 	]
 }
