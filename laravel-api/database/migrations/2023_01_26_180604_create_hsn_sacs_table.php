@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('1_hsn_sacs', function (Blueprint $table) {
+        Schema::create('hsn_sacs', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
             $table->decimal('tax_rate', $precision = 16, $scale = 4);
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('1_hsn_sacs');
+        Schema::dropIfExists('hsn_sacs');
     }
 };

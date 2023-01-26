@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('1_label_sizes', function (Blueprint $table) {
+        Schema::create('label_sizes', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
             $table->string('name')->unique();
@@ -42,6 +42,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('1_label_sizes');
+        Schema::dropIfExists('label_sizes');
     }
 };
