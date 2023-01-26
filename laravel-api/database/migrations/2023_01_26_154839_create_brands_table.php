@@ -13,13 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('1_barcode_symbologies', function (Blueprint $table) {
+        Schema::create('1_brands', function (Blueprint $table) {
             $table->id();
             $table->string('code');
             $table->string('name');
+            $table->string('logo')->nullable();
             $table->string('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
         });
     }
 
@@ -30,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('1_barcode_symbologies');
+        Schema::dropIfExists('1_brands');
     }
 };

@@ -13,11 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('1_barcode_symbologies', function (Blueprint $table) {
+        Schema::create('1_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
+            $table->foreignId('parent')->nullable()->constrained('1_categories');
+            $table->string('code')->unique();
             $table->string('name');
+            $table->string('slug')->unique();
             $table->string('description')->nullable();
+            $table->string('image')->nullable()->unique();
+            $table->boolean('allow_sub')->nullable();
+            $table->boolean('editable')->nullable();
+            $table->boolean('deletable')->nullable();
+            $table->unique(array('parent','name'),'slug');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -30,6 +37,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('1_barcode_symbologies');
+        Schema::dropIfExists('1_categories');
     }
 };
