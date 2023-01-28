@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Brand;
+use App\Models\Warehouse;
 use Illuminate\Http\Request;
 
-class BrandController extends Controller
+class WarehouseController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -23,14 +23,15 @@ class BrandController extends Controller
                 $search = $request->input('search')['value']; // search query
                 $offset = $request->input('start'); // start position
                 /****************************************************** */
-                $data['data'] = Brand::where('brands.name', 'LIKE', '%' . $search . '%')
+                $data['data'] = Warehouse::join('statuses', 'warehouses.status_id', '=', 'statuses.id')
+                    ->where('warehouses.name', 'LIKE', '%' . $search . '%')
                     ->orderBy($order_by, $order)
                     ->skip($offset)
                     ->take($limit)
-                    ->get(['brands.*']);
+                    ->get(['warehouses.*', 'statuses.name as status_name']);
                 /****************************************************** */
                 $data["draw"] = $request->input('draw');
-                $data["recordsTotal"] = Brand::count();
+                $data["recordsTotal"] = Warehouse::count();
                 $data["recordsFiltered"] = $data['data']->count();
                 $data['success'] = true;
                 return response()->json($data = $data, $status = 200, $headers = [], $options = JSON_PRETTY_PRINT);
@@ -49,7 +50,8 @@ class BrandController extends Controller
      */
     public function create()
     {
-        //
+        echo 'create';
+
     }
 
     /**
@@ -66,10 +68,10 @@ class BrandController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Brand  $brand
+     * @param  \App\Models\Warehouse  $warehouse
      * @return \Illuminate\Http\Response
      */
-    public function show(Brand $brand)
+    public function show(Warehouse $warehouse)
     {
         //
     }
@@ -77,10 +79,10 @@ class BrandController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Brand  $brand
+     * @param  \App\Models\Warehouse  $warehouse
      * @return \Illuminate\Http\Response
      */
-    public function edit(Brand $brand)
+    public function edit(Warehouse $warehouse)
     {
         //
     }
@@ -89,10 +91,10 @@ class BrandController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Brand  $brand
+     * @param  \App\Models\Warehouse  $warehouse
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Brand $brand)
+    public function update(Request $request, Warehouse $warehouse)
     {
         //
     }
@@ -100,12 +102,12 @@ class BrandController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Brand  $brand
+     * @param  \App\Models\Warehouse  $warehouse
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Brand $brand)
+    public function destroy(Warehouse $warehouse)
     {
-        Brand::destroy($brand->id);
-        return response()->json($data = array('success' => true, 'type' => 'success', 'id' => '$warehouse->id', 'message' => 'Successfully deleted brand <strong><em>' . $brand->name . '</em></strong> !'), $status = 200, $headers = [], $options = JSON_PRETTY_PRINT);
+        Warehouse::destroy($warehouse->id);
+        return response()->json($data = array('success' => true, 'type' => 'success', 'id' => '$warehouse->id', 'message' => 'Successfully deleted warehouse <strong><em>' . $warehouse->name . '</em></strong> !'), $status = 200, $headers = [], $options = JSON_PRETTY_PRINT);
     }
 }

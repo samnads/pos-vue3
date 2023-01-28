@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\WarehouseController;
+use App\Http\Controllers\BrandController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -12,6 +16,9 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::resource('admin/ajax/warehouse', WarehouseController::class);
+Route::resource('admin/ajax/brand', BrandController::class);
+
 
 Route::get('/', function () {
     return view('welcome');

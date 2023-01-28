@@ -464,7 +464,7 @@ export default {
       self
         .axiosAsyncCallReturnData(
           "delete",
-          "warehouse",
+          "warehouse/"+data.id,
           {
             data: data,
             action: "delete",

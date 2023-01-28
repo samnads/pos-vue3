@@ -3,8 +3,9 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use App\Models\Module;
 use Illuminate\Database\Seeder;
+use App\Models\Module;
+use App\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -43,8 +44,14 @@ class DatabaseSeeder extends Seeder
             ['name' => 'purchase'],
             ['name' => 'purchase_return'],
         ];
+        $roles = [
+            ['name' => 'Super Admin', 'description' => 'Super admin can do anything, can even delete this world !', 'limit' => 1, 'is_locked' => 1],
+            ['name' => 'Admin', 'description' => 'All rights or actions allowed !', 'limit' => 2, 'is_locked' => 1],
+            ['name' => 'Seller', 'description' => 'Rights for selling products !', 'limit' => 3],
+            ['name' => 'Purchaser', 'description' => 'Rights or purchase products !', 'limit' => 4],
+        ];
         /************************************************************************************************************* */
         collect($modules)->each(function ($data) {Module::create($data);});
-
+        collect($roles)->each(function ($data) {Role::create($data);});
     }
 }

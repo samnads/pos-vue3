@@ -5,7 +5,7 @@ module.exports = defineConfig({
   transpileDependencies: true,
   publicPath: (process.env.VUE_APP_ENV == "development") ? "/" : "/",
   devServer: {
-    proxy: 'http://localhost:8082/'
+    proxy: 'http://localhost:8082'
   },
   configureWebpack: {
     plugins: [

@@ -408,7 +408,7 @@ export default {
       self
         .axiosAsyncCallReturnData(
           "delete",
-          "brand",
+          "brand/"+data.id,
           {
             data: data,
             action: "delete",
