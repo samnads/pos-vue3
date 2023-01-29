@@ -42,23 +42,6 @@
                 />
                 <div class="invalid-feedback">{{ errorName }}</div>
               </div>
-              <div class="col">
-                <label class="form-label">Code</label>
-                <input
-                  type="text"
-                  name="code"
-                  v-model="code"
-                  class="form-control"
-                  v-bind:class="[
-                    errorCode
-                      ? 'is-invalid'
-                      : !errorCode && code
-                      ? 'is-valid'
-                      : '',
-                  ]"
-                />
-                <div class="invalid-feedback">{{ errorCode }}</div>
-              </div>
             </div>
             <div class="row">
               <div class="col">
@@ -156,12 +139,6 @@ export default {
           .nullable(true)
           .transform((_, val) => (val.length > 0 ? val : undefined))
           .label("Name"),
-        code: yup
-          .string()
-          .min(2)
-          .nullable(true)
-          .transform((_, val) => (val.length > 0 ? val : undefined))
-          .label("Code"),
         description: yup
           .string()
           .min(2)
@@ -192,7 +169,6 @@ export default {
       if (DATA.value.data) {
         let fields = DATA.value.data;
         setFieldValue("name", fields.name);
-        setFieldValue("code", fields.code);
         setFieldValue("description", fields.description || "");
       } else {
         //
@@ -206,6 +182,7 @@ export default {
       values.db = DATA.value.data;
       let method = DATA.value.data ? "put" : "post";
       let action = DATA.value.data ? "update" : "create";
+      let url = DATA.value.data ? "brand/"+values.db.id : "brand";
       let controller;
       if (method == "post") {
         // new
@@ -222,7 +199,7 @@ export default {
       }
       return axiosAsyncCallReturnData(
         method,
-        "brand",
+        url,
         {
           data: values,
           action: action,
@@ -265,7 +242,6 @@ export default {
         // edit form
         let fields = DATA.value.data;
         setFieldValue("name", fields.name);
-        setFieldValue("code", fields.code);
         setFieldValue("description", fields.description || "");
       } else {
         // new
@@ -274,7 +250,6 @@ export default {
     }
     /************************************************************************* */
     const { value: name, errorMessage: errorName } = useField("name");
-    const { value: code, errorMessage: errorCode } = useField("code");
     const { value: description, errorMessage: errorDescription } =
       useField("description");
     /*************************************** */
@@ -282,8 +257,6 @@ export default {
       /******* form fields   */
       name,
       errorName,
-      code,
-      errorCode,
       description,
       errorDescription,
       /*************** */

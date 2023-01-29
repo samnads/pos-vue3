@@ -1,10 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\BrandController;
-
-
+use App\Http\Controllers\WarehouseController;
+use App\Http\Controllers\UnitController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,10 +14,10 @@ use App\Http\Controllers\BrandController;
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
+ */
 Route::resource('admin/ajax/warehouse', WarehouseController::class);
 Route::resource('admin/ajax/brand', BrandController::class);
-
+Route::resource('admin/ajax/unit', UnitController::class);
 
 Route::get('/', function () {
     return view('welcome');

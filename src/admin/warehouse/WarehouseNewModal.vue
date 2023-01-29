@@ -82,9 +82,9 @@
                 <label class="form-label">Status<i>*</i></label>
                 <select
                   class="form-select text-capitalize"
-                  name="status"
+                  name="status_id"
                   :disabled="!storedWarehouseStatuses"
-                  v-model="status"
+                  v-model="status_id"
                   v-bind:class="[
                     errorStatus
                       ? 'is-invalid'
@@ -172,14 +172,14 @@
               <div class="col">
                 <label class="form-label">Country</label>
                 <input
-                  type="text"
-                  name="country"
-                  v-model="country"
+                  type="number"
+                  name="country_id"
+                  v-model="country_id"
                   class="form-control"
                   v-bind:class="[
                     errorCountry
                       ? 'is-invalid'
-                      : !errorCountry && country
+                      : !errorCountry && country_id
                       ? 'is-valid'
                       : '',
                   ]"
@@ -347,7 +347,7 @@ export default {
           .nullable(true)
           .transform((curr, orig) => (orig === "" ? null : curr))
           .label("Date of Open"),
-        status: yup.number().required().min(1).nullable(true).label("Status"),
+        status_id: yup.number().required().min(1).nullable(true).label("Status"),
         status_reason: yup
           .string()
           .min(3)
@@ -379,9 +379,9 @@ export default {
             val != null && val.length > 0 ? val : undefined
           )
           .label("Phone Number"),
-        country: yup
-          .string()
-          .min(3)
+        country_id: yup
+          .number()
+          .min(1)
           .max(100)
           .nullable(true)
           .transform((_, val) =>
@@ -459,10 +459,10 @@ export default {
         let fields = DATA.value.data;
         setFieldValue("name", fields.name);
         setFieldValue("date_of_open", fields.date_of_open);
-        setFieldValue("status", fields.status);
+        setFieldValue("status_id", fields.status_id);
         setFieldValue("status_reason", fields.status_reason);
         setFieldValue("phone", fields.phone);
-        setFieldValue("country", fields.country);
+        setFieldValue("country_id", fields.country_id);
         setFieldValue("city", fields.city);
         setFieldValue("place", fields.place);
         setFieldValue("pin_code", fields.pin_code);
@@ -470,7 +470,7 @@ export default {
         setFieldValue("address", fields.address);
         setFieldValue("description", fields.description);
       } else {
-        setFieldValue("status", null); // can use a default value
+        setFieldValue("status_id", null); // can use a default value
       }
       window.WAREHOUSE_NEW_MODAL.show();
     });
@@ -481,6 +481,7 @@ export default {
       values.db = DATA.value.data;
       let method = DATA.value.data ? "put" : "post";
       let action = DATA.value.data ? "update" : "create";
+      let url = DATA.value.data ? "warehouse/"+values.db.id : "warehouse";
       let controller;
       if (method == "post") {
         // new
@@ -497,7 +498,7 @@ export default {
       }
       return axiosAsyncCallReturnData(
         method,
-        "warehouse",
+        url,
         {
           data: values,
           action: action,
@@ -541,10 +542,10 @@ export default {
         let fields = DATA.value.data;
         setFieldValue("name", fields.name);
         setFieldValue("date_of_open", fields.date_of_open);
-        setFieldValue("status", fields.status);
+        setFieldValue("status_id", fields.status_id);
         setFieldValue("status_reason", fields.status_reason);
         setFieldValue("phone", fields.phone);
-        setFieldValue("country", fields.country);
+        setFieldValue("country_id", fields.country_id);
         setFieldValue("city", fields.city);
         setFieldValue("place", fields.place);
         setFieldValue("pin_code", fields.pin_code);
@@ -554,19 +555,19 @@ export default {
       } else {
         // new
         resetForm();
-        setFieldValue("status", null); // can use a default value
+        setFieldValue("status_id", null); // can use a default value
       }
     }
     /************************************************************************* */
     const { value: name, errorMessage: errorName } = useField("name");
     const { value: date_of_open, errorMessage: errorDoo } =
       useField("date_of_open");
-    const { value: status, errorMessage: errorStatus } = useField("status");
+    const { value: status_id, errorMessage: errorStatus } = useField("status_id");
     const { value: status_reason, errorMessage: errorStatusReason } =
       useField("status_reason");
     const { value: email, errorMessage: errorEmail } = useField("email");
     const { value: phone, errorMessage: errorPhone } = useField("phone");
-    const { value: country, errorMessage: errorCountry } = useField("country");
+    const { value: country_id, errorMessage: errorCountry } = useField("country_id");
     const { value: city, errorMessage: errorCity } = useField("city");
     const { value: place, errorMessage: errorPlace } = useField("place");
     const { value: pin_code, errorMessage: errorPin } = useField("pin_code");
@@ -580,7 +581,7 @@ export default {
       errorName,
       date_of_open,
       errorDoo,
-      status,
+      status_id,
       errorStatus,
       status_reason,
       errorStatusReason,
@@ -588,7 +589,7 @@ export default {
       errorEmail,
       phone,
       errorPhone,
-      country,
+      country_id,
       errorCountry,
       city,
       errorCity,

@@ -67,10 +67,6 @@ export default {
   components: {},
   /* eslint-disable */
   setup() {
-    const store = useStore();
-    let units = computed(function () {
-      return store.state.units;
-    });
     const emitter = inject("emitter"); // Inject `emitter`
     const controller_delete = ref({});
     // notify
@@ -88,8 +84,7 @@ export default {
       axiosAsyncCallReturnData,
       axiosAsyncStoreReturnBool,
       emitter,
-      controller_delete,
-      units,
+      controller_delete
     };
   },
   methods: {},
@@ -464,7 +459,7 @@ export default {
       self
         .axiosAsyncCallReturnData(
           "delete",
-          "unit",
+          "unit/"+data.id,
           {
             data: data,
             action: "delete",
@@ -495,14 +490,6 @@ export default {
     self.emitter.on("refreshUnitDataTable", (data) => {
       self.table.ajax.reload();
     });
-    //
-    if (!this.units) {
-      // if not found on store
-      this.axiosAsyncStoreReturnBool("storeUnits", "product", {
-        action: "create",
-        dropdown: "base_units",
-      }); // get units
-    }
   },
   beforeUnmount() {
     var self = this;

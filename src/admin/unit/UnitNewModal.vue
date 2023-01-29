@@ -267,7 +267,7 @@ export default {
           "allow_decimal",
           fields.allow_decimal == 1 ? true : false
         );
-        setFieldValue("step", fields.step);
+        setFieldValue("step", Number(fields.step));
         setFieldValue("description", fields.description || "");
         subForm.value = DATA.value.db.base ? true : false;
       } else {
@@ -285,6 +285,7 @@ export default {
     const onSubmit = handleSubmit((values, { resetForm }) => {
       let method = DATA.value.db ? "put" : "post";
       let action = DATA.value.db ? "update" : "create";
+      let url = DATA.value.db ? "unit/"+DATA.value.db.id : "unit";
       if (action == "create") {
         values.unit = DATA.value.data ? DATA.value.data.id : undefined; // for sub unit
       } else {
@@ -307,7 +308,7 @@ export default {
       }
       return axiosAsyncCallReturnData(
         method,
-        "unit",
+        url,
         {
           data: values,
           action: action,

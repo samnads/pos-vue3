@@ -110,7 +110,7 @@ export default {
           fixedColumnsLeft: 1,
           fixedColumnsRight: 1,
         },
-        order: [[1, "asc"]],
+        order: [[1, "desc"]],
         ajax: {
           method: "GET",
           url: config.VUE_APP_API_ROOT + "admin/ajax/warehouse",
