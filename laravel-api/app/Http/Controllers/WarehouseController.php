@@ -44,7 +44,7 @@ class WarehouseController extends Controller
         }
         switch ($request->input('dropdown')) {
             case 'status':
-                $data['data'] = Status::where('warehouse_status', '=', 1)->get(['statuses.id','statuses.name']);
+                $data['data'] = Status::where('warehouse_status', '=', 1)->get(['statuses.id', 'statuses.name']);
                 $data['success'] = true;
                 return response()->json($data = $data, $status = 200, $headers = [], $options = JSON_PRETTY_PRINT);
                 break;
